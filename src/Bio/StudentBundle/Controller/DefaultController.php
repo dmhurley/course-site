@@ -27,7 +27,7 @@ class DefaultController extends Controller
     		->add('fName', 'text', array('label' => "First Name:"))
     		->add('lName', 'text', array('label' => "Last Name:"))
     		->add('email', 'email', array('label' => "Email:"))
-    		->add('Submit', 'submit')
+    		->add('Add', 'submit')
     		->getForm();
 
     	$cloned = clone $form;
@@ -58,6 +58,7 @@ class DefaultController extends Controller
     public function deleteAction(Request $request) {
     	$form = $this->createFormBuilder(new Student())
     		->add('sid', 'integer', array('label' => "Student ID:"))
+    		->add('Delete', 'submit')
     		->getForm();
 
     	$cloned = clone $form;
@@ -79,5 +80,43 @@ class DefaultController extends Controller
     	}
 
     	return array('form' => $cloned->createView());
+    }
+
+    /**
+     * @Route("/edit")
+     * @Template("BioStudentBundle:Default:add.html.twig")
+     */
+    public function editAction(Request $request) {
+    	$entity = new Student();
+    	$form = $this->createFormBuilder($entity)
+    		->add('sid', 'integer', array('label' => "Student ID:"))
+    		->add('fName', 'text', array('label' => "First Name:"))
+    		->add('lName', 'text', array('label' => "Last Name:"))
+    		->add('email', 'email', array('label' => "Email:"))
+    		->add('Edit', 'submit')
+    		->getForm();
+
+    	$cloned = clone $form;
+
+    	if ($request->getMethod() === "POST") {		// if request was sent
+    		$form->handleRequest($request);
+    		if ($form->isValid()) {					// and form was valid
+    			$em = $this->getDoctrine()->getManager();
+    			$repo = $em->getRepository('BioStudentBundle:Student');
+    			$dbEntity = $repo->findOneBySid($entity->getSid());		// try to find the student in database
+    			if (!$dbEntity) {										// if student does not exist
+    				$request->getSession()->getFlashBag()->set('failure', 'Student #'.$entity->getSid()." does not exist.");
+    			} else {					// student does exist
+    				$dbEntity->setFName($entity->getFName());
+    				$dbEntity->setLName($entity->getLName());
+    				$dbEntity->setEmail($entity->getEmail());
+    				// for more changes
+    				$em->flush();
+    				$request->getSession()->getFlashBag()->set('success', "Student #".$entity->getSid()." updated.");
+    			}
+    		}
+    	}
+
+    	return array('form' => $form->createView());
     }
 }

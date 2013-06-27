@@ -27,6 +27,7 @@ class Student
      *
      * @ORM\Column(name="sid", type="integer", unique=true)
      * @Assert\NotBlank()
+     * @Assert\Range(min=10000, max=9999999, minMessage="Not enough digits.", maxMessage="Too many digits.")
      */
     private $sid;
 
