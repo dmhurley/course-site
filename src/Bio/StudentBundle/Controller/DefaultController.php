@@ -50,4 +50,34 @@ class DefaultController extends Controller
     	}
         return array('form' => $form->createView());
     }
+
+    /**
+     * @Route("/delete")
+     * @Template()
+     */
+    public function deleteAction(Request $request) {
+    	$form = $this->createFormBuilder(new Student())
+    		->add('sid', 'integer', array('label' => "Student ID:"))
+    		->getForm();
+
+    	$cloned = clone $form;
+
+    	if ($request->getMethod() === "POST") {
+    		$form->handleRequest($request);
+    		$sid = $form->get('sid')->getData();
+    		$em = $this->getDoctrine()->getManager();
+    		$repo = $em->getRepository('BioStudentBundle:Student');
+
+    		$entity = $repo->findOneBySid($sid);
+    		if (!$entity) {
+    			$request->getSession()->getFlashBag()->set('failure', "Student #".$sid." does not exist");
+    		} else {
+    			$em->remove($entity);
+    			$em->flush();
+    			$request->getSession()->getFlashBag()->set('success', "Student #".$sid." removed.");
+    		}
+    	}
+
+    	return array('form' => $cloned->createView());
+    }
 }
