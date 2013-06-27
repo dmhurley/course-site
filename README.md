@@ -8,13 +8,13 @@ and what Bundles are included.
 1) Cloning this Repository
 ------------------------------
 
-The best way to clone this repository is to use Composer. If you
-don't have Composer installed you can run the following commands 
+The best way to get this repository running on your computer is to use Composer. 
+If you don't have Composer installed you can run the following commands 
 from the project directory:
 
 		curl -s http://getcomposer.org/installer | php
 
-to install Composer and:
+to install Composer, and:
 
 		php composer.phar update
 
@@ -25,4 +25,7 @@ by running this command from project directory
 
 		php app/check.php
 
-		
+2) Bundles
+------------------------------
+
+We're working on it...
