@@ -23,27 +23,32 @@ class DefaultController extends Controller
     public function findAction(Request $request){
         $form = $this->createFormBuilder(new Student())
             ->add('sid', 'text', array('label' => "Student ID:", 'required' => false))
-            ->add('fName', 'text', array('label' => "First Name:", 'read_only' => true, 'required' => false))
-            ->add('lName', 'text', array('label' => "Last Name:", 'read_only' => true, 'required' => false))
-            ->add('email', 'email', array('label' => "Email:", 'read_only' => true, 'required' => false))
+            ->add('fName', 'text', array('label' => "First Name:", 'required' => false))
+            ->add('lName', 'text', array('label' => "Last Name:", 'required' => false))
+            ->add('email', 'email', array('label' => "Email:", 'required' => false))
             ->add('Find', 'submit')
             ->getForm();
 
         if ($request->getMethod() === "POST") {
-            $form->handleRequest($request);
-            $sid = $form->get('sid')->getData();
+            $values = $request->request->get('form');
+            $array = array();
+            if ($values['sid'] !== "") {
+                $array['sid'] = $values['sid'];
+            }
+            if ($values['fName'] !== "") {
+                $array['fName'] = $values['fName'];
+            }
+            if ($values['lName'] !== "") {
+                $array['lName'] = $values['lName'];
+            }
+            if ($values['email'] !== "") {
+                $array['email'] = $values['email'];
+            }
 
             try {
-                $entity = $this->findStudent($sid);
-                $request->getSession()->getFlashBag()->set('success', 'Student found!');
-                $form = $this->createFormBuilder($entity)
-                    ->add('sid', 'text', array('label' => "Student ID:"))
-                    ->add('fName', 'text', array('label' => "First Name:", 'read_only' => true))
-                    ->add('lName', 'text', array('label' => "Last Name:", 'read_only' => true))
-                    ->add('email', 'email', array('label' => "Email:", 'read_only' => true))
-                    ->add('Find', 'submit')
-                    ->getForm();
-
+                $entities = $this->findStudent($array, 'sid');
+                $request->getSession()->getFlashBag()->set('success', 'Students found!');
+                return $this->render('BioStudentBundle:Default:display.html.twig', array('entities' => $entities, 'title' => "Found ".count($entities)." students.", 'sort'=>'sid'));
             } catch (BioException $e){
                 $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
             }
@@ -88,30 +93,24 @@ class DefaultController extends Controller
 
     /**
      * @Route("/delete", name="delete_student")
-     * @Template()
      */
     public function deleteAction(Request $request) {
-    	$form = $this->createFormBuilder(new Student())
-    		->add('sid', 'text', array('label' => "Student ID:"))
-    		->add('Delete', 'submit')
-    		->getForm();
-
-    	$cloned = clone $form;
-
-    	if ($request->getMethod() === "POST") {
-    		$form->handleRequest($request);
-    		$sid = $form->get('sid')->getData();
+    	if ($request->getMethod() === "GET" && $request->query->get('sid')) {
+    		$sid = $request->query->get('sid');
 
             try {
-                $this->deleteStudent($sid);
+                $this->deleteStudent($this->findStudent(array('sid' => $sid)));
                 $request->getSession()->getFlashBag()->set('success', "Student #".$sid." removed.");
             } catch (BioException $e) {
                 $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
             }
     		
     	}
-
-    	return array('form' => $cloned->createView(), 'title' => "Delete Student");
+        if (!$request->headers->get('referer')){
+            return $this->redirect($this->generateUrl('display_students'));
+        } else {
+            return $this->redirect($request->headers->get('referer'));
+        }
     }
 
     /**
@@ -119,7 +118,15 @@ class DefaultController extends Controller
      * @Template("BioStudentBundle:Default:add.html.twig")
      */
     public function editAction(Request $request) {
-    	$entity = new Student();
+        $entity = new Student();
+        if ($request->getMethod() === "GET" && $request->query->get('sid')) {
+            try {
+                $entity = $this->findStudent(array('sid' => $request->query->get('sid')))[0];
+            } catch (BioException $e) {
+                $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
+            }
+        }
+
     	$form = $this->createFormBuilder($entity)
     		->add('sid', 'text', array('label' => "Student ID:"))
     		->add('fName', 'text', array('label' => "First Name:"))
@@ -157,7 +164,7 @@ class DefaultController extends Controller
         try {
             if ($mode && $sid) {
                 if ($mode === "delete") {
-                    $this->deleteStudent($sid);
+                    $this->deleteStudent($this->findStudent(array('sid' => $sid)));
                     $request->getSession()->getFlashBag()->set('success', "Deleted student #".$sid.".");
                 } else if ($mode === "edit") {
 
@@ -204,18 +211,21 @@ class DefaultController extends Controller
     	return array("form" => $form->createView(), 'title' => "Upload Student List");
     }
 
-    private function findStudent($sid) {
+    // takes in an array containing desired field-value pairs and a field name to sort by
+    // returns an array of all Students matching that description
+    private function findStudent($array = array(), $sort = "sid") {
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository('BioStudentBundle:Student');
 
-        $entity = $repo->findOneBySid($sid);
-        if (!$entity) {
-            throw new BioException("Student not found.");
+        $entities = $repo->findBy($array, array($sort => 'ASC'));
+        if (count($entities) === 0) {
+            throw new BioException("No students found.");
         } else {
-            return $entity;
+            return $entities;
         }
     }
 
+    // 
     private function addStudent($entity) {
         $em = $this->getDoctrine()->getManager();
         try {
@@ -226,17 +236,17 @@ class DefaultController extends Controller
         }
     }
 
-    private function deleteStudent($sid) {
+    // takes in an array of entities
+    // deletes all of them
+    private function deleteStudent($entities) {
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository('BioStudentBundle:Student');
 
-        $entity = $repo->findOneBySid($sid);
-        if (!$entity) {
-            throw new BioException('We could not find a student with that ID.');
-        } else {
-            $em->remove($entity);
-            $em->flush();
+        for ($i = 0; $i < count($entities); $i++) {
+            $em->remove($entities[$i]);
+
         }
+        $em->flush();
     }
 
     private function editStudent($entity) {
@@ -277,7 +287,7 @@ class DefaultController extends Controller
             $entity->setSid($sid);
             $entity->setEmail($email);
             list($lName, $fName) = explode(", ", $name);
-            $entity->setFName($fName);
+            $entity->setFName(explode(" ", $fName)[0]);
             $entity->setLName($lName);
             if (!in_array($sid, $sids) && !in_array($email, $emails)) {
                 $sids[] = $sid;

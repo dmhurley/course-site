@@ -16,16 +16,16 @@
 			<th><a href="?sort=sid">ID</a></th>
 			<th><a href="?sort=fName">First</a> - <a href="?sort=lName">Last</a></th>
 			<th><a href="?sort=email">Email</a></th>
-<!-- 			<th>Edit</th>
- -->			<th>Delete</th>
+			<th>Edit</th>
+			<th>Delete</th>
 		</tr>
 	{% for entity in entities %}
 		<tr>
 			<td>{{ entity.sid }}</td>
 			<td>{{ entity.fName }} {{ entity.lName }}</td>
 			<td><a href="mailto:{{ entity.email }}">{{ entity.email }}</a></td>
-<!-- 			<td><a href="?mode=edit&sid={{entity.sid}}&sort={{sort}}">edit</td>
- -->			<td><a href="?mode=delete&sid={{entity.sid}}&sort={{sort}}">delete</td>
+			<td><a href="{{ path('edit_student') }}?sid={{entity.sid}}">edit</td>
+			<td><a href="{{ path('delete_student') }}?sid={{entity.sid}}">delete</td>
 		</tr>
 	{% endfor %}
 
