@@ -91,9 +91,31 @@ body {
 .wlogoSmall {
 	background-image: url(http://www.biology.washington.edu/sites/all/themes/clean/bioStyleC2Images/uw-text.png);
 	background-repeat: no-repeat;
-	background-position: 113px 32px;
+	background-position: 113px 12px;
 
 	padding-left: 100px;
+}
+
+.logoAbsolute {
+	background-image: none;
+	background-color: rgb(222,185,57) !important;
+	left: 333px;
+	padding: 0;
+	margin: 0;
+	width: 53px;
+	height: 57px;
+	border-style: none;
+}
+
+#wlogoLink {
+	display: block;
+	width: 50px;
+	height: 60px;
+	position: relative;
+	z-index: 50000;
+	background: rgb(222,185,57) url(http://www.biology.washington.edu/sites/all/themes/clean/bioStyleC2Images/w-front-small.png) no-repeat 6px 17px;
+	top: 0;
+}
 }
 
 h1 {

@@ -1,0 +1,32 @@
+{% extends 'BioStudentBundle:Default:base.html.twig' %}
+
+{% block content %}
+	{% if app.session.flashbag.has('success') %}
+		<div class="success">
+			{{ app.session.flashbag.get('success')[0] }}
+		</div>
+	{% elseif app.session.flashbag.has('failure') %}
+		<div class="failure">
+			{{ app.session.flashbag.get('failure')[0] }}
+		</div>
+	{% endif %}
+
+	<table border="1px">
+		<tr>
+			<th><a href="?sort=sid">ID</a></th>
+			<th><a href="?sort=fName">First</a> - <a href="?sort=lName">Last</a></th>
+			<th><a href="?sort=email">Email</a></th>
+<!-- 			<th>Edit</th>
+ -->			<th>Delete</th>
+		</tr>
+	{% for entity in entities %}
+		<tr>
+			<td>{{ entity.sid }}</td>
+			<td>{{ entity.fName }} {{ entity.lName }}</td>
+			<td><a href="mailto:{{ entity.email }}">{{ entity.email }}</a></td>
+<!-- 			<td><a href="?mode=edit&sid={{entity.sid}}&sort={{sort}}">edit</td>
+ -->			<td><a href="?mode=delete&sid={{entity.sid}}&sort={{sort}}">delete</td>
+		</tr>
+	{% endfor %}
+
+{% endblock %}

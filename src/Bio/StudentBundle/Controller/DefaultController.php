@@ -144,6 +144,40 @@ class DefaultController extends Controller
 
     	return array('form' => $form->createView(), 'title' => "Edit Student");
     }
+
+    /**
+     * @Route("/display", name="display_students")
+     * @Template()
+     */
+    public function displayAction(Request $request) {
+        $sort = $request->query->get('sort');
+        $mode = $request->query->get('mode');
+        $sid = $request->query->get('sid');
+
+        try {
+            if ($mode && $sid) {
+                if ($mode === "delete") {
+                    $this->deleteStudent($sid);
+                    $request->getSession()->getFlashBag()->set('success', "Deleted student #".$sid.".");
+                } else if ($mode === "edit") {
+
+                }
+            }
+        } catch (BioException $e) {
+            $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
+        }
+
+        if (!$sort) {
+            $sort = 'sid';
+        }
+        $em = $this->getDoctrine()->getManager();
+        $repo = $em->getRepository('BioStudentBundle:Student');
+
+        $entities = $repo->findBy(array(), array($sort => 'ASC'));
+
+        return array('entities' => $entities, 'title' => "Display Students", 'sort' => $sort);
+    }
+
 	/**
      * @Route("/upload", name="upload_student")
      * @Template()
