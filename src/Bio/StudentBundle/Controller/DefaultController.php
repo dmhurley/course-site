@@ -178,9 +178,17 @@ class DefaultController extends Controller
 
     private function uploadStudentList($file) {
         $em = $this->getDoctrine()->getManager();
+        $repo = $em->getRepository('BioStudentBundle:Student');
+        $entities = $repo->findAll();
+
+        // truncate table
         $connection = $em->getConnection();
         $platform = $connection->getDatabasePlatform();
         $connection->executeUpdate($platform->getTruncateTableSQL('Student', true));
+
+        $sids = [];
+        $emails = [];
+
         for ($i = 1; $i < count($file); $i++) {
             list($sid, $name, $section, $credits, $gender, $class, $major, $email) = preg_split('/","|,"|",|"/', $file[$i], -1, PREG_SPLIT_NO_EMPTY);
             $entity = new Student();
@@ -189,12 +197,19 @@ class DefaultController extends Controller
             list($lName, $fName) = explode(", ", $name);
             $entity->setFName($fName);
             $entity->setLName($lName);
-            $em->persist($entity);
+            if (!in_array($sid, $sids) && !in_array($email, $emails)) {
+                $sids[] = $sid;
+                $emails[] = $email;
+                $em->persist($entity);
+            } else {
+                $em->clear();
+                for ($j = 0; $j < count($entities); $j++) {
+                    $em->persist($entities[$j]);
+                }
+                $em->flush();
+                throw new BioException("The file contained duplicate Student IDs or emails.");
+            }
         }
-        try {
-            $em->flush();
-        } catch (\Doctrine\DBAL\DBALException $e) {
-            throw new BioException("This file contains duplicate Student IDs or emails.");
-        }
+        $em->flush();
     }
 }
