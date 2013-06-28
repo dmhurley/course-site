@@ -122,22 +122,13 @@ class DefaultController extends Controller
     		$form->handleRequest($request);
     		$data = $form->get('file')->getData();
     		if ($data !== null) {
-    			$file = file($data);
-    			$em = $this->getDoctrine()->getManager();
-	    		for ($i = 1; $i < count($file); $i++) {
-	    			$array = explode(",", $file[$i]);
-	    			try {
-	    				$entity = new Student();
-	    				$entity->setSid(intval($array[0]));
-	    				$entity->setEmail($array[7]);
-	    				$entity->setFName($array[2]);
-	    				$entity->setLName($array[1]);
-	    				$em->persist($entity);
-	    			} catch(\Doctrine\DBAL\DBALException $e) {
-
-	    			}
-	    		}
-			$em->flush();
+    			$file = file($data, FILE_IGNORE_NEW_LINES);
+    			try {
+                    $this->uploadStudentList($file);
+                    $request->getSession()->getFlashBag()->set('success', "Student list updated.");
+                } catch (BioException $e) {
+                    $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
+                }
 	    	}
     	}
     	return array("form" => $form->createView());
@@ -186,6 +177,24 @@ class DefaultController extends Controller
     }
 
     private function uploadStudentList($file) {
-        
+        $em = $this->getDoctrine()->getManager();
+        $connection = $em->getConnection();
+        $platform = $connection->getDatabasePlatform();
+        $connection->executeUpdate($platform->getTruncateTableSQL('Student', true));
+        for ($i = 1; $i < count($file); $i++) {
+            list($sid, $name, $section, $credits, $gender, $class, $major, $email) = preg_split('/","|,"|",|"/', $file[$i], -1, PREG_SPLIT_NO_EMPTY);
+            $entity = new Student();
+            $entity->setSid($sid);
+            $entity->setEmail($email);
+            list($lName, $fName) = explode(", ", $name);
+            $entity->setFName($fName);
+            $entity->setLName($lName);
+            $em->persist($entity);
+        }
+        try {
+            $em->flush();
+        } catch (\Doctrine\DBAL\DBALException $e) {
+            throw new BioException("This file contains duplicate Student IDs or emails.");
+        }
     }
 }
