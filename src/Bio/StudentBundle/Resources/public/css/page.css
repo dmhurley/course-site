@@ -1,0 +1,95 @@
+body {
+	background-color: rgb(63, 63, 63);
+	color: rgb(73, 73, 73);
+	margin: 0px;
+	padding: 0px;
+}
+
+/*---------- width ----------*/
+#container, #header, #footer, #page{
+	width: 900px;
+}
+
+
+#container {
+	background-color: white;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#page {
+	margin-left: auto;
+	margin-right: auto;
+	min-height: 400px;
+}
+
+#left {
+	width: 180px;
+	float: left;
+	min-height: 250px;
+/*	background-color: rgb(223, 194, 93);
+*/}
+
+#center {
+	float: left;
+	width: 680px;
+	min-height: 250px;
+	margin-left: 20px;
+}
+
+#center table {
+	margin: 30px auto 15px auto;
+	width: 90%;
+	text-align: center;
+	background-color: rgba(180, 180, 180, .4);
+	border-radius: 5px;
+	height: 25px;
+}
+
+#center table a {
+	font-weight: bolder;
+}
+
+/*------------- header/footer ---------------*/
+
+#header, #footer {
+	background-color: #3d2480;
+}
+
+#header {
+	height: 150px;
+}
+
+#header #logo {
+	display: block;
+	width: 400px;
+	height: 96px;
+	background-image: url(http://www.biology.washington.edu/sites/all/themes/clean/bioStyleC2Images/not-front-bio.png);
+	background-repeat: no-repeat;
+	background-position: 0 0;
+	position: relative;
+	left: 41px;
+	top: 31px;
+}
+
+#footer {
+	height: 75px;
+	clear:both;
+}
+
+.wheader {
+	display: block;
+	width: 430px;
+	height: 80px;
+	position: relative;
+	top: -95px;
+	left: 470px;
+}
+
+.wlogoSmall {
+	background-image: url(http://www.biology.washington.edu/sites/all/themes/clean/bioStyleC2Images/uw-text.png);
+	background-repeat: no-repeat;
+	background-position: 113px 32px;
+
+	padding-left: 100px;
+}

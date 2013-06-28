@@ -17,7 +17,7 @@ use Bio\StudentBundle\Exception\BioException;
 class DefaultController extends Controller
 {
     /**
-     * @Route("/add")
+     * @Route("/add", name="add_student")
      * @Template()
      */
     public function addAction(Request $request)
@@ -47,11 +47,11 @@ class DefaultController extends Controller
     			$request->getSession()->getFlashBag()->set('failure', 'There was an error. Please try again :(');
     		}
     	}
-        return array('form' => $form->createView());
+        return array('form' => $form->createView(), 'title' => "Add Student");
     }
 
     /**
-     * @Route("/delete")
+     * @Route("/delete", name="delete_student")
      * @Template()
      */
     public function deleteAction(Request $request) {
@@ -75,11 +75,11 @@ class DefaultController extends Controller
     		
     	}
 
-    	return array('form' => $cloned->createView());
+    	return array('form' => $cloned->createView(), 'title' => "Delete Student");
     }
 
     /**
-     * @Route("/edit")
+     * @Route("/edit", name="edit_student")
      * @Template("BioStudentBundle:Default:add.html.twig")
      */
     public function editAction(Request $request) {
@@ -106,10 +106,10 @@ class DefaultController extends Controller
     		}
     	}
 
-    	return array('form' => $form->createView());
+    	return array('form' => $form->createView(), 'title' => "Edit Student");
     }
 	/**
-     * @Route("/upload")
+     * @Route("/upload", name="upload_student")
      * @Template()
      */
     public function uploadAction(Request $request) {
@@ -131,7 +131,7 @@ class DefaultController extends Controller
                 }
 	    	}
     	}
-    	return array("form" => $form->createView());
+    	return array("form" => $form->createView(), 'title' => "Upload Student List");
     }
 
     private function addStudent($entity) {
