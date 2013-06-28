@@ -17,6 +17,42 @@ use Bio\StudentBundle\Exception\BioException;
 class DefaultController extends Controller
 {
     /**
+     * @Route("/find", name="find_student")
+     * @Template("BioStudentBundle:Default:delete.html.twig")
+     */
+    public function findAction(Request $request){
+        $form = $this->createFormBuilder(new Student())
+            ->add('sid', 'integer', array('label' => "Student ID:"))
+            ->add('fName', 'text', array('label' => "First Name:", 'read_only' => true))
+            ->add('lName', 'text', array('label' => "Last Name:", 'read_only' => true))
+            ->add('email', 'email', array('label' => "Email:", 'read_only' => true))
+            ->add('Find', 'submit')
+            ->getForm();
+
+        if ($request->getMethod() === "POST") {
+            $form->handleRequest($request);
+            $sid = $form->get('sid')->getData();
+
+            try {
+                $entity = $this->findStudent($sid);
+                $request->getSession()->getFlashBag()->set('success', 'Student found!');
+                $form = $this->createFormBuilder($entity)
+                    ->add('sid', 'integer', array('label' => "Student ID:"))
+                    ->add('fName', 'text', array('label' => "First Name:", 'read_only' => true))
+                    ->add('lName', 'text', array('label' => "Last Name:", 'read_only' => true))
+                    ->add('email', 'email', array('label' => "Email:", 'read_only' => true))
+                    ->add('Find', 'submit')
+                    ->getForm();
+
+            } catch (BioException $e){
+                $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
+            }
+        }
+
+        return array('form' => $form->createView(), 'title' => 'Find Student');
+    }
+
+    /**
      * @Route("/add", name="add_student")
      * @Template()
      */
@@ -132,6 +168,18 @@ class DefaultController extends Controller
 	    	}
     	}
     	return array("form" => $form->createView(), 'title' => "Upload Student List");
+    }
+
+    private function findStudent($sid) {
+        $em = $this->getDoctrine()->getManager();
+        $repo = $em->getRepository('BioStudentBundle:Student');
+
+        $entity = $repo->findOneBySid($sid);
+        if (!$entity) {
+            throw new BioException("Student not found.");
+        } else {
+            return $entity;
+        }
     }
 
     private function addStudent($entity) {
