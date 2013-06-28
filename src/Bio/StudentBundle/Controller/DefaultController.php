@@ -22,10 +22,10 @@ class DefaultController extends Controller
      */
     public function findAction(Request $request){
         $form = $this->createFormBuilder(new Student())
-            ->add('sid', 'integer', array('label' => "Student ID:"))
-            ->add('fName', 'text', array('label' => "First Name:", 'read_only' => true))
-            ->add('lName', 'text', array('label' => "Last Name:", 'read_only' => true))
-            ->add('email', 'email', array('label' => "Email:", 'read_only' => true))
+            ->add('sid', 'text', array('label' => "Student ID:", 'required' => false))
+            ->add('fName', 'text', array('label' => "First Name:", 'read_only' => true, 'required' => false))
+            ->add('lName', 'text', array('label' => "Last Name:", 'read_only' => true, 'required' => false))
+            ->add('email', 'email', array('label' => "Email:", 'read_only' => true, 'required' => false))
             ->add('Find', 'submit')
             ->getForm();
 
@@ -37,7 +37,7 @@ class DefaultController extends Controller
                 $entity = $this->findStudent($sid);
                 $request->getSession()->getFlashBag()->set('success', 'Student found!');
                 $form = $this->createFormBuilder($entity)
-                    ->add('sid', 'integer', array('label' => "Student ID:"))
+                    ->add('sid', 'text', array('label' => "Student ID:"))
                     ->add('fName', 'text', array('label' => "First Name:", 'read_only' => true))
                     ->add('lName', 'text', array('label' => "Last Name:", 'read_only' => true))
                     ->add('email', 'email', array('label' => "Email:", 'read_only' => true))
@@ -60,7 +60,7 @@ class DefaultController extends Controller
     {
     	$entity = new Student();
     	$form = $this->createFormBuilder($entity)
-    		->add('sid', 'integer', array('label' => "Student ID:"))
+    		->add('sid', 'text', array('label' => "Student ID:"))
     		->add('fName', 'text', array('label' => "First Name:"))
     		->add('lName', 'text', array('label' => "Last Name:"))
     		->add('email', 'email', array('label' => "Email:"))
@@ -92,7 +92,7 @@ class DefaultController extends Controller
      */
     public function deleteAction(Request $request) {
     	$form = $this->createFormBuilder(new Student())
-    		->add('sid', 'integer', array('label' => "Student ID:"))
+    		->add('sid', 'text', array('label' => "Student ID:"))
     		->add('Delete', 'submit')
     		->getForm();
 
@@ -121,7 +121,7 @@ class DefaultController extends Controller
     public function editAction(Request $request) {
     	$entity = new Student();
     	$form = $this->createFormBuilder($entity)
-    		->add('sid', 'integer', array('label' => "Student ID:"))
+    		->add('sid', 'text', array('label' => "Student ID:"))
     		->add('fName', 'text', array('label' => "First Name:"))
     		->add('lName', 'text', array('label' => "Last Name:"))
     		->add('email', 'email', array('label' => "Email:"))

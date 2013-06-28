@@ -23,11 +23,10 @@ class Student
     private $id;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="sid", type="integer", unique=true)
+     * @ORM\Column(name="sid", type="string", length=7, unique=true)
      * @Assert\NotBlank()
-     * @Assert\Range(min=10000, max=9999999, minMessage="Not enough digits.", maxMessage="Too many digits.")
      */
     private $sid;
 
@@ -69,7 +68,7 @@ class Student
     /**
      * Set sid
      *
-     * @param integer $sid
+     * @param string $sid
      * @return Student
      */
     public function setSid($sid)
@@ -82,7 +81,7 @@ class Student
     /**
      * Get sid
      *
-     * @return integer 
+     * @return string 
      */
     public function getSid()
     {
