@@ -21,7 +21,7 @@ class DefaultController extends Controller
 
 		$options['clickers'] = array();
 			$options['clickers']['register'] = 'display_students';
-			$options['clickers']['unregister'] = 'display_students';
+			$options['clickers']['download'] = 'display_students';
 
 		if ($route == 'display_students' || $route == 'find_student' || 
 			$route == 'edit_student' || $route == 'add_student' || 

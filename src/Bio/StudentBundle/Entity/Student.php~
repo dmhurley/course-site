@@ -164,4 +164,27 @@ class Student
     {
         return $this->email;
     }
+
+    /**
+     * Set section
+     *
+     * @param string $section
+     * @return Student
+     */
+    public function setSection($section)
+    {
+        $this->section = $section;
+    
+        return $this;
+    }
+
+    /**
+     * Get section
+     *
+     * @return string 
+     */
+    public function getSection()
+    {
+        return $this->section;
+    }
 }
