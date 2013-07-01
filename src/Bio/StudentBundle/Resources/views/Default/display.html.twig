@@ -10,12 +10,16 @@
 			{{ app.session.flashbag.get('failure')[0] }}
 		</div>
 	{% endif %}
-
+	{% if app.request.query.get('filter') != "" %}
+		{% set filter = '&filter=' ~ app.request.query.get('filter') %}
+	{% else %}
+		{% set filter = '' %}
+	{% endif %}
 	<table border="1px">
 		<tr>
-			<th><a href="?sort=sid">ID</a></th>
-			<th><a href="?sort=fName">First</a> - <a href="?sort=lName">Last</a></th>
-			<th><a href="?sort=email">Email</a></th>
+			<th><a href="?sort=sid{{filter}}">ID</a></th>
+			<th><a href="?sort=fName{{filter}}">First</a> - <a href="?sort=lName{{filter}}">Last</a></th>
+			<th><a href="?sort=email{{filter}}">Email</a></th>
 			<th>Edit</th>
 			<th>Delete</th>
 		</tr>
