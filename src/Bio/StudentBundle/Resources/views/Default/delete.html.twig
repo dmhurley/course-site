@@ -1,0 +1,15 @@
+{% extends 'BioStudentBundle:Default:base.html.twig' %}
+
+{% block content %}
+	{% if app.session.flashbag.has('success') %}
+		<div class="success">
+			{{ app.session.flashbag.get('success')[0] }}
+		</div>
+	{% elseif app.session.flashbag.has('failure') %}
+		<div class="failure">
+			{{ app.session.flashbag.get('failure')[0] }}
+		</div>
+	{% endif %}
+
+	{{ form(form) }}
+{% endblock %}

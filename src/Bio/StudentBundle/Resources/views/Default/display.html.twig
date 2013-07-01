@@ -1,0 +1,36 @@
+{% extends 'BioStudentBundle:Default:base.html.twig' %}
+
+{% block content %}
+	{% if app.session.flashbag.has('success') %}
+		<div class="success">
+			{{ app.session.flashbag.get('success')[0] }}
+		</div>
+	{% elseif app.session.flashbag.has('failure') %}
+		<div class="failure">
+			{{ app.session.flashbag.get('failure')[0] }}
+		</div>
+	{% endif %}
+	{% if app.request.query.get('filter') != "" %}
+		{% set filter = '&filter=' ~ app.request.query.get('filter') %}
+	{% else %}
+		{% set filter = '' %}
+	{% endif %}
+	<table border="1px">
+		<tr>
+			<th><a href="?sort=sid{{filter}}">ID</a></th>
+			<th><a href="?sort=fName{{filter}}">First</a> - <a href="?sort=lName{{filter}}">Last</a></th>
+			<th><a href="?sort=email{{filter}}">Email</a></th>
+			<th>Edit</th>
+			<th>Delete</th>
+		</tr>
+	{% for entity in entities %}
+		<tr>
+			<td>{{ entity.sid }}</td>
+			<td>{{ entity.fName }} {{ entity.lName }}</td>
+			<td><a href="mailto:{{ entity.email }}">{{ entity.email }}</a></td>
+			<td><a href="{{ path('edit_student') }}?sid={{entity.sid}}">edit</td>
+			<td><a href="{{ path('delete_student') }}?sid={{entity.sid}}">delete</td>
+		</tr>
+	{% endfor %}
+
+{% endblock %}
