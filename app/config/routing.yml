@@ -3,3 +3,7 @@ bio_student:
     type:     annotation
     prefix:   /
 
+bio_style:
+        resource: "@BioStyleBundle/Controller/"
+        type:     annotation
+        prefix:   /

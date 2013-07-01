@@ -1,56 +1,22 @@
-{% extends '::base.html.twig' %}
-{% block stylesheets %}
-	{% stylesheets 'bundles/biostudent/css/form.css'
-				   'bundles/biostudent/css/page.css' filter="cssrewrite" output="css/*.css" %}
-		<link rel="stylesheet" href="{{ asset_url }}" />
-	{% endstylesheets %}
+{% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block head %}
+	{{ parent() }}
+		{% stylesheets 'bundles/biostudent/css/form.css' filter="cssrewrite" output="css/*.css" %}
+			<link rel="stylesheet" href="{{ asset_url }}" />
+		{% endstylesheets %}
 {% endblock %}
 
-{% block body %}
-	<div id="container">
-		<div id="page">
-			<div id="header">
-      		<a id="logo" href="/"></a>
-            <div class="wheader">	
-    	    	<div class="wlogoSmall"> 
-    	            <div class="logoAbsolute">
-    	            	<a id="wlogoLink" href="http://www.washington.edu/" target="_blank" title="Opens in a new window">W</a>
-    	            </div> 
-    	            <div><a href="http://www.washington.edu/" target="_blank" title="Opens in a new window">University of Washington</a>
-    	            </div> 
-    	    	</div> 
-	    	</div>
-	    </div>
+{% block content %}
+	{% block form %}
 
-			<div id="left">
-				<ul>
-					<a href="{{ path('display_students') }}"><li>Manage Student List</li></a>
-					<ul>
-						<li><a href="{{ path('display_students') }}">Display</a></li>
-						<li><a href="{{ path('find_student') }}">Find</a></li>
-						<li><a href="{{ path('add_student') }}">Add</a></li>
-						<li><a href="{{ path('upload_student') }}">Upload</a></li>
-					</ul>
-				<ul>
-			</div>
-
-			<div id="center">
-				<h1>{{title}}</h1>
-				{% block content %}
-
-				{% endblock %}
-				<table>
-					<tr>
-					  <td><a href="{{ path('display_students') }}">Display</a></td>
-					  <td><a href="{{ path('find_student') }}">Find</a></td>
-					  <td><a href="{{ path('add_student') }}">Add</a></td>
-					  <td><a href="{{ path('upload_student') }}">Upload</a></td>
-					</tr>
-				</table>
-			</div>
-		</div>
-
-		<div id="footer">
-
-		</div>
+	{% endblock %}
+	<table>
+		<tr>
+		  <td><a href="{{ path('display_students') }}">Display</a></td>
+		  <td><a href="{{ path('find_student') }}">Find</a></td>
+		  <td><a href="{{ path('add_student') }}">Add</a></td>
+		  <td><a href="{{ path('upload_student') }}">Upload</a></td>
+		</tr>
+	</table>
 {% endblock %}

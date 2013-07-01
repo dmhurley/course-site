@@ -1,6 +1,6 @@
 {% extends 'BioStudentBundle:Default:base.html.twig' %}
 
-{% block content %}
+{% block form %}
 	{% if app.session.flashbag.has('success') %}
 		<div class="success">
 			{{ app.session.flashbag.get('success')[0] }}

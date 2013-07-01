@@ -1,0 +1,49 @@
+{% extends 'BioStyleBundle:Default:base.html.twig' %}
+{% block title %}UW - Biology{% endblock %}
+
+{% block head %}
+	{% block stylesheets %}
+		{% stylesheets 'bundles/biostyle/css/page.css' filter="cssrewrite" output="css/*.css" %}
+			<link rel="stylesheet" href="{{ asset_url }}" />
+		{% endstylesheets %}
+	{% endblock %}
+{% endblock %}
+
+{% block body %}
+	<div id="container">
+		<div id="page">
+			<div id="header">
+				<a id="logo" href="http://www.biology.washington.edu"></a>
+				<div id="dub">
+					<div id="wLogo">
+						<div id="w">
+							<a href="http://www.washington.edu"></a>
+						</div>
+						<!-- <div id="x">
+							<a href="http://www.washington.edu/"></a>
+						</div> -->
+					</div>
+				</div>
+			</div>
+
+			<div id="left">
+				{{ render(controller('BioStyleBundle:Default:sidebar', {'route':app.request.attributes.get('_route')})) }}
+			</div>
+
+			<div id="center">
+				{% if title is defined %}
+					<h1>{{title}}</h1>
+				{% endif %}
+				<div id="content">
+					{% block content %}
+
+					{% endblock %}
+				</div>
+			</div>
+		</div>
+
+		<div id="footer">
+
+		</div>
+	</div>
+{% endblock %}
