@@ -31,30 +31,52 @@ class DefaultController extends Controller
 
         if ($request->getMethod() === "POST") {
             $values = $request->request->get('form');
-            $array = array();
-            if ($values['sid'] !== "") {
-                $array['sid'] = $values['sid'];
-            }
-            if ($values['fName'] !== "") {
-                $array['fName'] = $values['fName'];
-            }
-            if ($values['lName'] !== "") {
-                $array['lName'] = $values['lName'];
-            }
-            if ($values['email'] !== "") {
-                $array['email'] = $values['email'];
-            }
-
+            $array = $this->generateArray($values['sid'], $values['fName'], $values['lName'], $values['email']);
             try {
                 $entities = $this->findStudent($array, 'sid');
                 $request->getSession()->getFlashBag()->set('success', 'Students found!');
-                return $this->render('BioStudentBundle:Default:display.html.twig', array('entities' => $entities, 'title' => "Found ".count($entities)." students.", 'sort'=>'sid'));
+
+                $get = "?filter=";
+                if ($values['sid']) {
+                    $get.=$values['sid'];
+                }
+                $get.="-";
+                if ($values['fName']) {
+                    $get.=$values['fName'];
+                }
+                $get.="-";
+                if ($values['lName']) {
+                    $get.=$values['lName'];
+                }
+                $get.="-";
+                if ($values['email']) {
+                    $get.=$values['email'];
+                }
+
+                return $this->redirect($this->generateUrl('display_students').$get);
             } catch (BioException $e){
                 $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
             }
         }
 
         return array('form' => $form->createView(), 'title' => 'Find Student');
+    }
+
+    private function generateArray($sid = null, $fName = null, $lName = null, $email = null) {
+        $array = array();
+            if ($sid) {
+                $array['sid'] = $sid;
+            }
+            if ($fName) {
+                $array['fName'] = $fName;
+            }
+            if ($lName) {
+                $array['lName'] = $lName;
+            }
+            if ($email) {
+                $array['email'] = $email;
+            }
+        return $array;
     }
 
     /**
@@ -102,7 +124,7 @@ class DefaultController extends Controller
                 $this->deleteStudent($this->findStudent(array('sid' => $sid)));
                 $request->getSession()->getFlashBag()->set('success', "Student #".$sid." removed.");
             } catch (BioException $e) {
-                $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
+                $request->getSession()->getFlashBag()->set('failure', "Could not find student #".$sid.".");
             }
     		
     	}
@@ -128,7 +150,7 @@ class DefaultController extends Controller
         }
 
     	$form = $this->createFormBuilder($entity)
-    		->add('sid', 'text', array('label' => "Student ID:"))
+    		->add('sid', 'text', array('label' => "Student ID:", 'read_only'=> true))
     		->add('fName', 'text', array('label' => "First Name:"))
     		->add('lName', 'text', array('label' => "Last Name:"))
     		->add('email', 'email', array('label' => "Email:"))
@@ -143,6 +165,7 @@ class DefaultController extends Controller
     			try {
                     $this->editStudent($entity);
                     $request->getSession()->getFlashBag()->set('success', "Student #".$entity->getSid()." updated.");
+                    return $this->redirect($this->generateUrl('display_students'));
                 } catch (BioException $e) {
                     $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
                 }
@@ -153,34 +176,33 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/display", name="display_students")
+     * @Route("/", name="display_students")
+     * @Route("/display")
      * @Template()
      */
     public function displayAction(Request $request) {
         $sort = $request->query->get('sort');
-        $mode = $request->query->get('mode');
-        $sid = $request->query->get('sid');
+        $filter = $request->query->get('filter');
+
+        if (!$sort) {
+            $sort = 'sid';
+        }
+        $array = array();
 
         try {
-            if ($mode && $sid) {
-                if ($mode === "delete") {
-                    $this->deleteStudent($this->findStudent(array('sid' => $sid)));
-                    $request->getSession()->getFlashBag()->set('success', "Deleted student #".$sid.".");
-                } else if ($mode === "edit") {
-
-                }
+            if ($filter) {
+                list($sid, $fName, $lName, $email) = explode("-", $filter);
+                $array = $this->generateArray($sid, $fName, $lName, $email);
             }
         } catch (BioException $e) {
             $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
         }
 
-        if (!$sort) {
-            $sort = 'sid';
+        try {
+            $entities = $this->findStudent($array, $sort);
+        } catch (BioException $e) {
+            $entities = array();
         }
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('BioStudentBundle:Student');
-
-        $entities = $repo->findBy(array(), array($sort => 'ASC'));
 
         return array('entities' => $entities, 'title' => "Display Students", 'sort' => $sort);
     }
