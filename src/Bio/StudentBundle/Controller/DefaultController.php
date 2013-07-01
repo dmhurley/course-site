@@ -157,14 +157,14 @@ class DefaultController extends Controller
     		->add('Edit', 'submit')
     		->getForm();
 
-    	$cloned = clone $form;
-
     	if ($request->getMethod() === "POST") {		// if request was sent
     		$form->handleRequest($request);
     		if ($form->isValid()) {					// and form was valid
     			try {
                     $this->editStudent($entity);
                     $request->getSession()->getFlashBag()->set('success', "Student #".$entity->getSid()." updated.");
+
+                    // will not save filtering or sorting in display.
                     return $this->redirect($this->generateUrl('display_students'));
                 } catch (BioException $e) {
                     $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
@@ -189,13 +189,9 @@ class DefaultController extends Controller
         }
         $array = array();
 
-        try {
-            if ($filter) {
-                list($sid, $fName, $lName, $email) = explode("-", $filter);
-                $array = $this->generateArray($sid, $fName, $lName, $email);
-            }
-        } catch (BioException $e) {
-            $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
+        if ($filter) {
+            list($sid, $fName, $lName, $email) = explode("-", $filter);
+            $array = $this->generateArray($sid, $fName, $lName, $email);
         }
 
         try {

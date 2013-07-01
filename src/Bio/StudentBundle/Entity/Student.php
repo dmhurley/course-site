@@ -27,6 +27,7 @@ class Student
      *
      * @ORM\Column(name="sid", type="string", length=7, unique=true)
      * @Assert\NotBlank()
+     * @Assert\Regex("/^[0-9]{7}$/")
      */
     private $sid;
 
