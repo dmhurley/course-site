@@ -1,0 +1,42 @@
+#form > div {
+	margin: 10px;
+}
+
+#form > div label {
+	display:block;
+	float: left;
+	width: 100px;
+	text-align: right;
+	padding-right: 15px;
+}
+
+#form > div:last-of-type {
+	margin-left: 200px;
+}
+
+.success, .failure {
+	display: block;
+	width: 90%;
+	margin: 0 auto;
+	border: 2px solid black;
+	padding: 15px;
+	margin: 20px;
+	border-radius: 5px;
+	font-size: 15pt;
+	text-align: center;
+	background-repeat: no-repeat;
+	background-size: 40px 40px;
+	background-position: 10px 7px;
+}
+
+.success {
+	background-color: rgba(0, 256, 0, .1);
+	border-color: green;
+	background-image: url(http://www.clker.com/cliparts/e/2/a/d/1206574733930851359Ryan_Taylor_Green_Tick.svg.hi.png);
+}
+
+.failure {
+	background-color: rgba(256, 0, 0, .1);
+	border-color: red;
+	background-image: url(http://upload.wikimedia.org/wikipedia/en/thumb/b/ba/Red_x.svg/600px-Red_x.svg.png);
+}
