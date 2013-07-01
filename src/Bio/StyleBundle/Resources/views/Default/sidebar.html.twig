@@ -1,0 +1,17 @@
+<div class="content">
+	<ul class="trunk">
+		<li class="branch top">
+			<a href="">{{top}}</a>
+			<ul class="twig">
+				{% for key1,value1 in options[top] %}
+					<li class="leaf"><a href="{{ path(value1) }}">{{key1}}</a></li>
+				{% endfor %}
+			</ul>
+		</li>
+		{% for key,value in options %}
+			{% if key != top %}
+				<li class="branch"><a href="">{{key}}</a></li>
+			{% endif %}
+		{% endfor %}
+	</ul>
+</div>

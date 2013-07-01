@@ -27,20 +27,7 @@
 			</div>
 
 			<div id="left">
-				<div class="content">
-					<ul class="menu">
-						<li>
-							<a href="{{ path('display_students') }}">Students</a>
-							<ul>
-								<li><a href="{{ path('display_students') }}">Display</a></li>
-								<li><a href="{{ path('find_student') }}">Find</a></li>
-								<li><a href="{{ path('add_student') }}">Add</a></li>
-								<li><a href="{{ path('upload_student') }}">Upload</a></li>
-							</ul>
-						</li>
-						<li><a href="">Clickers</a></li>
-					</ul>
-				</div>
+				{{ render(controller('BioStyleBundle:Default:sidebar', {'route':app.request.attributes.get('_route')})) }}
 			</div>
 
 			<div id="center">
