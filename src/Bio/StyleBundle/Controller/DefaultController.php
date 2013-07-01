@@ -10,7 +10,6 @@ class DefaultController extends Controller
 {
 	/**
 	 * @Template()
-	 * 
 	 */
 	public function sidebarAction($route) {
 		$options = array();
