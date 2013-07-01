@@ -305,6 +305,9 @@ class DefaultController extends Controller
 
         for ($i = 1; $i < count($file); $i++) {
             list($sid, $name, $section, $credits, $gender, $class, $major, $email) = preg_split('/","|,"|",|"/', $file[$i], -1, PREG_SPLIT_NO_EMPTY);
+            while (strlen($sid) < 7) {
+                $sid = "0".$sid;
+            }
             $entity = new Student();
             $entity->setSid($sid);
             $entity->setEmail($email);
