@@ -27,6 +27,8 @@ class DefaultController extends Controller
 			$route == 'edit_student' || $route == 'add_student' || 
 			$route == 'upload_student') {
 				$top = 'students';
+		} else if ( $route == 'register_clicker') {
+			$top = 'clickers';
 		}
 
 		return array('top' => $top, 'options' => $options);
