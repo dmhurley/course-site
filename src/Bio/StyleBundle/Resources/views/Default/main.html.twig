@@ -13,41 +13,50 @@
 	<div id="container">
 		<div id="page">
 			<div id="header">
-      		<a id="logo" href="/"></a>
-            <div class="wheader">	
-    	    	<div class="wlogoSmall"> 
-    	            <div class="logoAbsolute">
-    	            	<a id="wlogoLink" href="http://www.washington.edu/" target="_blank" title="Opens in a new window">W</a>
-    	            </div> 
-    	            <div><a href="http://www.washington.edu/" target="_blank" title="Opens in a new window">University of Washington</a>
-    	            </div> 
-    	    	</div> 
-	    	</div>
-	    </div>
+				<a id="logo" href="http://www.biology.washington.edu"></a>
+				<div id="dub">
+					<div id="wLogo">
+						<div id="w">
+							<a href="http://www.washington.edu"></a>
+						</div>
+						<!-- <div id="x">
+							<a href="http://www.washington.edu/"></a>
+						</div> -->
+					</div>
+				</div>
+			</div>
 
 			<div id="left">
-				<ul>
-					<a href="{{ path('display_students') }}"><li>Manage Student List</li></a>
-					<ul>
-						<li><a href="{{ path('display_students') }}">Display</a></li>
-						<li><a href="{{ path('find_student') }}">Find</a></li>
-						<li><a href="{{ path('add_student') }}">Add</a></li>
-						<li><a href="{{ path('upload_student') }}">Upload</a></li>
+				<div class="content">
+					<ul class="menu">
+						<li>
+							<a href="{{ path('display_students') }}">Students</a>
+							<ul>
+								<li><a href="{{ path('display_students') }}">Display</a></li>
+								<li><a href="{{ path('find_student') }}">Find</a></li>
+								<li><a href="{{ path('add_student') }}">Add</a></li>
+								<li><a href="{{ path('upload_student') }}">Upload</a></li>
+							</ul>
+						</li>
+						<li><a href="">Clickers</a></li>
 					</ul>
-				<ul>
+				</div>
 			</div>
 
 			<div id="center">
 				{% if title is defined %}
 					<h1>{{title}}</h1>
 				{% endif %}
-				{% block content %}
+				<div id="content">
+					{% block content %}
 
-				{% endblock %}
+					{% endblock %}
+				</div>
 			</div>
 		</div>
 
 		<div id="footer">
 
 		</div>
+	</div>
 {% endblock %}

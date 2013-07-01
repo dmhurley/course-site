@@ -40,3 +40,17 @@
 	border-color: red;
 	background-image: url(http://upload.wikimedia.org/wikipedia/en/thumb/b/ba/Red_x.svg/600px-Red_x.svg.png);
 }
+
+#content table {
+	margin: 30px auto 15px auto;
+	width: 90%;
+	text-align: center;
+	background-color: rgba(180, 180, 180, .4);
+	border-radius: 5px;
+	height: 25px;
+}
+
+#content table a {
+	font-weight: bolder;
+	text-decoration: none;
+}
