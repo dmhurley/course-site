@@ -25,13 +25,14 @@ class DefaultController extends Controller
             ->add('sid', 'text', array('label' => "Student ID:", 'required' => false))
             ->add('fName', 'text', array('label' => "First Name:", 'required' => false))
             ->add('lName', 'text', array('label' => "Last Name:", 'required' => false))
+            ->add('section', 'text', array('label' => "Section:", 'required' => false))
             ->add('email', 'email', array('label' => "Email:", 'required' => false))
             ->add('Find', 'submit')
             ->getForm();
 
         if ($request->getMethod() === "POST") {
             $values = $request->request->get('form');
-            $array = $this->generateArray($values['sid'], $values['fName'], $values['lName'], $values['email']);
+            $array = $this->generateArray($values['sid'], $values['fName'], $values['lName'], $values['section'], $values['email']);
             try {
                 $entities = $this->findStudent($array, 'sid');
                 $request->getSession()->getFlashBag()->set('success', 'Students found!');
@@ -49,6 +50,10 @@ class DefaultController extends Controller
                     $get.=$values['lName'];
                 }
                 $get.="-";
+                if ($values['section']) {
+                    $get.=$values['section'];
+                }
+                $get.="-";
                 if ($values['email']) {
                     $get.=$values['email'];
                 }
@@ -62,7 +67,7 @@ class DefaultController extends Controller
         return array('form' => $form->createView(), 'title' => 'Find Student');
     }
 
-    private function generateArray($sid = null, $fName = null, $lName = null, $email = null) {
+    private function generateArray($sid = null, $fName = null, $lName = null, $section = null, $email = null) {
         $array = array();
             if ($sid) {
                 $array['sid'] = $sid;
@@ -72,6 +77,9 @@ class DefaultController extends Controller
             }
             if ($lName) {
                 $array['lName'] = $lName;
+            }
+            if ($section) {
+                $array['section'] = $section;
             }
             if ($email) {
                 $array['email'] = $email;
@@ -90,6 +98,7 @@ class DefaultController extends Controller
     		->add('sid', 'text', array('label' => "Student ID:"))
     		->add('fName', 'text', array('label' => "First Name:"))
     		->add('lName', 'text', array('label' => "Last Name:"))
+            ->add('section', 'text', array('label' => "Section:"))
     		->add('email', 'email', array('label' => "Email:"))
     		->add('Add', 'submit')
     		->getForm();
@@ -153,6 +162,7 @@ class DefaultController extends Controller
     		->add('sid', 'text', array('label' => "Student ID:", 'read_only'=> true))
     		->add('fName', 'text', array('label' => "First Name:"))
     		->add('lName', 'text', array('label' => "Last Name:"))
+            ->add('section', 'text', array('label' => "Section:"))
     		->add('email', 'email', array('label' => "Email:"))
     		->add('Edit', 'submit')
     		->getForm();
@@ -190,8 +200,8 @@ class DefaultController extends Controller
         $array = array();
 
         if ($filter) {
-            list($sid, $fName, $lName, $email) = explode("-", $filter);
-            $array = $this->generateArray($sid, $fName, $lName, $email);
+            list($sid, $fName, $lName, $section, $email) = explode("-", $filter);
+            $array = $this->generateArray($sid, $fName, $lName, $section, $email);
         }
 
         try {
@@ -277,6 +287,7 @@ class DefaultController extends Controller
             try {
                 $dbEntity->setFName($entity->getFName());
                 $dbEntity->setLName($entity->getLName());
+                $dbEntity->setSection($entity->getSection());
                 $dbEntity->setEmail($entity->getEmail());
                 // for more changes
                 $em->flush();
@@ -306,6 +317,7 @@ class DefaultController extends Controller
             }
             $entity = new Student();
             $entity->setSid($sid);
+            $entity->setSection($section);
             $entity->setEmail($email);
             list($lName, $fName) = explode(", ", $name);
             $entity->setFName(explode(" ", $fName)[0]);

@@ -19,6 +19,7 @@
 		<tr>
 			<th><a href="?sort=sid{{filter}}">ID</a></th>
 			<th><a href="?sort=fName{{filter}}">First</a> - <a href="?sort=lName{{filter}}">Last</a></th>
+			<th><a href="?sort=section{{filter}}">Section</a></th>
 			<th><a href="?sort=email{{filter}}">Email</a></th>
 			<th>Edit</th>
 			<th>Delete</th>
@@ -27,6 +28,7 @@
 		<tr>
 			<td>{{ entity.sid }}</td>
 			<td>{{ entity.fName }} {{ entity.lName }}</td>
+			<td>{{ entity.section }}</td>
 			<td><a href="mailto:{{ entity.email }}">{{ entity.email }}</a></td>
 			<td><a href="{{ path('edit_student') }}?sid={{entity.sid}}">edit</td>
 			<td><a href="{{ path('delete_student') }}?sid={{entity.sid}}">delete</td>
