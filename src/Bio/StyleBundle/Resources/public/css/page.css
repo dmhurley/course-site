@@ -27,70 +27,78 @@ body {
 #left {
 	padding-left: 5px;
 	padding-right: 20px;
+	padding-bottom: 10px;
+	padding-top: 10px;
 	margin-right: 20px;
 	clear: left;
-	border: 1px solid #d3d3d3;
 	float: left;
 	width: 185px;
 	font-size: .9em;
 	line-height: 1.5;
 }
 
+.content {
+	margin-bottom: 1em;
+}
+
 	.content ul {
+		list-style: none;
+	}
+
+	.content .trunk {
 		margin: 30px 0 0 0;
 		position: relative;
+		left: -20px;
 	}
 
-	.content li {
+	.trunk .branch {
 		margin-bottom: 9px;
-		list-style: none;
-		font-size: .9em;
-		line-height: 1.5;
 	}
 
-	.content li a {
-		color: #d0c0aa;
-		font-size: 14px;
-		padding-left: 20px;
-		font-weight: bold;
-		text-transform: uppercase;
-		text-decoration: none;
-	}
-
-	.content li:first-child {
-		display: block;
-	}
-
-	.content li:first-child a {
-		color: #483882;
-		line-height: 20px;
-		height: 20px;
-	}
-
-	.content li:first-child ul {
-		margin-top: 8px;
-		margin-bottom: 16px;
-		display: block;
-		left: 8px;
-		position: relative;
-	}
-
-		.content li:first-child ul li {
-			display:block;
-			position:relative;
-			margin: 4px;
-			height: 13px;
+		.branch a {
+			color: #d0c0aa;
+			font-size: 14px;
+			line-height: 20px;
+			padding-left: 20px;
+			font-weight: bold;
+			text-transform: uppercase;
+			text-decoration: none;
 		}
 
-			.content li:first-child ul li a {
-				color: rgb(108,99,87);
-				text-transform: none;
-				font-weight: normal;
-				font-style: normal;
-				text-decoration: none;
-				margin: 0 0 0 0;
-				font-size: 13px;
+	.trunk .top {
+		background-image: none;
+		display: block;
+		color: #483882;
+	}
+
+		.top a {
+			color: #483882;
+		}
+
+		.top .twig {
+			margin-top: 8px;
+			margin-bottom: 16px;
+			position: relative;
+			display: block;
+			left: 8px !important;
+		}
+
+			.twig .leaf {
+				margin: 4px !important;
+				padding: 0px !important;
 			}
+
+				.leaf a {
+					color: rgb(108, 99, 87);
+					text-transform: none;
+					font-weight: normal;
+					font-style: normal;
+					font-size: .9em !important;
+					text-indent: -5px;
+					display: block;
+					text-decoration: none;
+					line-height: 13px;
+				}
 
 #center {
 	font-size: 13px;
