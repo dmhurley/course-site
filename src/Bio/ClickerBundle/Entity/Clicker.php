@@ -34,7 +34,7 @@ class Clicker
     /**
      * @var string
      *
-     * @ORM\Column(name="sid", type="string", length=255)
+     * @ORM\Column(name="sid", type="string", length=255, unique=true)
      * @Assert\Regex("/^[0-9]{7}$/")
      */
     private $sid;
