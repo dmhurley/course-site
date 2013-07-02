@@ -45,9 +45,9 @@ class DefaultController extends Controller {
 					if (!$clicker){
 						$clicker = new Clicker();
 						$em->persist($clicker);
-						$request->getSession()->getFlashBag()->set('success', "Clicker registered.");
+						$request->getSession()->getFlashBag()->set('success', "Clicker ID #".$form->get('cid')->getData()." registered.");
 					} else { 
-						$request->getSession()->getFlashBag()->set('success', "Clicker changed.");
+						$request->getSession()->getFlashBag()->set('success', "Clicker ID changed to #".$form->get('cid')->getData());
 					}
 					$clicker->setCid($form->get('cid')->getData());
 					$clicker->setSid($student->getSid());
@@ -95,6 +95,31 @@ class DefaultController extends Controller {
 		header("Content-Transfer-Encoding: binary");
 
 	    return array('test' => $tring);
+    }
+
+    /**
+     * @Route("/clear", name="clear_list")
+     * @Template()
+     */
+    public function clearAction(Request $request) {
+    	$form = $this->createFormBuilder()
+    		->add('confirmation', 'checkbox')
+    		->add('clear', 'submit', array('label' => 'Clear Clickers'))
+    		->getForm();
+
+    	if ($request->getMethod() === "POST") {
+    		$form->handleRequest($request);
+
+    		if ($form->isValid()) {
+    			$connection = $this->getDoctrine()->getManager()->getConnection();
+		        $platform = $connection->getDatabasePlatform();
+		        $connection->executeUpdate($platform->getTruncateTableSQL('Clicker', true));
+
+		        $request->getSession()->getFlashBag()->set('success', 'All clicker registrations cleared.');
+    		}
+    	}
+
+    	return array('form' => $form->createView(), 'title' => 'Clear Registrations');
     }
 
     public function update() {

@@ -1,0 +1,11 @@
+{% extends 'BioClickerBundle:Default:base.html.twig' %}
+
+{% block content %}
+	{{ form_start(form)}}
+		<div id="form">
+			<p> Are you sure you want to delete all clicker registrations? </br> This <b>cannot</b> be undone.</p>
+			{{ form_widget(form.confirmation) }} - I understand.
+			{{ form_row(form.clear) }}
+		</div>
+	{{ form_end(form) }}
+{% endblock %}

@@ -24,13 +24,15 @@ class DefaultController extends Controller
 			$options['clickers']['clickers'] = 'register_clicker';
 			$options['clickers']['register'] = 'register_clicker';
 			$options['clickers']['download'] = 'download_list';
+			$options['clickers']['clear'] = 'clear_list';
 
 		if ($route == 'display_students' || $route == 'find_student' || 
 			$route == 'edit_student' || $route == 'add_student' || 
 			$route == 'upload_student') {
 				$top = 'students';
-		} else if ( $route == 'register_clicker') {
-			$top = 'clickers';
+		} else if ( $route == 'register_clicker' || $route == 'download_list' ||
+					$route == 'clear_list') {
+				$top = 'clickers';
 		}
 
 		return array('top' => $top, 'options' => $options);
