@@ -14,14 +14,16 @@ class DefaultController extends Controller
 	public function sidebarAction($route) {
 		$options = array();
 		$options['students'] = array();
+			$options['students']['students'] = 'display_students';
 			$options['students']['display'] = 'display_students';
 			$options['students']['find'] = 'find_student';
 			$options['students']['add'] = 'add_student';
 			$options['students']['upload'] = 'upload_student';
 
 		$options['clickers'] = array();
-			$options['clickers']['register'] = 'display_students';
-			$options['clickers']['download'] = 'display_students';
+			$options['clickers']['clickers'] = 'register_clicker';
+			$options['clickers']['register'] = 'register_clicker';
+			$options['clickers']['download'] = 'download_list';
 
 		if ($route == 'display_students' || $route == 'find_student' || 
 			$route == 'edit_student' || $route == 'add_student' || 

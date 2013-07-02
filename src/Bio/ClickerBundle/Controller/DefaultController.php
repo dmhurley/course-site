@@ -72,7 +72,7 @@ class DefaultController extends Controller {
 
     /**
      * @Template()
-     * @Route("/download")
+     * @Route("/download", name="download_list")
      */
     public function downloadAction(Request $request) {
     	$this->update();
