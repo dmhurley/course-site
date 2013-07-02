@@ -1,8 +1,11 @@
 {% extends 'BioInfoBundle:Default:base.html.twig' %}
 
 {% block content %}
+	{{ form(form) }}
+
 	<table border="1px">
 		<tr>
+			<th>Status</th>
 			<th>Text</th>
 			<th>Timestamp</th>
 			<th>Expiration</th>
@@ -10,14 +13,22 @@
 			<th>Delete</th>
 		</tr>
 		{% for ann in anns %}
-			<tr>
+		{% if date() > date(ann.expiration) %}
+			<tr class="expired">
+				<td>Expired</td>
+		{% elseif date() < date(ann.timestamp) %}
+			<tr class="hidden">
+				<td>Hidden</td>
+		{% else %}
+			<tr class="showing">
+				<td>Showing</td>
+		{% endif %}
 				<td>{{ann.text}}</td>
 				<td>{{ann.timestamp|date('m/d/Y h:i:s')}}</td>
 				<td>{{ann.expiration|date('m/d/Y h:i:s')}}</td>
 				<td><a href="">edit</a></td>
-				<td><a href="">delete</a></td>
+				<td><a href="{{ path('delete_announcement') }}?id={{ ann.id }}">delete</a></td>
 			</tr>
 		{% endfor %}
 	</table>
-	{{ form(form) }}
 {% endblock %}

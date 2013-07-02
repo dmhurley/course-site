@@ -90,7 +90,7 @@ class DefaultController extends Controller
     public function announcementsAction(Request $request) {
         $ann = new Announcement();
         $ann->setTimestamp(new \DateTime());
-        $ann->setExpiration(new \DateTime());
+        $ann->setExpiration((new \DateTime())->modify('+1 day'));
         $form = $this->createFormBuilder($ann)
             ->add('timestamp', 'datetime', array('attr' => array('class' => 'datetime')))
             ->add('expiration', 'datetime', array('attr' => array('class' => 'datetime')))
@@ -116,12 +116,44 @@ class DefaultController extends Controller
         return array('form' => $form->createView(),'anns' => $anns, 'title' => 'Edit Announcements');
     }
 
+    /**
+     * @Route("/delete", name="delete_announcement")
+     */
+    public function deleteAction(Request $request) {
+        if ($request->getMethod() === "GET" && $request->query->get('id')) {
+            $id = $request->query->get('id');
+
+            $em = $this->getDoctrine()->getManager();
+            $repo = $em->getRepository('BioInfoBundle:Announcement');
+
+            $ann = $repo->findOneById($id);
+            if ($repo) {
+                $em->remove($ann);
+                $em->flush();
+                $request->getSession()->getFlashBag()->set('success', 'Announcement deleted.');
+            } else {
+                $request->getSession()->getFlashBag()->set('failure', 'Could not find that announcement.');
+            }
+        }
+
+        if ($request->headers->get('referer')){
+            return $this->redirect($request->headers->get('referer'));
+        } else {
+            return $this->redirect($this->generateUrl('edit_announcements'));
+        }
+    }
+
     private function getAnnouncements() {
         $em = $this->getDoctrine()->getManager();
-        $query = $em->createQuery(
-            'SELECT a FROM BioInfoBundle:Announcement a WHERE a.expiration > :now ORDER BY a.expiration ASC')->setParameter('now', new \DateTime());
+        $repo = $em->getRepository('BioInfoBundle:Announcement');
+        // $query = $em->createQuery(
+        //     'SELECT a FROM BioInfoBundle:Announcement a 
+        //     WHERE a.expiration > :now AND a.timestamp < :now
+        //     ORDER BY a.expiration ASC')
+        //         ->setParameter('now', new \DateTime());
 
-        $announcements = $query->getResult();
+        // $announcements = $query->getResult();
+        $announcements = $repo->findBy(array());
         return $announcements;
     }
 }

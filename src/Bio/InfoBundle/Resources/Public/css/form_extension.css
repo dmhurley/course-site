@@ -7,6 +7,18 @@
 	height: 100px;
 }
 
-table tr td:first-child {
+table tr td:nth-child(2) {
 	text-align: left;
+}
+
+.expired {
+	background-color: rgba(250, 50, 50, .2);
+}
+
+.hidden {
+	background-color: rgba(250, 250, 50, .2);
+}
+
+.showing {
+	background-color: rgba(50, 250, 50, .2);
 }
