@@ -50,9 +50,9 @@ class Info
     private $year;
 
     /**
-     * @var string
+     * @var array
      *
-     * @ORM\Column(name="days", type="string", length=255)
+     * @ORM\Column(name="days", type="array")
      */
     private $days;
 

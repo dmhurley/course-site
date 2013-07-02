@@ -4,6 +4,7 @@ namespace Bio\ClickerBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Bio\StudentBundle\Entity\Student as Student;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Clicker
@@ -25,15 +26,18 @@ class Clicker
     /**
      * @var string
      *
-     * @ORM\Column(name="cid", type="string", length=255)
+     * @ORM\Column(name="cid", type="string", length=255, unique=true)
+     * @Assert\Regex("/^[0-9A-F]{6}$/")
      */
     private $cid;
 
     /**
-     * @ORM\OneToOne(targetEntity="Student")
-     * @ORM\JoinColumn(name="sid", referencedColumnName="sid")
+     * @var string
+     *
+     * @ORM\Column(name="sid", type="string", length=255, unique=true)
+     * @Assert\Regex("/^[0-9]{7}$/")
      */
-    private $student;
+    private $sid;
 
 
     /**
@@ -68,4 +72,29 @@ class Clicker
     {
         return $this->cid;
     }
+
+    /**
+     * Set sid
+     *
+     * @param string $sid
+     * @return Clicker
+     */
+    public function setSid($sid)
+    {
+        $this->sid = $sid;
+    
+        return $this;
+    }
+
+    /**
+     * Get sid
+     *
+     * @return string 
+     */
+    public function getSid()
+    {
+        return $this->sid;
+    }
+
+
 }
