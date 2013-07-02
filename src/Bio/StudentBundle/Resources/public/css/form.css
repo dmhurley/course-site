@@ -50,6 +50,10 @@
 	height: 25px;
 }
 
+#content table tr td {
+	padding: 4px;
+}
+
 #content table a {
 	font-weight: bolder;
 	text-decoration: none; 

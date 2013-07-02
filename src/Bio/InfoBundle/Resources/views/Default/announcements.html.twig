@@ -1,0 +1,23 @@
+{% extends 'BioInfoBundle:Default:base.html.twig' %}
+
+{% block content %}
+	<table border="1px">
+		<tr>
+			<th>Text</th>
+			<th>Timestamp</th>
+			<th>Expiration</th>
+			<th>Edit</th>
+			<th>Delete</th>
+		</tr>
+		{% for ann in anns %}
+			<tr>
+				<td>{{ann.text}}</td>
+				<td>{{ann.timestamp|date('m/d/Y h:i:s')}}</td>
+				<td>{{ann.expiration|date('m/d/Y h:i:s')}}</td>
+				<td><a href="">edit</a></td>
+				<td><a href="">delete</a></td>
+			</tr>
+		{% endfor %}
+	</table>
+	{{ form(form) }}
+{% endblock %}

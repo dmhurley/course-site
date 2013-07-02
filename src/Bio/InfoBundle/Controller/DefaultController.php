@@ -9,6 +9,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 
 use Bio\InfoBundle\Entity\Info;
+use Bio\InfoBundle\Entity\Announcement;
 
 /**
  * @Route("/course")
@@ -16,7 +17,7 @@ use Bio\InfoBundle\Entity\Info;
 class DefaultController extends Controller
 {
     /**
-     * @Route("/", name="edit_info")
+     * @Route("/edit", name="edit_info")
      * @Template()
      */
     public function indexAction(Request $request) {
@@ -80,5 +81,47 @@ class DefaultController extends Controller
     	}
 
         return array('form' => $form->createView(), 'title' => "Edit Course Information");
+    }
+
+    /**
+     * @Route("/announcements", name="edit_announcements")
+     * @Template()
+     */
+    public function announcementsAction(Request $request) {
+        $ann = new Announcement();
+        $ann->setTimestamp(new \DateTime());
+        $ann->setExpiration(new \DateTime());
+        $form = $this->createFormBuilder($ann)
+            ->add('timestamp', 'datetime', array('attr' => array('class' => 'datetime')))
+            ->add('expiration', 'datetime', array('attr' => array('class' => 'datetime')))
+            ->add('text', 'textarea')
+            ->add('id', 'hidden', array('mapped' => false))
+            ->add('add', 'submit')
+            ->getForm();
+
+        if ($request->getMethod() === "POST") {
+            $form->handleRequest($request);
+
+            if ($form->isValid()) {
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($ann);
+                $em->flush();
+                $request->getSession()->getFlashBag()->set('success', 'Announcement added.');
+            } else {
+                $request->getSession()->getFlashBag()->set('failure', 'Whoops.');
+            }
+        }
+
+        $anns = $this->getAnnouncements();
+        return array('form' => $form->createView(),'anns' => $anns, 'title' => 'Edit Announcements');
+    }
+
+    private function getAnnouncements() {
+        $em = $this->getDoctrine()->getManager();
+        $query = $em->createQuery(
+            'SELECT a FROM BioInfoBundle:Announcement a WHERE a.expiration > :now ORDER BY a.expiration ASC')->setParameter('now', new \DateTime());
+
+        $announcements = $query->getResult();
+        return $announcements;
     }
 }
