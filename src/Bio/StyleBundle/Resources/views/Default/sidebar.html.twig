@@ -5,7 +5,9 @@
 
 			<ul class="twig">
 				{% for key1,value1 in options[top] %}
-					<li class="leaf"><a href="{{ path(value1) }}">{{key1|capitalize}}</a></li>
+					{% if key1 != top %}
+						<li class="leaf"><a href="{{ path(value1) }}">{{key1|capitalize}}</a></li>
+					{% endif %}
 				{% endfor %}
 			</ul>
 			
@@ -13,7 +15,7 @@
 
 		{% for key,value in options %}
 			{% if key != top %}
-				<li class="branch"><a href="">{{key|capitalize}}</a></li>
+				<li class="branch"><a href="{{ path(options[key][key]) }}">{{key|capitalize}}</a></li>
 			{% endif %}
 		{% endfor %}
 	</ul>
