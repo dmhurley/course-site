@@ -1,3 +1,8 @@
+bio_info:
+    resource: "@BioInfoBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
 bio_clicker:
     resource: "@BioClickerBundle/Controller/"
     type:     annotation

@@ -25,6 +25,8 @@ class DefaultController extends Controller
 			$options['clickers']['register'] = 'register_clicker';
 			$options['clickers']['download'] = 'download_list';
 			$options['clickers']['clear'] = 'clear_list';
+		$options['Course Information'] = array();
+			$options['Course Information']['Course Information'] = 'edit_info';
 
 		if ($route == 'display_students' || $route == 'find_student' || 
 			$route == 'edit_student' || $route == 'add_student' || 
@@ -33,6 +35,8 @@ class DefaultController extends Controller
 		} else if ( $route == 'register_clicker' || $route == 'download_list' ||
 					$route == 'clear_list') {
 				$top = 'clickers';
+		} else if ( $route == 'edit_info') {
+			$top = 'Course Information';
 		}
 
 		return array('top' => $top, 'options' => $options);
