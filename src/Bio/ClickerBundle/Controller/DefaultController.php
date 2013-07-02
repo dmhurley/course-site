@@ -25,19 +25,19 @@ class DefaultController extends Controller {
     	$form = $this->createFormBuilder($clicker)
     		->add('cid', 'text', array('label' => "Clicker ID:"))
     		->add('sid', 'text', array('label' => "Student ID:"))
-    		->add('fName', 'text', array('label' => "First Name:", 'mapped' => false))
     		->add('lName', 'text', array('label' => "Last Name:", 'mapped' => false))
     		->add('Register', 'submit')
     		->getForm();
 
     	if ($request->getMethod() === "POST") {
+    		$this->update();
     		$form->handleRequest($request);
     		
     		if ($form->isValid()){
 
 	    		$em = $this->getDoctrine()->getManager();
 	    		$studentRepo = $em->getRepository('BioStudentBundle:Student');
-	    		$student = $studentRepo->findOneBy(array('sid' => $form->get('sid')->getData(), 'fName' => $form->get('fName')->getData(), 'lName' => $form->get('lName')->getData()));
+	    		$student = $studentRepo->findOneBy(array('sid' => $form->get('sid')->getData(), 'lName' => $form->get('lName')->getData()));
 
 	    		if ($student) {		// if student exists
 					$clickerRepo = $em->getRepository('BioClickerBundle:Clicker');
