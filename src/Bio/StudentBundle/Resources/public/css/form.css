@@ -65,3 +65,7 @@
 	color:red;
 	font-weight:bolder;
 }
+
+button {
+	padding: 3px;
+}

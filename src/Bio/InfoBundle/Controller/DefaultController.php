@@ -10,6 +10,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 use Bio\InfoBundle\Entity\Info;
 use Bio\InfoBundle\Entity\Announcement;
+use Bio\DataBundle\Objects\Database;
+use Bio\DataBundle\Exception\BioException;
 
 /**
  * @Route("/course")
@@ -21,13 +23,12 @@ class DefaultController extends Controller
      * @Template()
      */
     public function indexAction(Request $request) {
-    	$em = $this->getDoctrine()->getManager();
-		$repo = $em->getRepository('BioInfoBundle:Info');
-		$info = $repo->findOneBy(array());
+        $db = new Database($this, 'BioInfoBundle:Info');
+		$info = $db->findOne();
 
 		if (!$info) {
 			$info = new Info();
-			$em->persist($info);
+			$db->add($info);
 		}
 
     	$form = $this->createFormBuilder($info)
@@ -73,9 +74,10 @@ class DefaultController extends Controller
     			$info->setEmail($data->getEmail());
 
     			try {
-    				$em->flush();
-    			} catch (\Doctrine\DBAL\DBALException $e) {
-
+    				$db->close("Something broke...");
+                    $request->getSession()->getFlashBag()->set('success', 'Course information updated.');
+    			} catch (BioException $e) {
+                    $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
     			}
     		}
     	}
@@ -98,37 +100,37 @@ class DefaultController extends Controller
             ->add('add', 'submit')
             ->getForm();
 
+
+        $db = new Database($this, 'BioInfoBundle:Announcement');
         if ($request->getMethod() === "POST") {
             $form->handleRequest($request);
 
             if ($form->isValid()) {
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($ann);
-                $em->flush();
+                $db->add($ann);
+                $db->close();
                 $request->getSession()->getFlashBag()->set('success', 'Announcement added.');
             } else {
                 $request->getSession()->getFlashBag()->set('failure', 'Whoops.');
             }
         }
 
-        $anns = $this->getAnnouncements();
+        $anns = $db->find(array(), array('expiration' => 'DESC'));
         return array('form' => $form->createView(),'anns' => $anns, 'title' => 'Edit Announcements');
     }
 
     /**
-     * @Route("/delete", name="delete_announcement")
+     * @Route("/delete/announcement", name="delete_announcement")
      */
     public function deleteAction(Request $request) {
         if ($request->getMethod() === "GET" && $request->query->get('id')) {
             $id = $request->query->get('id');
 
-            $em = $this->getDoctrine()->getManager();
-            $repo = $em->getRepository('BioInfoBundle:Announcement');
+            $db = new Database($this, 'BioInfoBundle:Announcement');
 
-            $ann = $repo->findOneById($id);
-            if ($repo) {
-                $em->remove($ann);
-                $em->flush();
+            $ann = $db->findOne(array('id'=>$id));
+            if ($ann) {
+                $db->delete($ann);
+                $db->close();
                 $request->getSession()->getFlashBag()->set('success', 'Announcement deleted.');
             } else {
                 $request->getSession()->getFlashBag()->set('failure', 'Could not find that announcement.');
@@ -138,7 +140,7 @@ class DefaultController extends Controller
         if ($request->headers->get('referer')){
             return $this->redirect($request->headers->get('referer'));
         } else {
-            return $this->redirect($this->generateUrl('edit_announcements'));
+            return $this->redirect($this->generateUrl('view_announcements'));
         }
     }
 
@@ -147,40 +149,40 @@ class DefaultController extends Controller
      * @Template()
      */
     public function editAction(Request $request) {
-        $ann = new Announcement();
+        $ann = new Announcement(); // her??
+        $db = new Database($this, 'BioInfoBundle:Announcement');
+
         if ($request->getMethod() === "GET" && $request->query->get('id')){
             $id = $request->query->get('id');
-            $em = $this->getDoctrine()->getManager();
-            $repo = $em->getRepository('BioInfoBundle:Announcement');
 
-            $anns = $repo->findBy(array('id' => $id));
-            if (count($anns) === 1) {
-                $ann = $anns[0];
-            }
-            echo '..'.$ann->getText().'..';
+            $ann = $db->findOne(array('id' => $id));
+        } else {
+            $ann = new Announcement();
         }
 
         $form = $this->createFormBuilder($ann)
             ->add('timestamp', 'datetime', array('attr' => array('class' => 'datetime')))
             ->add('expiration', 'datetime', array('attr' => array('class' => 'datetime')))
             ->add('text', 'textarea')
-            ->add('add', 'submit')
+            ->add('id', 'hidden')
+            ->add('edit', 'submit')
             ->getForm();
 
+        if ($request->getMethod() === "POST") {
+            $form->handleRequest($request);
+
+            if($form->isValid()) {
+                $dbAnn = $db->findOne(array('id' => $ann->getId()));
+                $dbAnn->setTimestamp($ann->getTimestamp())
+                    ->setExpiration($ann->getExpiration())
+                    ->setText($ann->getText());
+
+                $db->close();
+
+                return $this->redirect($this->generateUrl('view_announcements'));
+            }
+        }
+
         return array('form' => $form->createView(), 'title' => 'Edit Announcement');
-    }
-
-    private function getAnnouncements() {
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('BioInfoBundle:Announcement');
-        // $query = $em->createQuery(
-        //     'SELECT a FROM BioInfoBundle:Announcement a 
-        //     WHERE a.expiration > :now AND a.timestamp < :now
-        //     ORDER BY a.expiration ASC')
-        //         ->setParameter('now', new \DateTime());
-
-        // $announcements = $query->getResult();
-        $announcements = $repo->findBy(array());
-        return $announcements;
     }
 }
