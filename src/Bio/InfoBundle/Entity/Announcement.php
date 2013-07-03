@@ -3,6 +3,9 @@
 namespace Bio\InfoBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Bio\InfoBundle\Entity\Base;
+use Symfony\Component\Form\FormBuilder;
+
 
 /**
  * Announcement
@@ -10,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table()
  * @ORM\Entity
  */
-class Announcement
+class Announcement extends Base
 {
     /**
      * @var integer
@@ -126,5 +129,20 @@ class Announcement
     public function getText()
     {
         return $this->text;
+    }
+
+    public function addToForm(FormBuilder $builder) {
+        $builder->add('timestamp', 'datetime', array('attr' => array('class' => 'datetime')))
+            ->add('expiration', 'datetime', array('attr' => array('class' => 'datetime')))
+            ->add('text', 'textarea');
+        return $builder;
+    }
+
+    public function setAll($entity) {
+        $this->setTimestamp($entity->getTimestamp())
+            ->setExpiration($entity->getExpiration())
+            ->setText($entity->getText());
+
+        return $this;
     }
 }

@@ -3,6 +3,9 @@
 namespace Bio\InfoBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Bio\InfoBundle\Entity\Base;
+use Symfony\Component\Form\FormBuilder;
+
 
 /**
  * Person
@@ -10,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table()
  * @ORM\Entity
  */
-class Person
+class Person extends Base
 {
     /**
      * @var integer
@@ -72,6 +75,12 @@ class Person
     public function getId()
     {
         return $this->id;
+    }
+
+    public function setId($id) {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**
@@ -210,5 +219,27 @@ class Person
     public function getTitle()
     {
         return $this->title;
+    }
+
+    public function addToForm(FormBuilder $builder) {
+        $array = file('bundles/bioinfo/buildings.txt', FILE_IGNORE_NEW_LINES);
+        $builder->add('fName', 'text')
+            ->add('lName', 'text')
+            ->add('email', 'email')
+            ->add('bldg', 'choice', array('choices' => array_combine($array, $array), 'validation_groups' => false))
+            ->add('room', 'text')
+            ->add('title', 'choice', array('choices' => array('instructor' => 'Instructor', 'ta' => 'TA', 'coordinator' => 'Coordinator')));
+        return $builder;
+    }
+
+    public function setAll($entity) {
+        $this->setFName($entity->getFName())
+            ->setLName($entity->getLName())
+            ->setEmail($entity->getEmail())
+            ->setBldg($entity->getBldg())
+            ->setRoom($entity->getRoom())
+            ->setTitle($entity->getTitle());
+
+        return $this;
     }
 }

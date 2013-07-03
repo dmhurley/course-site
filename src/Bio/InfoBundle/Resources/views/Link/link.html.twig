@@ -1,4 +1,4 @@
-{% extends 'BioInfoBundle:Default:base.html.twig' %}
+{% extends 'BioInfoBundle:Course:base.html.twig' %}
 
 {% block content %}
 	{{ form(form) }}
@@ -16,8 +16,8 @@
 				<td>{{link.location}}</td>
 				<td>{{link.title}}</td>
 				<td><a href="{{link.address}}">{{link.address}}</a></td>
-				<td><a href="{{ path('edit_link') }}?id={{ link.id}}">edit</a></td>
-				<td><a href="{{ path('delete_link') }}?id={{ link.id }}">delete</a></td>
+				<td><a href="{{ path('edit', {'entityName' : 'link'}) }}?id={{ link.id}}">edit</a></td>
+				<td><a href="{{ path('delete') }}?id={{ link.id }}">delete</a></td>
 			</tr>
 		{% endfor %}
 	</table>

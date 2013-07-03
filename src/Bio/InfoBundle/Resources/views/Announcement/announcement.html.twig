@@ -1,4 +1,4 @@
-{% extends 'BioInfoBundle:Default:base.html.twig' %}
+{% extends 'BioInfoBundle:Course:base.html.twig' %}
 
 {% block content %}
 	{{ form(form) }}
@@ -12,7 +12,7 @@
 			<th>Edit</th>
 			<th>Delete</th>
 		</tr>
-		{% for ann in anns %}
+		{% for ann in announcements %}
 		{% if date() > date(ann.expiration) %}
 			<tr class="expired">
 				<td>Expired</td>
@@ -26,8 +26,8 @@
 				<td>{{ann.text}}</td>
 				<td>{{ann.timestamp|date('m/d/Y h:i:s')}}</td>
 				<td>{{ann.expiration|date('m/d/Y h:i:s')}}</td>
-				<td><a href="{{ path('edit_announcement') }}?id={{ ann.id}}">edit</a></td>
-				<td><a href="{{ path('delete_announcement') }}?id={{ ann.id }}">delete</a></td>
+				<td><a href="{{ path('edit', {'entityName' : 'announcement'}) }}?id={{ ann.id}}">edit</a></td>
+				<td><a href="{{ path('delete', {'entityName' : 'announcement'}) }}?id={{ ann.id }}">delete</a></td>
 			</tr>
 		{% endfor %}
 	</table>

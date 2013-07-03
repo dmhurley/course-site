@@ -7,82 +7,118 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 use Symfony\Component\HttpFoundation\Request;
-
-use Bio\InfoBundle\Entity\Info;
+use Bio\InfoBundle\Entity\Person;
 use Bio\InfoBundle\Entity\Announcement;
+use Bio\InfoBundle\Entity\Link;
 use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 
 /**
- * @Route("/course")
+ * @Route("/{entityName}")
  */
 class DefaultController extends Controller
-{
-    /**
-     * @Route("/edit", name="edit_info")
-     * @Template()
+{ // starting letter has to be higher than D
+	/**
+     * @Route("/", name="view")
      */
-    public function indexAction(Request $request) {
-        $db = new Database($this, 'BioInfoBundle:Info');
-		$info = $db->findOne();
+    public function baseAction(Request $request, $entityName) {
+        $uc = ucfirst($entityName);
+        $lc = strtolower($entityName);
+        $type = 'Bio\InfoBundle\Entity\\'.$uc;
 
-		if (!$info) {
-			$info = new Info();
-			$db->add($info);
-		}
+        $entity = new $type;
+        $form = $entity->addToForm($this->createFormBuilder($entity))            
+            ->add('add', 'submit')
+            ->getForm();
 
-        $array = file('bundles/bioinfo/buildings.txt', FILE_IGNORE_NEW_LINES);
-    	$form = $this->createFormBuilder($info)
-    		->add('courseNumber', 'text')
-    		->add('title', 'text')
-    		->add('qtr', 'choice', array('choices' => array(
-    					'au' => 'Autumn',
-    					'wi' => 'Winter',
-    					'sp' => 'Spring',
-    					'su' => 'Summer'
-    				)))
-    		->add('year', 'integer')
-    		->add('days', 'choice', array('choices' => array(
-    					'm' => 'Monday',
-    					'tu' => 'Tuesday',
-    					'w' => 'Wednsday',
-    					'th' => 'Thursday',
-    					'f' => 'Friday',
-    					'sa' => 'Saturday'
-    				), 'multiple' => true))
-    		->add('startTime', 'time')
-    		->add('endTime', 'time')
-    		->add('bldg', 'choice', array('choices' => array_combine($array, $array), 'validation_groups' => false))
-    		->add('room', 'text')
-    		->add('email', 'email')
-    		->add('edit', 'submit')
-    		->getForm();
 
-    	if ($request->getMethod() === "POST") {
-    		$form->handleRequest($request);
+        $db = new Database($this, 'BioInfoBundle:'.$uc);
+        if ($request->getMethod() === "POST") {
+            $form->handleRequest($request);
 
-    		if ($form->isValid()) {
-    			$data = $form->getData();
-    			$info->setCourseNumber($data->getCourseNumber());
-    			$info->setTitle($data->getTitle());
-    			$info->setQtr($data->getQtr());
-    			$info->setYear($data->getYear());
-    			$info->setDays($data->getDays());
-    			$info->setStartTime($data->getStartTime());
-    			$info->setEndTime($data->getEndTime());
-    			$info->setBldg($data->getBldg());
-    			$info->setRoom($data->getRoom());
-    			$info->setEmail($data->getEmail());
+            if ($form->isValid()) {
+                $db->add($entity);
+                $db->close();
+                $request->getSession()->getFlashBag()->set('success', $uc.' added.');
+            } else {
+                $request->getSession()->getFlashBag()->set('failure', 'Whoops.');
+            }
+        }
+        if ($lc === "announcement"){
+            $entities = $db->find(array(), array('expiration' => 'DESC'), false);
+        } else {
+            $entities = $db->find(array(), array(), false);
+        }
+        return $this->render('BioInfoBundle:'.$uc.':'.$lc.'.html.twig', 
+                array('form' => $form->createView(), $lc.'s' => $entities, 'title' => 'Edit '.$uc));
+    }
 
-    			try {
-    				$db->close("Something broke...");
-                    $request->getSession()->getFlashBag()->set('success', 'Course information updated.');
-    			} catch (BioException $e) {
-                    $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
-    			}
-    		}
-    	}
+    /**
+     * @Route("/delete", name="delete")
+     */
+    public function deleteAction(Request $request, $entityName) {
+        $uc = ucfirst($entityName);
+        $lc = strtolower($entityName);
+        $type = 'Bio\InfoBundle\Entity\\'.$uc;
 
-        return array('form' => $form->createView(), 'title' => "Edit Course Information");
+        if ($request->getMethod() === "GET" && $request->query->get('id')) {
+            $id = $request->query->get('id');
+
+            $db = new Database($this, 'BioInfoBundle:'.$uc);
+
+            $entity = $db->findOne(array('id'=>$id));
+            if ($entity) {
+                $db->delete($entity);
+                $db->close();
+                $request->getSession()->getFlashBag()->set('success', $uc.' deleted.');
+            } else {
+                $request->getSession()->getFlashBag()->set('failure', 'Could not find that '.$lc.'.');
+            }
+        }
+
+        if ($request->headers->get('referer')){
+            return $this->redirect($request->headers->get('referer'));
+        } else {
+            return $this->redirect($this->generateUrl('view', array('entityName' => $lc)));
+        }
+    }
+
+    /**
+     * @Route("/edit", name="edit")
+     */
+    public function editAction(Request $request, $entityName) {
+        $uc = ucfirst($entityName);
+        $lc = strtolower($entityName);
+        $type = 'Bio\InfoBundle\Entity\\'.$uc;
+
+        $db = new Database($this, 'BioInfoBundle:'.$uc);
+
+        if ($request->getMethod() === "GET" && $request->query->get('id')){
+            $id = $request->query->get('id');
+
+            $entity = $db->findOne(array('id' => $id));
+        } else {
+            $entity = new $type;
+        }
+
+        $form = $entity->addToForm($this->createFormBuilder($entity))
+            ->add('id', 'hidden')
+            ->add('edit', 'submit')
+            ->getForm();
+
+        if ($request->getMethod() === "POST") {
+            $form->handleRequest($request);
+
+            if($form->isValid()) {
+                $dbEntity = $db->findOne(array('id' => $entity->getId()));
+                $dbEntity->setAll($entity);
+                $db->close();
+
+                return $this->redirect($this->generateUrl('view', array('entityName' => $lc)));
+            }
+        }
+
+        return $this->render('BioInfoBundle:'.$uc.':edit.html.twig', 
+                array('form' => $form->createView(), 'title' => 'Edit Announcement'));
     }
 }

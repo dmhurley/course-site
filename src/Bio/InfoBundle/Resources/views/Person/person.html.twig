@@ -1,4 +1,4 @@
-{% extends 'BioInfoBundle:Default:base.html.twig' %}
+{% extends 'BioInfoBundle:Course:base.html.twig' %}
 
 {% block content %}
 	{{ form(form) }}
@@ -13,15 +13,15 @@
 			<th>Edit</th>
 			<th>Delete</th>
 		</tr>
-		{% for person in people %}
+		{% for person in persons %}
 			<tr>
 				<td>{{person.fName}} {{person.lName}}</td>
 				<td>{{person.email}}</td>
 				<td><a href="http://www.washington.edu/maps/?{{person.bldg|split("	")[0]}}">{{person.bldg}}</a></td>
 				<td>{{person.room}}</td>
 				<td>{{person.title}}</td>
-				<td><a href="{{ path('edit_person') }}?id={{ person.id}}">edit</a></td>
-				<td><a href="{{ path('delete_person') }}?id={{ person.id }}">delete</a></td>
+				<td><a href="{{ path('edit', {'entityName' : 'person'}) }}?id={{ person.id}}">edit</a></td>
+				<td><a href="{{ path('delete', {'entityName' : 'person'}) }}?id={{ person.id }}">delete</a></td>
 			</tr>
 		{% endfor %}
 	</table>

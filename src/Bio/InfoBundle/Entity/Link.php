@@ -3,6 +3,9 @@
 namespace Bio\InfoBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Bio\InfoBundle\Entity\Base;
+use Symfony\Component\Form\FormBuilder;
+
 
 /**
  * Link
@@ -10,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table()
  * @ORM\Entity
  */
-class Link
+class Link extends Base
 {
     /**
      * @var integer
@@ -127,5 +130,20 @@ class Link
     public function getLocation()
     {
         return $this->location;
+    }
+
+    public function addToForm(FormBuilder $builder) {
+        $builder->add('title', 'text')
+            ->add('address', 'text')
+            ->add('location', 'choice', array('choices' => array('sidebar' => 'Sidebar', 'content' => 'Main page')));
+        return $builder;
+    }
+
+    public function setAll($entity) {
+       $this->setTitle($entity->getTitle())
+            ->setAddress($entity->getAddress())
+            ->setLocation($entity->getLocation());
+
+       return $this;
     }
 }
