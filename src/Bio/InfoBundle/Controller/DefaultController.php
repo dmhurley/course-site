@@ -31,6 +31,7 @@ class DefaultController extends Controller
 			$db->add($info);
 		}
 
+        $array = file('bundles/bioinfo/buildings.txt', FILE_IGNORE_NEW_LINES);
     	$form = $this->createFormBuilder($info)
     		->add('courseNumber', 'text')
     		->add('title', 'text')
@@ -51,7 +52,7 @@ class DefaultController extends Controller
     				), 'multiple' => true))
     		->add('startTime', 'time')
     		->add('endTime', 'time')
-    		->add('bldg', 'choice', array('choices' => file('bundles/bioinfo/buildings.txt', FILE_IGNORE_NEW_LINES)))
+    		->add('bldg', 'choice', array('choices' => array_combine($array, $array), 'validation_groups' => false))
     		->add('room', 'text')
     		->add('email', 'email')
     		->add('edit', 'submit')

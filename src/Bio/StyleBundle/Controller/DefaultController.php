@@ -25,11 +25,12 @@ class DefaultController extends Controller
 			$options['clickers']['register'] = 'register_clicker';
 			$options['clickers']['download'] = 'download_list';
 			$options['clickers']['clear'] = 'clear_list';
-		$options['Course Information'] = array();
-			$options['Course Information']['Course Information'] = 'edit_info';
-			$options['Course Information']['Edit Info'] = 'edit_info';
-			$options['Course Information']['Announcements'] = 'view_announcements';
-			$options['Course Information']['Links'] = 'view_links';
+		$options['Course Info'] = array();
+			$options['Course Info']['Course Info'] = 'edit_info';
+			$options['Course Info']['Edit Info'] = 'edit_info';
+			$options['Course Info']['Announcements'] = 'view_announcements';
+			$options['Course Info']['Links'] = 'view_links';
+			$options['Course Info']['Instructors'] = 'view_people';
 
 		if ($route == 'display_students' || $route == 'find_student' || 
 			$route == 'edit_student' || $route == 'add_student' || 
@@ -39,8 +40,8 @@ class DefaultController extends Controller
 					$route == 'clear_list') {
 				$top = 'clickers';
 		} else if ( $route == 'edit_info' || $route == 'view_announcements' || $route == 'edit_announcement' ||
-					$route == 'view_links' || $route == 'edit_link') {
-			$top = 'Course Information';
+					$route == 'view_links' || $route == 'edit_link' || $route == 'view_people') {
+			$top = 'Course Info';
 		}
 
 		return array('top' => $top, 'options' => $options);
