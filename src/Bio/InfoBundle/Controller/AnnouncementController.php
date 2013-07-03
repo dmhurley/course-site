@@ -46,7 +46,7 @@ class AnnouncementController extends Controller
             }
         }
 
-        $anns = $db->find(array(), array('expiration' => 'DESC'));
+        $anns = $db->find(array(), array('expiration' => 'DESC'), false);
         return array('form' => $form->createView(),'anns' => $anns, 'title' => 'Edit Announcements');
     }
 
@@ -81,7 +81,6 @@ class AnnouncementController extends Controller
      * @Template()
      */
     public function editAction(Request $request) {
-        $ann = new Announcement(); // her??
         $db = new Database($this, 'BioInfoBundle:Announcement');
 
         if ($request->getMethod() === "GET" && $request->query->get('id')){
