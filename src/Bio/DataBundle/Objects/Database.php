@@ -19,20 +19,17 @@ class Database {
 		$this->entityClass = explode(":", $repo)[1];
 	}
 
-	public function find(array $options = array(), array $order = array()) {
+	public function find(array $options = array(), array $order = array(), $throwErrors = true) {
 		$results = $this->repo->findBy($options, $order);
-		if (count($results) == 0) {
+		if (count($results) == 0 && $throwErrors) {
 			throw new BioException('No entries found.');
 		}
 		return $results;
 	}
 
 	public function findOne(array $options = array()) {
-		$entities = $this->find($options);
-		if (count($entities) !== 1) {
-			throw new Exception('More than one entry found.');
-		}
-		return $entities[0];
+		$entities = $this->repo->findOneBy($options);
+		return $entities;
 	}
 
 	public function addMany(array $entities) {
