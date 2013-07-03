@@ -19,6 +19,7 @@ class AppKernel extends Kernel
             new Bio\StudentBundle\BioStudentBundle(),
             new Bio\StyleBundle\BioStyleBundle(),
             new Bio\ClickerBundle\BioClickerBundle(),
+            new Bio\DataBundle\BioDataBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
