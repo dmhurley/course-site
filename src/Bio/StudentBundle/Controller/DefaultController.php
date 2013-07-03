@@ -9,7 +9,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 
 use Bio\StudentBundle\Entity\Student;
-use Bio\StudentBundle\Exception\BioException;
+use Bio\DataBundle\Exception\BioException;
+
+use Bio\DataBundle\Objects\Database;
 
 /**
  * @Route("/student")
@@ -34,7 +36,8 @@ class DefaultController extends Controller
             $values = $request->request->get('form');
             $array = $this->generateArray($values['sid'], $values['fName'], $values['lName'], $values['section'], $values['email']);
             try {
-                $entities = $this->findStudent($array, 'sid');
+                $db = new Database($this, 'BioStudentBundle:Student');
+                $entities = $db->find($array, array('sid' => 'ASC'));
                 $request->getSession()->getFlashBag()->set('success', 'Students found!');
 
                 $get = "?filter=";
@@ -109,7 +112,9 @@ class DefaultController extends Controller
     		$form->handleRequest($request);
     		if ($form->isValid()) {
     			try {
-                    $this->addStudent($entity);
+                    $db = new Database($this, 'BioStudentBundle:Student');
+                    $db->add($entity);
+                    $db->close("That Student ID or email is already registered.");
                     $request->getSession()->getFlashBag()->set('success', 'Student added!');
                 } catch (BioException $e) {
                     $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
@@ -128,9 +133,10 @@ class DefaultController extends Controller
     public function deleteAction(Request $request) {
     	if ($request->getMethod() === "GET" && $request->query->get('sid')) {
     		$sid = $request->query->get('sid');
-
             try {
-                $this->deleteStudent($this->findStudent(array('sid' => $sid)));
+                $db = new Database($this, 'BioStudentBundle:Student');
+                $db->deleteBy(array('sid' => $sid));
+                $db->close();
                 $request->getSession()->getFlashBag()->set('success', "Student #".$sid." removed.");
             } catch (BioException $e) {
                 $request->getSession()->getFlashBag()->set('failure', "Could not find student #".$sid.".");
@@ -152,7 +158,8 @@ class DefaultController extends Controller
         $entity = new Student();
         if ($request->getMethod() === "GET" && $request->query->get('sid')) {
             try {
-                $entity = $this->findStudent(array('sid' => $request->query->get('sid')))[0];
+                $db = new Database($this, 'BioStudentBundle:Student');
+                $entity = $db->findOne(array('sid' => $request->query->get('sid')));
             } catch (BioException $e) {
                 $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
             }
@@ -205,7 +212,8 @@ class DefaultController extends Controller
         }
 
         try {
-            $entities = $this->findStudent($array, $sort);
+            $db = new Database($this, 'BioStudentBundle:Student');
+            $entities = $db->find($array, array($sort => 'ASC'));
         } catch (BioException $e) {
             $entities = array();
         }
@@ -239,44 +247,6 @@ class DefaultController extends Controller
     	return array("form" => $form->createView(), 'title' => "Upload Student List");
     }
 
-    // takes in an array containing desired field-value pairs and a field name to sort by
-    // returns an array of all Students matching that description
-    private function findStudent($array = array(), $sort = "sid") {
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('BioStudentBundle:Student');
-
-        $entities = $repo->findBy($array, array($sort => 'ASC'));
-        if (count($entities) === 0) {
-            throw new BioException("No students found.");
-        } else {
-            return $entities;
-        }
-    }
-
-    // 
-    private function addStudent($entity) {
-        $em = $this->getDoctrine()->getManager();
-        try {
-            $em->persist($entity);
-            $em->flush();
-        } catch (\Doctrine\DBAL\DBALException $e) {
-            throw new BioException("That Student ID or email is already registered.");
-        }
-    }
-
-    // takes in an array of entities
-    // deletes all of them
-    private function deleteStudent($entities) {
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('BioStudentBundle:Student');
-
-        for ($i = 0; $i < count($entities); $i++) {
-            $em->remove($entities[$i]);
-
-        }
-        $em->flush();
-    }
-
     private function editStudent($entity) {
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository('BioStudentBundle:Student');
@@ -298,43 +268,37 @@ class DefaultController extends Controller
     }
 
     private function uploadStudentList($file) {
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('BioStudentBundle:Student');
-        $entities = $repo->findAll();
-
-        // truncate table
-        $connection = $em->getConnection();
-        $platform = $connection->getDatabasePlatform();
-        $connection->executeUpdate($platform->getTruncateTableSQL('Student', true));
-
+        $db = new Database($this, 'BioStudentBundle:Student');
+        $entities = $db->truncate();
+       
         $sids = [];
         $emails = [];
 
         for ($i = 1; $i < count($file); $i++) {
             list($sid, $name, $section, $credits, $gender, $class, $major, $email) = preg_split('/","|,"|",|"/', $file[$i], -1, PREG_SPLIT_NO_EMPTY);
+            list($lName, $fName) = explode(", ", $name);
             while (strlen($sid) < 7) {
                 $sid = "0".$sid;
             }
             $entity = new Student();
-            $entity->setSid($sid);
-            $entity->setSection($section);
-            $entity->setEmail($email);
-            list($lName, $fName) = explode(", ", $name);
-            $entity->setFName(explode(" ", $fName)[0]);
-            $entity->setLName($lName);
+            $entity->setSid($sid)
+                ->setSection($section)
+                ->setEmail($email)
+                ->setFName(explode(" ", $fName)[0])
+                ->setLName($lName);
             if (!in_array($sid, $sids) && !in_array($email, $emails)) {
                 $sids[] = $sid;
                 $emails[] = $email;
-                $em->persist($entity);
+                $db->add($entity);
             } else {
-                $em->clear();
+                $db->clear();
                 for ($j = 0; $j < count($entities); $j++) {
                     $em->persist($entities[$j]);
                 }
-                $em->flush();
+                $db->close();
                 throw new BioException("The file contained duplicate Student IDs or emails.");
             }
         }
-        $em->flush();
+        $db->close();
     }
 }

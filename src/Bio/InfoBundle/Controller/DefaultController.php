@@ -17,7 +17,7 @@ use Bio\InfoBundle\Entity\Announcement;
 class DefaultController extends Controller
 {
     /**
-     * @Route("/edit", name="edit_info")
+     * @Route("/edit/course", name="edit_info")
      * @Template()
      */
     public function indexAction(Request $request) {
@@ -84,7 +84,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/announcements", name="edit_announcements")
+     * @Route("/announcements", name="view_announcements")
      * @Template()
      */
     public function announcementsAction(Request $request) {
@@ -95,7 +95,6 @@ class DefaultController extends Controller
             ->add('timestamp', 'datetime', array('attr' => array('class' => 'datetime')))
             ->add('expiration', 'datetime', array('attr' => array('class' => 'datetime')))
             ->add('text', 'textarea')
-            ->add('id', 'hidden', array('mapped' => false))
             ->add('add', 'submit')
             ->getForm();
 
@@ -141,6 +140,34 @@ class DefaultController extends Controller
         } else {
             return $this->redirect($this->generateUrl('edit_announcements'));
         }
+    }
+
+    /**
+     * @Route("/edit/announcement", name="edit_announcement")
+     * @Template()
+     */
+    public function editAction(Request $request) {
+        $ann = new Announcement();
+        if ($request->getMethod() === "GET" && $request->query->get('id')){
+            $id = $request->query->get('id');
+            $em = $this->getDoctrine()->getManager();
+            $repo = $em->getRepository('BioInfoBundle:Announcement');
+
+            $anns = $repo->findBy(array('id' => $id));
+            if (count($anns) === 1) {
+                $ann = $anns[0];
+            }
+            echo '..'.$ann->getText().'..';
+        }
+
+        $form = $this->createFormBuilder($ann)
+            ->add('timestamp', 'datetime', array('attr' => array('class' => 'datetime')))
+            ->add('expiration', 'datetime', array('attr' => array('class' => 'datetime')))
+            ->add('text', 'textarea')
+            ->add('add', 'submit')
+            ->getForm();
+
+        return array('form' => $form->createView(), 'title' => 'Edit Announcement');
     }
 
     private function getAnnouncements() {
