@@ -233,12 +233,12 @@ class Person extends Base
 
     public function addToForm(FormBuilder $builder) {
         $array = file('bundles/bioinfo/buildings.txt', FILE_IGNORE_NEW_LINES);
-        $builder->add('fName', 'text')
-            ->add('lName', 'text')
-            ->add('email', 'email')
-            ->add('bldg', 'choice', array('choices' => array_combine($array, $array), 'validation_groups' => false))
-            ->add('room', 'text')
-            ->add('title', 'choice', array('choices' => array('instructor' => 'Instructor', 'ta' => 'TA', 'coordinator' => 'Coordinator')));
+        $builder->add('fName', 'text', array('label' => 'First Name:'))
+            ->add('lName', 'text', array('label' => 'Last Name:'))
+            ->add('email', 'email', array('label' => 'Email:'))
+            ->add('bldg', 'choice', array('choices' => array_combine($array, $array), 'validation_groups' => false, 'label' => 'Building:'))
+            ->add('room', 'text', array('label' => 'Room:'))
+            ->add('title', 'choice', array('choices' => array('instructor' => 'Instructor', 'ta' => 'TA', 'coordinator' => 'Coordinator'), 'label' => 'Title:'));
         return $builder;
     }
 

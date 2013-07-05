@@ -132,9 +132,9 @@ class Announcement extends Base
     }
 
     public function addToForm(FormBuilder $builder) {
-        $builder->add('timestamp', 'datetime', array('attr' => array('class' => 'datetime')))
-            ->add('expiration', 'datetime', array('attr' => array('class' => 'datetime')))
-            ->add('text', 'textarea');
+        $builder->add('timestamp', 'datetime', array('attr' => array('class' => 'datetime'), 'label' => 'Start Time:'))
+            ->add('expiration', 'datetime', array('attr' => array('class' => 'datetime'), 'label' => 'End Time:'))
+            ->add('text', 'textarea', array('label' => 'Announcment:'));
         return $builder;
     }
 

@@ -1,0 +1,29 @@
+{% extends 'BioInfoBundle:Course:base.html.twig' %}
+
+{% block content %}
+	{{ form(form) }}
+
+	<table border="1px">
+		<tr>
+			<th>Name</th>
+			<th>Day</th>
+			<th>Start</th>
+			<th>End</th>
+			<th>Building</th>
+			<th>Edit</th>
+			<th>Delete</th>
+		</tr>
+		{% for section in sections %}
+			<tr>
+				<td>{{section.name}}</td>
+				<td>{{section.day}}</td>
+				<td>{{section.start|date('h:m')}}</td>
+				<td>{{section.end|date('h:m')}}</td>
+				<td>{{section.bldg}}</td>
+				<td>{{section.room}}
+				<td><a href="{{ path('edit', {'entityName' : 'section'}) }}?id={{ section.id}}">edit</a></td>
+				<td><a href="{{ path('delete', {'entityName' : 'section'}) }}?id={{ section.id }}">delete</a></td>
+			</tr>
+		{% endfor %}
+	</table>
+{% endblock %}

@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Bio\InfoBundle\Entity\Person;
 use Bio\InfoBundle\Entity\Announcement;
 use Bio\InfoBundle\Entity\Link;
+use Bio\InfoBundle\Entity\Section;
 use Bio\InfoBundle\Entity\Hours;
 use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;

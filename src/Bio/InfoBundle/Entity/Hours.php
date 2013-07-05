@@ -190,11 +190,11 @@ class Hours extends Base
     }
 
     public function addToForm(FormBuilder $builder) {
-        $builder->add('person', 'entity', array('class' => 'BioInfoBundle:Person', 'property' => 'lName'))
-            ->add('days', 'text')
-            ->add('start', 'time')
-            ->add('end', 'time')
-            ->add('byAppointment', 'checkbox', array('required' => false));
+        $builder->add('person', 'entity', array('class' => 'BioInfoBundle:Person', 'property' => 'lName', 'label' => 'Instructor:'))
+            ->add('days', 'text', array('label' => 'Days:'))
+            ->add('start', 'time', array('label' => 'Start Time:'))
+            ->add('end', 'time', array('label' => 'End Time:'))
+            ->add('byAppointment', 'checkbox', array('required' => false, 'label' => 'By Appointment?'));
 
         return $builder;
     }

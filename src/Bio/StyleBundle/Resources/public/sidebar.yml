@@ -21,6 +21,10 @@
     route: view
     vars:
       entityName: hours
+  "Sections":
+    route: view
+    vars:
+      entityName: section
 
 "Students":
   "Students":

@@ -133,9 +133,9 @@ class Link extends Base
     }
 
     public function addToForm(FormBuilder $builder) {
-        $builder->add('title', 'text')
-            ->add('address', 'text')
-            ->add('location', 'choice', array('choices' => array('sidebar' => 'Sidebar', 'content' => 'Main page')));
+        $builder->add('title', 'text', array('label' => 'Title'))
+            ->add('address', 'text', array('label' => 'URL:'))
+            ->add('location', 'choice', array('choices' => array('sidebar' => 'Sidebar', 'content' => 'Main page'), 'label' => 'Location:'));
         return $builder;
     }
 

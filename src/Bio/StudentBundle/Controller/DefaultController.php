@@ -227,7 +227,7 @@ class DefaultController extends Controller
      */
     public function uploadAction(Request $request) {
     	$form = $this->createFormBuilder()
-    		->add('file', 'file')
+    		->add('file', 'file', array('label' => 'File:'))
     		->add('Upload', 'submit')
     		->getForm();
 
