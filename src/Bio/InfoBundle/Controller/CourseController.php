@@ -9,7 +9,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 
 use Bio\InfoBundle\Entity\Info;
-use Bio\InfoBundle\Entity\Announcement;
+use Bio\InfoBundle\Entity\Hours;
 use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 

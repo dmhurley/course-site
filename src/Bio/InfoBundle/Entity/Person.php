@@ -5,6 +5,7 @@ namespace Bio\InfoBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Bio\InfoBundle\Entity\Base;
 use Symfony\Component\Form\FormBuilder;
+use Doctrine\Common\Collections\ArrayCollection;
 
 
 /**
@@ -65,6 +66,15 @@ class Person extends Base
      * @ORM\Column(name="title", type="string", length=255)
      */
     private $title;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Hours", mappedBy="person", cascade={"remove"})
+     */
+    private $hours;
+
+    public function __construct() {
+        $this->products = new ArrayCollection();
+    }
 
 
     /**
@@ -241,5 +251,38 @@ class Person extends Base
             ->setTitle($entity->getTitle());
 
         return $this;
+    }
+
+    /**
+     * Add hours
+     *
+     * @param \Bio\InfoBundle\Entity\Hours $hours
+     * @return Person
+     */
+    public function addHour(\Bio\InfoBundle\Entity\Hours $hours)
+    {
+        $this->hours[] = $hours;
+    
+        return $this;
+    }
+
+    /**
+     * Remove hours
+     *
+     * @param \Bio\InfoBundle\Entity\Hours $hours
+     */
+    public function removeHour(\Bio\InfoBundle\Entity\Hours $hours)
+    {
+        $this->hours->removeElement($hours);
+    }
+
+    /**
+     * Get hours
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getHours()
+    {
+        return $this->hours;
     }
 }

@@ -1,0 +1,48 @@
+{% extends 'BioInfoBundle:Course:base.html.twig' %}
+
+{% block content %}
+	{{ form(form) }}
+
+	<table border="1px" style="text-align:center;">
+		<tr>
+			<th>Person</th>
+			<th>Days</th>
+			<th>Start</th>
+			<th>End</th>
+			<th>Edit</th>
+			<th>Delete</th>
+		</tr>
+		{% for person in hourss %}
+			{% if person.hours|length != 0 %}
+			<tr>
+				<td rowspan={{person.hours|length}}>{{person.fName}} {{person.lName}}</td>
+				{% if (person.hours|first).byAppointment %}
+					<td colspan=3 style="text-align:center;">By Appointment</td>
+				{% else %}
+					<td style="text-align:center;">{{(person.hours|first).days}}</td>
+					<td>{{(person.hours|first).start|date('h:m')}}</td>
+					<td>{{(person.hours|first).end|date('h:m')}}</td>
+				{% endif %}
+				<td style="text-align:center;"><a href="{{ path('edit', {'entityName' : 'hours'}) }}?id={{ (person.hours|first).id}}">edit</a></td>
+				<td><a href="{{ path('delete', {'entityName' : 'hours'}) }}?id={{ (person.hours|first).id }}">delete</a></td>
+			</tr>
+			{% for hour in person.hours %}
+				{% if not loop.first %}
+					<tr>
+						{% if hour.byAppointment %}
+							<td colspan=3>By Appointment</td>
+						{% else %}
+							<td>{{ hour.days }}</td>
+							<td style="text-align:center;">{{ hour.start|date('h:m') }}</td>
+							<td>{{ hour.end|date('h:m') }}</td>
+						{% endif %}
+						<td style="text-align:center"><a href="{{ path('edit', {'entityName' : 'hours'}) }}?id={{ hour.id}}">edit</td>
+						<td><a href="{{ path('delete', {'entityName' : 'hours'}) }}?id={{ hour.id }}">delete</a></td>
+					</tr>
+				{% endif %}
+			{% endfor %}
+			</tr>
+			{% endif %}
+		{% endfor %}
+	</table>
+{% endblock %}

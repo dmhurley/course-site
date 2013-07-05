@@ -25,13 +25,10 @@ class DefaultController extends Controller
 		} else if ( $route == 'register_clicker' || $route == 'download_list' ||
 					$route == 'clear_list') {
 				$expanded = 'Clickers';
-		} else if ( $route == 'edit_info' || $route == "view" || $route == "delete" || $route == 'edit') {
+		} else if ( $route == 'edit_info' || $route == "view" || $route == "delete" || $route == 'edit' ||
+					$route == 'edit_hours') {
 			$expanded = 'Course Info';
 		}
-
-		// $yaml = new Dumper();
-		// echo $yaml->dump($options1);
-
 
 		return array('expanded' => $expanded, 'options' => $options);
 	}
