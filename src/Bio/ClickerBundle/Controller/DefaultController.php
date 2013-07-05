@@ -10,6 +10,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 use Bio\ClickerBundle\Entity\Clicker;
 use Bio\StudentBundle\Entity\Student;
+use Bio\DataBundle\Objects\Database;
+use Bio\DataBundle\Exception\BioException;
 
 /**
  * @Route("/clicker")
@@ -34,27 +36,24 @@ class DefaultController extends Controller {
     		$form->handleRequest($request);
     		
     		if ($form->isValid()){
-
-	    		$em = $this->getDoctrine()->getManager();
-	    		$studentRepo = $em->getRepository('BioStudentBundle:Student');
-	    		$student = $studentRepo->findOneBy(array('sid' => $form->get('sid')->getData(), 'lName' => $form->get('lName')->getData()));
-
+                $db = new Database($this, 'BioStudentBundle:Student');
+                $student = $db->findOne(array('sid' => $form->get('sid')->getData(), 'lName' => $form->get('lName')->getData()));
+	    		
 	    		if ($student) {		// if student exists
-					$clickerRepo = $em->getRepository('BioClickerBundle:Clicker');
-					$clicker = $clickerRepo->findOneBy(array('sid' => $student->getSid()));
-					if (!$clicker){
-						$clicker = new Clicker();
-						$em->persist($clicker);
-						$request->getSession()->getFlashBag()->set('success', "Clicker ID #".$form->get('cid')->getData()." registered.");
-					} else { 
-						$request->getSession()->getFlashBag()->set('success', "Clicker ID changed to #".$form->get('cid')->getData());
-					}
+					$clickerDb = new Database($this, 'BioClickerBundle:Clicker');
+                    $clicker = $clickerDb->findOne(array('sid' => $student->getSid()));
+                    $request->getSession()->getFlashBag()->set('success', "Clicker ID changed to #".$form->get('cid')->getData());
+                    if (!$clicker) {
+                        $clicker = new Clicker();
+                        $clickerDb->add($clicker);
+                        $request->getSession()->getFlashBag()->set('success', "Clicker ID #".$form->get('cid')->getData()." registered.");
+                    }
 					$clicker->setCid($form->get('cid')->getData());
 					$clicker->setSid($student->getSid());
 
 					try {
-						$em->flush();
-					} catch (\Doctrine\DBAL\DBALException $e) {
+						$db->close();
+					} catch (BioException $e) {
 						$request->getSession()->getFlashBag()->set('failure', "Someone else is already registered to that clicker.");
 						$request->getSession()->getFlashBag()->get('success');
 					}
@@ -77,12 +76,11 @@ class DefaultController extends Controller {
     public function downloadAction(Request $request) {
     	$this->update();
     	$tring = "Last Name\tFirst Name\tclicker ID\tStudent ID\n";
-    	$clickerRepo = $this->getDoctrine()->getRepository('BioClickerBundle:Clicker');
-    	$studentRepo = $this->getDoctrine()->getRepository('BioStudentBundle:Student');
-
-    	$clickers = $clickerRepo->findBy(array());
+        $clickerDb = new Database($this, 'BioClickerBundle:Clicker');
+        $studentDb = new Database($this, 'BioStudentBundle:Student');
+    	$clickers = $clickerDb->find(array(), array(), false);
     	foreach ($clickers as $clicker) {
-    		$student = $studentRepo->findOneBySid($clicker->getSid());
+    		$student = $studentDb->findOne(array('sid' => $clicker->getSid()));
     		$tring.= $student->getLName()."\t";
     		$tring.= $student->getFName()."\t";
     		$tring.= $clicker->getCid()."\t";
@@ -111,9 +109,8 @@ class DefaultController extends Controller {
     		$form->handleRequest($request);
 
     		if ($form->isValid()) {
-    			$connection = $this->getDoctrine()->getManager()->getConnection();
-		        $platform = $connection->getDatabasePlatform();
-		        $connection->executeUpdate($platform->getTruncateTableSQL('Clicker', true));
+    			$db = new Database($this, 'BioClickerBundle:Clicker');
+                $db->truncate();
 
 		        $request->getSession()->getFlashBag()->set('success', 'All clicker registrations cleared.');
     		}
