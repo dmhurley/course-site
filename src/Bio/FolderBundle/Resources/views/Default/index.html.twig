@@ -1,5 +1,25 @@
 {% extends 'BioStyleBundle:Default:main.html.twig' %}
 
+{% block head %}
+	{{ parent() }}
+
+	{% stylesheets 'bundles/biofolder/css/folder.css'
+				   'bundles/biostudent/css/form.css' filter="cssrewrite" output="css/*.css" %}
+		<link rel="stylesheet" href="{{ asset_url }}" />
+	{% endstylesheets %}
+{% endblock %}
+
 {% block content %}
+<ul>
+	{{ render(controller('BioFolderBundle:Default:structure', {'root' : root, 'selected' : selected})) }}
+</ul>
+<div id="folder">
+	<h2>Add Folder</h2>
+	{{ form(folderForm) }}
+</div>
+<div id="file">
+	<h2>Add File</h2>
+	{{ form(fileForm) }}
+</div>
 
 {% endblock %}

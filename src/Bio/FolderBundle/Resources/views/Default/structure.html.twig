@@ -1,0 +1,37 @@
+{% if root.children is defined %}
+	{% set type = 'folder' %}
+{% else %}
+	{% set type = 'file' %}
+{% endif %}
+
+{% if root.children is defined and root.children|length == 0 %}
+	{% set full = 'empty' %}
+{% else %}
+	{% set full = '' %}
+{% endif %}
+
+{% if root.id is defined and root.id == selected %}
+	{% set id = 'selected' %}
+{% else %}
+	{% set id = '' %}
+{% endif %}
+
+<li class="{{type}} {{full}}" id="{{id}}">
+
+<a href="{{ path('view_folders', {'id' : root.id}) }}">
+	{{ root.name }}
+</a>
+{% if root.name != 'root' %}
+<span>
+	<a href="{{ path('delete_folder')}}?id={{root.id}}&type={{type}}">delete</a>
+</span>
+{% endif %}
+</li>
+
+
+
+<ul>
+	{% for child in root.children %}
+		{{ render(controller('BioFolderBundle:Default:structure', {'root' : child, 'selected' : selected})) }}
+	{% endfor %}
+</ul>
