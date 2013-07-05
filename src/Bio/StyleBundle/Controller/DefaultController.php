@@ -6,35 +6,29 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
+use Symfony\Component\Yaml\Parser;
+use Symfony\Component\Yaml\Dumper;
+
 class DefaultController extends Controller
 {
 	/**
 	 * @Template()
 	 */
 	public function sidebarAction($route) {
-		$options = array();
-		$options['students'] = array();
-			$options['students']['students'] = 'display_students';
-			$options['students']['display'] = 'display_students';
-			$options['students']['find'] = 'find_student';
-			$options['students']['add'] = 'add_student';
-			$options['students']['upload'] = 'upload_student';
-
-		$options['clickers'] = array();
-			$options['clickers']['clickers'] = 'register_clicker';
-			$options['clickers']['register'] = 'register_clicker';
-			$options['clickers']['download'] = 'download_list';
-			$options['clickers']['clear'] = 'clear_list';
+		$yaml = new Parser();
+		$options = $yaml->parse(file_get_contents('bundles/biostyle/sidebar.yml'));
 
 		if ($route == 'display_students' || $route == 'find_student' || 
 			$route == 'edit_student' || $route == 'add_student' || 
 			$route == 'upload_student') {
-				$top = 'students';
+				$expanded = 'Students';
 		} else if ( $route == 'register_clicker' || $route == 'download_list' ||
 					$route == 'clear_list') {
-				$top = 'clickers';
+				$expanded = 'Clickers';
+		} else if ( $route == 'edit_info' || $route == "view" || $route == 'edit') {
+			$expanded = 'Course Info';
 		}
 
-		return array('top' => $top, 'options' => $options);
+		return array('expanded' => $expanded, 'options' => $options);
 	}
 }

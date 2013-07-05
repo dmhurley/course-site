@@ -20,12 +20,39 @@ to install Composer, and:
 
 to install the various vender Bundles this project uses.
 
+You will be prompted to input various database options and it will fail after it is
+done. To fix this edit app/parameters.yml and add
+
+		database_socket: path/to/database.sock
+
+If you do not need this to specify the database socket. Remove the line
+
+		unix_socket: %database_socket%
+
+from the app/config.yml file.
+
 Before you try running this project, make sure your system is properly configured
 by running this command from project directory
 
 		php app/check.php
+		
+Then run
+
+		php app/console assets:install --symlink
+
+		php app/console doctrine:schema:create
+
+to install the public resources for assetic and to initialize the database respectively.
 
 2) Bundles
 ------------------------------
 
-We're working on it...
+* Student Bundle
+    + Allows adding, deleting, and editing students. Along with uploading lists in the .csv format.
+* Style Bundle
+    + Responsible for the look and feel of the site.
+    + All other bundles extend it's main.html.twig view.
+* Clicker Bundle
+    + Allows the registration of clickers. Along with downloading a list of registered clickers and clearing all registrations.
+* Info Bundle
+    + working on it....

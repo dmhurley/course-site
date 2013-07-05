@@ -12,3 +12,8 @@ bio_style:
         resource: "@BioStyleBundle/Controller/"
         type:     annotation
         prefix:   /
+
+bio_info:
+    resource: "@BioInfoBundle/Controller/"
+    type:     annotation
+    prefix:   /

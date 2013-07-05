@@ -1,0 +1,58 @@
+"Course Info":
+  "Course Info":
+    route: edit_info
+    vars: ~
+  "Edit Info":
+    route: edit_info
+    vars: ~
+  "Announcements":
+    route: view
+    vars:
+      entityName: announcement
+  "Links":
+    route: view
+    vars:
+      entityName: link
+  "Instructors":
+    route: view
+    vars:
+      entityName: person
+  "Hours":
+    route: view
+    vars:
+      entityName: hours
+  "Sections":
+    route: view
+    vars:
+      entityName: section
+
+"Students":
+  "Students":
+    route: display_students
+    vars: ~
+  "Display":
+    route: display_students
+    vars: ~
+  "Find":
+    route: find_student
+    vars: ~
+  "Add":
+    route: add_student
+    vars: ~
+  "Upload":
+    route: upload_student
+    vars: ~
+
+"Clickers":
+  "Clickers":
+    route: register_clicker
+    vars: ~
+  "Register":
+    route: register_clicker
+    vars: ~
+  "Download":
+    route: download_list
+    vars: ~
+  "Clear":
+    route: clear_list
+    vars: ~

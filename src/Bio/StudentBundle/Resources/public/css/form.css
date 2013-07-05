@@ -50,7 +50,22 @@
 	height: 25px;
 }
 
+#content table tr td {
+	padding: 4px;
+}
+
 #content table a {
 	font-weight: bolder;
 	text-decoration: none; 
+}
+
+#form ul {
+	float:right;
+	margin-right: 275px;
+	color:red;
+	font-weight:bolder;
+}
+
+button {
+	padding: 3px;
 }
