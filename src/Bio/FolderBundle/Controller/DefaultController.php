@@ -75,7 +75,7 @@ class DefaultController extends Controller
     		if($entity) {
     			$db->delete($entity);
     			$db->close();
-    			$request->getSession()->getFlashBag()->set('success', $type.' deleted.');
+    			$request->getSession()->getFlashBag()->set('success', $type.' "'.$entity->getName().'" deleted.');
     		} else {
     			$request->getSession()->getFlashBag()->set('failure', "Could not find that ".$type);
     		}
@@ -88,26 +88,30 @@ class DefaultController extends Controller
      * @Route("/addfolder", name="add_folder")
      */
     public function addFolderAction(Request $request) {
+        $folder = new Folder();
     	if ($request->getMethod() === "POST"){
-	    	$form = $this->createFormBuilder()
-	    		->setAction($this->generateUrl('add_folder'))
+	    	$form = $this->createFormBuilder($folder)
 	    		->add('name', 'text')
-	    		->add('add', 'submit')
 	    		->add('id', 'hidden', array('mapped' => false))
 	    		->getForm();
 
 	    	$form->handleRequest($request);
 
 	    	$db = new Database($this, 'BioFolderBundle:Folder');
-
-	    	$folder = new Folder();
-	    	$folder->setName($form->get('name')->getData());
-
 	    	$parent = $db->findOne(array('id' => $form->get('id')->getData()));
-	   		$folder->setParent($parent);
-	    	$parent->addFolder($folder);
-	    	$db->add($folder);
-	    	$db->close();
+            if (!$parent) {
+                $request->getSession()->getFlashBag()->set('failure', "Parent folder could not be found.");
+            } else {
+    	   		$folder->setParent($parent);
+    	    	$parent->addFolder($folder);
+    	    	$db->add($folder);
+                try {
+    	    	  $db->close();
+                  $request->getSession()->getFlashBag()->set('success', "Folder \"".$folder->getName()."\" added.");
+                } catch (BioException $e) {
+                    $request->getSession()->getFlashBag()->set('failure', "Folder could not be added.");
+                }
+            }
 	    }
 
 	    return $this->redirect($this->generateUrl('view_folders').'?id='.$form->get('id')->getData());
@@ -119,6 +123,7 @@ class DefaultController extends Controller
     public function addFileAction(Request $request) {
     	if ($request->getMethod() === "POST"){
             $file = new File();
+
 	    	$form = $this->createFormBuilder($file)
     		->add('file', 'file')
     		->add('name', 'text')
@@ -130,10 +135,19 @@ class DefaultController extends Controller
             $db = new Database($this, 'BioFolderBundle:Folder');
 
             $parent = $db->findOne(array('id' => $form->get('id')->getData()));
-            $parent->addFile($file);
-            $file->setParent($parent);
-            $db->add($file);
-            $db->close();
+            if (!$parent) {
+                 $request->getSession()->getFlashBag()->set('failure', "Parent folder could not be found.");
+            } else {
+                $parent->addFile($file);
+                $file->setParent($parent);
+                $db->add($file);
+                try {
+                    $db->close();
+                    $request->getSession()->getFlashBag()->set('success', "File \"".$file->getPath()."\" uploaded.");
+                } catch (BioException $e) {
+                     $request->getSession()->getFlashBag()->set('failure', "File could not be uploaded.");
+                }
+            }
             
 	    }
 
