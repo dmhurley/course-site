@@ -23,7 +23,7 @@
 		{{ root.name }}
 	</a>
 {% else %}
-	<a href="{{ root.getWebPath() }}"> {{root.name}} </a>
+	<a href="{{ path('download', {'filename' : root.path}) }}"> {{root.name}} </a>
 {% endif %}
 
 {% if root.name != 'root' %}
