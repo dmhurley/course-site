@@ -29,12 +29,12 @@ class Folder
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="Folder", mappedBy="parent", cascade={"remove", "persist", "refresh"}, fetch="EAGER")
+     * @ORM\OneToMany(targetEntity="Folder", mappedBy="parent", cascade={"remove", "persist", "refresh"}, fetch="LAZY")
      */
     private $folders;
 
     /**
-     * @ORM\OneToMany(targetEntity="File", mappedBy="parent", cascade={"remove", "persist", "refresh"}, fetch="EAGER")
+     * @ORM\OneToMany(targetEntity="File", mappedBy="parent", cascade={"remove", "persist", "refresh"}, fetch="LAZY")
      */
     private $files;
 
@@ -53,6 +53,12 @@ class Folder
     public function getId()
     {
         return $this->id;
+    }
+
+    public function setId($id) {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**

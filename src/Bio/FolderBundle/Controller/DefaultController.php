@@ -32,9 +32,7 @@ class DefaultController extends Controller
     	}
     	$db = new Database($this, 'BioFolderBundle:Folder');
 
-
     	$root = $db->findOne(array('id' => 1));
-    	$selectedFolder = $db->findOne(array('id'=> $selected));
 
     	$form = $this->createFormBuilder()
     		->setAction($this->generateUrl('add_folder'))
@@ -145,5 +143,33 @@ class DefaultController extends Controller
 	    }
 
 	    return $this->redirect($this->generateUrl('view_folders').'?id='.$form->get('id')->getData());
+    }
+
+    /**
+     * @Route("/clearall", name="clear_folders")
+     * @Template()
+     */
+    public function clearAction(Request $request) {
+        $form = $this->createFormBuilder()
+            ->add('confirmation', 'checkbox')
+            ->add('clear', 'submit', array('label' => 'Delete Folders'))
+            ->getForm();
+
+        if ($request->getMethod() === "POST") {
+            $form->handleRequest($request);
+
+            if ($form->isValid()) {
+                $db = new Database($this, 'BioFolderBundle:Folder');
+                $root = $db->findOne(array('id' => 1));
+                $db->deleteMany($root->getFolders()->toArray());
+                $db->deleteMany($root->getFiles()->toArray());
+                $db->close();
+                $request->getSession()->getFlashBag()->set('success', 'All folders deleted.');
+
+                return $this->redirect($this->generateUrl('view_folders'));
+            }
+        }
+
+        return array('form' => $form->createView(), 'title' => 'Delete All Folders');
     }
 }

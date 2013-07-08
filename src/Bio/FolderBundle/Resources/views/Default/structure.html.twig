@@ -30,6 +30,10 @@
 <span>
 	<a href="{{ path('delete_folder')}}?id={{root.id}}&type={{type}}">delete</a>
 </span>
+{% else %}
+<span>
+	<a href="{{ path('clear_folders') }}">empty</a>
+</span>
 {% endif %}
 </li>
 
