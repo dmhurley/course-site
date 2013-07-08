@@ -19,7 +19,7 @@ use Bio\DataBundle\Exception\BioException;
  * @Route("/{entityName}")
  */
 class DefaultController extends Controller
-{ // starting letter has to be higher than D
+{ // starting letter has to be higher than C
 	/**
      * @Route("/", name="view")
      */
@@ -29,6 +29,10 @@ class DefaultController extends Controller
         $type = 'Bio\InfoBundle\Entity\\'.$uc;
 
         $entity = new $type;
+        if ($lc === 'announcement') {
+            $entity->setTimestamp(new \DateTime());
+            $entity->setExpiration((new \DateTime())->modify('+1 week'));
+        }
         $form = $entity->addToForm($this->createFormBuilder($entity))            
             ->add('add', 'submit')
             ->getForm();
