@@ -1,16 +1,16 @@
-{% if root.children is defined %}
+{% if root.folders is defined %}
 	{% set type = 'folder' %}
 {% else %}
 	{% set type = 'file' %}
 {% endif %}
 
-{% if root.children is defined and root.children|length == 0 %}
+{% if root.folders is defined and root.folders|length == 0  and root.files|length == 0 %}
 	{% set full = 'empty' %}
 {% else %}
 	{% set full = '' %}
 {% endif %}
 
-{% if root.id is defined and root.id == selected %}
+{% if root.folders is defined and root.id == selected %}
 	{% set id = 'selected' %}
 {% else %}
 	{% set id = '' %}
@@ -18,9 +18,14 @@
 
 <li class="{{type}} {{full}}" id="{{id}}">
 
-<a href="{{ path('view_folders', {'id' : root.id}) }}">
-	{{ root.name }}
-</a>
+{% if root.folders is defined %}
+	<a href="{{ path('view_folders', {'id' : root.id}) }}">
+		{{ root.name }}
+	</a>
+{% else %}
+	<a href="{{ root.getWebPath() }}"> {{root.name}} </a>
+{% endif %}
+
 {% if root.name != 'root' %}
 <span>
 	<a href="{{ path('delete_folder')}}?id={{root.id}}&type={{type}}">delete</a>
@@ -29,9 +34,14 @@
 </li>
 
 
+{% if root.folders is defined %}
+	<ul>
+		{% for folder in root.folders %}
+			{{ render(controller('BioFolderBundle:Default:structure', {'root' : folder, 'selected' : selected})) }}
+		{% endfor %}
 
-<ul>
-	{% for child in root.children %}
-		{{ render(controller('BioFolderBundle:Default:structure', {'root' : child, 'selected' : selected})) }}
-	{% endfor %}
-</ul>
+		{% for file in root.files %}
+			{{ render(controller('BioFolderBundle:Default:structure', {'root' : file, 'selected' : selected})) }}
+		{% endfor %}
+	</ul>
+{% endif %}

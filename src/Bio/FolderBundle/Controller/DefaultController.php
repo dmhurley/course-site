@@ -105,7 +105,7 @@ class DefaultController extends Controller
 
 	    	$parent = $db->findOne(array('id' => $form->get('id')->getData()));
 	   		$folder->setParent($parent);
-	    	$parent->addChildren($folder);
+	    	$parent->addFolder($folder);
 	    	$db->add($folder);
 	    	$db->close();
 	    }
@@ -118,8 +118,8 @@ class DefaultController extends Controller
      */
     public function addFileAction(Request $request) {
     	if ($request->getMethod() === "POST"){
-	    	$form = $this->createFormBuilder()
-    		->setAction($this->generateUrl('add_file'))
+            $file = new File();
+	    	$form = $this->createFormBuilder($file)
     		->add('file', 'file')
     		->add('name', 'text')
     		->add('id', 'hidden', array('mapped' => false))
@@ -127,18 +127,14 @@ class DefaultController extends Controller
 
 	    	$form->handleRequest($request);
 
-	    	$db = new Database($this, 'BioFolderBundle:Folder');
+            $db = new Database($this, 'BioFolderBundle:Folder');
 
-	    	$file = new File();
-	    	$file->setName($form->get('name')->getData());
-
-	    	$data = $form->get('file')->getData();
-	    	$file->setPath($data);
-	    	$parent = $db->findOne(array('id' => $form->get('id')->getData()));
-	   		$file->setParent($parent);
-	    	$parent->addChildren($file);
-	    	$db->add($file);
-	    	$db->close();
+            $parent = $db->findOne(array('id' => $form->get('id')->getData()));
+            $parent->addFile($file);
+            $file->setParent($parent);
+            $db->add($file);
+            $db->close();
+            
 	    }
 
 	    return $this->redirect($this->generateUrl('view_folders').'?id='.$form->get('id')->getData());

@@ -30,9 +30,13 @@ class Folder
 
     /**
      * @ORM\OneToMany(targetEntity="Folder", mappedBy="parent", cascade={"remove", "persist", "refresh"}, fetch="EAGER")
+     */
+    private $folders;
+
+    /**
      * @ORM\OneToMany(targetEntity="File", mappedBy="parent", cascade={"remove", "persist", "refresh"}, fetch="EAGER")
      */
-    private $children;
+    private $files;
 
     /**
      * @ORM\ManyToOne(targetEntity="Folder", inversedBy="children")
@@ -78,40 +82,8 @@ class Folder
      */
     public function __construct()
     {
-        $this->children = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-    
-    /**
-     * Add children
-     *
-     * @param \Bio\FolderBundle\Entity\Folder $children
-     * @return Folder
-     */
-    public function addChildren(\Bio\FolderBundle\Entity\Folder $children)
-    {
-        $this->children[] = $children;
-    
-        return $this;
-    }
-
-    /**
-     * Remove children
-     *
-     * @param \Bio\FolderBundle\Entity\Folder $children
-     */
-    public function removeChildren(\Bio\FolderBundle\Entity\Folder $children)
-    {
-        $this->children->removeElement($children);
-    }
-
-    /**
-     * Get children
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getChildren()
-    {
-        return $this->children;
+        $this->folders = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->files = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -135,5 +107,71 @@ class Folder
     public function getParent()
     {
         return $this->parent;
+    }
+
+    /**
+     * Add folders
+     *
+     * @param \Bio\FolderBundle\Entity\Folder $folders
+     * @return Folder
+     */
+    public function addFolder(\Bio\FolderBundle\Entity\Folder $folders)
+    {
+        $this->folders[] = $folders;
+    
+        return $this;
+    }
+
+    /**
+     * Remove folders
+     *
+     * @param \Bio\FolderBundle\Entity\Folder $folders
+     */
+    public function removeFolder(\Bio\FolderBundle\Entity\Folder $folders)
+    {
+        $this->folders->removeElement($folders);
+    }
+
+    /**
+     * Get folders
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getFolders()
+    {
+        return $this->folders;
+    }
+
+    /**
+     * Add files
+     *
+     * @param \Bio\FolderBundle\Entity\File $files
+     * @return Folder
+     */
+    public function addFile(\Bio\FolderBundle\Entity\File $files)
+    {
+        $this->files[] = $files;
+    
+        return $this;
+    }
+
+    /**
+     * Remove files
+     *
+     * @param \Bio\FolderBundle\Entity\File $files
+     */
+    public function removeFile(\Bio\FolderBundle\Entity\File $files)
+    {
+        $this->files->removeElement($files);
+    }
+
+    /**
+     * Get files
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getFiles()
+    {
+        return $this->files;
     }
 }

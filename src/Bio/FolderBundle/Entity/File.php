@@ -3,12 +3,14 @@
 namespace Bio\FolderBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * File
  *
  * @ORM\Table()
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  */
 class File
 {
@@ -41,6 +43,9 @@ class File
      */
     private $parent;
 
+    // are not persisted!
+    private $file;
+    private $temp;
 
     /**
      * Get id
@@ -119,5 +124,65 @@ class File
     public function getParent()
     {
         return $this->parent;
+    }
+
+    /**
+     * Sets file.
+     *
+     * @param UploadedFile $file
+     */
+    public function setFile(UploadedFile $file = null)
+    {   
+        $this->file = $file;
+    }
+
+    /**
+     * Get file.
+     *
+     * @return UploadedFile
+     */
+    public function getFile()
+    {
+        return $this->file;
+    }
+
+    public function getAbsolutePath() {
+        return $this->getUploadRootDirectory().'/'.$this->path;
+    }
+
+    public function getWebPath() {
+        return $this->getUploadDirectory().'/'.$this->path;
+    }
+
+    private function getUploadRootDirectory() {
+        return __DIR__.'/../../../../web/'.$this->getUploadDirectory();
+    }
+
+    private function getUploadDirectory() {
+        return 'files';
+    }
+
+    /**
+     * @ORM\PrePersist()
+     * @ORM\PreUpdate()
+     */
+    public function preUpload() {
+        if (null !== $this->getFile()) {
+            $this->path = $this->name.'.'.$this->getFile()->getClientOriginalExtension();
+        }
+    }
+
+    /**
+     * @ORM\PostPersist()
+     * @ORM\PostUpdate()
+     */
+    public function upload() {
+        if (null === $this->getFile()) {
+            return;
+        }
+
+        // moves file to app/files directory
+        $this->getFile()->move($this->getUploadRootDirectory(), $this->path);
+        $this->file = null;
     }
 }
