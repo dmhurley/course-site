@@ -38,7 +38,7 @@ class File
     private $path;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Folder", inversedBy="children")
+     * @ORM\ManyToOne(targetEntity="Folder", inversedBy="files")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      */
     private $parent;

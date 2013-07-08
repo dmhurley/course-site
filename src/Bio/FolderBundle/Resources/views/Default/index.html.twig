@@ -11,7 +11,7 @@
 
 {% block content %}
 <ul>
-	{{ render(controller('BioFolderBundle:Default:structure', {'root' : root, 'selected' : selected})) }}
+	{% include 'BioFolderBundle:Default:structure.html.twig' with {'root' : root, 'selected' : selected} %}
 </ul>
 <div id="folder">
 	<h2>Add Folder</h2>

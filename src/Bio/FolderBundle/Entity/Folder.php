@@ -39,7 +39,7 @@ class Folder
     private $files;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Folder", inversedBy="children")
+     * @ORM\ManyToOne(targetEntity="Folder", inversedBy="folders")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      */
     private $parent;

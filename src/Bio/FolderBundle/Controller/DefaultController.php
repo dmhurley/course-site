@@ -55,13 +55,6 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Template()
-     */
-    public function structureAction($root, $selected) {
-    	return array('root' => $root, 'selected' => $selected);
-    }
-
-    /**
      * @Route("/delete", name="delete_folder")
      */
     public function deleteAction(Request $request) {

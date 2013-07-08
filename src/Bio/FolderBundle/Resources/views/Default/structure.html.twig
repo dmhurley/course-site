@@ -37,11 +37,11 @@
 {% if root.folders is defined %}
 	<ul>
 		{% for folder in root.folders %}
-			{{ render(controller('BioFolderBundle:Default:structure', {'root' : folder, 'selected' : selected})) }}
+			{% include 'BioFolderBundle:Default:structure.html.twig' with {'root' : folder, 'selected' : selected} %}
 		{% endfor %}
 
 		{% for file in root.files %}
-			{{ render(controller('BioFolderBundle:Default:structure', {'root' : file, 'selected' : selected})) }}
+			{% include 'BioFolderBundle:Default:structure.html.twig' with {'root' : file , 'selected' : selected } %}
 		{% endfor %}
 	</ul>
 {% endif %}
