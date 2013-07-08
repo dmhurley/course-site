@@ -17,7 +17,7 @@
 				<td>{{link.title}}</td>
 				<td><a href="{{link.address}}">{{link.address}}</a></td>
 				<td><a href="{{ path('edit', {'entityName' : 'link'}) }}?id={{ link.id}}">edit</a></td>
-				<td><a href="{{ path('delete') }}?id={{ link.id }}">delete</a></td>
+				<td><a href="{{ path('delete', {'entityName' : 'link'}) }}?id={{ link.id }}">delete</a></td>
 			</tr>
 		{% endfor %}
 	</table>

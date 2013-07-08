@@ -1,0 +1,51 @@
+{% if root.folders is defined %}
+	{% set type = 'folder' %}
+{% else %}
+	{% set type = 'file' %}
+{% endif %}
+
+{% if root.folders is defined and root.folders|length == 0  and root.files|length == 0 %}
+	{% set full = 'empty' %}
+{% else %}
+	{% set full = '' %}
+{% endif %}
+
+{% if root.folders is defined and root.id == selected %}
+	{% set id = 'selected' %}
+{% else %}
+	{% set id = '' %}
+{% endif %}
+
+<li class="{{type}} {{full}}" id="{{id}}">
+
+{% if root.folders is defined %}
+	<a href="{{ path('view_folders', {'id' : root.id}) }}">
+		{{ root.name }}
+	</a>
+{% else %}
+	<a href="{{ path('download', {'filename' : root.path}) }}"> {{root.name}} </a>
+{% endif %}
+
+{% if root.name != 'root' %}
+<span>
+	<a href="{{ path('delete_folder')}}?id={{root.id}}&type={{type}}">delete</a>
+</span>
+{% else %}
+<span>
+	<a href="{{ path('clear_folders') }}">empty</a>
+</span>
+{% endif %}
+</li>
+
+
+{% if root.folders is defined %}
+	<ul>
+		{% for folder in root.folders %}
+			{% include 'BioFolderBundle:Default:structure.html.twig' with {'root' : folder, 'selected' : selected} %}
+		{% endfor %}
+
+		{% for file in root.files %}
+			{% include 'BioFolderBundle:Default:structure.html.twig' with {'root' : file , 'selected' : selected } %}
+		{% endfor %}
+	</ul>
+{% endif %}

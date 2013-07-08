@@ -27,6 +27,8 @@ class DefaultController extends Controller
 				$expanded = 'Clickers';
 		} else if ( $route == 'edit_info' || $route == "view" || $route == 'edit') {
 			$expanded = 'Course Info';
+		} else if ($route == 'view_folders' || $route == 'clear_folders') {
+			$expanded = 'Folders';
 		}
 
 		return array('expanded' => $expanded, 'options' => $options);

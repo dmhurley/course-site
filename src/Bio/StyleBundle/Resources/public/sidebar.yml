@@ -56,3 +56,8 @@
   "Clear":
     route: clear_list
     vars: ~
+
+"Folders":
+  "Folders":
+    route: view_folders
+    vars: ~
