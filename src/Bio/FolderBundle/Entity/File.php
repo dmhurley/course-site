@@ -168,7 +168,9 @@ class File
      */
     public function preUpload() {
         if (null !== $this->getFile()) {
-            $this->path = $this->name.'.'.$this->getFile()->getClientOriginalExtension();
+            $extension = $this->getFile()->getClientOriginalExtension();
+            $extension = $extension === '' ? '' : '.'.$extension;
+            $this->path = preg_replace('/[ \t]/', '_', $this->name).$extension;
         }
     }
 
@@ -184,5 +186,14 @@ class File
         // moves file to app/files directory
         $this->getFile()->move($this->getUploadRootDirectory(), $this->path);
         $this->file = null;
+    }
+
+    /**
+     * @ORM\PostRemove()
+     */
+    public function removeUpload() {
+        if ($file = $this->getAbsolutePath()) {
+            unlink($file);
+        }
     }
 }
