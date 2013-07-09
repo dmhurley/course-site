@@ -14,7 +14,7 @@ use Bio\FolderBundle\Entity\Folder;
 use Bio\FolderBundle\Entity\File;
 
 	/**
-     * @Route("/folders")
+     * @Route("/admin/folders")
      * @Template()
      */
 class DefaultController extends Controller

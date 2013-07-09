@@ -1,25 +1,65 @@
-<div class="content">
-	<ul class="trunk">
-		{% for key,value in options %}
-			{% if key != expanded %}
-				<li class="branch"><a href="{{ path(options[key][key]['route']) }}">{{key|capitalize}}</a></li>
-			{% else %}
-				<li class="branch top">
-					<a href="{{ path(options[expanded][expanded]['route']) }}">{{expanded}}</a>
+{% if role == 'admin' %}
+	<div class="content">
+		<ul class="trunk">
+			{% for key,value in options %}
+				{% if key != expanded %}
+					<li class="branch"><a href="{{ path(options[key][key]['route']) }}">{{key|capitalize}}</a></li>
+				{% else %}
+					<li class="branch top">
+						<a href="{{ path(options[expanded][expanded]['route']) }}">{{expanded}}</a>
 
-					<ul class="twig">
-						{% for key1,value1 in options[key] %}
-							{% if key1 != expanded %}
-								{% if value1['vars'] %}
-									<li class="leaf"><a href="{{ path(value1['route'], value1['vars']) }}">{{ key1}}</a></li>
-								{% else %}
-									<li class="leaf"><a href="{{ path(value1['route']) }}">{{ key1}}</a></li>
+						<ul class="twig">
+							{% for key1,value1 in options[key] %}
+								{% if key1 != expanded %}
+									{% if value1['vars'] %}
+										<li class="leaf"><a href="{{ path(value1['route'], value1['vars']) }}">{{ key1}}</a></li>
+									{% else %}
+										<li class="leaf"><a href="{{ path(value1['route']) }}">{{ key1}}</a></li>
+									{% endif %}
 								{% endif %}
-							{% endif %}
+							{% endfor %}
+						</ul>
+					</li>
+				{% endif %}
+			{% endfor %}
+		</ul>
+	</div>
+{% elseif role == 'user' %}
+	<div class="content">
+		<ul class="trunk">
+			<li class="branch"><a href="{{ path('main_page') }}">Home</a></li>
+			{% if root.folders|length > 0 %}
+				<li class="branch">
+					<a href="">Folders</a>
+					<ul class="twig">
+						{% for folder in root.folders %}
+							<li class="leaf"><a href="">{{folder.name}}</a></li>
 						{% endfor %}
 					</ul>
 				</li>
 			{% endif %}
-		{% endfor %}
-	</ul>
-</div>
+
+			{% if root.files|length > 0 %}
+				<li class="branch">
+					<a href="">Files</a>
+					<ul class="twig">
+						{% for file in root.files %}
+							<li class="leaf"><a href="">{{file.name}}</a></li>
+						{% endfor %}
+					</ul>
+				</li>
+			{% endif %}
+
+			{% if links|length > 0 %}
+				<li class="branch">
+					<a href="">Links</a>
+					<ul class="twig">
+						{% for link in links %}
+							<li class="leaf"><a href="">{{link.title}}</a></li>
+						{% endfor %}
+					</ul>
+				</li>
+			{% endif %}
+		</ul>
+	</div>
+{% endif %}
