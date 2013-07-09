@@ -16,7 +16,7 @@ use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 
 /**
- * @Route("/{entityName}")
+ * @Route("/admin/{entityName}")
  */
 class DefaultController extends Controller
 { // starting letter has to be higher than C

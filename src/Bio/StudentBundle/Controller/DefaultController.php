@@ -14,7 +14,7 @@ use Bio\DataBundle\Exception\BioException;
 use Bio\DataBundle\Objects\Database;
 
 /**
- * @Route("/student")
+ * @Route("/admin/student")
  */
 class DefaultController extends Controller
 {

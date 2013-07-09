@@ -29,6 +29,8 @@ class DefaultController extends Controller
 			$expanded = 'Course Info';
 		} else if ($route == 'view_folders' || $route == 'clear_folders') {
 			$expanded = 'Folders';
+		} else {
+			$expanded = '';
 		}
 
 		return array('expanded' => $expanded, 'options' => $options);

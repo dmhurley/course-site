@@ -14,7 +14,7 @@ use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 
 /**
- * @Route("/clicker")
+ * @Route("/admin/clicker")
  * @Template()
  */
 class DefaultController extends Controller {
