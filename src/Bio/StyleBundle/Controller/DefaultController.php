@@ -59,11 +59,4 @@ class DefaultController extends Controller
 
 		return array('entity' => $info);
 	}
-
-	/**
-	 * @Template()
-	 */
-	public function signAction() {
-
-	}
 }

@@ -1,1 +1,113 @@
 {% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block head %}
+	{{ parent() }}
+	{% stylesheets 'bundles/biopublic/css/public.css' filter="cssrewrite" output="css/*.css" %}
+		<link rel="stylesheet" href="{{ asset_url }}" />
+	{% endstylesheets %}
+{% endblock %}
+
+{% block content %}
+	<div class="column">
+		<div class="row">
+			<h2>Class Info</h2>
+			<ul>
+				<li>{{info.courseNumber}} - {{info.title}}</li>
+				<li>{{info.qtr|upper}} - {{info.year}}</li>
+				<li>{{info.days|join(', ')|upper}}</li>
+				<li>{{info.startTime|date('h:i')}} - {{info.endTime|date('h:i')}}</li>
+				<li>{{info.bldg}} - {{info.room}}</li>
+				<li><a href="mailto:{{info.email}}">{{info.email}}</a></li>
+			</ul>
+		</div>
+
+		<div class="row">
+			<h2>Announcements</h2>
+			{% for ann in anns %}
+				<ul>
+					<li>{{ann.timestamp|date('m/d/y h:i')}}</li>
+					<ul>
+						<li>{{ann.text}}</li>
+					</ul>
+				</ul>
+			{% endfor %}
+		</div>
+
+		<div class="row">
+			<h2>Links</h2>
+			<ul>
+				<ul>
+					{% for link in links %}
+						<li><a href="{{link.address}}">{{link.title}}</a></li>
+					{% endfor %}
+				</ul>
+			</ul>
+		</div>
+	</div>
+
+	<div class="column">
+		<div class="row">
+			<h2>Instructors</h2>
+			{% for inst in instructors %}
+				<ul>
+					<li>{{inst.fName}} {{inst.lName}}</li>
+					<ul>
+						<li>{{inst.bldg}} - {{inst.room}}</li>
+						<li><a href="mailto:{{inst.email}}">{{inst.email}}</a></li>
+						{% if inst.hours|length > 0 %}
+							<li>Hours</li>
+							<ul>
+								{% for hour in inst.hours %}
+									{% if not hour.byAppointment %}
+										<li>{{hour.days}} {{hour.start|date('h:i')}} - {{hour.end|date('h:i')}}</li>
+									{% else %}
+										<li>By Appointment</li>
+									{% endif %}
+								{% endfor %}
+							</ul>
+						{% endif %}
+					</ul>
+				</ul>
+			{% endfor %}
+		</div>
+
+		<div class="row">
+			<h2>Ta's</h2>
+			{% for inst in tas %}
+				<ul>
+					<li>{{inst.fName}} {{inst.lName}}</li>
+					<ul>
+						<li>{{inst.bldg}} - {{inst.room}}</li>
+						<li><a href="mailto:{{inst.email}}">{{inst.email}}</a></li>
+						{% if inst.hours|length > 0 %}
+							<li>Hours</li>
+							<ul>
+								{% for hour in inst.hours %}
+									{% if not hour.byAppointment %}
+										<li>{{hour.days}} {{hour.start|date('h:i')}} - {{hour.end|date('h:i')}}</li>
+									{% else %}
+										<li>By Appointment</li>
+									{% endif %}
+								{% endfor %}
+							</ul>
+						{% endif %}
+					</ul>
+				</ul>
+			{% endfor %}
+		</div>
+
+		<div class="row">
+			<h2>Sections</h2>
+			{% for section in sections %}
+				<ul>
+					<li>Section {{section.name}}</li>
+					<ul>
+						<li>{{section.day}} {{section.start|date('h:i')}} - {{section.end|date('h:i')}}</li>
+						<li>{{section.bldg}} - {{section.room}}</li>
+					</ul>
+				</ul>
+			{% endfor %}
+		</div>
+
+	</div>
+{% endblock %}

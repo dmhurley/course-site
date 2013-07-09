@@ -9,6 +9,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\SecurityContext;
 
+use Bio\DataBundle\Objects\Database;
+
 
 class DefaultController extends Controller
 {
@@ -18,7 +20,27 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-        return array('title' => "Welcome");
+        $db = new Database($this, 'BioInfoBundle:Person');
+        $instructors = $db->find(array('title' => 'instructor'));
+        $tas = $db->find(array('title' => 'ta'));
+
+        $db = new Database($this, 'BioInfoBundle:Info');
+        $info = $db->findOne(array());
+
+        $db = new Database($this, 'BioInfoBundle:Section');
+        $sections = $db->find();
+
+        $em = $this->getDoctrine()->getManager();
+        $query = $em->createQuery(
+            'SELECT a FROM BioInfoBundle:Announcement a WHERE a.expiration > :now AND a.timestamp < :now ORDER BY a.expiration ASC'
+        )->setParameter('now', new \DateTime());
+        $anns = $query->getResult();
+
+        $db = new Database($this, 'BioInfoBundle:Link');
+        $links = $db->find(array('location' => 'content'));
+
+        return array('instructors' => $instructors, 'tas' => $tas, 'info' => $info,
+            'sections' => $sections, 'anns' => $anns, 'links' => $links, 'title' => "Welcome");
     }
 
     /**
@@ -37,11 +59,10 @@ class DefaultController extends Controller
             $error = $session->get(SecurityContext::AUTHENTICATION_ERROR);
             $session->remove(SecurityContext::AUTHENTICATION_ERROR);
         }
-        // 'last_username' => $session->get(SecurityContext::LAST_USERNAME)
         if ($error) {
             $request->getSession()->getFlashBag()->set('failure', "Incorrect username or password.");
         }
 
-        return array('title' => "Log In");
+        return array('title' => "Log In", 'last_username' => $session->get(SecurityContext::LAST_USERNAME));
     }
 }
