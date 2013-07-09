@@ -52,7 +52,7 @@
 
 			{% if links|length > 0 %}
 				<li class="branch">
-					<a href="">Links</a>
+					<a href="{{ path('public_links') }}">Links</a>
 					<ul class="twig">
 						{% for link in links %}
 							<li class="leaf"><a href="{{link.address}}">{{link.title}}</a></li>

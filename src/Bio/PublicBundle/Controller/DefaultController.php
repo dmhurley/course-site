@@ -76,4 +76,16 @@ class DefaultController extends Controller
 
         return array('root' => $root, 'title' => $root->getName().' Folder');
     }
+
+    /**
+     * @Route("/links", name="public_links")
+     * @Template()
+     */
+    public function linkAction(Request $request) {
+        $db = new Database($this, 'BioInfoBundle:Link');
+        $sidebar = $db->find(array('location' => 'sidebar'));
+        $mainpage = $db->find(array('location' => 'content'));
+
+        return array('sidelinks' => $sidebar, 'mainlinks' => $mainpage, 'title' => 'Links');
+    }
 }

@@ -1,0 +1,36 @@
+{% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block head %}
+	{{ parent() }}
+	{% stylesheets 'bundles/biopublic/css/public.css' filter="cssrewrite" output="css/*.css" %}
+		<link rel="stylesheet" href="{{ asset_url }}" />
+	{% endstylesheets %}
+{% endblock %}
+
+{% block content %}
+	<div class="column">
+		<div class="row">
+			<h2>Sidebar Links</h2>
+			<ul>
+				<ul>
+					{% for link in sidelinks %}
+						<li><a href="{{link.address}}">{{link.title}}</a></li>
+					{% endfor %}
+				</ul>
+			</ul>
+		</div>
+	</div>
+
+	<div class="column">
+		<div class="row">
+			<h2>Main Links</h2>
+			<ul>
+				<ul>
+					{% for link in mainlinks %}
+						<li><a href="{{link.address}}">{{link.title}}</a></li>
+					{% endfor %}
+				</ul>
+			</ul>
+		</div>
+	</div>
+{% endblock %}
