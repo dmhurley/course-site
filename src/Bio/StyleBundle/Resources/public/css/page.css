@@ -65,7 +65,7 @@ body {
 			text-decoration: none;
 		}
 
-	.trunk .top {
+	.trunk .branch {
 		background-image: none;
 		display: block;
 		color: #483882;
@@ -75,7 +75,7 @@ body {
 			color: #483882;
 		}
 
-		.top .twig {
+		.branch .twig {
 			margin-top: 8px;
 			margin-bottom: 16px;
 			position: relative;
@@ -190,6 +190,40 @@ body {
 				background-position: 6px 17px;
 
 			}
+
+	#course {
+		position: relative;
+		bottom: 90px;
+		color: rgb(245, 245, 245);
+		left: 263px;
+		font-size: 20pt;
+	}
+
+		#course a {
+			color: inherit;
+			text-decoration: inherit;
+		}
+
+	#sign {
+		position: relative;
+		bottom: 78px;
+		left: 827px;
+		padding-right: 2px;
+		padding-left: 2px;
+		display: inline;
+
+	}
+
+	#sign a {
+		color: white;
+		text-decoration: none;
+		background-color: #331b6f;
+		border: 1px solid #4c3782;
+		text-transform: uppercase;
+		font: 11px/12px "Trebuchet MS" !important;
+		padding: 6px 12px;
+		letter-spacing: 1px;
+	}
 
 #footer {
 	background-color: #3d2480;
