@@ -65,7 +65,7 @@ body {
 			text-decoration: none;
 		}
 
-	.trunk .top {
+	.trunk .branch {
 		background-image: none;
 		display: block;
 		color: #483882;
@@ -75,7 +75,7 @@ body {
 			color: #483882;
 		}
 
-		.top .twig {
+		.branch .twig {
 			margin-top: 8px;
 			margin-bottom: 16px;
 			position: relative;
