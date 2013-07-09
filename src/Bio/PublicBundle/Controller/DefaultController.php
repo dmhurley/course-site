@@ -65,4 +65,15 @@ class DefaultController extends Controller
 
         return array('title' => "Log In", 'last_username' => $session->get(SecurityContext::LAST_USERNAME));
     }
+
+    /**
+     * @Route("/folder/{id}", name="public_folder")
+     * @Template()
+     */
+    public function folderAction(Request $request, $id) {
+        $db = new Database($this, 'BioFolderBundle:Folder');
+        $root = $db->findOne(array('id' => $id));
+
+        return array('root' => $root, 'title' => $root->getName().' Folder');
+    }
 }

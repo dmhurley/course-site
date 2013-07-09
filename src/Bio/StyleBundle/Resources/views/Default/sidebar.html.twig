@@ -33,7 +33,7 @@
 					<a href="">Folders</a>
 					<ul class="twig">
 						{% for folder in root.folders %}
-							<li class="leaf"><a href="">{{folder.name}}</a></li>
+							<li class="leaf"><a href="{{ path('public_folder', {'id' : folder.id}) }}">{{folder.name}}</a></li>
 						{% endfor %}
 					</ul>
 				</li>
@@ -44,7 +44,7 @@
 					<a href="">Files</a>
 					<ul class="twig">
 						{% for file in root.files %}
-							<li class="leaf"><a href="">{{file.name}}</a></li>
+							<li class="leaf"><a href="{{ path('download', {'filename' : file.path}) }}">{{file.name}}</a></li>
 						{% endfor %}
 					</ul>
 				</li>
