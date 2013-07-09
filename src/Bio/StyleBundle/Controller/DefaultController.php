@@ -9,6 +9,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Dumper;
 
+use Bio\DataBundle\Objects\Database;
+
 class DefaultController extends Controller
 {
 	/**
@@ -34,5 +36,22 @@ class DefaultController extends Controller
 		}
 
 		return array('expanded' => $expanded, 'options' => $options);
+	}
+
+	/**
+	 * @Template()
+	 */
+	public function titleAction() {
+		$db = new Database($this, 'BioInfoBundle:Info');
+		$info = $db->findOne(array());
+
+		return array('entity' => $info);
+	}
+
+	/**
+	 * @Template()
+	 */
+	public function signAction() {
+
 	}
 }
