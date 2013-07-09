@@ -30,7 +30,7 @@
 			<li class="branch"><a href="{{ path('main_page') }}">Home</a></li>
 			{% if root.folders|length > 0 %}
 				<li class="branch">
-					<a href="">Folders</a>
+					<a href="{{ path('public_folder', {'id' : 1}) }}">Folders</a>
 					<ul class="twig">
 						{% for folder in root.folders %}
 							<li class="leaf"><a href="{{ path('public_folder', {'id' : folder.id}) }}">{{folder.name}}</a></li>
@@ -41,7 +41,7 @@
 
 			{% if root.files|length > 0 %}
 				<li class="branch">
-					<a href="">Files</a>
+					<a href="{{ path('public_folder', {'id' : 1}) }}">Files</a>
 					<ul class="twig">
 						{% for file in root.files %}
 							<li class="leaf"><a href="{{ path('download', {'filename' : file.path}) }}">{{file.name}}</a></li>

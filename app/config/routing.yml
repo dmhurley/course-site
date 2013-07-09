@@ -19,6 +19,10 @@ bio_clicker:
     type:     annotation
     prefix:   /
 
+register_clicker:
+    path:     /clicker/register
+    defaults: { _controller: BioClickerBundle:Default:register }
+
 bio_student:
     resource: "@BioStudentBundle/Controller/"
     type:     annotation

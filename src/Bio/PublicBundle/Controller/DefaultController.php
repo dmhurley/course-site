@@ -21,14 +21,15 @@ class DefaultController extends Controller
     public function indexAction(Request $request)
     {
         $db = new Database($this, 'BioInfoBundle:Person');
-        $instructors = $db->find(array('title' => 'instructor'));
-        $tas = $db->find(array('title' => 'ta'));
+        $instructors = $db->find(array('title' => 'instructor'), array(), false);
+        $tas = $db->find(array('title' => 'ta'), array(), false);
+        $coordinators = $db->find(array('title' => 'coordinator'), array(), false);
 
         $db = new Database($this, 'BioInfoBundle:Info');
         $info = $db->findOne(array());
 
         $db = new Database($this, 'BioInfoBundle:Section');
-        $sections = $db->find();
+        $sections = $db->find(array(), array(), false);
 
         $em = $this->getDoctrine()->getManager();
         $query = $em->createQuery(
@@ -37,9 +38,9 @@ class DefaultController extends Controller
         $anns = $query->getResult();
 
         $db = new Database($this, 'BioInfoBundle:Link');
-        $links = $db->find(array('location' => 'content'));
+        $links = $db->find(array('location' => 'content'), array(), false);
 
-        return array('instructors' => $instructors, 'tas' => $tas, 'info' => $info,
+        return array('instructors' => $instructors, 'tas' => $tas, 'coordinators' => $coordinators, 'info' => $info,
             'sections' => $sections, 'anns' => $anns, 'links' => $links, 'title' => "Welcome");
     }
 
