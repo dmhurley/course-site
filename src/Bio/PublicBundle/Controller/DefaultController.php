@@ -28,13 +28,6 @@ class DefaultController extends Controller
     public function loginAction(Request $request) {
     	$session = $request->getSession();
 
-    	// $form = $this->createFormBuilder()
-    	// 	->setAction($this->generateUrl('login_check'))
-    	// 	->add('username', 'text')
-    	// 	->add('password', 'password')
-    	// 	->add('login', 'submit')
-    	// 	->getForm();
-
         // get the login error if there is one
         if ($request->attributes->has(SecurityContext::AUTHENTICATION_ERROR)) {
             $error = $request->attributes->get(
@@ -45,6 +38,10 @@ class DefaultController extends Controller
             $session->remove(SecurityContext::AUTHENTICATION_ERROR);
         }
         // 'last_username' => $session->get(SecurityContext::LAST_USERNAME)
-        return array('error' => $error, 'title' => "Log In");
+        if ($error) {
+            $request->getSession()->getFlashBag()->set('failure', "Incorrect username or password.");
+        }
+
+        return array('title' => "Log In");
     }
 }
