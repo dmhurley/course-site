@@ -2,6 +2,9 @@
 <html>
 	<head>
 		<title>{% block title %}title{% endblock %}</title>
+		{% image 'bundles/biostyle/images/favicon.ico' output="images/*.ico" %}
+		<link rel="shortcut icon" href="{{ asset_url }}" />
+		{% endimage %}
 		{% block head %}
 
 		{% endblock %}

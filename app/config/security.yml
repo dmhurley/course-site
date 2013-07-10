@@ -13,6 +13,7 @@ security:
 
     access_control:
         - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/admin/user/delete, roles: ROLE_SUPER_ADMIN}
 
     providers:
         main:

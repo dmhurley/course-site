@@ -19,6 +19,10 @@
 				<input type="password" id="form_password" name="_password" required="required">
 			</div>
 			<div>
+				<label style="height:1px"></label>
+				<a href="{{ path('register') }}">register</a>&emsp;<a href="">forgot password</a>
+			</div>
+			<div>
 				<button type="submit" id="form_login" name="form[login]">Login</button>
 			</div>
 			<input type="hidden" name="_target_path" value="{{ url('edit_info') }}" />
