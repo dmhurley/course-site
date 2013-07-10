@@ -48,7 +48,7 @@ class AccountCommand extends ContainerAwareCommand
             $contents = str_replace('users:', "users:\n                    ".$username.":  { password: '".hash('sha512', $password)."', roles : '".$role."' }", $contents);
             file_put_contents($file, $contents);
         } else {
-            $output->writeln('<error>Could not write to file. File does not exist.</error>');
+            throw new Exception();
         }
     }
 }

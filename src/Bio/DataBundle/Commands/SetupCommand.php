@@ -48,25 +48,31 @@ class SetupCommand extends ContainerAwareCommand
     {
         $username = $input->getArgument('username');
         $password = $input->getArgument('password');
-$output->writeln('<info>Creating Account</info>');
-$output->writeln('<question>--------------------------------------------</question>');
-        $process = new Process('php app/console bio:create:account '.$username.' '.$password, null, null, null, 300);
-        $process->run(function($type, $buffer){echo $buffer;});
+
 
 $output->writeln('<info>Installing assets</info>');
 $output->writeln('<question>--------------------------------------------</question>');
         $process = new Process('php app/console assets:install --symlink', null, null, null, 300);
         $process->run(function($type, $buffer){echo $buffer;});
+        if (!$process->isSuccessful()) {
+            throw new \Exception('Unable to install Assets. '.$process->getExitCodeText());
+        }
 
 $output->writeln('<info>Creating database</info>');
 $output->writeln('<question>--------------------------------------------</question>');
         $process = new Process('php app/console doctrine:database:create', null, null, null, 300);
         $process->run(function($type, $buffer){echo $buffer;});
+        if (!$process->isSuccessful()) {
+            throw new \Exception('Unable to create database. '.$process->getExitCodeText());
+        }
 
 $output->writeln('<info>Creating schema</info>');
 $output->writeln('<question>--------------------------------------------</question>');
         $process = new Process('php app/console doctrine:schema:create', null, null, null, 300);
         $process->run(function($type, $buffer){echo $buffer;});
+        if (!$process->isSuccessful()) {
+            throw new \Exception('Unable to generate schema. '.$process->getExitCodeText());
+        }
 
 $output->writeln('<info>generating entities</info>');
 $output->writeln('<question>--------------------------------------------</question>');
@@ -80,7 +86,7 @@ $output->writeln('<question>--------------------------------------------</questi
                 ->setDays(array('m', 'w', 'f'))
                 ->setStartTime(new \DateTime())
                 ->setEndTime(new \DateTime())
-                ->setBldg('KNE	Kane Hall')
+                ->setBldg('KNE  Kane Hall')
                 ->setRoom('120')
                 ->setEmail('fakeemail@gmail.com');
         $db->add($info);
@@ -103,7 +109,16 @@ $output->writeln('<question>--------------------------------------------</questi
             $db->close();
             $output->writeln('<info>Completed</info>');
         } catch (BioException $e) {
-            $output->writeln('<error>Unable to persist objects to database!</error>');
+            throw new \Exception("Unable to persist objects to database.");
+        }
+
+        $output->writeln('<info>Creating Account</info>');
+$output->writeln('<question>--------------------------------------------</question>');
+        $process = new Process('php app/console bio:create:account '.$username.' '.$password, null, null, null, 300);
+        
+        $process->run(function($type, $buffer){echo $buffer;});
+        if (!$process->isSuccessful()) {
+            throw new \Exception('Unable to add user. '.$process->getExitCodeText());
         }
     }
 }
