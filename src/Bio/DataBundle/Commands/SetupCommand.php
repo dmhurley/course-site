@@ -48,13 +48,11 @@ class SetupCommand extends ContainerAwareCommand
     {
         $username = $input->getArgument('username');
         $password = $input->getArgument('password');
+$output->writeln('<info>Creating Account</info>');
+$output->writeln('<question>--------------------------------------------</question>');
+        $process = new Process('php app/console bio:create:account '.$username.' '.$password, null, null, null, 300);
+        $process->run(function($type, $buffer){echo $buffer;});
 
-        $output->writeln($username);
-        $output->writeln($password);
-
-        // if ($input->getOption('yell')) {
-        //     $text = strtoupper($text);
-        // }
 $output->writeln('<info>Installing assets</info>');
 $output->writeln('<question>--------------------------------------------</question>');
         $process = new Process('php app/console assets:install --symlink', null, null, null, 300);

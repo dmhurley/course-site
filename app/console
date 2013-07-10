@@ -15,6 +15,7 @@ use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Debug\Debug;
 
 use Bio\DataBundle\Commands\SetupCommand;
+use Bio\DataBundle\Commands\AccountCommand;
 
 $input = new ArgvInput();
 $env = $input->getParameterOption(array('--env', '-e'), getenv('SYMFONY_ENV') ?: 'dev');
@@ -27,4 +28,5 @@ if ($debug) {
 $kernel = new AppKernel($env, $debug);
 $application = new Application($kernel);
 $application->add(new SetupCommand());
+$application->add(new AccountCommand());
 $application->run($input);
