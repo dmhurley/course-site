@@ -36,13 +36,53 @@ by running this command from project directory
 
 		php app/check.php
 		
-Then run
+Then run:
+
+		php app/console bio:setup username password
+
+This command will do the complete basic setup for you. Installing assets, creating
+the database tables and columns, and initializing any entities that are necessary.
+Finally the command will store the username and hashed password in app/config/security.yml
+allowing you to access the admin pages.
+
+If for some reason bio:setup does not work, you can do the setup yourself. From the main
+directory run
 
 		php app/console assets:install --symlink
 
+		php app/console doctrine:database:create
+
 		php app/console doctrine:schema:create
 
-to install the public resources for assetic and to initialize the database respectively.
+to install the public resources for assetic, create the database, and create the tables
+respectively.
+
+You must then persist several entities.
+
+		$info = new Info();
+		    $info->setCourseNumber(999)
+		        ->setTitle('Biologiology')
+		        ->setQtr('summer')
+		        ->setYear(2013)
+		        ->setDays(array('m', 'w', 'f'))
+		        ->setStartTime(new \DateTime())
+		        ->setEndTime(new \DateTime())
+		        ->setBldg('KNE	Kane Hall')
+		        ->setRoom('120')
+		        ->setEmail('fakeemail@gmail.com');
+
+
+		$folder = new Folder();
+		    $folder->setName('root');
+
+Make sure that the root folder has an Id of 1, or it will not be recognized.
+
+If you would need to add an account, you can run the command
+
+		php app/console bio:create:account username password [ROLE_ADMIN|ROLE_SUPER_ADMIN]
+
+or add the necessary information in app/config/security.yml yourself.
+
 
 2) Bundles
 ------------------------------
