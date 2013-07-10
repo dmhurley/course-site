@@ -70,13 +70,6 @@ Make sure that the root folder has an Id of `1`, or it will not be recognized.
 		php app/console bio:create:account username password [ROLE_ADMIN|ROLE_SUPER_ADMIN]
 
 	or add the necessary information in `app/config/security.yml` yourself.
-	
-* By default `app/config/security.yml` is assumed to be unchanged. Meanings changes to the file won't be committed unless you call
-
-		git update-index --no-assume-unchanged path/to/file
-		
-	undo that call by removeing the `no-`.
-
 
 
 2) Bundles

@@ -5,12 +5,14 @@ namespace Bio\DataBundle\Entity;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * User
  *
  * @ORM\Table()
  * @ORM\Entity
+ * @UniqueEntity("username")
  */
 class User implements UserInterface
 {
@@ -26,7 +28,7 @@ class User implements UserInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="username", type="string", length=255)
+     * @ORM\Column(name="username", type="string", length=255, unique=true)
      */
     private $username;
 
@@ -50,6 +52,10 @@ class User implements UserInterface
      * @ORM\Column(name="roles", type="array")
      */
     private $roles;
+
+    public function __construct() {
+        $this->salt = md5(uniqid(null, true));
+    }
 
 
     /**
@@ -152,5 +158,9 @@ class User implements UserInterface
     public function getRoles()
     {
         return $this->roles;
+    }
+
+    public function eraseCredentials() {
+        
     }
 }
