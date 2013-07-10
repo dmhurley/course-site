@@ -76,7 +76,24 @@ $output->writeln('<question>--------------------------------------------</questi
 
 $output->writeln('<info>generating entities</info>');
 $output->writeln('<question>--------------------------------------------</question>');
-        $output->writeln('  generating course info');
+        try{
+            $this->populateDatabase($output);
+        } catch (\Exception $e) {
+            throw new \Exception('Unable to persist entities to database.');
+        }
+
+        $output->writeln('<info>Creating Account</info>');
+$output->writeln('<question>--------------------------------------------</question>');
+        $process = new Process('php app/console bio:create:account '.$username.' '.$password, null, null, null, 300);
+        
+        $process->run(function($type, $buffer){echo $buffer;});
+        if (!$process->isSuccessful()) {
+            throw new \Exception('Unable to add user. '.$process->getExitCodeText());
+        }
+    }
+
+    private function populateDatabase(OutputInterface $output) {
+        // does not matter what repository we use as long as we only persist objects to database. 'BioInfoBundle:Info' is arbitrary
         $db = new Database($this->getContainer(), 'BioInfoBundle:Info');
             $info = new Info();
             $info->setCourseNumber(999)
@@ -89,36 +106,22 @@ $output->writeln('<question>--------------------------------------------</questi
                 ->setBldg('KNE  Kane Hall')
                 ->setRoom('120')
                 ->setEmail('fakeemail@gmail.com');
-        $db->add($info);
 
-        $output->writeln('  generating root folder');
-            $folder = new Folder();
-            $folder->setName('root');
-        $db->add($folder);
+            $root = new Folder();
+            $root->setName('root');
 
-         $output->writeln('  generating instructor');
-            $person = new Person();
-            $person->setfName('John')
+            $instructor = new Person();
+            $instructor->setfName('John')
                 ->setlName('Doe')
                 ->setEmail('johndoe@gmail.com')
                 ->setBldg('KNE  Kane Hall')
                 ->setRoom('101')
                 ->setTitle('instructor');
-        $db->add($person);
-        try {
-            $db->close();
-            $output->writeln('<info>Completed</info>');
-        } catch (BioException $e) {
-            throw new \Exception("Unable to persist objects to database.");
-        }
 
-        $output->writeln('<info>Creating Account</info>');
-$output->writeln('<question>--------------------------------------------</question>');
-        $process = new Process('php app/console bio:create:account '.$username.' '.$password, null, null, null, 300);
-        
-        $process->run(function($type, $buffer){echo $buffer;});
-        if (!$process->isSuccessful()) {
-            throw new \Exception('Unable to add user. '.$process->getExitCodeText());
-        }
+        $db->add($info);
+        $db->add($root);
+        $db->add($instructor);
+
+        $db->close();
     }
 }
