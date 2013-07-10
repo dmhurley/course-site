@@ -1,0 +1,14 @@
+{% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block head %}
+	{{ parent() }}
+	{% stylesheets 'bundles/biofolder/css/folder.css' filter="cssrewrite" output="css/*.css" %}
+		<link rel="stylesheet" href="{{ asset_url }}" />
+	{% endstylesheets %}
+{% endblock %}
+
+{% block content %}
+<ul>
+	{% include 'BioPublicBundle:Default:structure.html.twig' with {'root' : root} %}
+</ul>
+{% endblock %}

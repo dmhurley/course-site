@@ -23,7 +23,7 @@
 		{{ root.name }}
 	</a>
 {% else %}
-	<a href="{{ path('download', {'filename' : root.path}) }}"> {{root.name}} </a>
+	<a href="{{ path('download', {'filename' : root.path}) }}"> {{root.path|replace({"_" : " "})}} </a>
 {% endif %}
 
 {% if root.name != 'root' %}
@@ -38,7 +38,7 @@
 </li>
 
 
-{% if root.folders is defined %}
+{% if root.folders is defined and (root.files|length > 0 or root.folders|length > 0)%}
 	<ul>
 		{% for folder in root.folders %}
 			{% include 'BioFolderBundle:Default:structure.html.twig' with {'root' : folder, 'selected' : selected} %}

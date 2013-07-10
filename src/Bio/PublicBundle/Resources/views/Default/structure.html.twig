@@ -1,0 +1,33 @@
+{% if root.folders is defined %}
+	{% set type = 'folder' %}
+{% else %}
+	{% set type = 'file' %}
+{% endif %}
+
+{% if root.folders is defined and root.folders|length == 0  and root.files|length == 0 %}
+	{% set full = 'empty' %}
+{% else %}
+	{% set full = '' %}
+{% endif %}
+
+<li class="{{type}} {{full}}">
+
+{% if root.folders is defined %}
+	{{ root.name }}
+{% else %}
+	<a href="{{ path('download', {'filename' : root.path}) }}"> {{root.name}} </a>
+{% endif %}
+</li>
+
+
+{% if root.folders is defined and (root.files|length > 0 or root.folders|length > 0) %}
+	<ul>
+		{% for folder in root.folders %}
+			{% include 'BioPublicBundle:Default:structure.html.twig' with {'root' : folder} %}
+		{% endfor %}
+
+		{% for file in root.files %}
+			{% include 'BioPublicBundle:Default:structure.html.twig' with {'root' : file} %}
+		{% endfor %}
+	</ul>
+{% endif %}
