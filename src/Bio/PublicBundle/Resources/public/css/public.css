@@ -1,0 +1,29 @@
+.column {
+	float: left;
+	width: 340px;
+	margin-left: 15px;
+	/*font-size: 11pt;*/
+}
+
+.row {
+	background-image: url(http://www.uwecocar2.com/images/divider.jpg);
+	background-repeat: no-repeat;
+	background-size: contain;
+	padding-top: 1px;
+	padding: 1px 0px 0px 20px;
+}
+
+.column h2 {
+	margin-bottom: 5px !important;
+	margin-top: 5px !important;
+}
+
+.column  ul {
+	margin-left: 20px;
+	list-style: none;
+	margin-bottom: 15px;
+}
+
+.column ul ul {
+	list-style: circle
+}

@@ -44,7 +44,7 @@ class DefaultController extends Controller
 			$root = $db->findOne(array('id' => 1));
 
 			$db = new Database($this, 'BioInfoBundle:Link');
-			$links = $db->find(array('location' => 'sidebar'));
+			$links = $db->find(array('location' => 'sidebar'), array(), false);
 
 			return array('root' => $root, 'links' => $links, 'role' => 'user');
 		}
@@ -58,12 +58,5 @@ class DefaultController extends Controller
 		$info = $db->findOne(array());
 
 		return array('entity' => $info);
-	}
-
-	/**
-	 * @Template()
-	 */
-	public function signAction() {
-
 	}
 }

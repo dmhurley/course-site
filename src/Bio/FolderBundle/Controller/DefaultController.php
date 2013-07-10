@@ -129,14 +129,14 @@ class DefaultController extends Controller
             if (!$parent) {
                  $request->getSession()->getFlashBag()->set('failure', "Parent folder could not be found.");
             } else {
-                $parent->addFile($file);
-                $file->setParent($parent);
-                $db->add($file);
                 try {
-                    $db->close();
+                    $parent->addFile($file);
+                    $file->setParent($parent);
+                    $db->add($file);
+                    $db->close("File could not be uploaded.");
                     $request->getSession()->getFlashBag()->set('success', "File \"".$file->getPath()."\" uploaded.");
                 } catch (BioException $e) {
-                     $request->getSession()->getFlashBag()->set('failure', "File could not be uploaded.");
+                     $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
                 }
             }
             

@@ -36,10 +36,10 @@ class CourseController extends Controller
     		->add('courseNumber', 'text')
     		->add('title', 'text')
     		->add('qtr', 'choice', array('choices' => array(
-    					'au' => 'Autumn',
-    					'wi' => 'Winter',
-    					'sp' => 'Spring',
-    					'su' => 'Summer'
+    					'autumn' => 'Autumn',
+    					'winter' => 'Winter',
+    					'spring' => 'Spring',
+    					'summer' => 'Summer'
     				)))
     		->add('year', 'integer')
     		->add('days', 'choice', array('choices' => array(

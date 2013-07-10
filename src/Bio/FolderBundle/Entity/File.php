@@ -5,6 +5,8 @@ namespace Bio\FolderBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
+use Bio\DataBundle\Exception\BioException;
+
 /**
  * File
  *
@@ -170,7 +172,13 @@ class File
         if (null !== $this->getFile()) {
             $extension = $this->getFile()->getClientOriginalExtension();
             $extension = $extension === '' ? '' : '.'.$extension;
-            $this->path = preg_replace('/[ \t]/', '_', $this->name).$extension;
+            $name = preg_replace('/[ \t]/', '_', $this->name).$extension;
+            $this->temp = $this->path;
+            $this->path = $name;
+
+            if (file_exists($this->getAbsolutePath())) {
+                throw new BioException("A file with that name already exists.");
+            }
         }
     }
 

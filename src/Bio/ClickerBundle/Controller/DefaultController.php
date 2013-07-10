@@ -15,11 +15,10 @@ use Bio\DataBundle\Exception\BioException;
 
 /**
  * @Route("/admin/clicker")
- * @Template()
  */
 class DefaultController extends Controller {
     /**
-     * @Route("/register", name="register_clicker")
+     * @Route("/../../clicker/register")
      * @Template()
      */
     public function registerAction(Request $request) {
