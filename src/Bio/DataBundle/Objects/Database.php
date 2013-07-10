@@ -13,10 +13,11 @@ class Database {
 	private $repo;
 	private $entityClass;
 
-	public function __construct(Controller $controller, $repo) {
-		$this->em = $controller->getDoctrine()->getManager();
+	public function __construct($controller, $repo) {
+		$this->em = $controller->get('doctrine')->getManager();
 		$this->repo = $this->em->getRepository($repo);
-		$this->entityClass = explode(":", $repo)[1];
+		$exploded = explode(":", $repo);
+		$this->entityClass = $exploded[1];
 	}
 
 	public function find(array $options = array(), array $order = array(), $throwErrors = true) {
