@@ -1,6 +1,6 @@
 <?php
 
-namespace Bio\DataBundle\Entity;
+namespace Bio\UserBundle\Entity;
 
 use Symfony\Component\Security\Core\User\UserInterface;
 

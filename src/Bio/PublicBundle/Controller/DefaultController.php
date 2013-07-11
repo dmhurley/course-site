@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\SecurityContext;
 
 use Bio\DataBundle\Objects\Database;
-use Bio\DataBundle\Entity\User;
+use Bio\UserBundle\Entity\User;
 
 
 class DefaultController extends Controller
@@ -87,7 +87,7 @@ class DefaultController extends Controller
                 if ($form->get('password')->getData() === $form->get('password1')->getData()) {
                      $request->getSession()->getFlashBag()->set('failure', 'You typed in two different passwords.');
                 } else if ($form->isValid()) {
-                    $db = new Database($this, 'BioDataBundle:User');
+                    $db = new Database($this, 'BioUserBundle:User');
                     $factory = $this->get('security.encoder_factory');
                     $encoder = $factory->getEncoder($user);
                     $pwd = $encoder->encodePassword($user->getPassword(), $user->getSalt());

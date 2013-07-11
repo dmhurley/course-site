@@ -8,7 +8,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use Symfony\Component\Security\Core\User\UserInterface;
-use Bio\DataBundle\Entity\User;
+use Bio\UserBundle\Entity\User;
 use Bio\DataBundle\Objects\Database;
 
 class AccountCommand extends ContainerAwareCommand
@@ -45,7 +45,7 @@ class AccountCommand extends ContainerAwareCommand
             $role = 'ROLE_ADMIN';
         }
 
-        $db = new Database($this->getContainer(), 'BioDataBundle:User');
+        $db = new Database($this->getContainer(), 'BioUserBundle:User');
 
         $factory = $this->getContainer()->get('security.encoder_factory');
         $user = new User();

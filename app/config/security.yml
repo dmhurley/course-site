@@ -18,10 +18,10 @@ security:
 
     providers:
         main:
-            entity: { class: Bio\DataBundle\Entity\User, property: username}
+            entity: { class: Bio\UserBundle\Entity\User, property: username}
 
     encoders:
-        Bio\DataBundle\Entity\User: sha512
+        Bio\UserBundle\Entity\User: sha512
 
     role_hierarchy:
         ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
