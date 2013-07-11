@@ -7,6 +7,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use Symfony\Component\Security\Core\User\UserInterface;
+use Bio\UserBundle\Entity\User;
+use Bio\DataBundle\Objects\Database;
+
 class AccountCommand extends ContainerAwareCommand
 {
     protected function configure()
@@ -41,14 +45,18 @@ class AccountCommand extends ContainerAwareCommand
             $role = 'ROLE_ADMIN';
         }
 
-        $output->writeln('Hashing password and adding account to file.');
-        $file = __dir__.'/../../../../app/config/security.yml';
-        if (file_exists($file)){
-            $contents = file_get_contents($file);
-            $contents = str_replace('users:', "users:\n                    ".$username.":  { password: '".hash('sha512', $password)."', roles : '".$role."' }", $contents);
-            file_put_contents($file, $contents);
-        } else {
-            throw new Exception();
-        }
+        $db = new Database($this->getContainer(), 'BioUserBundle:User');
+
+        $factory = $this->getContainer()->get('security.encoder_factory');
+        $user = new User();
+
+        $encoder = $factory->getEncoder($user);
+        $pwd = $encoder->encodePassword($password, $user->getSalt());
+        $user->setPassword($pwd);
+        $user->setUsername($username);
+        $user->setRoles(array($role));
+
+        $db->add($user);
+        $db->close();
     }
 }

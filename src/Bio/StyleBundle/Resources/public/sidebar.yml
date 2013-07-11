@@ -61,3 +61,8 @@
   "Folders":
     route: view_folders
     vars: ~
+
+"Users":
+  "Users":
+    route: view_users
+    vars: ~

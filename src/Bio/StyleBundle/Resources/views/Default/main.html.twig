@@ -28,8 +28,15 @@
 				{{ render(controller('BioStyleBundle:Default:title')) }}
 
 				<div id="sign">
-					{% if is_granted('ROLE_ADMIN') %}
+					{% if is_granted('ROLE_USER') %}
 						<a href="{{ path('logout') }}">Logout</a>
+						{% if is_granted('ROLE_SUPER_ADMIN') %}
+							- super admin
+						{% elseif is_granted('ROLE_ADMIN') %}
+							- admin
+						{% else %}
+							- user
+						{% endif %}
 					{% else %}
 						<a href="{{ path('login') }}">Admin</a>
 					{% endif %}
