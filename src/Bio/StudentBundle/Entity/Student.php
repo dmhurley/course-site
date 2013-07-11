@@ -25,9 +25,8 @@ class Student
     /**
      * @var string
      *
-     * @ORM\Column(name="sid", type="string", length=7, unique=true)
+     * @ORM\Column(name="sid", type="privatestring", unique=true)
      * @Assert\NotBlank()
-     * @Assert\Regex("/^[0-9]{7}$/")
      */
     private $sid;
 
@@ -57,7 +56,7 @@ class Student
     /**
      * @var string
      *
-     * @ORM\Column(name="email", type="string", length=255, unique=true)
+     * @ORM\Column(name="email", type="privatestring", unique=true)
      * @Assert\NotBlank()
      */
     private $email;

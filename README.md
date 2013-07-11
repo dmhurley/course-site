@@ -6,6 +6,12 @@ Welcome to a GitHub Repository for the University of Washington Biology Departme
 1) Cloning this Repository
 ------------------------------
 
+#### Requirements
+* The latest version of mcrypt and libmcrypt must be installed.
+* PHP version 5.4.1+ must be installed
+* The permissions of app/cache and app/log [***must*** be set correctly](http://symfony.com/doc/current/book/installation.html#configuration-and-setup)
+* if apache does not follow symlinks. Assets must be installed with `php app/console assets:install`
+
 The best way to get this repository running on your computer is to use Composer. If you don't have Composer installed you can run the following commands from the project directory to install the various Bundles this project uses.
 
 		curl -s http://getcomposer.org/installer | php
@@ -63,13 +69,19 @@ Make sure that the root folder has an Id of `1`, or it will not be recognized.
 
 #### Notes
 
-* The project will **NOT** run if you are using a PHP version below `5.4.1`
+* If `bio:setup` fails after creating the database. Make sure to drop the database before running it again.
 
 * If you need to add an account, you can run the command
 
-		php app/console bio:create:account username password [ROLE_ADMIN|ROLE_SUPER_ADMIN]
+		php app/console bio:create:account username password [ROLE_USER|ROLE_ADMIN|ROLE_SUPER_ADMIN|ROLE_SETUP]
 
 	or add the necessary information in `app/config/security.yml` yourself.
+	
+* Four roles are possible, `ROLE_USER`, `ROLE_ADMIN`, `ROLE_SUPER_ADMIN`, and `ROLE_SETUP`. With each role inheriting the permissions of the previous.
+    1. `ROLE_USER`: can log in and that's it. All newly registed accounts start at this role.
+    2. `ROLE_ADMIN`: can edit all aspects of the site ***except*** for other users.
+    3. `ROLE_SUPER_ADMIN`: can promote, demote, or delete users.
+    4. `ROLE_SETUP`: Used for debugging. Can't be seen or deleted on the User admin screen. Can switch roles.
 
 
 2) Bundles
