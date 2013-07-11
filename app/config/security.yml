@@ -13,8 +13,8 @@ security:
             switch_user: true
 
     access_control:
+        - { path: ^/admin/user/, roles: ROLE_SUPER_ADMIN}
         - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/admin/user/delete, roles: ROLE_SUPER_ADMIN}
 
     providers:
         main:
@@ -24,5 +24,6 @@ security:
         Bio\UserBundle\Entity\User: sha512
 
     role_hierarchy:
-        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+        ROLE_SETUP: [ROLE_SUPER_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN]
         ROLE_ADMIN: [ROLE_USER]

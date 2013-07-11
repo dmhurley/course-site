@@ -84,7 +84,7 @@ class DefaultController extends Controller
 
             if ($request->getMethod() === "POST") {
                 $form->handleRequest($request);
-                if ($form->get('password')->getData() === $form->get('password1')->getData()) {
+                if ($form->get('password')->getData() !== $form->get('password1')->getData()) {
                      $request->getSession()->getFlashBag()->set('failure', 'You typed in two different passwords.');
                 } else if ($form->isValid()) {
                     $db = new Database($this, 'BioUserBundle:User');
