@@ -84,8 +84,9 @@ class DefaultController extends Controller
 
             if ($request->getMethod() === "POST") {
                 $form->handleRequest($request);
-
-                if ($form->isValid() && $form->get('password')->getData() === $form->get('password1')->getData()) {
+                if ($form->get('password')->getData() === $form->get('password1')->getData()) {
+                     $request->getSession()->getFlashBag()->set('failure', 'You typed in two different passwords.');
+                } else if ($form->isValid()) {
                     $db = new Database($this, 'BioDataBundle:User');
                     $factory = $this->get('security.encoder_factory');
                     $encoder = $factory->getEncoder($user);
@@ -96,10 +97,10 @@ class DefaultController extends Controller
                     $db->add($user);
                     $db->close();
                 } else {
-                    $request->getSession()->getFlashBag()->set('failure', 'You typed in two different passwords.');
+                    $request->getSession()->getFlashBag()->set('failure', 'Form was invalid.');
                 }
             } else {
-                $request->getSession()->getFlashBag()->set('failure', 'An instructor will have to approve this account. Don\'t bother signing up without ones permission');
+                $request->getSession()->getFlashBag()->set('failure', 'An instructor will have to approve this account. Don\'t bother signing up without permission');
             }
 
             return array('form' => $form->createView(), 'title' => 'Register Account');

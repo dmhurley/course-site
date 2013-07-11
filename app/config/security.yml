@@ -9,6 +9,7 @@ security:
             logout:
                 path: logout
                 target: main_page
+            access_denied_handler: kernel.listener.access_denied.handler
             switch_user: true
 
     access_control:
@@ -24,3 +25,4 @@ security:
 
     role_hierarchy:
         ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+        ROLE_ADMIN: [ROLE_USER]
