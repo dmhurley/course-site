@@ -9,21 +9,21 @@ security:
             logout:
                 path: logout
                 target: main_page
+            access_denied_handler: kernel.listener.access_denied.handler
             switch_user: true
 
     access_control:
+        - { path: ^/admin/user/, roles: ROLE_SUPER_ADMIN}
         - { path: ^/admin, roles: ROLE_ADMIN }
 
     providers:
-        in_memory:
-            memory:
-                users:
+        main:
+            entity: { class: Bio\UserBundle\Entity\User, property: username}
 
     encoders:
-        Symfony\Component\Security\Core\User\User:
-            algorithm: sha512
-            iterations: 1
-            encode_as_base64: false
+        Bio\UserBundle\Entity\User: sha512
 
     role_hierarchy:
-        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+        ROLE_SETUP: [ROLE_SUPER_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN]
+        ROLE_ADMIN: [ROLE_USER]

@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\SecurityContext;
 
 use Bio\DataBundle\Objects\Database;
+use Bio\UserBundle\Entity\User;
 
 
 class DefaultController extends Controller
@@ -65,6 +66,44 @@ class DefaultController extends Controller
         }
 
         return array('title' => "Log In", 'last_username' => $session->get(SecurityContext::LAST_USERNAME));
+    }
+
+    /**
+     * @Route("/register", name="register")
+     * @Template()
+     */
+    public function registerAction(Request $request) {
+        $user = new User();
+
+        $form = $this->createFormBuilder($user)
+            ->add('username', 'text', array('label' => 'Username:'))
+            ->add('password', 'password', array('label' => 'Password:'))
+            ->add('password1', 'password', array('mapped' => false, 'label' => 'Password:'))
+            ->add('register', 'submit')
+            ->getForm();
+
+            if ($request->getMethod() === "POST") {
+                $form->handleRequest($request);
+                if ($form->get('password')->getData() !== $form->get('password1')->getData()) {
+                     $request->getSession()->getFlashBag()->set('failure', 'You typed in two different passwords.');
+                } else if ($form->isValid()) {
+                    $db = new Database($this, 'BioUserBundle:User');
+                    $factory = $this->get('security.encoder_factory');
+                    $encoder = $factory->getEncoder($user);
+                    $pwd = $encoder->encodePassword($user->getPassword(), $user->getSalt());
+                    $user->setPassword($pwd);
+                    $user->setRoles(array('ROLE_USER'));
+
+                    $db->add($user);
+                    $db->close();
+                } else {
+                    $request->getSession()->getFlashBag()->set('failure', 'Form was invalid.');
+                }
+            } else {
+                $request->getSession()->getFlashBag()->set('failure', 'An instructor will have to approve this account. Don\'t bother signing up without permission');
+            }
+
+            return array('form' => $form->createView(), 'title' => 'Register Account');
     }
 
     /**

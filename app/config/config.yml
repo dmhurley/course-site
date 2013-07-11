@@ -29,7 +29,7 @@ twig:
 assetic:
     debug:          %kernel.debug%
     use_controller: false
-    bundles:        ['BioStudentBundle', 'BioStyleBundle', 'BioClickerBundle', 'BioInfoBundle', 'BioFolderBundle', 'BioPublicBundle']
+    bundles:        ['BioStudentBundle', 'BioStyleBundle', 'BioClickerBundle', 'BioInfoBundle', 'BioFolderBundle', 'BioPublicBundle', 'BioUserBundle']
     #java: /usr/bin/java
     filters:
         cssrewrite: ~
