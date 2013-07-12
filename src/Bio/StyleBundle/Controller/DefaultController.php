@@ -6,9 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
-use Symfony\Component\Yaml\Parser;
-use Symfony\Component\Yaml\Dumper;
-
 use Bio\DataBundle\Objects\Database;
 
 class DefaultController extends Controller
@@ -19,8 +16,7 @@ class DefaultController extends Controller
 	public function sidebarAction($route) {
 		// if admin show full sidebar loaded from yaml file
 		if ($this->get('security.context')->isGranted('ROLE_ADMIN')){
-			$yaml = new Parser();
-			$options = $yaml->parse(file_get_contents('bundles/biostyle/sidebar.yml'));
+			$options = $this->container->getParameter('sidebar');
 
 			if ($route == 'display_students' || $route == 'find_student' || 
 				$route == 'edit_student' || $route == 'add_student' || 
@@ -33,7 +29,9 @@ class DefaultController extends Controller
 				$expanded = 'Course Info';
 			} else if ($route == 'view_folders' || $route == 'clear_folders') {
 				$expanded = 'Folders';
-			} else {
+			} else if ($route == 'view_users') {
+				$expanded = 'Users';
+			}else {
 				$expanded = '';
 			}
 
