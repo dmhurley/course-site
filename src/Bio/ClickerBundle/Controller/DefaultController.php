@@ -24,8 +24,8 @@ class DefaultController extends Controller {
     public function registerAction(Request $request) {
     	$clicker = new Clicker();
     	$form = $this->createFormBuilder($clicker)
-    		->add('cid', 'text', array('label' => "Clicker ID:"))
-    		->add('sid', 'text', array('label' => "Student ID:"))
+    		->add('cid', 'text', array('label' => "Clicker ID:", 'attr' => array('pattern' => '[0-9A-Fa-f]{6}', 'title' => '6 digit clicker ID')))
+    		->add('sid', 'text', array('label' => "Student ID:", 'attr' => array('pattern' => '[0-9]{7}', 'title' => '7 digit student ID')))
     		->add('lName', 'text', array('label' => "Last Name:", 'mapped' => false))
     		->add('Register', 'submit')
     		->getForm();
