@@ -50,6 +50,7 @@ class Student
      * @var string
      *
      *@ORM\Column(name="section", type="string", length=2)
+     *@Assert\NotBlank()
      */
     private $section;
 

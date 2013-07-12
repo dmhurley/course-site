@@ -1,4 +1,4 @@
-AAA	14700 N.E. 95th #102, Redmond, WA 
+AAA	14700 N.E. 95th 102, Redmond, WA
 AAB	4513 University Way N.E. 
 AAH	506 Second Avenue
 ABP	Ann Building Partnership
@@ -211,8 +211,8 @@ OAK	Oaktree Building
 OBS	Observatory
 OCE	Oceanography Building
 ODB	Oceanography Dock Building
-OR1	Ocean Research Bldg. #1 
-OR2	Ocean Research Bldg. #2 
+OR1	Ocean Research Bldg. 1 
+OR2	Ocean Research Bldg. 2 
 ORN	Olympic Natural Resource Center
 OSS	Oceanography Storage Shed
 OTB	Oceanography Teaching Building

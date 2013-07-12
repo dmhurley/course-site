@@ -27,7 +27,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/{type}mote", name="mote_user")
+     * @Route("/{type}mote", name="mote_user", requirements={"type" = "de|pro"})
      */
     public function mote(Request $request, $type) {
     	if ($request->getMethod() === "GET" && $request->query->get('id')) {
@@ -36,31 +36,37 @@ class DefaultController extends Controller
             $db = new Database($this, 'BioUserBundle:User');
 
             $entity = $db->findOne(array('id'=>$id));
-            $role = $entity->getRoles()[0];
+            if ($entity) {
+                $role = $entity->getRoles()[0];
 
-            if ($type==="de") {
-            	if ($role === "ROLE_USER") {
-            		$db->delete($entity);
-            	} else if ($role === "ROLE_ADMIN") {
-            		$entity->setRoles(array("ROLE_USER"));
-            	} else if ($role === "ROLE_SUPER_ADMIN") {
-            		$entity->setRoles(array("ROLE_ADMIN"));
-            	}
+                if ($type==="de") {
+                	if ($role === "ROLE_ADMIN") {
+                		$entity->setRoles(array("ROLE_USER"));
+                	} else if ($role === "ROLE_SUPER_ADMIN") {
+                		$entity->setRoles(array("ROLE_ADMIN"));
+                	}
+                } else {
+                	if ($role === "ROLE_USER") {
+                		$entity->setRoles(array("ROLE_ADMIN"));
+                	} else if ($role === "ROLE_ADMIN") {
+                		$entity->setRoles(array("ROLE_SUPER_ADMIN"));
+                	}
+                }
+                try {
+                    $db->close();
+                    $request->getSession()->getFlashBag()->set('sucess', ucfirst($type).'moted user.');
+                } catch (BioException $e) {
+                    $request->getSession()->getFlashBag()->set('failure', 'Could not '.$type.'mote that user.');
+                }
             } else {
-            	if ($role === "ROLE_USER") {
-            		$entity->setRoles(array("ROLE_ADMIN"));
-            	} else if ($role === "ROLE_ADMIN") {
-            		$entity->setRoles(array("ROLE_SUPER_ADMIN"));
-            	}
+                $request->getSession()->getFlashBag()->set('failure', 'Could not find that user.');
             }
-
-            $db->close();
         }
 
         if ($request->headers->get('referer')){
             return $this->redirect($request->headers->get('referer'));
         } else {
-            return $this->redirect($this->generateUrl('view', array('entityName' => $lc)));
+            return $this->redirect($this->generateUrl('view_users'));
         }
     }
 
@@ -77,7 +83,7 @@ class DefaultController extends Controller
             if ($entity) {
                 $db->delete($entity);
                 $db->close();
-                $request->getSession()->getFlashBag()->set('success '.$entity->getUsername().' deleted.');
+                $request->getSession()->getFlashBag()->set('success', $entity->getUsername().' deleted.');
             } else {
                 $request->getSession()->getFlashBag()->set('failure', 'Could not find that user.');
             }

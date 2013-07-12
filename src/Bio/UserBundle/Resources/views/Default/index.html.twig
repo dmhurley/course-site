@@ -21,9 +21,18 @@
 		<tr>
 			<td>{{user.username}}</td>
 			<td>{{user.roles|join(", ")|replace({'ROLE' : '', '_' : ' '}) }}</td>
-			<td><a href="{{ path('mote_user', {'type' : 'pro'}) }}?id={{user.id}}">promote</a></td>
-			<td><a href="{{ path('mote_user', {'type' : 'de'}) }}?id={{user.id}}">demote</a></td>
-			<td><a href="{{ path('delete_user') }}">delete</a></td>
+			{% if'ROLE_SUPER_ADMIN' in user.roles %}
+				<td>promote</td>
+			{% else %}
+				<td><a href="{{ path('mote_user', {'type' : 'pro'}) }}?id={{user.id}}">promote</a></td>
+			{% endif %}
+
+			{% if 'ROLE_USER' in user.roles %}
+				<td>demote</td>
+			{% else %}
+				<td><a href="{{ path('mote_user', {'type' : 'de'}) }}?id={{user.id}}">demote</a></td>
+			{% endif %}
+			<td><a href="{{ path('delete_user') }}?id={{user.id}}">delete</a></td>
 		</tr>
 	{% endfor %}
 </table>

@@ -55,7 +55,7 @@ class User implements UserInterface
     private $roles;
 
     public function __construct() {
-        $this->salt = md5(uniqid(null, true));
+        $this->salt = md5(uniqid(rand(), true));
     }
 
 
