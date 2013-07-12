@@ -128,15 +128,4 @@ class DefaultController extends Controller
 
         return array('sidelinks' => $sidebar, 'mainlinks' => $mainpage, 'title' => 'Links');
     }
-    /**
-     * @Route("/test", name="test")
-     * @Template()
-     */
-    public function testAction(Request $request) {
-        $flash = $request->getSession()->getFlashBag();
-        $flash->set('success', 'testing!');
-
-
-        return array('title' => "TEST");
-    }
 }
