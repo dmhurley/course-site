@@ -75,6 +75,14 @@ parameters:
                 route: clear_list
                 vars: ~
 
+        "Scores":
+            "Scores":
+                route: scores
+                vars: ~
+            "Find Scores":
+                route: main_page
+                vars: ~
+
         "Folders":
             "Folders":
                 route: view_folders
