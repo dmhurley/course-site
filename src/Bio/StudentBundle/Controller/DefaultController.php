@@ -126,29 +126,34 @@ class DefaultController extends Controller
             }
         }
 
-    	$form = $this->createFormBuilder($entity)
-    		->add('sid', 'text', array('label' => "Student ID:", 'read_only'=> true))
-    		->add('fName', 'text', array('label' => "First Name:"))
-    		->add('lName', 'text', array('label' => "Last Name:"))
-            ->add('section', 'text', array('label' => "Section:"))
-    		->add('email', 'email', array('label' => "Email:"))
-    		->add('Edit', 'submit')
-    		->getForm();
+        if ($entity) {
+        	$form = $this->createFormBuilder($entity)
+        		->add('sid', 'text', array('label' => "Student ID:", 'read_only'=> true))
+        		->add('fName', 'text', array('label' => "First Name:"))
+        		->add('lName', 'text', array('label' => "Last Name:"))
+                ->add('section', 'text', array('label' => "Section:"))
+        		->add('email', 'email', array('label' => "Email:"))
+        		->add('Edit', 'submit')
+        		->getForm();
 
-    	if ($request->getMethod() === "POST") {		// if request was sent
-    		$form->handleRequest($request);
-    		if ($form->isValid()) {					// and form was valid
-    			try {
-                    $this->editStudent($entity);
-                    $request->getSession()->getFlashBag()->set('success', "Student #".$entity->getSid()." updated.");
+        	if ($request->getMethod() === "POST") {		// if request was sent
+        		$form->handleRequest($request);
+        		if ($form->isValid()) {					// and form was valid
+        			try {
+                        $this->editStudent($entity);
+                        $request->getSession()->getFlashBag()->set('success', "Student #".$entity->getSid()." updated.");
 
-                    // will not save filtering or sorting in display.
-                    return $this->redirect($this->generateUrl('display_students'));
-                } catch (BioException $e) {
-                    $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
-                }
-    		}
-    	}
+                        // will not save filtering or sorting in display.
+                        return $this->redirect($this->generateUrl('display_students'));
+                    } catch (BioException $e) {
+                        $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
+                    }
+        		}
+        	}
+        } else {
+            $request->getSession()->getFlashBag()->set('failure', 'Could not find that student.');
+            return $this->redirect($this->generateUrl('display_students'));
+        }
 
     	return array('form' => $form->createView(), 'title' => "Edit Student");
     }

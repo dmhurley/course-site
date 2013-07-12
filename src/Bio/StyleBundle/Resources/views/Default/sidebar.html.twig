@@ -7,18 +7,19 @@
 				{% else %}
 					<li class="branch top">
 						<a href="{{ path(options[expanded][expanded]['route']) }}">{{expanded}}</a>
-
-						<ul class="twig">
-							{% for key1,value1 in options[key] %}
-								{% if key1 != expanded %}
-									{% if value1['vars'] %}
-										<li class="leaf"><a href="{{ path(value1['route'], value1['vars']) }}">{{key1}}</a></li>
-									{% else %}
-										<li class="leaf"><a href="{{ path(value1['route']) }}">{{ key1}}</a></li>
+						{% if options[key]|length > 1 %}
+							<ul class="twig">
+								{% for key1,value1 in options[key] %}
+									{% if key1 != expanded %}
+										{% if value1['vars'] %}
+											<li class="leaf"><a href="{{ path(value1['route'], value1['vars']) }}">{{key1}}</a></li>
+										{% else %}
+											<li class="leaf"><a href="{{ path(value1['route']) }}">{{ key1}}</a></li>
+										{% endif %}
 									{% endif %}
-								{% endif %}
-							{% endfor %}
-						</ul>
+								{% endfor %}
+							</ul>
+						{% endif %}
 					</li>
 				{% endif %}
 			{% endfor %}
@@ -29,6 +30,8 @@
 		<ul class="trunk">
 			<li class="branch"><a href="{{ path('main_page') }}">Home</a></li>
 			{% if root.folders|length > 0 %}
+
+
 				<li class="branch">
 					<a href="{{ path('public_folder', {'id' : 1}) }}">Folders</a>
 					<ul class="twig">
@@ -38,6 +41,7 @@
 					</ul>
 				</li>
 			{% endif %}
+
 
 			{% if root.files|length > 0 %}
 				<li class="branch">
@@ -50,6 +54,7 @@
 				</li>
 			{% endif %}
 
+
 			{% if links|length > 0 %}
 				<li class="branch">
 					<a href="{{ path('public_links') }}">Links</a>
@@ -59,6 +64,8 @@
 						{% endfor %}
 					</ul>
 				</li>
+
+
 			{% endif %}
 		</ul>
 	</div>

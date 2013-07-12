@@ -32,7 +32,7 @@
 			{% else %}
 				<td><a href="{{ path('mote_user', {'type' : 'de'}) }}?id={{user.id}}">demote</a></td>
 			{% endif %}
-			<td><a href="{{ path('delete_user') }}">delete</a></td>
+			<td><a href="{{ path('delete_user') }}?id={{user.id}}">delete</a></td>
 		</tr>
 	{% endfor %}
 </table>

@@ -66,7 +66,7 @@ class DefaultController extends Controller
         if ($request->headers->get('referer')){
             return $this->redirect($request->headers->get('referer'));
         } else {
-            return $this->redirect($this->generateUrl('view', array('entityName' => $lc)));
+            return $this->redirect($this->generateUrl('view_users'));
         }
     }
 
@@ -83,7 +83,7 @@ class DefaultController extends Controller
             if ($entity) {
                 $db->delete($entity);
                 $db->close();
-                $request->getSession()->getFlashBag()->set('success '.$entity->getUsername().' deleted.');
+                $request->getSession()->getFlashBag()->set('success', $entity->getUsername().' deleted.');
             } else {
                 $request->getSession()->getFlashBag()->set('failure', 'Could not find that user.');
             }
