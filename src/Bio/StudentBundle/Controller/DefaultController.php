@@ -24,7 +24,7 @@ class DefaultController extends Controller
      */
     public function findAction(Request $request){
         $form = $this->createFormBuilder(new Student())
-            ->add('sid', 'text', array('label' => "Student ID:", 'required' => false))
+            ->add('sid', 'text', array('label' => "Student ID:", 'required' => false, 'attr' => array('pattern' => '[0-9]{7}', 'title' => '7 digit student ID')))
             ->add('fName', 'text', array('label' => "First Name:", 'required' => false))
             ->add('lName', 'text', array('label' => "Last Name:", 'required' => false))
             ->add('section', 'text', array('label' => "Section:", 'required' => false))
@@ -34,32 +34,13 @@ class DefaultController extends Controller
 
         if ($request->getMethod() === "POST") {
             $values = $request->request->get('form');
-            $array = $this->generateArray($values['sid'], $values['fName'], $values['lName'], $values['section'], $values['email']);
+            $array = array_filter(array_slice($values, 0, 5));
             try {
                 $db = new Database($this, 'BioStudentBundle:Student');
                 $entities = $db->find($array, array('sid' => 'ASC'));
                 $request->getSession()->getFlashBag()->set('success', 'Students found!');
 
-                $get = "?filter=";
-                if ($values['sid']) {
-                    $get.=$values['sid'];
-                }
-                $get.="-";
-                if ($values['fName']) {
-                    $get.=$values['fName'];
-                }
-                $get.="-";
-                if ($values['lName']) {
-                    $get.=$values['lName'];
-                }
-                $get.="-";
-                if ($values['section']) {
-                    $get.=$values['section'];
-                }
-                $get.="-";
-                if ($values['email']) {
-                    $get.=$values['email'];
-                }
+                $get = "?filter=".implode(array_slice($values, 0, 5), '-');
 
                 return $this->redirect($this->generateUrl('display_students').$get);
             } catch (BioException $e){
@@ -70,26 +51,6 @@ class DefaultController extends Controller
         return array('form' => $form->createView(), 'title' => 'Find Student');
     }
 
-    private function generateArray($sid = null, $fName = null, $lName = null, $section = null, $email = null) {
-        $array = array();
-            if ($sid) {
-                $array['sid'] = $sid;
-            }
-            if ($fName) {
-                $array['fName'] = $fName;
-            }
-            if ($lName) {
-                $array['lName'] = $lName;
-            }
-            if ($section) {
-                $array['section'] = $section;
-            }
-            if ($email) {
-                $array['email'] = $email;
-            }
-        return $array;
-    }
-
     /**
      * @Route("/add", name="add_student")
      * @Template()
@@ -98,7 +59,7 @@ class DefaultController extends Controller
     {
     	$entity = new Student();
     	$form = $this->createFormBuilder($entity)
-    		->add('sid', 'text', array('label' => "Student ID:"))
+    		->add('sid', 'text', array('label' => "Student ID:", 'attr' => array('pattern' => '[0-9]{7}', 'title' => '7 digit student ID')))
     		->add('fName', 'text', array('label' => "First Name:"))
     		->add('lName', 'text', array('label' => "Last Name:"))
             ->add('section', 'text', array('label' => "Section:"))
@@ -207,8 +168,9 @@ class DefaultController extends Controller
         $array = array();
 
         if ($filter) {
-            list($sid, $fName, $lName, $section, $email) = explode("-", $filter);
-            $array = $this->generateArray($sid, $fName, $lName, $section, $email);
+            $array = explode("-", $filter);
+            $array = array_combine(array('sid', 'fName', 'lName', 'section', 'email'), $array);
+            $array = array_filter($array);
         }
 
         try {

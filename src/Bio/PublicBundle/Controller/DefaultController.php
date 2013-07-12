@@ -8,9 +8,11 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\SecurityContext;
+use Symfony\Component\HttpFoundation\Response;
 
 use Bio\DataBundle\Objects\Database;
 use Bio\UserBundle\Entity\User;
+use Bio\InfoBundle\Entity\Announcement;
 
 
 class DefaultController extends Controller
@@ -123,9 +125,17 @@ class DefaultController extends Controller
      */
     public function linkAction(Request $request) {
         $db = new Database($this, 'BioInfoBundle:Link');
-        $sidebar = $db->find(array('location' => 'sidebar'));
-        $mainpage = $db->find(array('location' => 'content'));
+        $sidebar = $db->find(array('location' => 'sidebar'), array(), false);
+        $mainpage = $db->find(array('location' => 'content'), array(), false);
 
         return array('sidelinks' => $sidebar, 'mainlinks' => $mainpage, 'title' => 'Links');
+    }
+
+    public function emailAction() {
+        $db = new Database($this, 'BioInfoBundle:Info');
+        $instructor = $db->findOne(array());
+        $link = 'mailto:';
+        $link.=$instructor->getEmail();
+        return new Response($link);
     }
 }

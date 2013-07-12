@@ -13,10 +13,10 @@ use Bio\DataBundle\Objects\Database;
 use Bio\FolderBundle\Entity\Folder;
 use Bio\FolderBundle\Entity\File;
 
-	/**
-     * @Route("/download")
-     * @Template()
-     */
+/**
+ * @Route("/download")
+ * @Template()
+ */
 class DownloadController extends Controller
 {
     /**

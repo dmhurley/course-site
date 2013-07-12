@@ -32,11 +32,14 @@ class DefaultController extends Controller
         if ($lc === 'announcement') {
             $entity->setTimestamp(new \DateTime());
             $entity->setExpiration((new \DateTime())->modify('+1 week'));
+        } else if ($lc === 'link') {
+            $entity->setAddress('http://');
         }
         $form = $entity->addToForm($this->createFormBuilder($entity))            
             ->add('add', 'submit')
             ->getForm();
 
+        $formclone = clone $form;
 
         $db = new Database($this, 'BioInfoBundle:'.$uc);
         if ($request->getMethod() === "POST") {
@@ -47,6 +50,7 @@ class DefaultController extends Controller
                 $db->close();
                 $request->getSession()->getFlashBag()->set('success', $uc.' added.');
             } else {
+                $formclone = $clone;
                 $request->getSession()->getFlashBag()->set('failure', 'Whoops.');
             }
         }
@@ -59,7 +63,7 @@ class DefaultController extends Controller
             $entities = $db->find(array(), array(), false);
         }
         return $this->render('BioInfoBundle:'.$uc.':'.$lc.'.html.twig', 
-                array('form' => $form->createView(), $lc.'s' => $entities, 'title' => 'Edit '.$uc));
+                array('form' => $formclone->createView(), $lc.'s' => $entities, 'title' => 'Edit '.$uc));
     }
 
     /**

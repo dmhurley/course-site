@@ -52,7 +52,7 @@ class CourseController extends Controller
     				), 'multiple' => true))
     		->add('startTime', 'time')
     		->add('endTime', 'time')
-    		->add('bldg', 'choice', array('choices' => array_combine($array, $array), 'validation_groups' => false))
+    		->add('bldg', 'choice', array('choices' => array_combine($array, $array)))
     		->add('room', 'text')
     		->add('email', 'email')
     		->add('edit', 'submit')
@@ -80,7 +80,9 @@ class CourseController extends Controller
     			} catch (BioException $e) {
                     $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
     			}
-    		}
+    		} else {
+                $request->getSession()->getFlashBag()->set('failure', 'Not updated. Please fix any errors.');
+            }
     	}
 
         return array('form' => $form->createView(), 'title' => "Edit Course Information");

@@ -63,7 +63,7 @@ class DefaultController extends Controller
     		$db = new Database($this, 'BioFolderBundle:'.$type);
 
     		$entity = $db->findOne(array('id' => $id));
-    		if($entity) {
+    		if($entity && $id !== '1') {
     			$db->delete($entity);
     			$db->close();
     			$request->getSession()->getFlashBag()->set('success', $type.' "'.$entity->getName().'" deleted.');
@@ -79,8 +79,9 @@ class DefaultController extends Controller
      * @Route("/addfolder", name="add_folder")
      */
     public function addFolderAction(Request $request) {
-        $folder = new Folder();
     	if ($request->getMethod() === "POST"){
+            $folder = new Folder();
+
 	    	$form = $this->createFormBuilder($folder)
 	    		->add('name', 'text')
 	    		->add('id', 'hidden', array('mapped' => false))
@@ -89,6 +90,7 @@ class DefaultController extends Controller
 	    	$form->handleRequest($request);
 
 	    	$db = new Database($this, 'BioFolderBundle:Folder');
+
 	    	$parent = $db->findOne(array('id' => $form->get('id')->getData()));
             if (!$parent) {
                 $request->getSession()->getFlashBag()->set('failure', "Parent folder could not be found.");
@@ -103,9 +105,9 @@ class DefaultController extends Controller
                     $request->getSession()->getFlashBag()->set('failure', "Folder could not be added.");
                 }
             }
+            return $this->redirect($this->generateUrl('view_folders').'?id='.$form->get('id')->getData());
 	    }
-
-	    return $this->redirect($this->generateUrl('view_folders').'?id='.$form->get('id')->getData());
+        return $this->redirect($this->generateUrl('view_folders'));
     }
 
 	/**
@@ -139,10 +141,9 @@ class DefaultController extends Controller
                      $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
                 }
             }
-            
+            return $this->redirect($this->generateUrl('view_folders').'?id='.$form->get('id')->getData());
 	    }
-
-	    return $this->redirect($this->generateUrl('view_folders').'?id='.$form->get('id')->getData());
+        return $this->redirect($this->generateUrl('view_folders'));
     }
 
     /**
@@ -163,8 +164,12 @@ class DefaultController extends Controller
                 $root = $db->findOne(array('id' => 1));
                 $db->deleteMany($root->getFolders()->toArray());
                 $db->deleteMany($root->getFiles()->toArray());
-                $db->close();
-                $request->getSession()->getFlashBag()->set('success', 'All folders deleted.');
+                try {
+                    $db->close();
+                    $request->getSession()->getFlashBag()->set('success', 'All folders deleted.');
+                } catch (BioException $e) {
+                    $request->getSession()->getFlashBag()->set('failure', 'Oops. Folders were not cleared.');
+                }
 
                 return $this->redirect($this->generateUrl('view_folders'));
             }
