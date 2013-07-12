@@ -32,29 +32,18 @@ class DefaultController extends Controller
     		$form->handleRequest($request);
 
     		if ($form->isValid() && file_exists($form->get('file')->getData())) {
-    			$filename = $form->get('file')->getData();
-		    	$file = file($filename, FILE_IGNORE_NEW_LINES);
+
+		    	$file = file($form->get('file')->getData(), FILE_IGNORE_NEW_LINES);
 		    	if (count($file) === 1){
 		    		$file = preg_split('/\r\n|\r|\n/', $file[0]);
 		    	}
-		    	$header = explode("\t", $file[0]); // get titles of tests. Column titles
 
-		    	for($i = 1; $i < count($file); $i++) { // go down the rows, starting at the second one
-		    		$data = explode("\t", $file[$i]);  // split row into columns
-		    		$score = new Scores();
-		    		$score->setSid($data[0]);
-		    		$array = array();
-
-		    		for ($j = 1; $j < count($data); $j++) { // go down columns starting at second one
-		    			$array[$header[$j]] = $data[$j];    // entries to titles
-		    		}
-
-		    		$score->setScores($array);
-		    		$db->add($score);
+		    	try {
+		    		$this->uploadStudentScores($file, $db);
+		    		$request->getSession()->getFlashBag()->set('success', 'Scores uploaded.');
+		    	} catch (BioException $e) {
+		    		$request->getSession()->getFlashBag()->set('failure', $e->getMessage());
 		    	}
-
-		    	$db->close();
-		    	$request->getSession()->getFlashBag()->set('success', 'Scores uploaded.');
 		    } else {
 		    	$request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
 		    }
@@ -63,5 +52,41 @@ class DefaultController extends Controller
     	$scores = $db->find(array(), array(), false);
 
         return array('form' => $form->createView(), 'scores' => $scores, 'title' => 'Scores');
+    }
+
+    private function uploadStudentScores($file, $db) {
+    	$entities = $db->truncate();
+        $sids = [];
+
+        $header = explode("\t", $file[0]); // get titles of tests. Column titles
+
+    	for($i = 1; $i < count($file); $i++) { // go down the rows, starting at the second one
+	    	$data = explode("\t", $file[$i]);  // split row into columns
+	    	$sid = $data[0].'';
+	    	if (!in_array($sid, $sids)) {
+	    		$score = new Scores();
+	    		while (strlen($sid) < 7) {
+                	$sid = "0".$sid;
+            	}
+	    		$score->setSid($sid);
+	    		$array = array();
+
+	    		for ($j = 1; $j < count($data); $j++) { // go down columns starting at second one
+	    			$array[$header[$j]] = $data[$j];    // entries to titles
+	    		}
+	    		$score->setScores($array);
+    			$sids[] = $sid;
+    			$db->add($score);
+    		} else {
+    			$db->clear();
+    			for ($j = 0; $j < count($entities); $j++) {
+                    $db->add($entities[$j]);
+                }
+                $db->close();
+                throw new BioException("The file contained duplicated Student IDs.");
+    		}
+    	}
+    	
+    	$db->close("Could not persist scores to database.");
     }
 }
