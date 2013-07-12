@@ -1,5 +1,34 @@
 {% extends 'BioStyleBundle:Default:main.html.twig' %}
 
+{% block head %}
+	{{ parent() }}
+		{% stylesheets 'bundles/biostudent/css/form.css'
+					   'bundles/bioscore/css/tableextension.css' filter="cssrewrite" output="css/*.css" %}
+			<link rel="stylesheet" href="{{ asset_url }}" />
+		{% endstylesheets %}
+{% endblock %}
+
 {% block content %}
 	{{ form(form) }}
+
+	<div id="scroller">
+		{% if scores|length > 0 %}
+			<table border="1px">
+				<tr>
+					<th>Sid</th>
+					{% for key in scores[0].scores|keys %}
+						<th>{{key}}</th>
+					{% endfor %}
+				</tr>
+				{% for person in scores %}
+					<tr>
+						<td>{{person.sid}}</td>
+						{% for test in person.scores %}
+							<td>{{test}}</td>
+						{% endfor %}
+					</tr>
+				{% endfor %}
+			</table>
+		{% endif %}
+	</div>
 {% endblock %}

@@ -1,0 +1,15 @@
+#scroller{
+	overflow: scroll;
+	max-height:500px;
+	width: 90%;
+	margin: 30px auto 15px auto;
+}
+
+#scroller table {
+	width: auto;
+	margin:0px;
+}
+
+#scroller th, #scroller td {
+	min-width: 75px;
+}
