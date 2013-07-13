@@ -13,10 +13,13 @@ use Bio\DataBundle\Objects\Database;
 
 use Bio\ScoreBundle\Entity\Scores;
 
+/**
+ * @Route("/admin/scores")
+ */
 class DefaultController extends Controller
 {
     /**
-     * @Route("/admin/scores", name="scores")
+     * @Route("/", name="scores")
      * @Template()
      */
     public function indexAction(Request $request)
@@ -52,6 +55,28 @@ class DefaultController extends Controller
     	$scores = $db->find(array(), array(), false);
 
         return array('form' => $form->createView(), 'scores' => $scores, 'title' => 'Scores');
+    }
+
+    /**
+     * @Route("/../../scores/find")
+     * @Template("BioScoreBundle:Default:index.html.twig")
+     */
+    public function findAction(Request $request) {
+    	$form = $this->createFormBuilder()
+    		->add('sid', 'text', array('label' => 'Student ID:', 'mapped' => false))
+    		->add('find', 'submit')
+    		->getForm();
+    	$scores = array();
+    	if ($request->getMethod() === "POST") {
+    		$form->handleRequest($request);
+
+    		if ($form->isValid()) {
+    			$db = new Database($this, 'BioScoreBundle:Scores');
+    			$scores = $db->find(array('sid' => $form->get('sid')->getData()), array(), false);
+    		}
+    	}
+
+    	return array('scores'=>$scores, 'form' => $form->createView(), 'title' => 'View Your Scores');
     }
 
     private function uploadStudentScores($file, $db) {

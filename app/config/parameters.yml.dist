@@ -80,7 +80,7 @@ parameters:
                 route: scores
                 vars: ~
             "Find Scores":
-                route: main_page
+                route: find_score
                 vars: ~
 
         "Folders":
