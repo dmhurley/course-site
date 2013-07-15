@@ -15,7 +15,11 @@ parameters:
     secret:            ThisTokenIsNotSoSecretChangeIt
 
     site_name:         Bio 999
-    sidebar: 
+    sidebar:
+        "Admin":
+            "Admin":
+                route: main_admin_page
+                vars: ~
         "Course Info":
             "Course Info":
                 route: info_instruct
