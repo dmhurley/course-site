@@ -18,6 +18,14 @@ use Bio\DataBundle\Exception\BioException;
  */
 class DefaultController extends Controller {
     /**
+     * @Route("/", name="clicker_instruct")
+     * @Template()
+     */
+    public function instructionAction() {
+        return array('title' => 'Clickers');
+    }
+
+    /**
      * @Route("/../../clicker/register")
      * @Template()
      */

@@ -20,7 +20,15 @@ use Bio\ScoreBundle\Entity\Stat;
 class DefaultController extends Controller
 {
     /**
-     * @Route("/", name="scores")
+     * @Route("/", name="scores_instruct")
+     * @Template()
+     */
+    public function instructionAction() {
+        return array('title' => 'Scores');
+    }
+
+    /**
+     * @Route("/upload", name="scores")
      * @Template()
      */
     public function indexAction(Request $request)
