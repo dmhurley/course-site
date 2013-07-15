@@ -10,9 +10,8 @@
 
 {% block content %}
 	{{ form(form) }}
-
-	<div id="scroller">
-		{% if scores|length > 0 %}
+	{% if scores|length > 0 %}
+		<div id="scroller">
 			<table border="1px">
 				<tr>
 					<th>Sid</th>
@@ -29,6 +28,6 @@
 					</tr>
 				{% endfor %}
 			</table>
-		{% endif %}
-	</div>
+		</div>
+	{% endif %}
 {% endblock %}

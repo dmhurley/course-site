@@ -58,12 +58,12 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/../../scores/find")
+     * @Route("/../../scores/find", name="find_score")
      * @Template("BioScoreBundle:Default:index.html.twig")
      */
     public function findAction(Request $request) {
     	$form = $this->createFormBuilder()
-    		->add('sid', 'text', array('label' => 'Student ID:', 'mapped' => false))
+    		->add('sid', 'text', array('label' => 'Student ID:', 'mapped' => false, 'attr' => array('pattern' => '[0-9]{7}', 'title' => '7 digit student ID')))
     		->add('find', 'submit')
     		->getForm();
     	$scores = array();
@@ -73,6 +73,10 @@ class DefaultController extends Controller
     		if ($form->isValid()) {
     			$db = new Database($this, 'BioScoreBundle:Scores');
     			$scores = $db->find(array('sid' => $form->get('sid')->getData()), array(), false);
+
+    			if (!$scores) {
+    				$request->getSession()->getFlashBag()->set('failure', 'Scores could not be found.');
+    			}
     		}
     	}
 
