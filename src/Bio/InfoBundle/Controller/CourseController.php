@@ -32,10 +32,12 @@ class CourseController extends Controller
      * @Route("/customlink", name="fake_link")
      * @Template("BioInfoBundle:Link:link.html.twig")
      */
-    public function addLinkAction() {
+    public function addLinkAction(Request $request) {
         $link = new Link();
-        $link->setTitle('Clicker Registration');
-        $link->setAddress($this->generateUrl('register_clicker'));
+        if ($request->query->get('title') && $request->query->get('route')) {
+            $link->setTitle($request->query->get('title'))
+                ->setAddress($this->generateUrl($request->query->get('route')));
+        }
         $form = $link->addToForm($this->createFormBuilder($link))
             ->setAction($this->generateUrl('view', array('entityName' => 'link')))            
             ->add('add', 'submit')

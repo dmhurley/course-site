@@ -16,7 +16,7 @@
 			<img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2> Find Scores </h2>
-		<p>The link to this page is public. Meaning that anyone can access it without having to sign in. However by default this link cannot be found anywhere on the site. You can add a link to it by clicking <a href="{{ path('fake_link') }}">here</a>. Or distribute it yourself with the url <input onClick="this.select();" value="{{ url('find_score') }}" />.</p>
+		<p>The link to this page is public. Meaning that anyone can access it without having to sign in. However by default this link cannot be found anywhere on the site. You can add a link to it by clicking <a href="{{ path('fake_link') }}?title=Find Scores&route=find_score">here</a>. Or distribute it yourself with the url <input onClick="this.select();" value="{{ url('find_score') }}" />.</p>
 
 		<p> After a student enters their ID number. The page will display their scores along with any statistics given.</p>
 	</div>
