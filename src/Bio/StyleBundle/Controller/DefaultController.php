@@ -20,7 +20,7 @@ class DefaultController extends Controller
 
 			if ($route == 'display_students' || $route == 'find_student' || 
 				$route == 'edit_student' || $route == 'add_student' || 
-				$route == 'upload_student') {
+				$route == 'upload_student' || $route == 'students_instruct') {
 					$expanded = 'Students';
 			} else if ( $route == 'register_clicker' || $route == 'download_list' ||
 						$route == 'clear_list') {

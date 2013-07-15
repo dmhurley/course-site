@@ -1,0 +1,35 @@
+{% extends 'BioStyleBundle:Default:instruction.html.twig' %}
+
+{% block content %}
+	<div>
+		<h2> Display </h2>
+			{% image 'bundles/biostudent/images/display.png' output='/images/*.png' %}
+			    <img src="{{ asset_url }}"/>
+			{% endimage %}
+		<p> The display page shows you a list of all students and their basic information such as student ID, name, section, and email. And allows you to edit their information or delete them from the list. Keep in mind that any actions done here will <b>not</b> be reflected anywhere else and <b>will be overwritten</b> if you upload a student list from the registrar. You can sort by any field alphabetically ascending by clicking on the links at the top of the table.</p>
+	</div>
+
+	<div>
+		<h2> Find </h2>
+			{% image 'bundles/biostudent/images/find.png' output='/images/*.png' %}
+			    <img src="{{ asset_url }}"/>
+			{% endimage %}
+		<p> If you wish to find a certain student among the list, or perhaps view all students in a section. The find page will allow you to do so. From this page you can search by any combination of fields, and additionally edit, delete, and sort from the displayed list.</p>
+	</div>
+
+	<div>
+		<h2> Add </h2>
+			{% image 'bundles/biostudent/images/add.png' output='/images/*.png' %}
+			    <img src="{{ asset_url }}"/>
+			{% endimage %}
+		<p> The add page lets you add students to the list. Keep in mind that any changes here will not be reflected in the official list. </p>
+	</div>
+
+	<div>
+		<h2> Upload </h2>
+			{% image 'bundles/biostudent/images/upload.png' output='/images/*.png' %}
+			    <img src="{{ asset_url }}"/>
+			{% endimage %}
+		<p> From here you can upload <b>.csv</b> files from the registrars office. This will only work if the file is properly formatted. Keep in mind that uploading a list will completely overwrite any changes you have made.</p>
+	</div>
+{% endblock %}

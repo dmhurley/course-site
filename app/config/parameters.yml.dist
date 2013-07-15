@@ -46,7 +46,7 @@ parameters:
 
         "Students":
             "Students":
-                route: display_students
+                route: students_instruct
                 vars: ~
             "Display":
                 route: display_students
