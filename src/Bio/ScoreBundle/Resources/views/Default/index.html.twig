@@ -25,7 +25,9 @@
 							<td>{{stat.name|capitalize}}</td>
 							{% for test in stat.stats %}
 								<td>
-									{% if '.' in test %}
+									{% if test =='' %}
+										-
+									{% elseif '.' in test %}
 										{{test|number_format(3, '.', '')}}
 									{% else %}
 										{{test|number_format(1, '.', '')}}
@@ -39,7 +41,11 @@
 					<tr>
 						<td>{{person.sid}}</td>
 						{% for test in person.scores %}
-							<td>{{test}}</td>
+							{% if test == '' %}
+								<td> - </td>
+							{% else %}
+								<td>{{test}}</td>
+							{% endif %}
 						{% endfor %}
 					</tr>
 				{% endfor %}
