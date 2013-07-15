@@ -63,7 +63,7 @@ parameters:
 
         "Clickers":
             "Clickers":
-                route: register_clicker
+                route: clicker_instruct
                 vars: ~
             "Register":
                 route: register_clicker

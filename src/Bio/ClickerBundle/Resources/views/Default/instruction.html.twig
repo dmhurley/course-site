@@ -1,0 +1,27 @@
+{% extends 'BioStyleBundle:Default:instruction.html.twig' %}
+
+{% block content %}
+	<div>
+		{% image 'bundles/bioclicker/images/register.png' output='/images/*.png' %}
+			<img src="{{ asset_url }}"/>
+		{% endimage %}
+		<h2> Register </h2>
+		<p> The link to this page is public. Meaning that anyone can access and register a clicker without having to sign in. However by default this link cannot be found anywhere on the site. You can add a link to it by clicking <a href="">here</a>. Or distribute it yourself with the url <input onClick="this.select();" value="{{ url('register_clicker') }}" />.</p>
+	</div>
+
+	<div>
+		{% image 'bundles/bioclicker/images/download.png' output='/images/*.png' %}
+			<img src="{{ asset_url }}"/>
+		{% endimage %}
+		<h2> Download </h2>
+		<p>This link will download a properly formatted .xls file containing all students registered and their clicker IDs for use with BLANKBLANKBLANK software.</p>
+	</div>
+
+	<div>
+		{% image 'bundles/bioclicker/images/clear.png' output='/images/*.png' %}
+			<img src="{{ asset_url }}"/>
+		{% endimage %}
+		<h2> Clear </h2>
+		<p>A quick way to delete all registrations at the end of a quarter. This action <b>cannot</b> be undone.</p>
+	</div>
+{% endblock %}
