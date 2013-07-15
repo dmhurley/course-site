@@ -1,3 +1,12 @@
+bio_score:
+    resource: "@BioScoreBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+find_score:
+    path:     /scores/find
+    defaults: { _controller: BioScoreBundle:Default:find }
+
 bio_user:
     resource: "@BioUserBundle/Controller/"
     type:     annotation

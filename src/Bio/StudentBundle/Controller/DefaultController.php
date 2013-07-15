@@ -260,7 +260,7 @@ class DefaultController extends Controller
             } else {
                 $db->clear();
                 for ($j = 0; $j < count($entities); $j++) {
-                    $em->persist($entities[$j]);
+                    $db->add($entities[$j]);
                 }
                 $db->close();
                 throw new BioException("The file contained duplicate Student IDs or emails.");

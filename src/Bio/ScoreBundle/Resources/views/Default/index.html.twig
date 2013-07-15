@@ -1,0 +1,55 @@
+{% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block head %}
+	{{ parent() }}
+		{% stylesheets 'bundles/biostudent/css/form.css'
+					   'bundles/bioscore/css/tableextension.css' filter="cssrewrite" output="css/*.css" %}
+			<link rel="stylesheet" href="{{ asset_url }}" />
+		{% endstylesheets %}
+{% endblock %}
+
+{% block content %}
+	{{ form(form) }}
+	{% if scores|length > 0 %}
+		<div id="scroller">
+			<table border="1px">
+				<tr>
+					<th></th>
+					{% for key in scores[0].scores|keys %}
+						<th>{{key}}</th>
+					{% endfor %}
+				</tr>
+				{% if stats|length > 0 %}
+					{% for stat in stats %}
+						<tr>
+							<td>{{stat.name|capitalize}}</td>
+							{% for test in stat.stats %}
+								<td>
+									{% if test =='' %}
+										-
+									{% elseif '.' in test %}
+										{{test|number_format(3, '.', '')}}
+									{% else %}
+										{{test|number_format(1, '.', '')}}
+									{% endif %}
+								</td>
+							{% endfor %}
+						</tr>
+					{% endfor %}
+				{% endif %}
+				{% for person in scores %}
+					<tr>
+						<td>{{person.sid}}</td>
+						{% for test in person.scores %}
+							{% if test == '' %}
+								<td> - </td>
+							{% else %}
+								<td>{{test}}</td>
+							{% endif %}
+						{% endfor %}
+					</tr>
+				{% endfor %}
+			</table>
+		</div>
+	{% endif %}
+{% endblock %}
