@@ -72,7 +72,7 @@ class Database {
 	}
 
 	public function clear() {
-		$em->clear();
+		$this->em->clear();
 	}
 
 	public function close($errorMessage = 'Could not persist objects to database') {

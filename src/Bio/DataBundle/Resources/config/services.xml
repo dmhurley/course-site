@@ -7,12 +7,13 @@
     
     <parameters>
         <parameter key="bio_data.privatestring.class">Bio\DataBundle\Type\PrivateTextType</parameter>
+        <parameter key="secret.token">THIS IS A SECRET</parameter>
     </parameters>
 
     <services>
         <service id="bio_data.privatestring" class="%bio_data.privatestring.class%">
-            <call method="setKey">
-                <argument>secret</argument>
+            <call method="setSalt">
+                <argument type="string">%secret.token%</argument>
             </call>
         </service>
     </services>

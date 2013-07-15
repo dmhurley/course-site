@@ -31,7 +31,9 @@ class DefaultController extends Controller
 				$expanded = 'Folders';
 			} else if ($route == 'view_users') {
 				$expanded = 'Users';
-			}else {
+			} else if($route == 'scores' || $route == 'find_score') {
+				$expanded = 'Scores';
+			} else {
 				$expanded = '';
 			}
 

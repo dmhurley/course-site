@@ -7,8 +7,9 @@ Welcome to a GitHub Repository for the University of Washington Biology Departme
 ------------------------------
 
 #### Requirements
-* The latest version of mcrypt and libmcrypt must be installed.
 * PHP version 5.4.1+ must be installed
+* MySQL must installed. Or at least another doctrine compatible database.
+* The latest version of mcrypt and libmcrypt must be installed.
 * The permissions of app/cache and app/log [***must*** be set correctly](http://symfony.com/doc/current/book/installation.html#configuration-and-setup)
 * if apache does not follow symlinks. Assets must be installed with `php app/console assets:install`
 
@@ -82,17 +83,3 @@ Make sure that the root folder has an Id of `1`, or it will not be recognized.
     2. `ROLE_ADMIN`: can edit all aspects of the site ***except*** for other users.
     3. `ROLE_SUPER_ADMIN`: can promote, demote, or delete users.
     4. `ROLE_SETUP`: Used for debugging. Can't be seen or deleted on the User admin screen. Can switch roles.
-
-
-2) Bundles
-------------------------------
-
-* Student Bundle
-    + Allows adding, deleting, and editing students. Along with uploading lists in the .csv format.
-* Style Bundle
-    + Responsible for the look and feel of the site.
-    + All other bundles extend it's main.html.twig view.
-* Clicker Bundle
-    + Allows the registration of clickers. Along with downloading a list of registered clickers and clearing all registrations.
-* Info Bundle
-    + working on it....
