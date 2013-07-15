@@ -18,6 +18,15 @@ use Bio\DataBundle\Exception\BioException;
  */
 class CourseController extends Controller
 {
+
+    /**
+     * @Route("/", name="info_instruct")
+     * @Template()
+     */
+    public function instructionAction() {
+        return array ('title' => 'Course Info');
+    }
+
     /**
      * @Route("/edit", name="edit_info")
      * @Template()

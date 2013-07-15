@@ -18,7 +18,7 @@ parameters:
     sidebar: 
         "Course Info":
             "Course Info":
-                route: edit_info
+                route: info_instruct
                 vars: ~
             "Edit Info":
                 route: edit_info
