@@ -1,0 +1,23 @@
+{% extends 'BioStyleBundle:Default:instruction.html.twig' %}
+
+{% block content %}
+	<div>
+		{% image 'bundles/bioscore/images/upload.png' output='/images/*.png' %}
+			<img src="{{ asset_url }}"/>
+		{% endimage %}
+		<h2> Upload </h2>
+		<p>From this page you can upload student scores from excel. Make sure to save the file as a <i>Tab Delimited Text (.txt)</i> file with names of assignments as the first row and student IDs as the first column or uploading will not work. Statistics can be added as well. Instead of a student ID number, simply replace it with the name of the statistic.</p>
+
+		<p> Uploading a new file will completely overwrite the current file. It <b>cannot</b> be undone.</p>
+	</div>
+
+	<div>
+		{% image 'bundles/bioscore/images/find.png' output='/images/*.png' %}
+			<img src="{{ asset_url }}"/>
+		{% endimage %}
+		<h2> Find Scores </h2>
+		<p>The link to this page is public. Meaning that anyone can access it without having to sign in. However by default this link cannot be found anywhere on the site. You can add a link to it by clicking <a href="{{ path('fake_link') }}">here</a>. Or distribute it yourself with the url <input onClick="this.select();" value="{{ url('find_score') }}" />.</p>
+
+		<p> After a student enters their ID number. The page will display their scores along with any statistics given.</p>
+	</div>
+{% endblock %}
