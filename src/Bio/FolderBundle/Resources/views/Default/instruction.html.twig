@@ -1,11 +1,12 @@
 {% extends 'BioStyleBundle:Default:instruction.html.twig' %}
 
 {% block content %}
+	<p>Welcome to the Folder section. From here you can created many levels of nested folders to <a href="{{ path('view_folders') }}">organize</a> any files you want to be accessible from the main page.</p>
 	<div>
 		{% image 'bundles/biofolder/images/manage.png' output='/images/*.png' %}
 			<img src="{{ asset_url }}"/>
 		{% endimage %}
-		<h2> Manage </h2>
+		<h2><a href="{{ path('view_folders') }}">Manage</a></h2>
 		<p> Folders are a great way for you to organize files on your course site. The first folder you'll start with is the root folder, and it cannot be deleted. Any folders that are direct children of the the root folder will show up on the sidebar under <b>Folders</b>. Likewise, any files that are a direct child of the root folder will appear in the sidebar under <b>Files</b>. </p>
 
 		<p>Folders can have many folders and files inside of them. In fact you can safely nest folders many levels deep. In order to place a file or folder inside another folder, click on the parent folders link. When properly selected, you'll see a small label next to the folder name saying <i> - selected </i>, now any folders or files you add will go into that folder.</p>
@@ -19,7 +20,7 @@
 		{% image 'bundles/biofolder/images/clear.png' output='/images/*.png' %}
 			<img src="{{ asset_url }}"/>
 		{% endimage %}
-		<h2> Clear </h2>
+		<h2><a href="{{ path('clear_folders') }}">Clear</a></h2>
 		<p>Quickly delete every folder except for <i>root</i>. There is <b>no</b> way to undo this.</p>
 	</div>
 {% endblock %}
