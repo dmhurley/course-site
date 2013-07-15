@@ -2,7 +2,7 @@
 
 {% block head %}
 	{{ parent() }}
-		{% stylesheets 'bundles/biostudent/css/form.css' filter="cssrewrite" output="css/*.css" %}
+		{% stylesheets 'bundles/biostudent/css/form.css' 'bundles/biostyle/css/instruction.css' filter="cssrewrite" output="css/*.css" %}
 			<link rel="stylesheet" href="{{ asset_url }}" />
 		{% endstylesheets %}
 
@@ -36,4 +36,14 @@
 		</tr>
 	{% endfor %}
 </table>
+
+<div>
+	{% image 'bundles/biouser/images/login.png' output='/images/*.png' %}
+		<img src="{{ asset_url }}"/>
+	{% endimage %}
+	<h2>Instructions</h2>
+	<p>A user can have one of three different roles. If a user has the role <i>USER</i> they cannot access anything that is not already publicly available. A user with the role <i>ADMIN</i> has the power to edit everything on the course website <b>except</b> for this page. Finally anyone with the role <i>SUPER ADMIN</i> can edit everything on the site and promote, demote, or delete any user <b>including themselves</b> (be careful). To see what role you have, look for the dark grey text at the top right of the page next to the logout button.</p>
+
+	<p>If you want to give other instructors or TAs access to the admin portion of the site. They must first register an account and be promoted from this page. It's not recommended to promote anyone but yourself to the role of <i>SUPER ADMIN</i>.</p>
+</div>
 {% endblock %}

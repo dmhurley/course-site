@@ -1,0 +1,22 @@
+{% extends 'BioStyleBundle:Default:instruction.html.twig' %}
+
+{% block content %}
+	<div>
+		{% image 'bundles/biopublic/images/mainpage.png' output='/images/*.png' %}
+			<img src="{{ asset_url }}"/>
+		{% endimage %}
+		<h2> Welcome </h2>
+		<p>This is the admin portion of the site. Where you can do everything from edit basic course info, to folder management. The small links on the sidebar contain all your available tools. If you'd like to read about how to use them, click the on the larger links (such as <i>COURSE INFO</i>, <i>STUDENTS</i>,or <i>SCORES</i>), they will give detailed instructions on how to use these tools to quickly setup and manage your course site.</p>
+
+		<p>After making an edit you'll usually come across a colored bar on the top of your page. If the operation was a success the bar will be green with a checkmark. If the operation failed for some reason it will be red with a large <i>X</i>. Any error will usually be accompanied with a descriptive message of what went wrong.</p>
+	</div>
+
+	<div>
+		<div class="success">
+			This means that the operation was a success!
+		</div>
+		<div class="failure">
+			The operation failed. You should fix the problem and try again.
+		</div>
+	</div>
+{% endblock %}

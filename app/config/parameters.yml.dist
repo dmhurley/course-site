@@ -15,10 +15,14 @@ parameters:
     secret:            ThisTokenIsNotSoSecretChangeIt
 
     site_name:         Bio 999
-    sidebar: 
+    sidebar:
+        "Admin":
+            "Admin":
+                route: main_admin_page
+                vars: ~
         "Course Info":
             "Course Info":
-                route: edit_info
+                route: info_instruct
                 vars: ~
             "Edit Info":
                 route: edit_info
@@ -46,7 +50,7 @@ parameters:
 
         "Students":
             "Students":
-                route: display_students
+                route: students_instruct
                 vars: ~
             "Display":
                 route: display_students
@@ -63,7 +67,7 @@ parameters:
 
         "Clickers":
             "Clickers":
-                route: register_clicker
+                route: clicker_instruct
                 vars: ~
             "Register":
                 route: register_clicker
@@ -77,6 +81,9 @@ parameters:
 
         "Scores":
             "Scores":
+                route: scores_instruct
+                vars: ~
+            "Upload":
                 route: scores
                 vars: ~
             "Find Scores":
@@ -85,7 +92,13 @@ parameters:
 
         "Folders":
             "Folders":
+                route: folders_instruct
+                vars: ~
+            "Manage":
                 route: view_folders
+                vars: ~
+            "Clear":
+                route: clear_folders
                 vars: ~
 
         "Users":

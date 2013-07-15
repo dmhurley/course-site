@@ -19,6 +19,14 @@ use Bio\DataBundle\Objects\Database;
 class DefaultController extends Controller
 {
     /**
+     * @Route("/", name="students_instruct")
+     * @Template()
+     */
+    public function instructionAction() {
+        return array('title' => "Students");
+    }
+
+    /**
      * @Route("/find", name="find_student")
      * @Template("BioStudentBundle:Default:delete.html.twig")
      */
@@ -159,8 +167,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/", name="display_students")
-     * @Route("/display")
+     * @Route("/display", name="display_students")
      * @Template()
      */
     public function displayAction(Request $request) {
