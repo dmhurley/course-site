@@ -12,6 +12,7 @@ use Bio\DataBundle\Exception\BioException;
 use Bio\DataBundle\Objects\Database;
 
 use Bio\ScoreBundle\Entity\Scores;
+use Bio\ScoreBundle\Entity\Stat;
 
 /**
  * @Route("/admin/scores")
@@ -53,8 +54,10 @@ class DefaultController extends Controller
 	    }
 
     	$scores = $db->find(array(), array(), false);
+    	$db = new Database($this, 'BioScoreBundle:Stat');
+    	$stats = $db->find(array(), array(), false);
 
-        return array('form' => $form->createView(), 'scores' => $scores, 'title' => 'Scores');
+        return array('form' => $form->createView(), 'scores' => $scores, 'stats'=>$stats, 'title' => 'Scores');
     }
 
     /**
@@ -67,6 +70,7 @@ class DefaultController extends Controller
     		->add('find', 'submit')
     		->getForm();
     	$scores = array();
+    	$stats = array();
     	if ($request->getMethod() === "POST") {
     		$form->handleRequest($request);
 
@@ -74,48 +78,73 @@ class DefaultController extends Controller
     			$db = new Database($this, 'BioScoreBundle:Scores');
     			$scores = $db->find(array('sid' => $form->get('sid')->getData()), array(), false);
 
+    			$db = new Database($this, 'BioScoreBundle:Stat');
+    			$stats = $db->find(array(), array(), false);
+
     			if (!$scores) {
     				$request->getSession()->getFlashBag()->set('failure', 'Scores could not be found.');
     			}
     		}
     	}
 
-    	return array('scores'=>$scores, 'form' => $form->createView(), 'title' => 'View Your Scores');
+    	return array('scores'=>$scores, 'stats'=>$stats, 'form' => $form->createView(), 'title' => 'View Your Scores');
     }
 
     private function uploadStudentScores($file, $db) {
     	$entities = $db->truncate();
+    	$tempDb = new Database($this, 'BioScoreBundle:Stat');
+    	$stats = $tempDb->truncate();
         $sids = [];
 
         $header = explode("\t", $file[0]); // get titles of tests. Column titles
 
     	for($i = 1; $i < count($file); $i++) { // go down the rows, starting at the second one
 	    	$data = explode("\t", $file[$i]);  // split row into columns
-	    	$sid = $data[0].'';
-	    	if (!in_array($sid, $sids)) {
-	    		$score = new Scores();
-	    		while (strlen($sid) < 7) {
-                	$sid = "0".$sid;
-            	}
-	    		$score->setSid($sid);
-	    		$array = array();
+	    	if (!preg_match('/[0-9]/', $data[0])) {
+	    		$db->add($this->createStat($header, $data));
+	    	} else {
+		    	$sid = $data[0].'';
+		    	if (!in_array($sid, $sids)) {
+		    		$score = new Scores();
+		    		while (strlen($sid) < 7) {
+	                	$sid = "0".$sid;
+	            	}
+		    		$score->setSid($sid);
+		    		$array = array();
 
-	    		for ($j = 1; $j < count($data); $j++) { // go down columns starting at second one
-	    			$array[$header[$j]] = $data[$j];    // entries to titles
+		    		for ($j = 1; $j < count($data); $j++) { // go down columns starting at second one
+		    			$array[$header[$j]] = $data[$j];    // entries to titles
+		    		}
+		    		$score->setScores($array);
+	    			$sids[] = $sid;
+	    			$db->add($score);
+	    		} else {
+	    			$db->clear();
+	    			for ($j = 0; $j < count($entities); $j++) {
+	                    $db->add($entities[$j]);
+	                }
+	                for ($j = 0; $j < count($stats); $j++) {
+	                	$db->add($stats[$j]);
+	                }
+	                $db->close();
+	                throw new BioException("The file contained duplicated Student IDs.");
 	    		}
-	    		$score->setScores($array);
-    			$sids[] = $sid;
-    			$db->add($score);
-    		} else {
-    			$db->clear();
-    			for ($j = 0; $j < count($entities); $j++) {
-                    $db->add($entities[$j]);
-                }
-                $db->close();
-                throw new BioException("The file contained duplicated Student IDs.");
-    		}
+	    	}
     	}
     	
     	$db->close("Could not persist scores to database.");
+    }
+
+    private function createStat($header, $data) {
+    	$stat = new Stat();
+    	$stat->setName($data[0]);
+
+    	$array = array();
+    	for ($j = 1; $j < count($data); $j++) {
+    		$array[$header[$j]] = $data[$j];
+    	}
+    	$stat->setStats($array);
+
+    	return $stat;
     }
 }

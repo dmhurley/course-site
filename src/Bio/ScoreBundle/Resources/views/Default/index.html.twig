@@ -14,11 +14,27 @@
 		<div id="scroller">
 			<table border="1px">
 				<tr>
-					<th>Sid</th>
+					<th></th>
 					{% for key in scores[0].scores|keys %}
 						<th>{{key}}</th>
 					{% endfor %}
 				</tr>
+				{% if stats|length > 0 %}
+					{% for stat in stats %}
+						<tr>
+							<td>{{stat.name|capitalize}}</td>
+							{% for test in stat.stats %}
+								<td>
+									{% if '.' in test %}
+										{{test|number_format(3, '.', '')}}
+									{% else %}
+										{{test|number_format(1, '.', '')}}
+									{% endif %}
+								</td>
+							{% endfor %}
+						</tr>
+					{% endfor %}
+				{% endif %}
 				{% for person in scores %}
 					<tr>
 						<td>{{person.sid}}</td>
