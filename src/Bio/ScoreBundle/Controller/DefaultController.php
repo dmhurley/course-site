@@ -51,6 +51,7 @@ class DefaultController extends Controller
 		    } else {
 		    	$request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
 		    }
+		    return $this->redirect($this->generateUrl('scores'));
 	    }
 
     	$scores = $db->find(array(), array(), false);
@@ -98,13 +99,19 @@ class DefaultController extends Controller
 
         $header = explode("\t", $file[0]); // get titles of tests. Column titles
 
-    	for($i = 1; $i < count($file); $i++) { // go down the rows, starting at the second one
-	    	$data = explode("\t", $file[$i]);  // split row into columns
-	    	if (!preg_match('/[0-9]/', $data[0])) {
-	    		$db->add($this->createStat($header, $data));
-	    	} else {
-		    	$sid = $data[0].'';
-		    	if (!in_array($sid, $sids)) {
+        try {
+	    	for($i = 1; $i < count($file); $i++) { // go down the rows, starting at the second one
+		    	$data = explode("\t", $file[$i]);  // split row into columns
+		    	if (count($header) !== count($data)) {
+		    		throw new BioException('Improperly formatted file. All rows must have the same number of columns.');
+		    	}
+		    	if (!preg_match('/[0-9]/', $data[0])) {
+		    		$db->add($this->createStat($header, $data));
+		    	} else {
+			    	$sid = $data[0].'';
+			    	if (in_array($sid, $sids)) {
+			    		throw new BioException('The file contained duplicate Student IDs.');
+		    		}
 		    		$score = new Scores();
 		    		while (strlen($sid) < 7) {
 	                	$sid = "0".$sid;
@@ -118,19 +125,19 @@ class DefaultController extends Controller
 		    		$score->setScores($array);
 	    			$sids[] = $sid;
 	    			$db->add($score);
-	    		} else {
-	    			$db->clear();
-	    			for ($j = 0; $j < count($entities); $j++) {
-	                    $db->add($entities[$j]);
-	                }
-	                for ($j = 0; $j < count($stats); $j++) {
-	                	$db->add($stats[$j]);
-	                }
-	                $db->close();
-	                throw new BioException("The file contained duplicated Student IDs.");
-	    		}
+		    	}
 	    	}
-    	}
+	    } catch (\Exception $e) {
+	    	$db->clear();
+			for ($j = 0; $j < count($entities); $j++) {
+                $db->add($entities[$j]);
+            }
+            for ($j = 0; $j < count($stats); $j++) {
+            	$db->add($stats[$j]);
+            }
+            $db->close();
+            throw $e;
+	    }
     	
     	$db->close("Could not persist scores to database.");
     }
