@@ -20,7 +20,15 @@ use Bio\FolderBundle\Entity\File;
 class DefaultController extends Controller
 {
     /**
-     * @Route("/", name="view_folders")
+     * @Route("/", name="folders_instruct")
+     * @Template()
+     */
+    public function instructionAction() {
+        return array('title' => 'Folders');
+    }
+
+    /**
+     * @Route("/manage", name="view_folders")
      * @Template()
      */
     public function indexAction(Request $request)

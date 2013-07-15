@@ -88,8 +88,13 @@ parameters:
 
         "Folders":
             "Folders":
+                route: folders_instruct
+                vars: ~
+            "Manage":
                 route: view_folders
                 vars: ~
+            "Clear":
+                route: clear_folders
 
         "Users":
             "Users":
