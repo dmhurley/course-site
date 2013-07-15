@@ -18,6 +18,14 @@ use Bio\InfoBundle\Entity\Announcement;
 class DefaultController extends Controller
 {
     /**
+     * @Route("/admin/", name="main_admin_page")
+     * @Template()
+     */
+    public function instructionAction() {
+        return array('title' => 'Admin Page');
+    }
+
+    /**
      * @Route("/", name="main_page")
      * @Template()
      */

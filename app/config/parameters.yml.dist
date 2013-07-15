@@ -99,6 +99,7 @@ parameters:
                 vars: ~
             "Clear":
                 route: clear_folders
+                vars: ~
 
         "Users":
             "Users":

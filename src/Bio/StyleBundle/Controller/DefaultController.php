@@ -17,8 +17,9 @@ class DefaultController extends Controller
 		// if admin show full sidebar loaded from yaml file
 		if ($this->get('security.context')->isGranted('ROLE_ADMIN')){
 			$options = $this->container->getParameter('sidebar');
-
-			if ($route == 'display_students' || $route == 'find_student' || 
+			if ($route == 'main_admin_page'){
+				$expanded = 'all';
+			} else if ($route == 'display_students' || $route == 'find_student' || 
 				$route == 'edit_student' || $route == 'add_student' || 
 				$route == 'upload_student' || $route == 'students_instruct') {
 					$expanded = 'Students';
