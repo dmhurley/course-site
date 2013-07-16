@@ -27,7 +27,7 @@ class DefaultController extends Controller
 						$route == 'clear_list' || $route == 'clicker_instruct') {
 					$expanded = 'Clickers';
 			} else if ( $route == 'edit_info' || $route == "view" || $route == 'edit' ||
-				$route == 'info_instruct') {
+				$route == 'info_instruct' || $route == 'fake_link') {
 					$expanded = 'Course Info';
 			} else if ($route == 'view_folders' || $route == 'clear_folders' || $route == 'folders_instruct') {
 				$expanded = 'Folders';
@@ -35,6 +35,8 @@ class DefaultController extends Controller
 				$expanded = 'Users';
 			} else if($route == 'scores' || $route == 'find_score' || $route == 'scores_instruct') {
 				$expanded = 'Scores';
+			} else if ($route == 'exam_instruct') {
+				$expanded = 'Exams';
 			} else {
 				$expanded = '';
 			}
