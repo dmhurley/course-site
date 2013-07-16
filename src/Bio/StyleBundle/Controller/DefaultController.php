@@ -35,8 +35,9 @@ class DefaultController extends Controller
 				$expanded = 'Users';
 			} else if($route == 'scores' || $route == 'find_score' || $route == 'scores_instruct') {
 				$expanded = 'Scores';
-			} else if ($route == 'exam_instruct' || $route == 'view_exams' || $route == 'edit_exam') {
-				$expanded = 'Exams';
+			} else if ($route == 'exam_instruct' || $route == 'view_exams' || $route == 'edit_exam' ||
+				$route == 'view_questions') {
+					$expanded = 'Exams';
 			} else {
 				$expanded = '';
 			}

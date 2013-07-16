@@ -1,0 +1,33 @@
+{% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block head %}
+	{{ parent() }}
+		{% stylesheets 'bundles/biostudent/css/form.css' filter="cssrewrite" output="css/*.css" %}
+			<link rel="stylesheet" href="{{ asset_url }}" />
+		{% endstylesheets %}
+{% endblock %}
+
+{% block content %}
+	{{ form(form) }}
+
+	<table border="1px">
+		<tr>
+			<th>Question</th>
+			<th>Points</th>
+			<th>Edit</th>
+			<th>Delete</th>
+		</tr>
+		{% for question in questions %}
+			<tr>
+				<td>{{question.question|striptags}}</td>
+				<td>{{question.points}} pts</td>
+				<td><a href="{{ path('edit_question') }}?id={{question.id}}">edit</a></td>
+				<td><a href="{{ path('delete_question') }}?id={{question.id}}">delete</a></td>
+			</tr>
+		{% endfor %}
+	</table>
+{% endblock %}
+
+{% block java %}
+	{{ tinymce_init() }}
+{% endblock %}

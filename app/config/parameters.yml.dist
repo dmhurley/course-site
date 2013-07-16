@@ -109,6 +109,9 @@ parameters:
             "Exams":
                 route: exam_instruct
                 vars: ~
-            "Manage":
+            "Manage Exams":
                 route: view_exams
+                vars: ~
+            "Manage Questions":
+                route: view_questions
                 vars: ~
