@@ -29,8 +29,8 @@
 				<td>{{exam.end|date('h:i')}}</td>
 				<td>{{exam.duration}} m</td>
 				<td>{{exam.questions|length}}</td>
-				<td><a href="">edit</a></td>
-				<td><a href="">delete</a></td>
+				<td><a href="{{ path('edit_exam') }}?id={{exam.id}}">edit</a></td>
+				<td><a href="{{ path('delete_exam') }}?id={{exam.id}}">delete</a></td>
 			</tr>
 		{% endfor %}
 	</table>
