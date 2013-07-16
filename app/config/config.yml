@@ -82,6 +82,7 @@ stfalcon_tinymce:
             bio:
                 mode: "textareas"
                 theme: "advanced"
+                content_css: "../../../bundles/bioexam/css/editor.css"
                 plugins: "fullscreen, preview, table, advimage, inlinepopups, autolink, contextmenu, lists"
                 theme_advanced_buttons1: " undo, redo, |, fullscreen, preview, |, tablecontrols"
                 theme_advanced_buttons2: "bold, italic, underline, link, unlink, image, |, justifyleft, justifycenter, justifyright, justifyfull, |, indent, outdent, bullist, numlist"

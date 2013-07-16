@@ -206,7 +206,7 @@ class AdminController extends Controller
     	if ($request->getMethod() === "POST") {
 	   		$form->handleRequest($request);
 	   		if ($form->isValid()) {
-	   			$dbQ = $db->findOne(array('id' => $q->getId()));
+	   			$dbQ = $db->findOne(array('id' => $form->get('id')->getData()));
 	   			$dbQ->setQuestion($q->getQuestion())
 	   				->setAnswer($q->getAnswer())
 	   				->setPoints($q->getPoints());
