@@ -1,0 +1,37 @@
+{% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block head %}
+	{{ parent() }}
+		{% stylesheets 'bundles/biostudent/css/form.css' filter="cssrewrite" output="css/*.css" %}
+			<link rel="stylesheet" href="{{ asset_url }}" />
+		{% endstylesheets %}
+{% endblock %}
+
+{% block content %}
+	{{ form(form) }}
+
+	<table border="1px">
+		<tr>
+			<th>Name</th>
+			<th>Date</th>
+			<th>Start</th>
+			<th>End</th>
+			<th>Duration</th>
+			<th>Questions</th>
+			<th>Edit</th>
+			<th>Delete</th>
+		</tr>
+		{% for exam in exams %}
+			<tr>
+				<td>{{exam.name}}</td>
+				<td>{{exam.date|date('m-d-y')}}</td>
+				<td>{{exam.start|date('h:i')}}</td>
+				<td>{{exam.end|date('h:i')}}</td>
+				<td>{{exam.duration}} m</td>
+				<td>{{exam.questions|length}}</td>
+				<td><a href="">edit</a></td>
+				<td><a href="">delete</a></td>
+			</tr>
+		{% endfor %}
+	</table>
+{% endblock %}
