@@ -1,0 +1,23 @@
+{% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block content %}
+	{% block head %}
+	{{ parent() }}
+		{% stylesheets 'bundles/biostudent/css/form.css' 'bundles/bioexam/css/exam.css' filter="cssrewrite" output="css/*.css" %}
+			<link rel="stylesheet" href="{{ asset_url }}" />
+		{% endstylesheets %}
+{% endblock %}
+	<form method="POST" action="{{ path('main_page') }}">
+		{% for question in exam.questions %}
+			<div class="question tableStyle">
+				<h2>Question {{loop.index}}</h2> <h4>{{question.points}} points</h4>
+				<div class="q">
+					{{ question.question|raw }}
+				</div>
+				<div class="a">
+					<textarea> </textarea>
+				</div>
+			</div>
+		{% endfor %}
+	</form>
+{% endblock %}

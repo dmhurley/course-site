@@ -7,6 +7,7 @@
 			<link rel="stylesheet" href="{{ asset_url }}" />
 		{% endstylesheets %}
 {% endblock %}
+<p> Welcome student #{{app.session.get('sid')}}, once you begin this test you will have {{ app.session.get('duration') }} minutes to complete it. There will be more text here about what happens after the test, and what rules there are during the test, open notes, open book, etc... Maybe some more words about the the test... Press the start button to begin.</p>
 
-	{{ form(form) }}
+{{ form(form) }}
 {% endblock %}

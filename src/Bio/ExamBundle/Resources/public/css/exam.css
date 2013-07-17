@@ -1,0 +1,32 @@
+.question {
+	width: 600px;
+	border: solid 1px black;
+	margin: 10px;
+	padding: 10px;
+}
+
+.q ul{
+	padding-left: 15px;
+}
+
+.q table {
+	margin: 5px;
+}
+
+.q table, .q td, .q th {
+	border: 1px solid black;
+}
+
+.q img {
+	margin: 5px;
+}
+
+.a, .q {
+	width: 90%;
+	margin: 20px auto;
+}
+
+.a textarea {
+	width: 100%;
+	min-height: 100px;
+}
