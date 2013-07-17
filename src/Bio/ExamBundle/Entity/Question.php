@@ -94,6 +94,13 @@ class Question
         return $this->question;
     }
 
+    public function getFormattedQuestion() {
+        $string = $this->question;
+        $string = strip_tags($string);
+        $string = str_replace("&nbsp;", '', $string);
+        return $string;
+    }
+
     /**
      * Set answer
      *

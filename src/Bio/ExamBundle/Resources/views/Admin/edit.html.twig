@@ -8,7 +8,30 @@
 {% endblock %}
 
 {% block content %}
-	{{ form(form) }}
+	{{ form_start(form) }}
+		<div id="form">
+			{{ form_row(form.name) }}
+			{{ form_row(form.date) }}
+			{{ form_row(form.start)}}
+			{{ form_row(form.end)}}
+			{{ form_row(form.duration)}}
+			<div id="thingscroller" style="position:absolute;width:400px;right:150px;top: 170px;overflow-y: scroll;height: 300px;">
+				<table border="1px" style="width:100%;margin:0px">
+					<tr>
+						<th>Check</th>
+						<th>Question</th>
+					</tr>
+					{% for child in form.questions.children %}
+						<tr>
+							<td>{{ form_widget(child) }}</td>
+							<td>{{ child.parent.vars.choices[child.vars.value].label }}</td>
+						</tr>
+					{% endfor %}
+				</table>
+			</div>
+			{{ form_row(form.edit) }}
+		</div>
+	{{ form_end(form) }}
 {% endblock %}
 
 {% block java %}

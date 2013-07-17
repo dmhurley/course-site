@@ -57,14 +57,15 @@ class Exam
     private $duration;
 
     /**
-     * @var array
-     *
-     * @ORM\Column(name="questions", type="array")
+     * @ORM\ManyTOMany(targetEntity="Question")
+     * @ORM\JoinTable(name="exam_questions",
+     *      joinColumns={@ORM\JoinColumn(name="exam_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="question_id", referencedColumnName="id")})
      */
     private $questions;
 
     public function __construct() {
-        $this->questions = array();
+        $this->questions = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
 
@@ -176,35 +177,6 @@ class Exam
         return $this->duration;
     }
 
-    public function addQuestion($question) {
-        $this->questions[] = $question;
-
-        return $this;
-    }
-
-    /**
-     * Set questions
-     *
-     * @param array $questions
-     * @return Exam
-     */
-    public function setQuestions($questions)
-    {
-        $this->questions = $questions;
-    
-        return $this;
-    }
-
-    /**
-     * Get questions
-     *
-     * @return array 
-     */
-    public function getQuestions()
-    {
-        return $this->questions;
-    }
-
     /**
      * Set date
      *
@@ -226,5 +198,45 @@ class Exam
     public function getDate()
     {
         return $this->date;
+    }
+
+    public function setQuestions($questions) {
+        $this->questions = new \Doctrine\Common\Collections\ArrayCollection();
+        foreach ($questions as $q) {
+            $this->addQuestion($q);
+        }
+    }
+
+    /**
+     * Add questions
+     *
+     * @param \Bio\ExamBundle\Entity\Question $questions
+     * @return Exam
+     */
+    public function addQuestion(\Bio\ExamBundle\Entity\Question $questions)
+    {
+        $this->questions[] = $questions;
+    
+        return $this;
+    }
+
+    /**
+     * Remove questions
+     *
+     * @param \Bio\ExamBundle\Entity\Question $questions
+     */
+    public function removeQuestion(\Bio\ExamBundle\Entity\Question $questions)
+    {
+        $this->questions->removeElement($questions);
+    }
+
+    /**
+     * Get questions
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getQuestions()
+    {
+        return $this->questions;
     }
 }

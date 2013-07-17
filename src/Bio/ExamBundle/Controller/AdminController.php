@@ -104,22 +104,25 @@ class AdminController extends Controller
     		->add('start', 'time', array('label'=>'Start Time:'))
     		->add('end', 'time', array('label'=>'End Time:'))
     		->add('duration', 'integer', array('label'=>'Duration (m):'))
+    		->add('questions', 'entity', array('label' => 'Questions:', 'class' => 'BioExamBundle:Question', 'property'=>'formattedQuestion', 'multiple' => true, 'expanded'=> true))
     		->add('id', 'hidden')
    			->add('edit', 'submit')
    			->getForm();
 
     	if ($request->getMethod() === "POST") {
 	   		$form->handleRequest($request);
+
 	   		if ($form->isValid()) {
 	   			$dbExam = $db->findOne(array('id' => $exam->getId()));
 	   			$dbExam->setName($exam->getName())
 	   				->setDate($exam->getDate())
 	   				->setStart($exam->getStart())
 	   				->setEnd($exam->getEnd())
-	   				->setDuration($exam->getDuration());
+	   				->setDuration($exam->getDuration())
+	   				->setQuestions($exam->getQuestions());
 
 	   				$db->close();
-	   				return $this->redirect($this->generateUrl('view_exams'));
+	   				// return $this->redirect($this->generateUrl('view_exams'));
 	   		}
     	}
 
@@ -181,7 +184,7 @@ class AdminController extends Controller
 
     /**
      * @Route("/questions/edit", name="edit_question")
-     * @Template("BioExamBundle:Admin:edit.html.twig")
+     * @Template()
      */
     public function editQuestionAction(Request $request) {
 
