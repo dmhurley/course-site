@@ -148,6 +148,7 @@ class AdminController extends Controller
     		$form->handleRequest($request);
 
     		if ($form->isValid()) {
+                $q->setTags(array('test', 'testing', 'not_a_tag'));
     			$db->add($q);
     			$db->close();http://localhost/~nick/course-site/web/app_dev.php/
     		}
