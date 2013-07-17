@@ -49,8 +49,15 @@ class AdminController extends Controller
 
    			if ($form->isValid()) {
    				$db->add($exam);
-   				$db->close();
-   			}
+                try {
+   				    $db->close();
+                    $request->getSession()->getFlashBag()->set('success', 'Exam added.');
+                } catch (BioException $e) {
+                    $request->getSession()->getFlashBag()->set('failure', 'Unable to save exam.');
+                }
+   			} else {
+                $request->getSession()->getFlashBag()->set('failure', 'Form is invalid.');
+            }
    		}
 
    		$exams = $db->find(array(), array('date' => 'ASC'), false);
@@ -92,8 +99,11 @@ class AdminController extends Controller
 
     	if ($request->getMethod() === "GET" && $request->query->get('id')) {
     		$id = $request->query->get('id');
-
     		$exam = $db->findOne(array('id' => $id));
+            if (!$exam) {
+                $request->getSession()->getFlashBag()->set('failure', 'Unable to find that exam.');
+                return $this->redirect($this->generateUrl('view_exams'));
+            }
     	} else {
     		$exam = new Exam();
     	}
@@ -120,10 +130,16 @@ class AdminController extends Controller
 	   				->setEnd($exam->getEnd())
 	   				->setDuration($exam->getDuration())
 	   				->setQuestions($exam->getQuestions());
-
-	   				$db->close();
-	   				// return $this->redirect($this->generateUrl('view_exams'));
-	   		}
+                    try {
+	   				    $db->close();
+                        $request->getSession()->getFlashBag()->set('success', 'Exam edited.');
+                    } catch (BioException $e) {
+                        $request->getSession()->getFlashBag()->set('failure', 'Unable to save changes.');
+                    }
+	   				return $this->redirect($this->generateUrl('view_exams'));
+	   		} else {
+                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+            }
     	}
 
     	return array('form' => $form->createView(), 'title' => 'Edit Exam');
@@ -136,9 +152,9 @@ class AdminController extends Controller
     public function questionAction(Request $request) {
     	$q = new Question();
     	$form = $this->createFormBuilder($q)
-    		->add('question', 'textarea', array('attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
-    		->add('answer', 'textarea', array('attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
-    		->add('points', 'integer')
+    		->add('question', 'textarea', array('label' => 'Question:', 'attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
+    		->add('answer', 'textarea', array('label' => 'Answer/Rubric:','attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
+    		->add('points', 'integer', array('label' => 'Points:'))
             ->add('tags', 'text', array('label' => 'Tags:', 'mapped' => false, 'required' => false, 'attr' => array('pattern' => '[a-z\s]+', 'title' => 'Lower case tags seperated by spaces. a-z only.')))
     		->add('add', 'submit')
     		->getForm();
@@ -151,8 +167,14 @@ class AdminController extends Controller
     		if ($form->isValid()) {
                 $q->setTags(explode(" ", $form->get('tags')->getData()));
     			$db->add($q);
-    			$db->close();http://localhost/~nick/course-site/web/app_dev.php/
-    		}
+                try {
+                    $db->close();
+                } catch (BioException $e) {
+                    $request->getSession()->getFlashBag()->set('failure', 'Unable to add question.');
+                }
+    		} else {
+                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+            }
     	}
 
     	$questions = $db->find(array(), array(), false);
@@ -217,10 +239,16 @@ class AdminController extends Controller
 	   				->setAnswer($q->getAnswer())
 	   				->setPoints($q->getPoints())
                     ->setTags(explode(' ', $form->get('tags')->getData()));
-
-	   				$db->close();
+                    try {
+	   				    $db->close();
+                        $request->getSession()->getFlashBag()->set('success', 'Question edited.');
+                    } catch (BioException $e) {
+                        $request->getSession()->getFlashBag()->set('failure', 'Unable to save changes.');
+                    }
 	   				return $this->redirect($this->generateUrl('view_questions'));
-	   		}
+	   		} else {
+                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+            }
     	}
 
     	return array('form' => $form->createView(), 'title' => 'Edit Questions');
