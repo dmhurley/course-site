@@ -6,13 +6,18 @@
 					   'bundles/bioscore/css/tableextension.css' filter="cssrewrite" output="css/*.css" %}
 			<link rel="stylesheet" href="{{ asset_url }}" />
 		{% endstylesheets %}
+	<style type="text/css">
+		td {
+			border-right: 1px solid grays;
+		}
+	</style>
 {% endblock %}
 
 {% block content %}
 	{{ form(form) }}
 	{% if scores|length > 0 %}
 		<div class="tableStyle" id="scroller">
-			<table border="1px">
+			<table>
 				<tr>
 					<th></th>
 					{% for key in scores[0].scores|keys %}

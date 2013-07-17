@@ -14,7 +14,7 @@
 	margin-left: 200px;
 }
 
-#content > table, .tableStyle  table {
+/*#content > table, .tableStyle  table {
 	margin: 30px auto 15px auto;
 	width: 90%;
 	text-align: center;
@@ -30,6 +30,24 @@
 #content table a {
 	font-weight: bolder;
 	text-decoration: none; 
+}*/
+
+#content table, .tableStyle table {
+	border-spacing: 0px;
+	width: 95%;
+}
+
+#content > table th, #content > table td , .tableStyle table th, .tableStyle table td{
+	padding: 5px;
+	text-align: left;
+}
+
+#content > table th, .tableStyle table th {
+	border-bottom: solid 3px #A591D9;
+}
+
+#content > table td, .tableStyle table td {
+	border-bottom: solid 1px #A591D9;
 }
 
 #form ul {

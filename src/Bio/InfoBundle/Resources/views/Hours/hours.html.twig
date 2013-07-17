@@ -3,7 +3,7 @@
 {% block content %}
 	{{ form(form) }}
 
-	<table border="1px" style="text-align:center;">
+	<table>
 		<tr>
 			<th>Person</th>
 			<th>Days</th>
@@ -17,13 +17,13 @@
 			<tr>
 				<td rowspan={{person.hours|length}}>{{person.fName}} {{person.lName}}</td>
 				{% if (person.hours|first).byAppointment %}
-					<td colspan=3 style="text-align:center;">By Appointment</td>
+					<td colspan=3>By Appointment</td>
 				{% else %}
-					<td style="text-align:center;">{{(person.hours|first).days}}</td>
+					<td>{{(person.hours|first).days}}</td>
 					<td>{{(person.hours|first).start|date('h:m')}}</td>
 					<td>{{(person.hours|first).end|date('h:m')}}</td>
 				{% endif %}
-				<td style="text-align:center;"><a href="{{ path('edit', {'entityName' : 'hours'}) }}?id={{ (person.hours|first).id}}">edit</a></td>
+				<td><a href="{{ path('edit', {'entityName' : 'hours'}) }}?id={{ (person.hours|first).id}}">edit</a></td>
 				<td><a href="{{ path('delete', {'entityName' : 'hours'}) }}?id={{ (person.hours|first).id }}">delete</a></td>
 			</tr>
 			{% for hour in person.hours %}
@@ -33,10 +33,10 @@
 							<td colspan=3>By Appointment</td>
 						{% else %}
 							<td>{{ hour.days }}</td>
-							<td style="text-align:center;">{{ hour.start|date('h:m') }}</td>
+							<td >{{ hour.start|date('h:m') }}</td>
 							<td>{{ hour.end|date('h:m') }}</td>
 						{% endif %}
-						<td style="text-align:center"><a href="{{ path('edit', {'entityName' : 'hours'}) }}?id={{ hour.id}}">edit</td>
+						<td><a href="{{ path('edit', {'entityName' : 'hours'}) }}?id={{ hour.id}}">edit</td>
 						<td><a href="{{ path('delete', {'entityName' : 'hours'}) }}?id={{ hour.id }}">delete</a></td>
 					</tr>
 				{% endif %}

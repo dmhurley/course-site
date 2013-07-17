@@ -16,16 +16,16 @@
 		<div class="questioncontainer">
 			<input type="text" id="tag">
 			<label>Tags:</label>
-			<div id="scroller">
-				<table border="1px"
+			<div id="scroller" class="tableStyle">
+				<table>
 					<tr>
 						<th>Check</th>
 						<th>Question</th>
 					</tr>
 					{% for child in form.questions.children %}
 						<tr class="question" tags="{{ child.parent.vars.choices[child.vars.value].data.tags|join(' ') }}">
-							<td>{{ form_widget(child) }}</td>
-							<td style="text-align:left;" >{{ child.parent.vars.choices[child.vars.value].label }}</td>
+							<td style="text-align:center;">{{ form_widget(child) }}</td>
+							<td>{{ child.parent.vars.choices[child.vars.value].label }}</td>
 						</tr>
 					{% endfor %}
 				</table>
