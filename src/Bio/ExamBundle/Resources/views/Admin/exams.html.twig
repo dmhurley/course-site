@@ -18,6 +18,7 @@
 			<th>End</th>
 			<th>Duration</th>
 			<th>Questions</th>
+			<th>Preview</th>
 			<th>Edit</th>
 			<th>Delete</th>
 		</tr>
@@ -29,6 +30,7 @@
 				<td>{{exam.end|date('h:i')}}</td>
 				<td>{{exam.duration}} m</td>
 				<td>{{exam.questions|length}}</td>
+				<td><a href="{{ path('preview') }}?id={{exam.id}}&type=exam">preview</a></td>
 				<td><a href="{{ path('edit_exam') }}?id={{exam.id}}">edit</a></td>
 				<td><a href="{{ path('delete_exam') }}?id={{exam.id}}">delete</a></td>
 			</tr>

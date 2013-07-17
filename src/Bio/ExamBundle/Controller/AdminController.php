@@ -253,4 +253,31 @@ class AdminController extends Controller
 
     	return array('form' => $form->createView(), 'title' => 'Edit Questions');
     }
+
+    /**
+     * @Route("/preview", name="preview")
+     * @Template("BioExamBundle:Public:exam.html.twig")
+     */
+    public function previewAction(Request $request) {
+        if ($request->query->get('id') && $request->query->get('type')) {
+            $id = $request->query->get('id');
+            $type = $request->query->get('type');
+
+            $db = new Database($this, 'BioExamBundle:'.ucfirst($type));
+            $entity = $db->findOne(array('id' => $id));
+
+            if ($entity) {
+                if ($type == 'question') {
+                    $exam = array();
+                    $exam['questions'] = array($entity);
+                } else {
+                    $exam = $entity;
+                }
+
+                return array('exam' => $exam, 'title' => 'Preview');
+            }
+            return $this->redirect($this->generateUrl('view_'.$type.'s'));
+        }
+        return $this->redirect($this->generateUrl('view_exams'));
+    }
 }
