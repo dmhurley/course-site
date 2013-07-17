@@ -139,6 +139,7 @@ class AdminController extends Controller
     		->add('question', 'textarea', array('attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
     		->add('answer', 'textarea', array('attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
     		->add('points', 'integer')
+            ->add('tags', 'text', array('label' => 'Tags:', 'mapped' => false, 'required' => false, 'attr' => array('pattern' => '[a-z\s]+', 'title' => 'Lower case tags seperated by spaces. a-z only.')))
     		->add('add', 'submit')
     		->getForm();
 
@@ -148,7 +149,7 @@ class AdminController extends Controller
     		$form->handleRequest($request);
 
     		if ($form->isValid()) {
-                $q->setTags(array('test', 'testing', 'not_a_tag'));
+                $q->setTags(explode(" ", $form->get('tags')->getData()));
     			$db->add($q);
     			$db->close();http://localhost/~nick/course-site/web/app_dev.php/
     		}
@@ -203,6 +204,7 @@ class AdminController extends Controller
 			->add('question', 'textarea', array('attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
     		->add('answer', 'textarea', array('attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
     		->add('points', 'integer')
+            ->add('tags', 'text', array('label' => 'Tags:', 'data' => implode(' ', $q->getTags()), 'mapped' => false, 'required' => false, 'attr' => array('pattern' => '[a-z\s]+', 'title' => 'Lower case tags seperated by spaces. a-z only.')))
     		->add('id', 'hidden')
    			->add('edit', 'submit')
    			->getForm();
@@ -213,7 +215,8 @@ class AdminController extends Controller
 	   			$dbQ = $db->findOne(array('id' => $form->get('id')->getData()));
 	   			$dbQ->setQuestion($q->getQuestion())
 	   				->setAnswer($q->getAnswer())
-	   				->setPoints($q->getPoints());
+	   				->setPoints($q->getPoints())
+                    ->setTags(explode(' ', $form->get('tags')->getData()));
 
 	   				$db->close();
 	   				return $this->redirect($this->generateUrl('view_questions'));

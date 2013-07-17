@@ -1,0 +1,25 @@
+.questioncontainer {
+	float:right;
+	height: 450px;
+}
+	.questioncontainer input[type=text], .questioncontainer > label {
+		float: left;
+		margin: 5px;
+		font-size: 13pt;
+	}
+
+	.questioncontainer input[type=text] {
+		float:right;
+		width: 335px;
+	}
+
+	.questioncontainer #scroller {
+		overflow-y: scroll;
+		height: 410px;
+		width: 400px;
+	}
+
+		#scroller table {
+			width: 100%;
+			margin: 0px;
+		}

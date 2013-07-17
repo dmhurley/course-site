@@ -2,26 +2,30 @@
 
 {% block head %}
 	{{ parent() }}
-		{% stylesheets 'bundles/biostudent/css/form.css' filter="cssrewrite" output="css/*.css" %}
+		{% stylesheets 'bundles/biostudent/css/form.css' 'bundles/bioexam/css/form_extension.css' filter="cssrewrite" output="css/*.css" %}
 			<link rel="stylesheet" href="{{ asset_url }}" />
 		{% endstylesheets %}
 {% endblock %}
 
 {% block content %}
 	{{ form_start(form) }}
-		<div id="thingscroller" style="float:right;width:400px;overflow-y: scroll;height: 300px;">
-			<table border="1px" style="width:100%;margin:0px">
-				<tr>
-					<th>Check</th>
-					<th>Question</th>
-				</tr>
-				{% for child in form.questions.children %}
-					<tr tags="{{ child.parent.vars.choices[child.vars.value].data.tags|join(' ') }}">
-						<td>{{ form_widget(child) }}</td>
-						<td style="text-align:left;" >{{ child.parent.vars.choices[child.vars.value].label }}</td>
+		<div class="questioncontainer">
+			<input type="text" id="tag">
+			<label>Tags:</label>
+			<div id="scroller">
+				<table border="1px"
+					<tr>
+						<th>Check</th>
+						<th>Question</th>
 					</tr>
-				{% endfor %}
-			</table>
+					{% for child in form.questions.children %}
+						<tr class="question" tags="{{ child.parent.vars.choices[child.vars.value].data.tags|join(' ') }}">
+							<td>{{ form_widget(child) }}</td>
+							<td style="text-align:left;" >{{ child.parent.vars.choices[child.vars.value].label }}</td>
+						</tr>
+					{% endfor %}
+				</table>
+			</div>
 		</div>
 		<div id="form">
 			{{ form_row(form.name) }}
@@ -35,5 +39,7 @@
 {% endblock %}
 
 {% block java %}
-	{{ tinymce_init() }}
+	{% javascripts 'bundles/bioexam/js/tags.js' output="js/*.js" %}
+		<script src="{{ asset_url }}"></script>
+	{% endjavascripts %}
 {% endblock %}
