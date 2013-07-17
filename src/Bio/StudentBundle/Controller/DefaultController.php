@@ -105,10 +105,10 @@ class DefaultController extends Controller
             try {
                 $db = new Database($this, 'BioStudentBundle:Student');
                 $db->deleteBy(array('sid' => $sid));
-                $db->close();
+                $db->close("Could not delete student.");
                 $request->getSession()->getFlashBag()->set('success', "Student #".$sid." removed.");
             } catch (BioException $e) {
-                $request->getSession()->getFlashBag()->set('failure', "Could not find student #".$sid.".");
+                $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
             }
     		
     	}

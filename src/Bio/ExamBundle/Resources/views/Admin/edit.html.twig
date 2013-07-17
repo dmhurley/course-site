@@ -5,6 +5,10 @@
 		{% stylesheets 'bundles/biostudent/css/form.css' 'bundles/bioexam/css/form_extension.css' filter="cssrewrite" output="css/*.css" %}
 			<link rel="stylesheet" href="{{ asset_url }}" />
 		{% endstylesheets %}
+		
+		{% javascripts 'bundles/bioexam/js/tags.js' output="js/*.js" %}
+			<script src="{{ asset_url }}"></script>
+		{% endjavascripts %}
 {% endblock %}
 
 {% block content %}
@@ -36,10 +40,4 @@
 			{{ form_row(form.edit) }}
 		</div>
 	{{ form_end(form) }}
-{% endblock %}
-
-{% block java %}
-	{% javascripts 'bundles/bioexam/js/tags.js' output="js/*.js" %}
-		<script src="{{ asset_url }}"></script>
-	{% endjavascripts %}
 {% endblock %}
