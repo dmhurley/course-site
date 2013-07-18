@@ -64,6 +64,7 @@ class PublicController extends Controller
 				// create session stuff
 				$session = $request->getSession();
 				$session->set('duration', 30);
+				$session->set('start', $exam->getStart());
 				$session->set('sid', $sid);
 
 				return $this->redirect($this->generateUrl('exam_start'));
@@ -81,7 +82,8 @@ class PublicController extends Controller
 	public function startAction(Request $request) {
 		$session = $request->getSession();
 
-		if ($session->has('sid') && $session->has('duration')) {
+		if ($session->has('sid') && $session->has('duration') && $session->has('start')) {
+			$start = $session->get('start');
 			$form = $this->createFormBuilder()
 				->setAction($this->generateUrl('exam_take'))
 				->add('start', 'submit')
@@ -107,6 +109,12 @@ class PublicController extends Controller
 			return $this->redirect($this->generateUrl('exam_entrance'));
 		}
 
+		if ($exam->getStart() > new \DateTime()) {
+			$session->getFlashBag()->set('failure', "The exam has not started yet.");
+			$session->set('start', $exam->getStart());
+			return $this->redirect($this->generateUrl('exam_start'));
+		}
+
 		if ($session->has('sid') && $session->has('duration')) {
 			$db = new Database($this, 'BioExamBundle:TestTaker');
 			$taker = $db->findOne(array('sid' => $session->get('sid'), 'exam' => $exam->getId()));
@@ -125,7 +133,7 @@ class PublicController extends Controller
 		$query = $em->createQuery(
 				'SELECT p FROM BioExamBundle:Exam p
 		 		 WHERE p.date >= CURRENT_DATE()
-				 AND p.start >= CURRENT_TIME()
+				 AND p.end >= CURRENT_TIME()
 				 ORDER BY p.date ASC, p.start ASC'
 			);
 		$result = $query->getResult();

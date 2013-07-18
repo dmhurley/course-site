@@ -1,12 +1,13 @@
 {% extends 'BioStyleBundle:Default:main.html.twig' %}
 
-{% block content %}
-	{% block head %}
+{% block head %}
 	{{ parent() }}
-		{% stylesheets 'bundles/biostudent/css/form.css' 'bundles/bioexam/css/exam.css' filter="cssrewrite" output="css/*.css" %}
-			<link rel="stylesheet" href="{{ asset_url }}" />
-		{% endstylesheets %}
+	{% stylesheets 'bundles/biostudent/css/form.css' 'bundles/bioexam/css/exam.css' filter="cssrewrite" output="css/*.css" %}
+		<link rel="stylesheet" href="{{ asset_url }}" />
+	{% endstylesheets %}
 {% endblock %}
+
+{% block content %}
 	<form method="POST" action="{{ path('main_page') }}">
 		{% for question in exam.questions %}
 			<div class="question tableStyle">
@@ -20,5 +21,8 @@
 				</div>
 			</div>
 		{% endfor %}
+		<div id="submit" >
+			<input type="submit" />
+		</div>
 	</form>
 {% endblock %}

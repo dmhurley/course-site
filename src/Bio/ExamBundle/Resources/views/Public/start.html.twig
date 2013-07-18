@@ -1,13 +1,23 @@
 {% extends 'BioStyleBundle:Default:main.html.twig' %}
 
-{% block content %}
-	{% block head %}
+{% block head %}
 	{{ parent() }}
-		{% stylesheets 'bundles/biostudent/css/form.css' filter="cssrewrite" output="css/*.css" %}
-			<link rel="stylesheet" href="{{ asset_url }}" />
-		{% endstylesheets %}
-{% endblock %}
-<p> Welcome student #{{app.session.get('sid')}}, once you begin this test you will have {{ app.session.get('duration') }} minutes to complete it. There will be more text here about what happens after the test, and what rules there are during the test, open notes, open book, etc... Maybe some more words about the the test... Press the start button to begin.</p>
+	{% stylesheets 'bundles/biostudent/css/form.css' filter="cssrewrite" output="css/*.css" %}
+		<link rel="stylesheet" href="{{ asset_url }}" />
+	{% endstylesheets %}
 
-{{ form(form) }}
+	{% javascripts 'bundles/bioexam/js/pinger.js' output="js/*.js" %}
+		<script src={{ asset_url }}></script>
+	{% endjavascripts %}
+{% endblock %}
+
+{% block content %}
+	<p> Welcome student #{{app.session.get('sid')}}, once you begin this test you will have {{ app.session.get('duration') }} minutes to complete it. There will be more text here about what happens after the test, and what rules there are during the test, open notes, open book, etc... Maybe some more words about the the test... The start button will appear, and you can begin <b><span id="time"></span></b>.</p>
+	<div id="hidden" style="display:none;">
+		{{ form(form) }}
+	</div>
+{% endblock %}
+
+{% block java %}
+<script>init("{{app.session.get('start').date}}")</script>
 {% endblock %}
