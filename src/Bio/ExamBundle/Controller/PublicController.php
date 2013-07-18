@@ -32,56 +32,57 @@ class PublicController extends Controller
 			->add('sign in', 'submit')
 			->getForm();
 
-		// check to see if there is a test soon.
+		// check to see if there is an exam
 		try {
-			$exam = $this->getNextExam();
+			$array = $this->check(true);
 		} catch (BioException $e) {
 			$request->getSession()->getFlashBag()->set('failure', $e->getMessage());
-			return array('form' => $form->createView(), 'title' => 'Sign In');
+			return array('form' => $form->createView(), 'title' => 'Log In');
 		}
 
-		// check to see if they just submitted logon info
+		// check to see if they submitted login stuff
 		if ($request->getMethod() === "POST") {
 			$form->handleRequest($request);
-			$sid = $form->get('sid')->getData();
-			$lName = $form->get('lName')->getData();
+			// check to see if they submitted ALL the login stuff
+			if ($form->has('sid') && $form->has('lName')) {
 
-			// check to see if student exists
-			$db =  new Database($this, 'BioStudentBundle:Student');
-			$student = $db->findOne(array('sid' => $sid, 'lName' => $lName));
-			if ($student) {
+				// check to see if student exists
+				$db = new Database($this, 'BioStudentBundle:Student');
+				try {
+					$db->find(array('sid' => $form->get('sid')->getData(), 'lName' => $form->get('lName')->getData()));
+				} catch (BioException $e) {
+					$request->getSession()->getFlashBag()->set('failure', "Could not find anyone with that student ID and last name.");
+					return array('form' => $form->createView(), 'title' => 'Log In');
+				}
 
-				// check if they have already signed in for this test
+				// check to see if they've already logged in
+				// add to database if they haven't
+				// reroute if they have
 				$db = new Database($this, 'BioExamBundle:TestTaker');
-				$taker = $db->findOne(array('sid' => $sid, 'exam' => $exam->getId()));
-
-				// otherwise create and add to databse
+				$taker = $db->findOne(array('sid' => $form->get('sid')->getData(), 'exam' => $array['exam']->getId()));
 				if (!$taker) {
 					$taker = new TestTaker();
-					$taker->setStatus(1) // set status signed in
-						->setSid($sid)
-						->setExam($exam->getId()); // TODO
+					$taker->setSid($form->get('sid')->getData())
+						->setExam($array['exam']->getId())
+						->setStatus(1);
 					$db->add($taker);
 					$db->close();
 				}
 
-				// create session stuff, overwriting any old stuffs
 				$session = $request->getSession();
-				$session->set('duration', 30);
-				$session->set('start', $exam->getStart());
-				$session->set('sid', $sid);
-				$session->set('eid', $exam->getId());
+				$session->set('sid', $taker->getSid());
+				$session->set('eid', $array['exam']->getId());
 
-				if ($taker->getStatus() === 1){
+				if ($taker->getStatus() === 1) {
+					// $request->getSession()->getFlashBag()->set('success', 'Signed in.');
 					return $this->redirect($this->generateUrl('exam_start'));
 				} else if ($taker->getStatus() === 2) {
 					return $this->redirect($this->generateUrl('exam_take'));
 				}
-				$request->getSession()->getFlashBag()->set('failure','..... uhhhhh wrong status?'); //TEMPORARY
-			} else {
-				$request->getSession()->getFlashBag()->set('failure', 'Could not find anyone with that student ID and last name.');
+				/// dot dot dot
 			}
 		}
+
 		return array('form' => $form->createView(), 'title' => 'Sign In');
 	}
 
@@ -90,24 +91,38 @@ class PublicController extends Controller
 	 * @Template()
 	 */
 	public function startAction(Request $request) {
-		$session = $request->getSession();
-
-		// check to see if they are signed in
-		if ($session->has('sid') && $session->has('duration') && $session->has('start') && $session->has('eid')) {
-
-			if ($request->getMethod() === "POST") {
-
+		// check for exam soon, signed in, and haven't started yet
+		try {
+			$array = $this->check(true, $request, 1);
+		} catch (BioException $e) {
+			if ($e->getMessage() > 1) {
+				return $this->redirect($this->generateUrl('exam_take'));
 			}
-			$start = $session->get('start');
-			$form = $this->createFormBuilder()
-				->add('start', 'submit')
-				->getForm();
-
-			return array('form' => $form->createView(), 'title' => 'Begin');
-		} else {
-			$session->getFlashBag()->set('failure', 'Not signed in.');
+			$request->getSession()->getFlashBag()->set('failure', $e->getMessage());
 			return $this->redirect($this->generateUrl('exam_entrance'));
 		}
+
+		$form = $this->createFormBuilder()
+			->add('start', 'submit')
+			->getForm();
+
+		// check to see if they pressed the start button
+		if ($request->getMethod() === "POST") {
+
+			// check to see if they cheated and did it early
+			if ($array['exam']->getStart() > new \DateTime()) {
+				$request->getSession()->getFlashBag()->set('failure', "Exam has not started yet.");
+				return $this->redirect($this->generateUrl('exam_start'));
+			}
+
+			$array['taker']->setStatus(2);
+			$array['taker']->setVar('started', new \DateTime());
+			$array['db']->close();
+
+			return $this->redirect($this->generateUrl('exam_take'));
+		}
+
+		return array('form' => $form->createView(), 'exam' => $array['exam'], 'title' => 'Begin Test');
 	}
 
 	/**
@@ -115,90 +130,72 @@ class PublicController extends Controller
 	 * @Template()
 	 */
 	public function examAction(Request $request) {
-		$session = $request->getSession();
-		// check to see if there even in an exam
 		try {
-			$exam = $this->getNextExam();
+			$array = $this->check(true, $request, 2);
 		} catch (BioException $e) {
-			$session->getFlashBag()->set('failure', $e->getMessage());
-			return $this->redirect($this->generateUrl('exam_entrance'));
-		}
-
-		// check to see if they accessed the page early
-		if ($exam->getStart() > new \DateTime()) {
-			$session->getFlashBag()->set('failure', "The exam has not started yet.");
-			$session->set('start', $exam->getStart());
-			return $this->redirect($this->generateUrl('exam_start'));
-		}
-
-		// check to see if they are signed in
-		if ($session->has('sid') && $session->has('duration') && $session->has('start') && $session->get('eid') === $exam->getId()) {
-			$db = new Database($this, 'BioExamBundle:TestTaker');
-			$taker = $db->findOne(array('sid' => $session->get('sid'), 'exam' => $exam->getId()));
-
-			// check to see if student has started test
-			// if they haven't, start them
-			if ($taker->getStatus() == 1) {
-				$taker->setStatus(2);
-				$taker->setVar('started', new \DateTime());
-				$db->close();
+			if ($e->getMessage() > 2) {
+				return $this->redirect($this->generateUrl('exam_review'));
+			} else if ($e->getMessage() < 2) {
+				return $this->redirect($this->generateUrl('exam_start'));
 			}
-
-
-
-			return array('exam' => $exam, 'title' => $exam->getName(), 'started' => $taker->getVar('started'));
-		} else {
-			$session->getFlashBag()->set('failure', 'Not signed in.');
+			$request->getSession()->getFlashBag()->set('failure', $e->getMessage());
 			return $this->redirect($this->generateUrl('exam_entrance'));
 		}
+
+		// should be unnecessary due to statussss
+		// // check to see if they cheated and did it early
+		// if ($array['exam']->getStart() > new \DateTime()) {
+		// 	$request->getSession()->getFlashBag()->set('failure', "Exam has not started yet.");
+		// 	return $this->redirect($this->generateUrl('exam_start'));
+		// }
+
+		if ($request->getMethod() === "POST") {
+			// handle saving form shit
+			// update status and vars
+			// redirect
+		}
+
+		return array('exam' => $array['exam'], 'started' => $array['taker']->getVar('started') , 'title' => $array['exam']->getName());
 	}
 
 	/**
-	 * @Route("/review", name="review_exam")
+	 * @Route("/review", name="exam_review")
 	 * @Template()
 	 */
 	public function reviewAction(Request $request) {
-		if ($request->getMethod() === "POST") {
-			$session = $request->getSession();
-			
-			// check to see if signed in
-			if (!$session->has('sid') || !$session->has('duration') || !$session->has('start') || !$session->has('eid')) {
-				$session->getFlashBag()->set('failure', 'Not signed in.');
-				return $this->redirect($this->generateUrl('exam_entrance'));
-			}
+		
+	}
 
-			// check to see if exam exists
-			$db = new Database($this, 'BioExamBundle:Exam');
-			$exam = $db->findOne(array('id' => $session->get('eid')));
-			if (!$exam) {
-				return $this->redirect($this->generateUrl('exam_entrance'));
-			}
+	private function check($isExam = true, Request $loggedIn = null, $status = null) {
+		$array = array();
 
-			// check to see if they have started the test
-			$db = new Database($this, 'BioExamBundle:TestTaker');
-			$taker = $db->findOne(array('sid' => $session->get('sid'), 'exam' => $session->get('eid')));
-			if (!$taker) {
-				$session->getFlashBag()->set('failure', 'You have not taken the test yet.');
-				return $this->redirect($this->generateUrl('exam_start'));
-			}
-
-			$db = new Database($this, 'BioExamBundle:Question');
-			$answers = array();
-			$questions = array();
-			foreach ($request->request->keys() as $key) {
-				$answers[$key] = $request->request->get($key);
-				$questions[$key] = $db->findOne(array('id' => $key));
-			}
-			$taker->setVar('answers', $answers);
-			$db->close();
-
-			return array('questions' => $questions, 'answers' => $answers, 'title' => 'Review Answers');
+		if ($isExam) {
+			$array['exam'] = $this->getNextExam();
 		}
-		if ($request->headers->get('referer')) {
-			return $this->redirect($request->headers->get('referer'));
-		} else {
-			return $this->redirect($this->generateUrl('exam_take'));
+
+		if ($loggedIn) {
+			$session = $loggedIn->getSession();
+			if ($session->has('sid') && $session->has('eid')) {
+				$db = new Database($this, 'BioExamBundle:TestTaker');
+				$array['db'] = $db;
+				$taker = $db->findOne(array('sid' => $session->get('sid'), 'exam' => $array['exam']->getId()));
+				if (!$taker) {
+					throw new BioException("Not logged in.");
+				}
+				$array['taker'] = $taker;
+			} else {
+				throw new BioException("Not logged in.");
+			}
 		}
+
+		if ($status) {
+			if ($array['taker']->getStatus() !== $status) {
+				throw new BioException($array['taker']->getStatus());
+			}
+			$array['status'] = $status;
+		}
+
+		return $array;
 	}
 
 	private function getNextExam() {

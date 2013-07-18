@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-	<form method="POST" action="{{ path('review_exam') }}">
+	<form method="POST">
 		{% for question in exam.questions %}
 			<div class="question tableStyle">
 				<h2>Question {{loop.index}}</h2> <h4>{{question.points}} points</h4>
@@ -55,7 +55,7 @@
 				})(this), 300);
 		this.updateTime();
 	}
-		timer = new Timer(30, "{{started|date('Y-m-d h:i:s')}}");
-	// timer = new Timer({{exam.duration}} ,"{{started|date('Y-m-d h:i:s')}}");
+		// timer = new Timer(30, "{{started|date('Y-m-d H:i:s')}}");
+	timer = new Timer({{exam.duration}} ,"{{started|date('Y-m-d H:i:s')}}");
 	</script>
 {% endblock %}
