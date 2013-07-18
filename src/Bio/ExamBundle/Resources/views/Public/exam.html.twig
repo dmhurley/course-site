@@ -17,12 +17,12 @@
 				</div>
 				<div class="line"></div>
 				<div class="a">
-					<textarea name="{{question.id}}" required="required"></textarea>
+					<textarea name="{{question.id}}" required="required">{{ answers[question.id] }}</textarea>
 				</div>
 			</div>
 		{% endfor %}
 		<div id="submit" >
-			<input type="submit" />
+			<button type="submit" />Submit</button>
 		</div>
 	</form>
 

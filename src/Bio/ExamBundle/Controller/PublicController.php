@@ -78,6 +78,8 @@ class PublicController extends Controller
 					return $this->redirect($this->generateUrl('exam_start'));
 				} else if ($taker->getStatus() === 2) {
 					return $this->redirect($this->generateUrl('exam_take'));
+				} else if ($taker->getStatus() === 3) {
+					return $this->redirect($this->generateUrl('exam_review'));
 				}
 				/// dot dot dot
 			}
@@ -150,12 +152,24 @@ class PublicController extends Controller
 		// }
 
 		if ($request->getMethod() === "POST") {
-			// handle saving form shit
-			// update status and vars
-			// redirect
+			$answers = array();
+			$db = new Database($this, 'BioExamBundle:Question');
+
+			foreach($request->request->keys() as $key) {
+				if ($db->findOne(array('id' => $key))){
+					$answers[$key] = $request->request->get($key);
+				} else {
+					throw new \Exception("NOOOOOO");
+				}
+			}
+			$array['taker']->setVar('answers', $answers);
+			$array['taker']->setStatus(3);
+			$db->close();
+
+			return $this->redirect($this->generateUrl('exam_review'));
 		}
 
-		return array('exam' => $array['exam'], 'started' => $array['taker']->getVar('started') , 'title' => $array['exam']->getName());
+		return array('exam' => $array['exam'], 'answers' => $array['taker']->getVar('answers'), 'started' => $array['taker']->getVar('started') , 'title' => $array['exam']->getName());
 	}
 
 	/**
@@ -163,7 +177,43 @@ class PublicController extends Controller
 	 * @Template()
 	 */
 	public function reviewAction(Request $request) {
-		
+		try {
+			$array = $this->check(true, $request, 3);
+		} catch (BioException $e) {
+			if ($e->getMessage() > 3) {
+				return $this->redirect($this->generateUrl('main_page'));
+			} else if ($e->getMessage() < 3) {
+				return $this->redirect($this->generateUrl('exam_take'));
+			}
+			$request->getSession()->getFlashBag()->set('failure', $e->getMessage());
+			return $this->redirect($this->generateUrl('exam_entrance'));
+		}
+
+		$form = $this->createFormBuilder()
+			->add('edit', 'submit')
+			->add('submit', 'submit')
+			->getForm();
+
+		if ($request->getMethod() === "POST") {
+			$form->handleRequest($request);
+
+			if ($form->get('edit')->isClicked()) {
+				$array['taker']->setStatus(2);
+				$array['db']->close();
+				return $this->redirect($this->generateUrl('exam_take'));
+			} else {
+				$array['taker']->setStatus(4);
+				$array['taker']->setVar('ended', new \DateTime());
+				$array['db']->close();
+				return $this->redirect($this->generateUrl('exam_entrance'));
+			}
+		}
+
+		return array('form'=>$form->createView(), 'exam' => $array['exam'], 'started' => $array['taker']->getVar('started'), 'answers' => $array['taker']->getVar('answers'), 'title' => 'Review Answers.');
+	}
+
+	public function doneAction(Request $request) {
+
 	}
 
 	private function check($isExam = true, Request $loggedIn = null, $status = null) {

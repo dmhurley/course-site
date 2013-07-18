@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-		{% for question in questions %}
+		{% for question in exam.questions %}
 			<div class="question tableStyle">
 				<h2>Question {{loop.index}}</h2> <h4>{{question.points}} points</h4>
 				<div class="q">
@@ -22,4 +22,43 @@
 				</div>
 			</div>
 		{% endfor %}
+		<div id="submit">
+			{{ form_start(form) }}
+				{{form_widget(form.edit)}}
+				{{form_widget(form.submit)}}
+			{{ form_end(form) }}
+		</div>
+
+	<div id="timer">
+		
+	</div>
+{% endblock %}
+
+{% block java %}
+	<script>
+	function Timer(duration, start) {
+		this.duration = duration;
+		this.date = new Date(start);
+		this.updateTime = function() {
+				var now = new Date();
+				timeleft = (this.date.valueOf() - now.valueOf())/1000/60 + duration;
+				if (timeleft >= 0) {
+					minutes = Math.floor(timeleft);
+				} else {
+					minutes ="-" + Math.abs(Math.floor(timeleft) + 1);
+				}
+				seconds = Math.abs(Math.floor((timeleft%1)*60));
+				document.getElementById('timer').innerHTML = minutes + ":" + (seconds%10===seconds?"0"+seconds:seconds);
+			}
+		this.interval = setInterval(
+				(function(self) {
+					return function() {
+						self.updateTime();
+					}
+				})(this), 300);
+		this.updateTime();
+	}
+		// timer = new Timer(30, "{{started|date('Y-m-d H:i:s')}}");
+	timer = new Timer({{exam.duration}} ,"{{started|date('Y-m-d H:i:s')}}");
+	</script>
 {% endblock %}
