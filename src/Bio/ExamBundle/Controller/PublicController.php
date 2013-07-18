@@ -25,12 +25,14 @@ class PublicController extends Controller
 	 * @Template()
 	 */
 	public function signAction(Request $request) {
+		// create signin form
 		$form = $this->createFormBuilder()
 			->add('sid', 'text', array('label' => 'Student ID:', 'mapped' => false))
 			->add('lName', 'text', array('label' => 'Last Name:', 'mapped' => false))
 			->add('sign in', 'submit')
 			->getForm();
 
+		// check to see if there is a test soon.
 		try {
 			$exam = $this->getNextExam();
 		} catch (BioException $e) {
@@ -38,17 +40,19 @@ class PublicController extends Controller
 			return array('form' => $form->createView(), 'title' => 'Sign In');
 		}
 
+		// check to see if they just submitted logon info
 		if ($request->getMethod() === "POST") {
 			$form->handleRequest($request);
 			$sid = $form->get('sid')->getData();
 			$lName = $form->get('lName')->getData();
 
-			// see if student exists in database
+			// check to see if student exists
 			$db =  new Database($this, 'BioStudentBundle:Student');
 			$student = $db->findOne(array('sid' => $sid, 'lName' => $lName));
 			if ($student) {
+
+				// check if they have already signed in for this test
 				$db = new Database($this, 'BioExamBundle:TestTaker');
-				// get test taker if they exist
 				$taker = $db->findOne(array('sid' => $sid, 'exam' => $exam->getId()));
 
 				// otherwise create and add to databse
@@ -61,13 +65,19 @@ class PublicController extends Controller
 					$db->close();
 				}
 
-				// create session stuff
+				// create session stuff, overwriting any old stuffs
 				$session = $request->getSession();
 				$session->set('duration', 30);
 				$session->set('start', $exam->getStart());
 				$session->set('sid', $sid);
+				$session->set('eid', $exam->getId());
 
-				return $this->redirect($this->generateUrl('exam_start'));
+				if ($taker->getStatus() === 1){
+					return $this->redirect($this->generateUrl('exam_start'));
+				} else if ($taker->getStatus() === 2) {
+					return $this->redirect($this->generateUrl('exam_take'));
+				}
+				$request->getSession()->getFlashBag()->set('failure','..... uhhhhh wrong status?'); //TEMPORARY
 			} else {
 				$request->getSession()->getFlashBag()->set('failure', 'Could not find anyone with that student ID and last name.');
 			}
@@ -82,10 +92,14 @@ class PublicController extends Controller
 	public function startAction(Request $request) {
 		$session = $request->getSession();
 
-		if ($session->has('sid') && $session->has('duration') && $session->has('start')) {
+		// check to see if they are signed in
+		if ($session->has('sid') && $session->has('duration') && $session->has('start') && $session->has('eid')) {
+
+			if ($request->getMethod() === "POST") {
+
+			}
 			$start = $session->get('start');
 			$form = $this->createFormBuilder()
-				->setAction($this->generateUrl('exam_take'))
 				->add('start', 'submit')
 				->getForm();
 
@@ -102,6 +116,7 @@ class PublicController extends Controller
 	 */
 	public function examAction(Request $request) {
 		$session = $request->getSession();
+		// check to see if there even in an exam
 		try {
 			$exam = $this->getNextExam();
 		} catch (BioException $e) {
@@ -109,22 +124,80 @@ class PublicController extends Controller
 			return $this->redirect($this->generateUrl('exam_entrance'));
 		}
 
+		// check to see if they accessed the page early
 		if ($exam->getStart() > new \DateTime()) {
 			$session->getFlashBag()->set('failure', "The exam has not started yet.");
 			$session->set('start', $exam->getStart());
 			return $this->redirect($this->generateUrl('exam_start'));
 		}
 
-		if ($session->has('sid') && $session->has('duration')) {
+		// check to see if they are signed in
+		if ($session->has('sid') && $session->has('duration') && $session->has('start') && $session->get('eid') === $exam->getId()) {
 			$db = new Database($this, 'BioExamBundle:TestTaker');
 			$taker = $db->findOne(array('sid' => $session->get('sid'), 'exam' => $exam->getId()));
-			$taker->setStatus(2);
-			$db->close();
 
-			return array('exam' => $exam, 'title' => $exam->getName());
+			// check to see if student has started test
+			// if they haven't, start them
+			if ($taker->getStatus() == 1) {
+				$taker->setStatus(2);
+				$taker->setVar('started', new \DateTime());
+				$db->close();
+			}
+
+
+
+			return array('exam' => $exam, 'title' => $exam->getName(), 'started' => $taker->getVar('started'));
 		} else {
 			$session->getFlashBag()->set('failure', 'Not signed in.');
 			return $this->redirect($this->generateUrl('exam_entrance'));
+		}
+	}
+
+	/**
+	 * @Route("/review", name="review_exam")
+	 * @Template()
+	 */
+	public function reviewAction(Request $request) {
+		if ($request->getMethod() === "POST") {
+			$session = $request->getSession();
+			
+			// check to see if signed in
+			if (!$session->has('sid') || !$session->has('duration') || !$session->has('start') || !$session->has('eid')) {
+				$session->getFlashBag()->set('failure', 'Not signed in.');
+				return $this->redirect($this->generateUrl('exam_entrance'));
+			}
+
+			// check to see if exam exists
+			$db = new Database($this, 'BioExamBundle:Exam');
+			$exam = $db->findOne(array('id' => $session->get('eid')));
+			if (!$exam) {
+				return $this->redirect($this->generateUrl('exam_entrance'));
+			}
+
+			// check to see if they have started the test
+			$db = new Database($this, 'BioExamBundle:TestTaker');
+			$taker = $db->findOne(array('sid' => $session->get('sid'), 'exam' => $session->get('eid')));
+			if (!$taker) {
+				$session->getFlashBag()->set('failure', 'You have not taken the test yet.');
+				return $this->redirect($this->generateUrl('exam_start'));
+			}
+
+			$db = new Database($this, 'BioExamBundle:Question');
+			$answers = array();
+			$questions = array();
+			foreach ($request->request->keys() as $key) {
+				$answers[$key] = $request->request->get($key);
+				$questions[$key] = $db->findOne(array('id' => $key));
+			}
+			$taker->setVar('answers', $answers);
+			$db->close();
+
+			return array('questions' => $questions, 'answers' => $answers, 'title' => 'Review Answers');
+		}
+		if ($request->headers->get('referer')) {
+			return $this->redirect($request->headers->get('referer'));
+		} else {
+			return $this->redirect($this->generateUrl('exam_take'));
 		}
 	}
 
