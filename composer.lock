@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "e67df720e8a1a2e0e6df41d91d788e48",
+    "hash": "9be63a29bca6c83760eb0a519f217cb6",
     "packages": [
         {
             "name": "doctrine/common",
@@ -57,7 +57,7 @@
                     "email": "kontakt@beberlei.de"
                 },
                 {
-                    "name": "Johannes M. Schmitt",
+                    "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
                     "homepage": "http://jmsyst.com",
                     "role": "Developer of wrapped JMSSerializerBundle"
@@ -690,6 +690,64 @@
             "time": "2013-06-05 17:32:22"
         },
         {
+            "name": "stfalcon/tinymce-bundle",
+            "version": "dev-master",
+            "target-dir": "Stfalcon/Bundle/TinymceBundle",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stfalcon/TinymceBundle.git",
+                "reference": "a0766c3cb1f56e9240a61620c2092be8e04bfb2c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/stfalcon/TinymceBundle/zipball/a0766c3cb1f56e9240a61620c2092be8e04bfb2c",
+                "reference": "a0766c3cb1f56e9240a61620c2092be8e04bfb2c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0",
+                "symfony/symfony": ">=2.1"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Stfalcon\\Bundle\\TinymceBundle": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Stepan Tanasiychuk",
+                    "email": "ceo@stfalcon.com",
+                    "homepage": "http://blog.stfalcon.com"
+                },
+                {
+                    "name": "Igor Negrutsa",
+                    "email": "progi2007@gmail.com",
+                    "homepage": "http://igor-negrutsa.info"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://github.com/stfalcon/TinymceBundle/contributors"
+                }
+            ],
+            "description": "This Bundle integrates TinyMCE WYSIWYG editor into a Symfony2 project.",
+            "keywords": [
+                "editor",
+                "tinymce",
+                "wysiwyg"
+            ],
+            "time": "2013-07-16 09:30:17"
+        },
+        {
             "name": "swiftmailer/swiftmailer",
             "version": "v5.0.1",
             "source": {
@@ -1173,9 +1231,9 @@
 
     ],
     "minimum-stability": "stable",
-    "stability-flags": [
-
-    ],
+    "stability-flags": {
+        "stfalcon/tinymce-bundle": 20
+    },
     "platform": {
         "php": ">=5.3.3"
     },

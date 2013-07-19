@@ -1,0 +1,97 @@
+.question {
+	width: 600px;
+	border-radius: 25px;
+	box-shadow: 1px 1px 15px rgb(200, 200, 200);
+	margin: 10px auto;
+	padding: 5px 20px;
+}
+
+.q ul, .q ol{
+	padding-left: 15px;
+}
+
+.q table {
+	margin: 5px;
+}
+
+.q table, .q td, .q th {
+	border: 1px solid black;
+}
+
+.q img {
+	margin: 10px !important;
+}
+
+.a, .q {
+	width: 90%;
+}
+
+.q {
+	margin: 5px auto;
+}
+
+.line {
+	width: 100%;
+	margin: 20px auto;
+	height: 3px;
+	background-color:gray;
+	clear:both;
+}
+
+.a {
+	margin: 20px auto 5px auto;
+}
+
+	.a textarea {
+		width: 100%;
+		min-height: 100px;
+		border-radius: 5px;
+	}
+
+.review {
+
+}
+
+	.review p {
+		text-indent: 0px !important;
+		margin-left: 60px;
+	}
+
+	.review .score {
+		float: left;
+		width: 60px;
+		height: 80px;
+	}
+
+#submit {
+	text-align:center;
+}
+	#submit p {
+		text-indent: 0px;
+	}
+
+	#submit input{
+		padding: 10px;
+		width: 50px;
+	}
+
+#timer {
+	position: fixed;
+	right: 0px;
+	top: 100px;
+	background-color: white;
+	padding: 20px;
+	border: 7px solid rgb(200,200,200);
+	border-right:none;
+	border-top-left-radius: 25px;
+	border-bottom-left-radius: 25px;
+	font-size: 20pt;
+	width: 100px;
+}
+
+#loader {
+	background-image: url('../images/ajax-loader.gif');
+	width: 220px;
+	height: 19px;
+	margin: 0 auto;
+}

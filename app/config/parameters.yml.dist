@@ -105,3 +105,16 @@ parameters:
             "Users":
                 route: view_users
                 vars: ~
+        "Exams":
+            "Exams":
+                route: exam_instruct
+                vars: ~
+            "Manage Exams":
+                route: view_exams
+                vars: ~
+            "Manage Questions":
+                route: view_questions
+                vars: ~
+            "Start Exam":
+                route: exam_entrance
+                vars: ~

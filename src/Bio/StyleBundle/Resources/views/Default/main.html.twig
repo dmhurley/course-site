@@ -2,11 +2,9 @@
 {% block title %}{{name}}{% endblock %}
 
 {% block head %}
-	{% block stylesheets %}
-		{% stylesheets 'bundles/biostyle/css/page.css' filter="cssrewrite" output="css/*.css" %}
-			<link rel="stylesheet" href="{{ asset_url }}" />
-		{% endstylesheets %}
-	{% endblock %}
+	{% stylesheets 'bundles/biostyle/css/page.css' filter="cssrewrite" output="css/*.css" %}
+		<link rel="stylesheet" href="{{ asset_url }}" />
+	{% endstylesheets %}
 {% endblock %}
 
 {% block body %}

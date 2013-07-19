@@ -36,7 +36,7 @@ class CourseController extends Controller
         $link = new Link();
         if ($request->query->get('title') && $request->query->get('route')) {
             $link->setTitle($request->query->get('title'))
-                ->setAddress($this->generateUrl($request->query->get('route')));
+                ->setAddress($this->get('router')->generate($request->query->get('route'), array(), true));
         }
         $form = $link->addToForm($this->createFormBuilder($link))
             ->setAction($this->generateUrl('view', array('entityName' => 'link')))            

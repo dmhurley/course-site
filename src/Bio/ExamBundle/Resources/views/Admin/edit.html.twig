@@ -1,0 +1,43 @@
+{% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block head %}
+	{{ parent() }}
+		{% stylesheets 'bundles/biostudent/css/form.css' 'bundles/bioexam/css/form_extension.css' filter="cssrewrite" output="css/*.css" %}
+			<link rel="stylesheet" href="{{ asset_url }}" />
+		{% endstylesheets %}
+		
+		{% javascripts 'bundles/bioexam/js/tags.js' output="js/*.js" %}
+			<script src="{{ asset_url }}"></script>
+		{% endjavascripts %}
+{% endblock %}
+
+{% block content %}
+	{{ form_start(form) }}
+		<div class="questioncontainer">
+			<input type="text" id="tag">
+			<label>Tags:</label>
+			<div id="scroller" class="tableStyle">
+				<table>
+					<tr>
+						<th></th>
+						<th>Question</th>
+					</tr>
+					{% for child in form.questions.children %}
+						<tr class="question" tags="{{ child.parent.vars.choices[child.vars.value].data.tags|join(' ') }}">
+							<td style="text-align:center;">{{ form_widget(child) }}</td>
+							<td>{{ child.parent.vars.choices[child.vars.value].label }}</td>
+						</tr>
+					{% endfor %}
+				</table>
+			</div>
+		</div>
+		<div id="form">
+			{{ form_row(form.name) }}
+			{{ form_row(form.date) }}
+			{{ form_row(form.start)}}
+			{{ form_row(form.end)}}
+			{{ form_row(form.duration)}}
+			{{ form_row(form.edit) }}
+		</div>
+	{{ form_end(form) }}
+{% endblock %}
