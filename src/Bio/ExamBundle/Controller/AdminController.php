@@ -302,7 +302,7 @@ class AdminController extends Controller
 
         echo "sid\t";
         echo "status\t";
-        echo "grader\t";
+        echo "assigned\t";
 
         $numQuestions = count($exam->getQuestions()->toArray());
         for($i = 1; $i <= $numQuestions; $i++) {
