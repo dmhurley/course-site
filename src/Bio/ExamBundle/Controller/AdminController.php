@@ -280,4 +280,41 @@ class AdminController extends Controller
         }
         return $this->redirect($this->generateUrl('view_exams'));
     }
+
+    /**
+     * @Route("/download/{id}", name="exam_download")
+     * @Template("BioFolderBundle:Download:download.html.twig")
+     */
+    public function downloadAction(Request $request, $id) {
+        $db = new Database($this, 'BioExamBundle:Exam');
+        $exam = $db->findOne(array('id' => $id));
+
+        $db = new Database($this, 'BioExamBundle:TestTaker');
+        $takers = $db->find(array('exam' => $id), array('sid' => 'ASC'), false);
+
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename='.$exam->getName().'.txt');
+        header('Content-Transfer-Encoding: binary');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+
+        $header = "sid\tstatus\tgrader\t";
+        for($i = 1; $i <= count($exam->getQuestions()->toArray()); $i++) {
+            $header = $header."q".$i." answer\tq".$i." points\t";
+        }
+        echo $header."time started\ttime ended\tlate\n";
+
+        foreach ($takers as $taker) {
+            $line = $taker->getSid()."\t".$taker->getStatus()."\t".$taker->getGrader()."\t";
+            foreach(array_keys($taker->getVar('answers')) as $key) {
+
+                $line = $line.$taker->getVar('answers')[$key]."\t".$taker->getVar('points')[$key]."\t";
+            }
+            $line = $line.$taker->getVar('started')->format('Y-m-d H:i:s')."\t".$taker->getVar('ended')->format('Y-m-d H:i:s')."\t".$taker->hasVar('error')."\n";
+            echo $line;
+        }
+        return array('text' => '');
+    }
 }
