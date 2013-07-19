@@ -27,7 +27,7 @@ class PublicController extends Controller
 	public function signAction(Request $request) {
 		// create signin form
 		$form = $this->createFormBuilder()
-			->add('sid', 'text', array('label' => 'Student ID:', 'mapped' => false))
+			->add('sid', 'text', array('label' => 'Student ID:', 'mapped' => false)) // add a pattern to this TODO
 			->add('lName', 'text', array('label' => 'Last Name:', 'mapped' => false))
 			->add('sign in', 'submit')
 			->getForm();
@@ -43,7 +43,9 @@ class PublicController extends Controller
 		// check to see if they submitted login stuff
 		if ($request->getMethod() === "POST") {
 			$form->handleRequest($request);
+
 			// check to see if they submitted ALL the login stuff
+			// cant' use form validate because they aren't mapped
 			if ($form->has('sid') && $form->has('lName')) {
 
 				// check to see if student exists
@@ -57,7 +59,6 @@ class PublicController extends Controller
 
 				// check to see if they've already logged in
 				// add to database if they haven't
-				// reroute if they have
 				$db = new Database($this, 'BioExamBundle:TestTaker');
 				$taker = $db->findOne(array('sid' => $form->get('sid')->getData(), 'exam' => $array['exam']->getId()));
 				if (!$taker) {
@@ -69,23 +70,38 @@ class PublicController extends Controller
 					$db->close();
 				}
 
+				// overwrite session in case multiple people go in succession
 				$session = $request->getSession();
 				$session->set('sid', $taker->getSid());
 				$session->set('eid', $array['exam']->getId());
 
+
+				// route to page based on status
 				if ($taker->getStatus() === 1) {
-					// $request->getSession()->getFlashBag()->set('success', 'Signed in.');
+
+					$request->getSession()->getFlashBag()->set('success', 'Signed in.');
 					return $this->redirect($this->generateUrl('exam_start'));
 				} else if ($taker->getStatus() === 2) {
+
+					$request->getSession()->getFlashBag()->set('success', 'You previously started the test.');
 					return $this->redirect($this->generateUrl('exam_take'));
 				} else if ($taker->getStatus() === 3) {
+
+					$request->getSession()->getFlashBag()->set('success', 'Review your answers and submit.');
 					return $this->redirect($this->generateUrl('exam_review'));
 				} else if ($taker->getStatus() == 4) {
+
+					$request->getSession()->getFlashBag()->set('success', 'You have already finished your exam. Please wait to grade a test.');
 					return $this->redirect($this->generateUrl('exam_confirm'));
 				} else if ($taker->getStatus() == 5) {
+
+					$request->getSession()->getFlashBag()->set('success', 'You still need to grade this test.');
 					return $this->redirect($this->generateUrl('exam_grade'));
+				} else if ($taker->getStatus() == 6) {
+
+					$request->getSession()->getFlashBag()->set('success', 'You have already completed the exam');
+					return $this->redirect($this->generateUrl('main_page'));
 				}
-				/// dot dot dot
 			}
 		}
 
@@ -101,6 +117,7 @@ class PublicController extends Controller
 		try {
 			$array = $this->check(true, $request, 1);
 		} catch (BioException $e) {
+			// redirect forward if they have started already
 			if ($e->getMessage() > 1) {
 				return $this->redirect($this->generateUrl('exam_take'));
 			}
@@ -115,17 +132,17 @@ class PublicController extends Controller
 		// check to see if they pressed the start button
 		if ($request->getMethod() === "POST") {
 
-			// check to see if they cheated and did it early
-			if ($array['exam']->getStart() > new \DateTime()) {
+			// check to see if they started on team
+			if ($array['exam']->getStart() <= new \DateTime()) {
+				$array['taker']->setStatus(2);
+				$array['taker']->setVar('started', new \DateTime());
+				$array['db']->close();
+				return $this->redirect($this->generateUrl('exam_take'));
+			} else {
+
+				// if they got to this early
 				$request->getSession()->getFlashBag()->set('failure', "Exam has not started yet.");
-				return $this->redirect($this->generateUrl('exam_start'));
 			}
-
-			$array['taker']->setStatus(2);
-			$array['taker']->setVar('started', new \DateTime());
-			$array['db']->close();
-
-			return $this->redirect($this->generateUrl('exam_take'));
 		}
 
 		return array('form' => $form->createView(), 'exam' => $array['exam'], 'title' => 'Begin Test');
@@ -136,9 +153,12 @@ class PublicController extends Controller
 	 * @Template()
 	 */
 	public function examAction(Request $request) {
+		// check for exam soon, signed in, and haven't started yet
 		try {
 			$array = $this->check(true, $request, 2);
 		} catch (BioException $e) {
+			// redirect forward if they're passed this
+			// redirect back if they haven't gotten here yet
 			if ($e->getMessage() > 2) {
 				return $this->redirect($this->generateUrl('exam_review'));
 			} else if ($e->getMessage() < 2) {
@@ -148,31 +168,27 @@ class PublicController extends Controller
 			return $this->redirect($this->generateUrl('exam_entrance'));
 		}
 
-		// should be unnecessary due to statussss
-		// // check to see if they cheated and did it early
-		// if ($array['exam']->getStart() > new \DateTime()) {
-		// 	$request->getSession()->getFlashBag()->set('failure', "Exam has not started yet.");
-		// 	return $this->redirect($this->generateUrl('exam_start'));
-		// }
-
+		// if they pressed submit
 		if ($request->getMethod() === "POST") {
 			$answers = array();
-			// do exam instead??? MUCH BETTER
-			$db = new Database($this, 'BioExamBundle:Question');
 
+			// add their answers to array by key value IF the keys match the exam
 			foreach($request->request->keys() as $key) {
-				if ($db->findOne(array('id' => $key))){
+				if ($this->arrayContainsId($array['exam']->getQuestions()->toArray(), $key)){
 					$answers[$key] = $request->request->get($key);
 				} else {
-					throw new \Exception("NOOOOOO");
+					throw new \Exception("NOOOOOO"); // TODO handle this
 				}
 			}
+
+			// save stuff
 			$array['taker']->setVar('answers', $answers);
 			$array['taker']->setStatus(3);
-			$db->close();
+			$array['db']->close(); // TODO handle errors probably shouldn't happpen ever
 
 			return $this->redirect($this->generateUrl('exam_review'));
 		}
+		// get answers if they exist, else make empty array
 		$answers = $array['taker']->hasVar('answers')?$array['taker']->getVar('answers'):array();
 		return array('exam' => $array['exam'], 'answers' => $answers, 'started' => $array['taker']->getVar('started') , 'title' => $array['exam']->getName());
 	}
@@ -182,9 +198,11 @@ class PublicController extends Controller
 	 * @Template()
 	 */
 	public function reviewAction(Request $request) {
+		// check for exam, see if signed in, check status
 		try {
 			$array = $this->check(true, $request, 3);
 		} catch (BioException $e) {
+			// do redirects if necessary
 			if ($e->getMessage() > 3) {
 				return $this->redirect($this->generateUrl('exam_confirm'));
 			} else if ($e->getMessage() < 3) {
@@ -199,23 +217,27 @@ class PublicController extends Controller
 			->add('submit', 'submit')
 			->getForm();
 
+		// if they pressed a button
 		if ($request->getMethod() === "POST") {
 			$form->handleRequest($request);
 
+			// if they want to edit stuff
 			if ($form->get('edit')->isClicked()) {
 				$array['taker']->setStatus(2);
+				$array['taker']->setVar('edited', true); // save that they edited it
 				$array['db']->close();
 				return $this->redirect($this->generateUrl('exam_take'));
+
+			// if they want to submit it
 			} else {
 				$array['taker']->setStatus(4);
 				$array['taker']->setVar('ended', new \DateTime());
+
+				// check to see if they went over the time limit, let them continue working. Just marks it.
 				$diff = date_diff($array['taker']->getVar('ended'), $array['taker']->getVar('started'));
 				$duration = new \DateInterval('PT'.$array['exam']->getDuration()."M");
 				if ($diff->format('%Y-%M-%D %H:%I:%S') > $duration->format('%Y-%M-%D %H:%I:%S') ){
 					$request->getSession()->getFlashBag()->set('success', 'Went over time limit. Answers saved.');
-					$array['taker']->setVar('error', -2);
-				} else if (false) { // if current time is after ending time
-					$request->getSession()->getFlashBag()->set('success', 'Submitted late. Answers saved.');
 					$array['taker']->setVar('error', -1);
 				} else {
 					$request->getSession()->getFlashBag()->set('success', 'Answers saved.');
@@ -233,6 +255,7 @@ class PublicController extends Controller
 	 * @Template()
 	 */
 	public function confirmationAction(Request $request) {
+		// checks exam still going, logged in, right status
 		try {
 			$array = $this->check(true, $request, 4);
 		} catch (BioException $e) {
@@ -245,7 +268,9 @@ class PublicController extends Controller
 			return $this->redirect($this->generateUrl('exam_entrance'));
 		}
 
+		// if they pressed the grade button
 		if ($request->getMethod() === "POST") {
+			// if they haven't cheated set them up and forward them
 			if ($array['taker']->getGrader() !== '') {
 				$array['taker']->setStatus(5);
 				$array['db']->close();
@@ -261,6 +286,7 @@ class PublicController extends Controller
 	 * @Template()
 	 */
 	public function gradeAction(Request $request) {
+		// check if exam is still going, if logged in, status
 		try {
 			$array = $this->check(true, $request, 5);
 		} catch (BioException $e) {
@@ -273,19 +299,26 @@ class PublicController extends Controller
 			return $this->redirect($this->generateUrl('exam_entrance'));
 		}
 
+		// finds the person they're grading
 		$db = new Database($this, 'BioExamBundle:TestTaker');
 		$target = $db->findOne(array('sid' => $array['taker']->getGrader()));
-		// pretty much guaranteed to exist..... I think..... could take back to confirm..
+		// pretty much guaranteed to exist..... I think..... could take back to confirm.. TODO figure out....
 		$exam = $array['exam'];
 
+		// if they pressed submit
 		if ($request->getMethod() === "POST") {
+
+			// get the points they assigned from the form
+
 			$points = array();
 
+			// make sure they graded everything
 			if (count($request->request->keys()) !== count($exam->getQuestions())) {
 				$request->getSession()->getFlashBag()->set('failure', 'You did not grade every question.');
 				return array('exam' => $exam, 'answers' => $target->getVar('answers'), 'title' => 'Grade Exam');
 			}
 
+			// make sure all ids in form match questions in exam
 			foreach($request->request->keys() as $key) {
 				if (!$this->arrayContainsId($exam->getQuestions()->toArray(), $key)) {
 					$request->getSession()->getFlashBag()->set('failure', 'Error');
@@ -295,11 +328,14 @@ class PublicController extends Controller
 				}
 			}
 
+			// if target has been graded already, don't overwrite TODO append??
 			if (!$target->hasVar('points')){
 				$target->setVar('points', $points);
 			}
 			$array['taker']->setStatus(6);
 			$db->close();
+
+			$request->getSession()->getFlashBag()->set('success', 'Completed exam and grading.');
 			return $this->redirect($this->generateUrl('main_page'));
 
 		}
@@ -312,32 +348,55 @@ class PublicController extends Controller
 	 * @Template("BioExamBundle:Public:check.json.twig")
 	 */
 	public function checkAction(Request $request) {
+
+		// check if proper request
 		if ($request->request->has('sid') && $request->request->has('exam')) {
+
 			// get the person
 			$db = new Database($this, 'BioExamBundle:TestTaker');
 			$you = $db->findOne(array('sid' => $request->request->get('sid'), 'exam' => $request->request->get('exam')));
 
+			// if you don't exist
+			if (!$you) {
+				return array('error' => true, 'message' => 'Cannot find entry with that sid and exam.');
+			}
+
+			// if they got assigned someone between checks
 			if ($you->getGrader() !== '') {
 				return array('error' => false, 'message' => "HOORAY", 'sid' => $you->getGrader());
 			}
 
 			// get everyone else
+
+			// if they force it
 			if ($request->request->has('force') && $request->request->get('force') === 'force'){
+
+				// get everyone who's finished a test and at least started grading
 				$em = $this->getDoctrine()->getManager();
 				$query = $em->createQueryBuilder()
 					->select('p')
 					->from('BioExamBundle:TestTaker', 'p')
-					->where('p.status >= 4')
+					->where('p.status >= 5')
 					->andWhere('p.exam = :eid')
 					->setParameter('eid', $request->request->get('exam'))
 					->getQuery();
 				$targets = $query->getResult();
-				if (count($targets) < 2) {
+
+				// if there's literally nobody
+				if (count($targets) === 0) {
 					return array('error' => true, 'message' => 'No other test takers.');
 				}
+
+				// choose person randomly
 				$target = $targets[rand(0, count($targets) - 1)];
+
+			// if they ask nicely
 			} else {
+
+				// get everyone unpaired
 				$targets = $db->find(array('status' => 4, 'exam' => $request->request->get('exam'), 'grader' => ''), array(), false);
+
+				// get person who's not yourself from targets
 				if (count($targets) < 2) {
 					return array('error' => true, 'message' => 'No other test takers.');
 				} else {
@@ -347,6 +406,9 @@ class PublicController extends Controller
 						$target = $targets[0];
 					}
 				}
+
+
+			// make a cute match
 				$target->setGrader($you->getSid());
 			}
 			$you->setGrader($target->getSid());
@@ -354,7 +416,7 @@ class PublicController extends Controller
 			try {
 				$db->close();
 			} catch (\Exception $e) {
-				return array('error' => true, 'message' => "Error persisting to database.");
+				return array('error' => true, 'message' => "Error persisting to database.");// TODO do I  need this at all ???
 			}
 
 			return array('error' => false, 'message' => "HOORAY", 'sid' => $you->getGrader());

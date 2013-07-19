@@ -36,29 +36,35 @@
 
 {% block java %}
 	<script>
-	function Timer(duration, start) {
-		this.duration = duration;
-		this.date = new Date(start);
-		this.updateTime = function() {
-				var now = new Date();
-				timeleft = (this.date.valueOf() - now.valueOf())/1000/60 + duration;
-				if (timeleft >= 0) {
-					minutes = Math.floor(timeleft);
-				} else {
-					minutes ="-" + Math.abs(Math.floor(timeleft) + 1);
-				}
-				seconds = Math.abs(Math.floor((timeleft%1)*60));
-				document.getElementById('timer').innerHTML = minutes + ":" + (seconds%10===seconds?"0"+seconds:seconds);
-			}
-		this.interval = setInterval(
-				(function(self) {
-					return function() {
-						self.updateTime();
+		function Timer(duration, start, end) {
+			this.duration = duration;
+			this.end = new Date(end);
+			this.date = new Date(start);
+			this.updateTime = function() {
+					var now = new Date();
+					var ttLate = (this.date.valueOf() - now.valueOf())/1000/60 + duration;
+					var ttEnd = (this.end.valueOf() - now.valueOf())/1000/60;
+					console.log(ttLate);
+					console.log(this.end);
+
+					var timeleft = Math.min(ttLate, ttEnd);
+
+					if (timeleft >= 0) {
+						minutes = Math.floor(timeleft);
+					} else {
+						minutes ="-" + Math.abs(Math.floor(timeleft) + 1);
 					}
-				})(this), 300);
-		this.updateTime();
-	}
-		// timer = new Timer(30, "{{started|date('Y-m-d H:i:s')}}");
-	timer = new Timer({{exam.duration}} ,"{{started|date('Y-m-d H:i:s')}}");
+					seconds = Math.abs(Math.floor((timeleft%1)*60));
+					document.getElementById('timer').innerHTML = minutes + ":" + (seconds%10===seconds?"0"+seconds:seconds);
+				}
+			this.interval = setInterval(
+					(function(self) {
+						return function() {
+							self.updateTime();
+						}
+					})(this), 300);
+			this.updateTime();
+		}
+		timer = new Timer({{exam.duration}} ,"{{started|date('Y-m-d H:i:s')}}", "{{exam.date|date('Y-m-d')}} {{exam.end|date('H:i:s')}}");
 	</script>
 {% endblock %}

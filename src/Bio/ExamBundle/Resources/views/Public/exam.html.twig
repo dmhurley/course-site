@@ -33,12 +33,19 @@
 
 {% block java %}
 	<script>
-	function Timer(duration, start) {
+		function Timer(duration, start, end) {
 		this.duration = duration;
+		this.end = new Date(end);
 		this.date = new Date(start);
 		this.updateTime = function() {
 				var now = new Date();
-				timeleft = (this.date.valueOf() - now.valueOf())/1000/60 + duration;
+				var ttLate = (this.date.valueOf() - now.valueOf())/1000/60 + duration;
+				var ttEnd = (this.end.valueOf() - now.valueOf())/1000/60;
+				console.log(ttLate);
+				console.log(this.end);
+
+				var timeleft = Math.min(ttLate, ttEnd);
+
 				if (timeleft >= 0) {
 					minutes = Math.floor(timeleft);
 				} else {
@@ -55,7 +62,6 @@
 				})(this), 300);
 		this.updateTime();
 	}
-		// timer = new Timer(30, "{{started|date('Y-m-d H:i:s')}}");
-	timer = new Timer({{exam.duration}} ,"{{started|date('Y-m-d H:i:s')}}");
+	timer = new Timer({{exam.duration}} ,"{{started|date('Y-m-d H:i:s')}}", "{{exam.date|date('Y-m-d')}} {{exam.end|date('H:i:s')}}");
 	</script>
 {% endblock %}
