@@ -120,6 +120,10 @@ class TestTaker
         return $this->vars[$key];
     }
 
+    public function hasVar($key) {
+        return isset($this->vars[$key]);
+    }
+
     /**
      * Get vars
      *

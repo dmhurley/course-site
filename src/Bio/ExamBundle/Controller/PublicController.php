@@ -82,6 +82,8 @@ class PublicController extends Controller
 					return $this->redirect($this->generateUrl('exam_review'));
 				} else if ($taker->getStatus() == 4) {
 					return $this->redirect($this->generateUrl('exam_confirm'));
+				} else if ($taker->getStatus() == 5) {
+					return $this->redirect($this->generateUrl('exam_grade'));
 				}
 				/// dot dot dot
 			}
@@ -155,6 +157,7 @@ class PublicController extends Controller
 
 		if ($request->getMethod() === "POST") {
 			$answers = array();
+			// do exam instead??? MUCH BETTER
 			$db = new Database($this, 'BioExamBundle:Question');
 
 			foreach($request->request->keys() as $key) {
@@ -170,7 +173,7 @@ class PublicController extends Controller
 
 			return $this->redirect($this->generateUrl('exam_review'));
 		}
-		$answers = array_key_exists('answers', $array['taker']->getVars())?$array['taker']->getVar('answers'):array();
+		$answers = $array['taker']->hasVar('answers')?$array['taker']->getVar('answers'):array();
 		return array('exam' => $array['exam'], 'answers' => $answers, 'started' => $array['taker']->getVar('started') , 'title' => $array['exam']->getName());
 	}
 
@@ -217,7 +220,6 @@ class PublicController extends Controller
 				} else {
 					$request->getSession()->getFlashBag()->set('success', 'Answers saved.');
 				}
-
 				$array['db']->close();
 				return $this->redirect($this->generateUrl('exam_confirm'));
 			}
@@ -235,7 +237,7 @@ class PublicController extends Controller
 			$array = $this->check(true, $request, 4);
 		} catch (BioException $e) {
 			if ($e->getMessage() > 4) {
-				return $this->redirect($this->generateUrl('main_page'));
+				return $this->redirect($this->generateUrl('exam_grade'));
 			} else if ($e->getMessage() < 4) {
 				return $this->redirect($this->generateUrl('exam_take'));
 			}
@@ -243,7 +245,66 @@ class PublicController extends Controller
 			return $this->redirect($this->generateUrl('exam_entrance'));
 		}
 
+		if ($request->getMethod() === "POST") {
+			if ($array['taker']->getGrader() !== '') {
+				$array['taker']->setStatus(5);
+				$array['db']->close();
+				return $this->redirect($this->generateUrl('exam_grade'));
+			}
+		}
+
 		return array( 'title' => 'Exam Submitted', 'taker' => $array['taker']);
+	}
+
+	/**
+	 * @Route("/grade", name="exam_grade")
+	 * @Template()
+	 */
+	public function gradeAction(Request $request) {
+		try {
+			$array = $this->check(true, $request, 5);
+		} catch (BioException $e) {
+			if ($e->getMessage() > 5) {
+				return $this->redirect($this->generateUrl('main_page'));
+			} else if ($e->getMessage() < 5) {
+				return $this->redirect($this->generateUrl('exam_confirm'));
+			}
+			$request->getSession()->getFlashBag()->set('failure', $e->getMessage());
+			return $this->redirect($this->generateUrl('exam_entrance'));
+		}
+
+		$db = new Database($this, 'BioExamBundle:TestTaker');
+		$target = $db->findOne(array('sid' => $array['taker']->getGrader()));
+		// pretty much guaranteed to exist..... I think..... could take back to confirm..
+		$exam = $array['exam'];
+
+		if ($request->getMethod() === "POST") {
+			$points = array();
+
+			if (count($request->request->keys()) !== count($exam->getQuestions())) {
+				$request->getSession()->getFlashBag()->set('failure', 'You did not grade every question.');
+				return array('exam' => $exam, 'answers' => $target->getVar('answers'), 'title' => 'Grade Exam');
+			}
+
+			foreach($request->request->keys() as $key) {
+				if (!$this->arrayContainsId($exam->getQuestions()->toArray(), $key)) {
+					$request->getSession()->getFlashBag()->set('failure', 'Error');
+					return array('exam' => $exam, 'answers' => $target->getVar('answers'), 'title' => 'Grade Exam');
+				} else {
+					$points[$key] = $request->request->get($key);
+				}
+			}
+
+			if (!$target->hasVar('points')){
+				$target->setVar('points', $points);
+			}
+			$array['taker']->setStatus(6);
+			$db->close();
+			return $this->redirect($this->generateUrl('main_page'));
+
+		}
+
+		return array('exam' => $exam, 'answers' => $target->getVar('answers'), 'title' => 'Grade Exam');
 	}
 
 	/**
@@ -262,7 +323,15 @@ class PublicController extends Controller
 
 			// get everyone else
 			if ($request->request->has('force') && $request->request->get('force') === 'force'){
-				$targets = $db->find(array('status' => 4, 'exam' => $request->request->get('exam')), array(), false);
+				$em = $this->getDoctrine()->getManager();
+				$query = $em->createQueryBuilder()
+					->select('p')
+					->from('BioExamBundle:TestTaker', 'p')
+					->where('p.status >= 4')
+					->andWhere('p.exam = :eid')
+					->setParameter('eid', $request->request->get('exam'))
+					->getQuery();
+				$targets = $query->getResult();
 				if (count($targets) < 2) {
 					return array('error' => true, 'message' => 'No other test takers.');
 				}
@@ -282,13 +351,26 @@ class PublicController extends Controller
 			}
 			$you->setGrader($target->getSid());
 
-			$db->close();
+			try {
+				$db->close();
+			} catch (\Exception $e) {
+				return array('error' => true, 'message' => "Error persisting to database.");
+			}
 
 			return array('error' => false, 'message' => "HOORAY", 'sid' => $you->getGrader());
 		}
 
 		return array('error' => true, 'message' => 'Improper request.');
 
+	}
+
+	private function arrayContainsId($array, $id) {
+		foreach($array as $object) {
+			if ($object->getId() === $id) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private function check($isExam = true, Request $loggedIn = null, $status = null) {

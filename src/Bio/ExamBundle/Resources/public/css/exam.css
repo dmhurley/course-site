@@ -42,20 +42,37 @@
 	margin: 20px auto 5px auto;
 }
 
-.a textarea {
-	width: 100%;
-	min-height: 100px;
-	border-radius: 5px;
+	.a textarea {
+		width: 100%;
+		min-height: 100px;
+		border-radius: 5px;
+	}
+
+.review {
+
 }
+
+	.review textarea {
+		width: 80%;
+	}
+
+	.review .score {
+		float: left;
+		width: 19%;
+		height: 80px;
+	}
 
 #submit {
 	text-align:center;
 }
+	#submit p {
+		text-indent: 0px;
+	}
 
-#submit input{
-	padding: 10px;
-	width: 50px;
-}
+	#submit input{
+		padding: 10px;
+		width: 50px;
+	}
 
 #timer {
 	position: fixed;
@@ -69,4 +86,11 @@
 	border-bottom-left-radius: 25px;
 	font-size: 20pt;
 	width: 100px;
+}
+
+#loader {
+	background-image: url('../images/ajax-loader.gif');
+	width: 220px;
+	height: 19px;
+	margin: 0 auto;
 }
