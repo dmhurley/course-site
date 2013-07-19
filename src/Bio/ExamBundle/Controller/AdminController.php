@@ -300,20 +300,49 @@ class AdminController extends Controller
         header('Cache-Control: must-revalidate');
         header('Pragma: public');
 
-        $header = "sid\tstatus\tgrader\t";
-        for($i = 1; $i <= count($exam->getQuestions()->toArray()); $i++) {
-            $header = $header."q".$i." answer\tq".$i." points\t";
+        echo "sid\t";
+        echo "status\t";
+        echo "grader\t";
+
+        $numQuestions = count($exam->getQuestions()->toArray());
+        for($i = 1; $i <= $numQuestions; $i++) {
+            echo "q".$i." answer\t";
+            echo "q".$i." points/".$exam->getQuestions()->toArray()[$i-1]->getPoints()."\t";
         }
-        echo $header."time started\ttime ended\tlate\n";
+        echo "time started\t";
+        echo "time ended\t";
+        echo "late\n";
 
         foreach ($takers as $taker) {
-            $line = $taker->getSid()."\t".$taker->getStatus()."\t".$taker->getGrader()."\t";
-            foreach(array_keys($taker->getVar('answers')) as $key) {
+            echo $taker->getSid()."\t";
+            echo $taker->getStatus()."\t";
+            echo $taker->getGrader()."\t";
 
-                $line = $line.$taker->getVar('answers')[$key]."\t".$taker->getVar('points')[$key]."\t";
+            if ($taker->hasVar('answers')) {
+                foreach(array_keys($taker->getVar('answers')) as $key) {
+                    echo $taker->getVar('answers')[$key]."\t";
+                    if (!$taker->hasVar('points')) {
+                        echo $taker->getVar('points')[$key]; // tab on next line
+                    }
+                    echo "\t";
+                }
+            } else {
+                for ($i = 0; $i < $numQuestions*2; $i++) {
+                    echo "\t";
+                }
             }
-            $line = $line.$taker->getVar('started')->format('Y-m-d H:i:s')."\t".$taker->getVar('ended')->format('Y-m-d H:i:s')."\t".$taker->hasVar('error')."\n";
-            echo $line;
+
+            if ($taker->hasVar('started')){
+                echo $taker->getVar('started')->format('Y-m-d H:i:s')."\t";
+                if ($taker->hasVar('ended')) {
+                    echo $taker->getVar('ended')->format('Y-m-d H:i:s'); // tab on next line
+                }
+                echo "\t";
+            } else {
+                echo "\t\t";
+            }
+
+            echo $taker->hasVar('error')?'true':'false'."\n";
         }
         return array('text' => '');
     }
