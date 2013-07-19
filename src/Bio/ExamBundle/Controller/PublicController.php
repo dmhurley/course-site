@@ -177,20 +177,19 @@ class PublicController extends Controller
 				if ($this->arrayContainsId($array['exam']->getQuestions()->toArray(), $key)){
 					$answers[$key] = $request->request->get($key);
 				} else {
-					throw new \Exception("NOOOOOO"); // TODO handle this
+					$request->getSession()->getFlashBag()->set('failure', 'Error');
+					return array('exam' => $array['exam'], 'taker' => $array['taker'], 'title' => $array['exam']->getName());
 				}
 			}
 
 			// save stuff
 			$array['taker']->setVar('answers', $answers);
 			$array['taker']->setStatus(3);
-			$array['db']->close(); // TODO handle errors probably shouldn't happpen ever
+			$array['db']->close();
 
 			return $this->redirect($this->generateUrl('exam_review'));
 		}
-		// get answers if they exist, else make empty array
-		$answers = $array['taker']->hasVar('answers')?$array['taker']->getVar('answers'):array();
-		return array('exam' => $array['exam'], 'answers' => $answers, 'started' => $array['taker']->getVar('started') , 'title' => $array['exam']->getName());
+		return array('exam' => $array['exam'], 'taker' => $array['taker'], 'title' => $array['exam']->getName());
 	}
 
 	/**
@@ -247,7 +246,7 @@ class PublicController extends Controller
 			}
 		}
 
-		return array('form'=>$form->createView(), 'exam' => $array['exam'], 'started' => $array['taker']->getVar('started'), 'answers' => $array['taker']->getVar('answers'), 'title' => 'Review Answers.');
+		return array('form'=>$form->createView(), 'exam' => $array['exam'], 'taker' => $array['taker'], 'title' => 'Review Answers.');
 	}
 
 	/**
@@ -278,7 +277,7 @@ class PublicController extends Controller
 			}
 		}
 
-		return array( 'title' => 'Exam Submitted', 'taker' => $array['taker']);
+		return array('taker' => $array['taker'], 'exam' => $array['exam'], 'title' => 'Exam Submitted');
 	}
 
 	/**
@@ -302,7 +301,7 @@ class PublicController extends Controller
 		// finds the person they're grading
 		$db = new Database($this, 'BioExamBundle:TestTaker');
 		$target = $db->findOne(array('sid' => $array['taker']->getGrader()));
-		// pretty much guaranteed to exist..... I think..... could take back to confirm.. TODO figure out....
+
 		$exam = $array['exam'];
 
 		// if they pressed submit
@@ -315,14 +314,14 @@ class PublicController extends Controller
 			// make sure they graded everything
 			if (count($request->request->keys()) !== count($exam->getQuestions())) {
 				$request->getSession()->getFlashBag()->set('failure', 'You did not grade every question.');
-				return array('exam' => $exam, 'answers' => $target->getVar('answers'), 'title' => 'Grade Exam');
+				return array('exam' => $exam, 'taker' => $target, 'title' => 'Grade Exam');
 			}
 
 			// make sure all ids in form match questions in exam
 			foreach($request->request->keys() as $key) {
 				if (!$this->arrayContainsId($exam->getQuestions()->toArray(), $key)) {
 					$request->getSession()->getFlashBag()->set('failure', 'Error');
-					return array('exam' => $exam, 'answers' => $target->getVar('answers'), 'title' => 'Grade Exam');
+					return array('exam' => $exam, 'taker' => $target, 'title' => 'Grade Exam');
 				} else {
 					$points[$key] = $request->request->get($key);
 				}
@@ -340,7 +339,7 @@ class PublicController extends Controller
 
 		}
 
-		return array('exam' => $exam, 'answers' => $target->getVar('answers'), 'title' => 'Grade Exam');
+		return array('exam' => $exam, 'taker' => $target, 'title' => 'Grade Exam');
 	}
 
 	/**
@@ -408,16 +407,12 @@ class PublicController extends Controller
 				}
 
 
-			// make a cute match
+			// make a cute pairing
 				$target->setGrader($you->getSid());
 			}
 			$you->setGrader($target->getSid());
-
-			try {
-				$db->close();
-			} catch (\Exception $e) {
-				return array('error' => true, 'message' => "Error persisting to database.");// TODO do I  need this at all ???
-			}
+			$db->close();
+			
 
 			return array('error' => false, 'message' => "HOORAY", 'sid' => $you->getGrader());
 		}

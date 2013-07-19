@@ -25,7 +25,7 @@
 							 {% endfor %}
 						</select>
 					</div>
-					<textarea disabled=true>{% if question.id in answers|keys %}{{ answers[question.id] }}{% endif %}</textarea>
+					<p>{% if question.id in taker.getVar('answers')|keys %}{{ taker.getVar('answers')[question.id] }}{% endif %}</p>
 				</div>
 				<div class="line"></div>
 				<div class="a">
@@ -37,6 +37,8 @@
 			<button type="submit" />Submit</button>
 		</div>
 	</form>
+
+	{% include 'BioExamBundle:Public:timer.html.twig' %}
 {% endblock %}
 
 {% block java %}

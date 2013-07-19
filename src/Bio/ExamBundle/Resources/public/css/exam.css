@@ -52,13 +52,14 @@
 
 }
 
-	.review textarea {
-		width: 80%;
+	.review p {
+		text-indent: 0px !important;
+		margin-left: 60px;
 	}
 
 	.review .score {
 		float: left;
-		width: 19%;
+		width: 60px;
 		height: 80px;
 	}
 
