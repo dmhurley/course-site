@@ -14,7 +14,7 @@
 {% block java %}
 	<script>
 	function Checker() {
-		this.tries = 20;
+		this.tries = 5;
 		this.check = function() {
 			var ajax = new XMLHttpRequest();
 			ajax.open('POST', '{{ url("check") }}', true);
@@ -28,14 +28,14 @@
 					console.log(response.message);
 					console.log(self.tries + " left.");
 				} else {
-					console.log(response.sid);
+					console.log("{{taker.sid}}" + "->" + response.sid);
 					clearInterval(self.interval);
 				}
 			};
 			if (this.tries > 0) {
 				ajax.send("sid={{taker.sid}}&exam={{taker.exam}}");
 			} else {
-				ajax.send("sid={{taker.sid}}&exam={{taker.exam}}");
+				ajax.send("sid={{taker.sid}}&exam={{taker.exam}}&force=force");
 			}
 		}
 		this.interval = setInterval(

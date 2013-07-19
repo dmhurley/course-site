@@ -32,6 +32,13 @@ class TestTaker
     private $sid;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="grader", type="privatestring", nullable=true)
+     */
+    private $grader;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="exam", type="integer")
@@ -54,6 +61,7 @@ class TestTaker
 
     public function __construct() {
         $this->vars = array();
+        $this->grader = null;
     }
 
     /**
@@ -166,5 +174,28 @@ class TestTaker
     public function getSid()
     {
         return $this->sid;
+    }
+
+    /**
+     * Set grader
+     *
+     * @param privatestring $grader
+     * @return TestTaker
+     */
+    public function setGrader($grader)
+    {
+        $this->grader = $grader;
+    
+        return $this;
+    }
+
+    /**
+     * Get grader
+     *
+     * @return privatestring 
+     */
+    public function getGrader()
+    {
+        return $this->grader;
     }
 }

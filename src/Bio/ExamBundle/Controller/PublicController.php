@@ -256,19 +256,35 @@ class PublicController extends Controller
 			$db = new Database($this, 'BioExamBundle:TestTaker');
 			$you = $db->findOne(array('sid' => $request->request->get('sid'), 'exam' => $request->request->get('exam')));
 
-			// get everyone else
-			$targets = $db->find(array('status' => 4, 'exam' => $request->request->get('exam')), array(), false);
-			if (count($targets) < 2) {
-				return array('error' => true, 'message' => 'No other test takers.');
-			} else {
-				if ($targets[0]->getSid() === $you->getSid()) {
-					$target = $target[1];
-				} else {
-					$target = $targets[0];
-				}
-				return array('error' => false, 'message' => "HOORAY", 'sid' => $target->getSid());
+			if ($you->getGrader() !== '') {
+				return array('error' => false, 'message' => "HOORAY", 'sid' => $you->getGrader());
 			}
 
+			// get everyone else
+			if ($request->request->has('force') && $request->request->get('force') === 'force'){
+				$targets = $db->find(array('status' => 4, 'exam' => $request->request->get('exam')), array(), false);
+				if (count($targets) < 2) {
+					return array('error' => true, 'message' => 'No other test takers.');
+				}
+				$target = $targets[rand(0, count($targets) - 1)];
+			} else {
+				$targets = $db->find(array('status' => 4, 'exam' => $request->request->get('exam'), 'grader' => ''), array(), false);
+				if (count($targets) < 2) {
+					return array('error' => true, 'message' => 'No other test takers.');
+				} else {
+					if ($targets[0]->getSid() === $you->getSid()) {
+						$target = $targets[1];
+					} else {
+						$target = $targets[0];
+					}
+				}
+				$target->setGrader($you->getSid());
+			}
+			$you->setGrader($target->getSid());
+
+			$db->close();
+
+			return array('error' => false, 'message' => "HOORAY", 'sid' => $you->getGrader());
 		}
 
 		return array('error' => true, 'message' => 'Improper request.');
