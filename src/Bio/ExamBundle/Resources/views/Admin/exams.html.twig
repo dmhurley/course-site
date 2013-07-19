@@ -1,0 +1,43 @@
+{% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block head %}
+	{{ parent() }}
+		{% stylesheets 'bundles/biostudent/css/form.css' filter="cssrewrite" output="css/*.css" %}
+			<link rel="stylesheet" href="{{ asset_url }}" />
+		{% endstylesheets %}
+{% endblock %}
+
+{% block content %}
+	{{ form(form) }}
+
+	<table>
+		<tr>
+			<th>Name</th>
+			<th>Date</th>
+			<th>Start</th>
+			<th>End</th>
+			<th>Duration</th>
+			<th>Questions</th>
+			<th>Preview</th>
+			<th>Edit</th>
+			<th>Delete</th>
+		</tr>
+		{% for exam in exams %}
+			<tr>
+				{% if date() > date(exam.date|date('Y-m-d')~' '~exam.end|date('H:i:s')) %}
+					<td><a href="{{ path('exam_download', {'id' : exam.id}) }}">{{exam.name}}</a></td>
+				{% else %}
+					<td>{{exam.name}}</td>
+				{% endif %}
+				<td>{{exam.date|date('m-d-y')}}</td>
+				<td>{{exam.start|date('h:i')}}</td>
+				<td>{{exam.end|date('h:i')}}</td>
+				<td>{{exam.duration}} m</td>
+				<td>{{exam.questions|length}}</td>
+				<td><a href="{{ path('preview') }}?id={{exam.id}}&type=exam">preview</a></td>
+				<td><a href="{{ path('edit_exam') }}?id={{exam.id}}">edit</a></td>
+				<td><a href="{{ path('delete_exam') }}?id={{exam.id}}">delete</a></td>
+			</tr>
+		{% endfor %}
+	</table>
+{% endblock %}

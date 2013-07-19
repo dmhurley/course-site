@@ -1,0 +1,34 @@
+{% extends 'BioStyleBundle:Default:instruction.html.twig' %}
+
+{% block content %}
+	<p>Welcome to the Student section. This section allows you to <a href="{{ path('display_students') }}">view</a>, sort, edit, and <a href="{{ path('find_student') }}">filter</a> students in your course. By <a href="{{ path('upload_student') }}">uploading</a> a file from the registrars office or <a href="{{ path('add_student') }}">adding</a> students individually you can easily access their basic information easily and efficiently.</p>
+	<div>
+		{% image 'bundles/bioexam/images/exams.png' output='/images/*.png' %}
+		    <img src="{{ asset_url }}"/>
+		{% endimage %}
+		<h2><a href="{{ path('view_exams') }}">Manage Exams</a></h2>
+		<p> From this page you can create practice exams for students to take. You must specify the exam name, date, starting time, ending time, and duration (the maximum time a student can spend on it, <b>including</b> the time it takes to grade another test). Once an exam has been created, you can edit it, preview what it will look like to students, and delete it.</p>
+
+		<p>After an exam has happened, click on its name to download a <i>tab delimited .txt</i> file that can be opened in Excel. Most of the column names are self explanatory, but a few may require explaining. The <i>status</i> number can range anywhere from 1-6, with 1 being the least complete, 6 being completed. A status code of 1 means the student logged in with their student ID and last name, but never started the test; 2 means that they started the text but never reviewed or submitted it; 3 means it was completed but it was never reviewed and resubmitted; 4 means the test was submitted but they never started grading another exam; 5 means they started grading an exam but never finished; finally 6 means that they fully completed every part of the exam in the given time.</p>
+
+		<p> When setting an exams time and duration, keep in mind that the duration is a <i>soft</i> limit (meaning they will still be able to complete the test <i>and</i> grade another students work if they submit late) but end time is a hard limit. After the end time has passed, students will not be able to continue any further. Also keep in mind that students will be expected to finish their exam <b>and</b> grade another exam within the given duration, and that finding a test to grade can sometimes take up to <b>5 minutes</b>.</p>
+	</div>
+
+	<div>
+		{% image 'bundles/bioexam/images/editexams.png' output='/images/*.png' %}
+		    <img src="{{ asset_url }}"/>
+		{% endimage %}
+		<h2>Edit Exams</h2>
+		<p>From this page you can edit all the information about the test, and most importantly find and select the questions that will be on it. The left side of the page contains the basic information needed to create the exam initially, and on the left there is a scrollable table that includes every question in the database. It's possible to narrow down the questions shown by typing in any number of tags.</p>
+	</div>
+
+	<div>
+		{% image 'bundles/bioexam/images/questions.png' output='/images/*.png' %}
+		    <img src="{{ asset_url }}"/>
+		{% endimage %}
+		<h2><a href="{{ path('view_questions') }}">Manage Questions</a></h2>
+		<p> This page allows you to create questions that can later be put onto exams. It also displays all previously created questions and allows you to preview, edit, and delete them. You must specify the question, answer, and number of points the question is worth to make a test. Tags are optional, but can be very helpful if there are a lot of questions to choose from.</p> 
+
+		<p>The text boxes for the question and cooresponding answer/rubric allow you to write in rich text format. Giving you the ability to create lists and tables, insert images, and more. Make sure to preview the question once it's been created because the exact formatting and style will slightly change.</p>
+	</div>
+{% endblock %}

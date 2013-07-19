@@ -1,0 +1,32 @@
+{% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block head %}
+	{{ parent() }}
+	{% stylesheets 'bundles/biostudent/css/form.css' 'bundles/bioexam/css/exam.css' filter="cssrewrite" output="css/*.css" %}
+		<link rel="stylesheet" href="{{ asset_url }}" />
+	{% endstylesheets %}
+{% endblock %}
+
+{% block content %}
+	<form method="POST">
+		{% for question in exam.questions %}
+			<div class="question tableStyle">
+				<h2>Question {{loop.index}}</h2> <h4>{{question.points}} points</h4>
+				<div class="q">
+					{{ question.question|raw }}
+				</div>
+				<div class="line"></div>
+				<div class="a">
+					{# cant have any extra spaces between textareas #}
+					<textarea name="{{question.id}}" required="required">{% if taker is defined and taker.hasVar('answers') and question.id in taker.getVar('answers')|keys %}{{ taker.getVar('answers')[question.id] }}{% endif %}</textarea>
+				</div>
+			</div>
+		{% endfor %}
+		<div id="submit" >
+			<button type="submit" />Submit</button>
+		</div>
+	</form>
+	{% if taker is defined %}
+		{% include 'BioExamBundle:Public:timer.html.twig' %}
+	{% endif %}
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block head %}
+	{{ parent() }}
+	{% stylesheets 'bundles/biostudent/css/form.css' filter="cssrewrite" output="css/*.css" %}
+		<link rel="stylesheet" href="{{ asset_url }}" />
+	{% endstylesheets %}
+{% endblock %}
+
+{% block content %}
+	<p> Welcome student #{{app.session.get('sid')}}, once you begin this test you will have {{exam.duration}} minutes to complete it. There will be more text here about what happens after the test, and what rules there are during the test, open notes, open book, etc... Maybe some more words about the the test... The start button will appear, and you can begin <b><span id="time"></span></b>.</p>
+	<div id="hidden" style="display:none;">
+		{{ form(form) }}
+	</div>
+{% endblock %}
+
+{% block java %}
+	<script>
+		function Pinger(time) {
+			this.date = new Date(time);
+			this.updatePage = function() {
+					console.log(this.date.toString());
+					var now = new Date();
+					var diff = this.date.valueOf() - now.valueOf();
+					document.getElementById('time').innerHTML = msToText(diff);
+					if (diff < 0) {
+						clearInterval(this.interval);
+						document.getElementById('hidden').style.display="block";
+					}
+				}
+
+			// start interval then call once immediately.
+			this.interval = setInterval(
+				(function(self) {
+					return function() {
+						self.updatePage();
+					}
+				})(this), 10000);
+			this.updatePage();
+		}
+
+		function msToText(ms) {
+			if (ms <= 0) {
+				return "now";
+			} else if (ms < 1000 * 60) {
+				return 'less than 1 minute';
+			}
+
+			var hours = ms/1000/60/60;
+			ms = ms%(1000*60*60);
+			var minutes = ms/1000/60;
+
+			var string = "in approximately ";
+			if (Math.floor(hours) > 1) {
+				string+=Math.floor(hours) + " hours, and ";
+			} else if (Math.floor(hours) === 1) {
+				string+="1 hour, and ";
+			}
+
+			if (Math.floor(minutes) !== 1) {
+				string+=Math.floor(minutes) + " minutes";
+			} else {
+				string+="1 minute";
+			}
+
+			return string;
+		}
+
+		new Pinger("{{exam.start|date('Y-m-d H:i:s')}}")
+	</script>
+{% endblock %}

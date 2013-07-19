@@ -1,0 +1,64 @@
+{% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block head %}
+	{{ parent() }}
+	{% stylesheets 'bundles/biostudent/css/form.css' 'bundles/bioexam/css/exam.css' filter="cssrewrite" output="css/*.css" %}
+		<link rel="stylesheet" href="{{ asset_url }}" />
+	{% endstylesheets %}
+{% endblock %}
+
+{% block content %}
+		<p>Your answers have been saved. Stay on this page to be randomly assigned someone elses practice test. Lets talk a lot longer about how this thing works. How long you have, how many points to give or to not give a person. Etc... Talky talky talky talky talky Talk about the rubric, and how awesome they guy who made this is. When the button appears, press it to begin grading.</p>
+
+		<div id="submit">
+			<form id="button" method="POST" action="" style="display:none">
+				<button>Grade</button>
+			</form>
+			<div id="loadMessage">
+				Finding test to grade<br />This could take several minutes
+				<div id="loader"></div>
+			</div>
+		</div>
+
+		{% include 'BioExamBundle:Public:timer.html.twig' %}
+{% endblock %}
+
+{% block java %}
+	<script>
+	function Checker() {
+		this.tries = 8;
+		this.check = function() {
+			var ajax = new XMLHttpRequest();
+			ajax.open('POST', '{{ url("check") }}', true);
+			ajax.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+			self = this;
+			ajax.onload = function() {
+				console.log(this.responseText);
+				var response = JSON.parse(this.responseText);
+				if (response.error) {
+					self.tries = self.tries-1;
+					console.log(self.tries + " tries left.");
+				} else {
+					console.log("{{taker.sid}}" + "->" + response.sid);
+					clearInterval(self.interval);
+					document.getElementById('loadMessage').style.display="none";
+					document.getElementById('button').style.display = "block";
+				}
+			};
+			if (this.tries > 0) {
+				ajax.send("sid={{taker.sid}}&exam={{taker.exam}}");
+			} else {
+				ajax.send("sid={{taker.sid}}&exam={{taker.exam}}&force=force");
+			}
+		}
+		this.interval = setInterval(
+				(function(self) {
+					return function() {
+						self.check();
+					}
+				})(this), 30000);
+		this.check();
+	}
+	checker = new Checker();
+	</script>
+{% endblock %}
