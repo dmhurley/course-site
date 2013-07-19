@@ -80,6 +80,8 @@ class PublicController extends Controller
 					return $this->redirect($this->generateUrl('exam_take'));
 				} else if ($taker->getStatus() === 3) {
 					return $this->redirect($this->generateUrl('exam_review'));
+				} else if ($taker->getStatus() == 4) {
+					return $this->redirect($this->generateUrl('exam_confirm'));
 				}
 				/// dot dot dot
 			}
@@ -168,8 +170,8 @@ class PublicController extends Controller
 
 			return $this->redirect($this->generateUrl('exam_review'));
 		}
-
-		return array('exam' => $array['exam'], 'answers' => $array['taker']->getVar('answers'), 'started' => $array['taker']->getVar('started') , 'title' => $array['exam']->getName());
+		$answers = array_key_exists('answers', $array['taker']->getVars())?$array['taker']->getVar('answers'):array();
+		return array('exam' => $array['exam'], 'answers' => $answers, 'started' => $array['taker']->getVar('started') , 'title' => $array['exam']->getName());
 	}
 
 	/**
@@ -181,7 +183,7 @@ class PublicController extends Controller
 			$array = $this->check(true, $request, 3);
 		} catch (BioException $e) {
 			if ($e->getMessage() > 3) {
-				return $this->redirect($this->generateUrl('main_page'));
+				return $this->redirect($this->generateUrl('exam_confirm'));
 			} else if ($e->getMessage() < 3) {
 				return $this->redirect($this->generateUrl('exam_take'));
 			}
@@ -204,15 +206,72 @@ class PublicController extends Controller
 			} else {
 				$array['taker']->setStatus(4);
 				$array['taker']->setVar('ended', new \DateTime());
+				$diff = date_diff($array['taker']->getVar('ended'), $array['taker']->getVar('started'));
+				$duration = new \DateInterval('PT'.$array['exam']->getDuration()."M");
+				if ($diff->format('%Y-%M-%D %H:%I:%S') > $duration->format('%Y-%M-%D %H:%I:%S') ){
+					$request->getSession()->getFlashBag()->set('success', 'Went over time limit. Answers saved.');
+					$array['taker']->setVar('error', -2);
+				} else if (false) { // if current time is after ending time
+					$request->getSession()->getFlashBag()->set('success', 'Submitted late. Answers saved.');
+					$array['taker']->setVar('error', -1);
+				} else {
+					$request->getSession()->getFlashBag()->set('success', 'Answers saved.');
+				}
+
 				$array['db']->close();
-				return $this->redirect($this->generateUrl('exam_entrance'));
+				return $this->redirect($this->generateUrl('exam_confirm'));
 			}
 		}
 
 		return array('form'=>$form->createView(), 'exam' => $array['exam'], 'started' => $array['taker']->getVar('started'), 'answers' => $array['taker']->getVar('answers'), 'title' => 'Review Answers.');
 	}
 
-	public function doneAction(Request $request) {
+	/**
+	 * @Route("/confirmation", name="exam_confirm")
+	 * @Template()
+	 */
+	public function confirmationAction(Request $request) {
+		try {
+			$array = $this->check(true, $request, 4);
+		} catch (BioException $e) {
+			if ($e->getMessage() > 4) {
+				return $this->redirect($this->generateUrl('main_page'));
+			} else if ($e->getMessage() < 4) {
+				return $this->redirect($this->generateUrl('exam_take'));
+			}
+			$request->getSession()->getFlashBag()->set('failure', $e->getMessage());
+			return $this->redirect($this->generateUrl('exam_entrance'));
+		}
+
+		return array( 'title' => 'Exam Submitted', 'taker' => $array['taker']);
+	}
+
+	/**
+	 * @Route("/check.json", name="check")
+	 * @Template("BioExamBundle:Public:check.json.twig")
+	 */
+	public function checkAction(Request $request) {
+		if ($request->request->has('sid') && $request->request->has('exam')) {
+			// get the person
+			$db = new Database($this, 'BioExamBundle:TestTaker');
+			$you = $db->findOne(array('sid' => $request->request->get('sid'), 'exam' => $request->request->get('exam')));
+
+			// get everyone else
+			$targets = $db->find(array('status' => 4, 'exam' => $request->request->get('exam')), array(), false);
+			if (count($targets) < 2) {
+				return array('error' => true, 'message' => 'No other test takers.');
+			} else {
+				if ($targets[0]->getSid() === $you->getSid()) {
+					$target = $target[1];
+				} else {
+					$target = $targets[0];
+				}
+				return array('error' => false, 'message' => "HOORAY", 'sid' => $target->getSid());
+			}
+
+		}
+
+		return array('error' => true, 'message' => 'Improper request.');
 
 	}
 

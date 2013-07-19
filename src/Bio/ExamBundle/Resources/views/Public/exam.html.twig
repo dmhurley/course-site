@@ -17,7 +17,7 @@
 				</div>
 				<div class="line"></div>
 				<div class="a">
-					<textarea name="{{question.id}}" required="required">{{ answers[question.id] }}</textarea>
+					<textarea name="{{question.id}}" required="required">{% if question.id in answers|keys %}{{ answers[question.id] }}{% endif %}</textarea>
 				</div>
 			</div>
 		{% endfor %}
