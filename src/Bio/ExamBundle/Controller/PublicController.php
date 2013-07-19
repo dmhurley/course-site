@@ -27,7 +27,7 @@ class PublicController extends Controller
 	public function signAction(Request $request) {
 		// create signin form
 		$form = $this->createFormBuilder()
-			->add('sid', 'text', array('label' => 'Student ID:', 'mapped' => false)) // add a pattern to this TODO
+			->add('sid', 'text', array('label' => 'Student ID:', 'mapped' => false, 'attr' => array('pattern' => '[0-9]{7}', 'title' => 'Seven digit student ID.'))) // add a pattern to this TODO
 			->add('lName', 'text', array('label' => 'Last Name:', 'mapped' => false))
 			->add('sign in', 'submit')
 			->getForm();

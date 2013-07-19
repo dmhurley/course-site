@@ -115,3 +115,6 @@ parameters:
             "Manage Questions":
                 route: view_questions
                 vars: ~
+            "Start Exam":
+                route: exam_entrance
+                vars: ~
