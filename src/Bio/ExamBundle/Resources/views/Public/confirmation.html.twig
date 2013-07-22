@@ -1,4 +1,4 @@
-{% extends 'BioStyleBundle:Default:main.html.twig' %}
+{% extends 'BioExamBundle:Public:main.html.twig' %}
 
 {% block head %}
 	{{ parent() }}
@@ -19,7 +19,7 @@
 				<div id="loader"></div>
 			</div>
 		</div>
-
+		{{parent()}}
 		{% include 'BioExamBundle:Public:timer.html.twig' %}
 {% endblock %}
 

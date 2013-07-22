@@ -1,4 +1,4 @@
-{% extends 'BioStyleBundle:Default:main.html.twig' %}
+{% extends 'BioExamBundle:Public:main.html.twig' %}
 
 {% block head %}
 	{{ parent() }}
@@ -12,6 +12,7 @@
 	<div id="hidden" style="display:none;">
 		{{ form(form) }}
 	</div>
+	{{parent()}}
 {% endblock %}
 
 {% block java %}

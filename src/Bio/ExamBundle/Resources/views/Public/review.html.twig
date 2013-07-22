@@ -1,4 +1,4 @@
-{% extends 'BioStyleBundle:Default:main.html.twig' %}
+{% extends 'BioExamBundle:Public:main.html.twig' %}
 
 {% block head %}
 	{{ parent() }}
@@ -17,7 +17,7 @@
 				<div class="line"></div>
 				<div class="a">
 					<p>
-					{{taker.getVar('answers')[question.id]}}
+					{{taker.answers[question.id]}}
 					</p>
 				</div>
 			</div>
@@ -28,6 +28,6 @@
 				{{form_widget(form.submit)}}
 			{{ form_end(form) }}
 		</div>
-
+	{{parent()}}
 	{% include 'BioExamBundle:Public:timer.html.twig' %}
 {% endblock %}

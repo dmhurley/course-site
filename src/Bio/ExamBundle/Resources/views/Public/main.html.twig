@@ -1,0 +1,16 @@
+{% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block head %}
+	{{ parent() }}
+	{% stylesheets 'bundles/biostudent/css/form.css' 'bundles/bioexam/css/exam.css' filter="cssrewrite" output="css/*.css" %}
+		<link rel="stylesheet" href="{{ asset_url }}" />
+	{% endstylesheets %}
+{% endblock %}
+
+{% block content %}
+	{% if app.session.has('sid') and app.session.has('exam') %}
+		<div id="signedin">
+		Signed in with student ID {{app.session.get('sid')}}. <a href="?logout">not them?</a>
+		</div>
+	{% endif %}
+{% endblock %}

@@ -75,6 +75,12 @@
 		width: 50px;
 	}
 
+#hidden #form div {
+	text-align:center;
+	padding: 0px;
+	margin: 0px;
+}
+
 #timer {
 	position: fixed;
 	right: 0px;
@@ -94,4 +100,9 @@
 	width: 220px;
 	height: 19px;
 	margin: 0 auto;
+}
+
+#signedin {
+	margin-top: 15px;
+	text-align: center;
 }
