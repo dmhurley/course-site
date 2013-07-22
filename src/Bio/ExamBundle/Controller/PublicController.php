@@ -75,8 +75,6 @@ class PublicController extends Controller
 
 					if (!$flash->has('success'))
 						$flash->set('success', 'You have already completed the exam.');
-
-					return $this->redirect($this->generateUrl('main_page'));
 				}
 			} else {
 				$session->getFlashBag()->set('failure', 'Not signed in.');
@@ -281,7 +279,7 @@ class PublicController extends Controller
 			$taker->setStatus(6);
 			$db->close();
 
-			$request->getSession()->getFlashBag()->set('success', 'Completed exam and grading.');
+			$request->getSession()->getFlashBag()->set('success', 'Completed.');
 			return $this->redirect($this->generateUrl('exam_entrance'));
 
 		}

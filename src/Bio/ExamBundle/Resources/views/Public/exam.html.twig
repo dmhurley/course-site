@@ -1,4 +1,4 @@
-{% extends 'BioStyleBundle:Default:main.html.twig' %}
+{% extends 'BioExamBundle:Public:main.html.twig' %}
 
 {% block head %}
 	{{ parent() }}
@@ -26,6 +26,7 @@
 			<button type="submit" />Submit</button>
 		</div>
 	</form>
+	{{parent()}}
 	{% if taker is defined %}
 		{% include 'BioExamBundle:Public:timer.html.twig' %}
 	{% endif %}

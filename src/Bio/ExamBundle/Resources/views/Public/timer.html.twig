@@ -8,8 +8,6 @@
 					var now = new Date();
 					var ttLate = (this.date.valueOf() - now.valueOf())/1000/60 + duration;
 					var ttEnd = (this.end.valueOf() - now.valueOf())/1000/60;
-					console.log(ttLate);
-					console.log(this.end);
 
 					var timeleft = Math.min(ttLate, ttEnd);
 
