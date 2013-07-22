@@ -25,7 +25,7 @@
 							 {% endfor %}
 						</select>
 					</div>
-					<p>{% if question.id in taker.getVar('answers')|keys %}{{ taker.getVar('answers')[question.id] }}{% endif %}</p>
+					<p>{% if question.id in taker.answers|keys %}{{ taker.answers[question.id] }}{% endif %}</p>
 				</div>
 				<div class="line"></div>
 				<div class="a">

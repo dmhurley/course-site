@@ -302,27 +302,33 @@ class AdminController extends Controller
 
         echo "sid\t";
         echo "status\t";
-        echo "assigned\t";
+        echo "graded\t";
 
         $numQuestions = count($exam->getQuestions()->toArray());
         for($i = 1; $i <= $numQuestions; $i++) {
             echo "q".$i." answer\t";
             echo "q".$i." points/".$exam->getQuestions()->toArray()[$i-1]->getPoints()."\t";
         }
-        echo "time started\t";
-        echo "time ended\t";
+        echo "started test\t";
+        echo "ended test\t";
+        echo "finished\t";
+        echo "edited\t";
         echo "late\n";
 
         foreach ($takers as $taker) {
             echo $taker->getSid()."\t";
             echo $taker->getStatus()."\t";
-            echo $taker->getGrader()."\t";
+            echo $taker->getGrading()."\t";
 
-            if ($taker->hasVar('answers')) {
-                foreach(array_keys($taker->getVar('answers')) as $key) {
-                    echo $taker->getVar('answers')[$key]."\t";
-                    if (!$taker->hasVar('points')) {
-                        echo $taker->getVar('points')[$key]; // tab on next line
+            if (count($taker->getAnswers()) === $numQuestions) {
+                foreach(array_keys($taker->getAnswers()) as $key) {
+                    echo $taker->getAnswers()[$key]."\t";
+                    if (count($taker->getPoints()) > 0) {
+                        $points = 0;
+                        foreach(array_keys($taker->getPoints()) as $grader) {
+                            $points += $taker->getPoints()[$grader][$key];
+                        }
+                        echo $points/count($taker->getPoints()); // tab on next line
                     }
                     echo "\t";
                 }
@@ -332,17 +338,23 @@ class AdminController extends Controller
                 }
             }
 
-            if ($taker->hasVar('started')){
-                echo $taker->getVar('started')->format('Y-m-d H:i:s')."\t";
-                if ($taker->hasVar('ended')) {
-                    echo $taker->getVar('ended')->format('Y-m-d H:i:s'); // tab on next line
-                }
-                echo "\t";
-            } else {
-                echo "\t\t";
+            if (isset($taker->getTimecard()[2])){
+                echo $taker->getTimecard()[2]->format('Y-m-d H:i:s'); // tab on next line
             }
+            echo "\t";
 
-            echo $taker->hasVar('error')?'true':'false'."\n";
+            if (isset($taker->getTimecard()[4])) {
+                    echo $taker->getTimecard()[4]->format('Y-m-d H:i:s'); // tab on next line
+            }
+            echo "\t";
+
+            if(isset($taker->getTimecard()[6])) {
+                echo $taker->getTimecard()[6]->format('Y-m-d H:i:s'); // tab on next line
+            }
+            echo "\t";
+
+            echo ($taker->hasVar('edited')?'true':'false')."\t";
+            echo ($taker->hasVar('late')?'true':'false')."\n";
         }
         return array('text' => '');
     }

@@ -146,7 +146,6 @@ class PublicController extends Controller
 			// check to see if they started on team
 			if ($exam->getStart() <= new \DateTime()) {
 				$taker->setStatus(2);
-				$taker->setVar('started', new \DateTime());
 				$db->close();
 
 				$request->getSession()->getFlashBag()->set('success', 'Exam started.');
@@ -178,7 +177,7 @@ class PublicController extends Controller
 			}
 
 			// save stuff
-			$taker->setVar('answers', $answers);
+			$taker->setAnswers($answers);
 			$taker->setStatus(3);
 			$db->close();
 
@@ -208,14 +207,13 @@ class PublicController extends Controller
 			// if they want to submit it
 			} else {
 				$taker->setStatus(4);
-				$taker->setVar('ended', new \DateTime());
 
 				// check to see if they went over the time limit, let them continue working. Just marks it.
-				$diff = date_diff($taker->getVar('ended'), $taker->getVar('started'));
+				$diff = date_diff($taker->getTimecard(4), $taker->getTimecard(2));
 				$duration = new \DateInterval('PT'.$exam->getDuration()."M");
 				if ($diff->format('%Y-%M-%D %H:%I:%S') > $duration->format('%Y-%M-%D %H:%I:%S') ){
 					$request->getSession()->getFlashBag()->set('success', 'Went over time limit. Answers saved.');
-					$taker->setVar('error', -1);
+					$taker->setVar('late', true);
 				} else {
 					$request->getSession()->getFlashBag()->set('success', 'Answers saved.');
 				}
@@ -233,7 +231,7 @@ class PublicController extends Controller
 		// if they pressed the grade button
 		if ($request->getMethod() === "POST") {
 			// if they haven't cheated set them up and forward them
-			if ($taker->getGrader() !== '') {
+			if ($taker->getGrading() !== '') {
 				$taker->setStatus(5);
 				$db->close();
 
@@ -248,7 +246,7 @@ class PublicController extends Controller
 	private function gradeAction(Request $request, $exam, $taker, $db) {
 		// finds the person they're grading
 		$db = new Database($this, 'BioExamBundle:TestTaker');
-		$target = $db->findOne(array('sid' => $taker->getGrader()));
+		$target = $db->findOne(array('sid' => $taker->getGrading()));
 
 		// if they pressed submit
 		if ($request->getMethod() === "POST") {
@@ -272,10 +270,7 @@ class PublicController extends Controller
 				}
 			}
 
-			// if target has been graded already, don't overwrite TODO append??
-			if (!$target->hasVar('points')){
-				$target->setVar('points', $points);
-			}
+			$target->addPoint($taker->getSid(), $points);
 			$taker->setStatus(6);
 			$db->close();
 
@@ -306,8 +301,8 @@ class PublicController extends Controller
 			}
 
 			// if they got assigned someone between checks
-			if ($you->getGrader() !== '') {
-				return array('error' => false, 'message' => "HOORAY", 'sid' => $you->getGrader());
+			if ($you->getGrading() !== '') {
+				return array('error' => false, 'message' => "HOORAY", 'sid' => $you->getGrading());
 			}
 
 			// get everyone else
@@ -338,7 +333,7 @@ class PublicController extends Controller
 			} else {
 
 				// get everyone unpaired
-				$targets = $db->find(array('status' => 4, 'exam' => $request->request->get('exam'), 'grader' => ''), array(), false);
+				$targets = $db->find(array('status' => 4, 'exam' => $request->request->get('exam'), 'grading' => ''), array(), false);
 
 				// get person who's not yourself from targets
 				if (count($targets) < 2) {
@@ -353,13 +348,13 @@ class PublicController extends Controller
 
 
 			// make a cute pairing
-				$target->setGrader($you->getSid());
+				$target->setGrading($you->getSid());
 			}
-			$you->setGrader($target->getSid());
+			$you->setGrading($target->getSid());
 			$db->close();
 			
 
-			return array('error' => false, 'message' => "HOORAY", 'sid' => $you->getGrader());
+			return array('error' => false, 'message' => "HOORAY", 'sid' => $you->getGrading());
 		}
 
 		return array('error' => true, 'message' => 'Improper request.');
