@@ -44,6 +44,7 @@ class PublicController extends Controller
 				// route to page based on status
 				if ($taker->getStatus() === 1) {
 
+					$flash->set('success', 'Signed in.');
 					return $this->startAction($request, $exam, $taker, $db);
 				} else if ($taker->getStatus() === 2) {
 
@@ -128,7 +129,6 @@ class PublicController extends Controller
 				$session->set('sid', $taker->getSid());
 				$session->set('exam', $exam->getId());
 
-				$session->getFlashBag('success', 'Signed in.');
 				return $this->redirect($this->generateUrl('exam_entrance'));
 			}
 		}
@@ -150,6 +150,8 @@ class PublicController extends Controller
 				$taker->setStatus(2);
 				$taker->setVar('started', new \DateTime());
 				$db->close();
+
+				$request->getSession()->getFlashBag()->set('success', 'Exam started.');
 				return $this->redirect($this->generateUrl('exam_entrance'));
 
 			} else {
@@ -182,6 +184,7 @@ class PublicController extends Controller
 			$taker->setStatus(3);
 			$db->close();
 
+			$request->getSession()->getFlashBag()->set('success', 'Answers saved. Please review your answers.');
 			return $this->redirect($this->generateUrl('exam_entrance'));
 		}
 		return $this->render('BioExamBundle:Public:exam.html.twig', array('exam' => $exam, 'taker' => $taker, 'title' => $exam->getName()));
@@ -219,6 +222,8 @@ class PublicController extends Controller
 					$request->getSession()->getFlashBag()->set('success', 'Answers saved.');
 				}
 				$db->close();
+
+				$request->getSession()->getFlashBag()->set('success', 'Exam submitted.');
 				return $this->redirect($this->generateUrl('exam_entrance'));
 			}
 		}
@@ -233,6 +238,8 @@ class PublicController extends Controller
 			if ($taker->getGrader() !== '') {
 				$taker->setStatus(5);
 				$db->close();
+
+				$request->getSession()->getFlashBag()->set('success', 'Grade this test.');
 				return $this->redirect($this->generateUrl('exam_entrance'));
 			}
 		}
