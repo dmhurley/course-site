@@ -21,7 +21,7 @@ class PublicController extends Controller
 {
 
 	/**
-	 * @Route("/", name="exam_entrance")
+	 * @Route("", name="exam_entrance")
 	 */
 	public function gateAction(Request $request) {
 		$session = $request->getSession();
@@ -29,7 +29,8 @@ class PublicController extends Controller
 		try {
 			$exam = $this->getNextExam(); // try
 		} catch (BioException $e) {
-			return $this->signAction($request, $exam);
+			$flash->set('failure', $e->getMessage());
+			return $this->redirect($this->generateUrl('main_page'));
 		}
 
 		if ($request->query->has('logout')) {
