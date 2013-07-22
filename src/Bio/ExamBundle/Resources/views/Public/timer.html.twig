@@ -8,8 +8,6 @@
 					var now = new Date();
 					var ttLate = (this.date.valueOf() - now.valueOf())/1000/60 + duration;
 					var ttEnd = (this.end.valueOf() - now.valueOf())/1000/60;
-					console.log(ttLate);
-					console.log(this.end);
 
 					var timeleft = Math.min(ttLate, ttEnd);
 
@@ -29,6 +27,6 @@
 					})(this), 300);
 			this.updateTime();
 		}
-		timer = new Timer({{exam.duration}} ,"{{taker.getVar('started')|date('Y-m-d H:i:s')}}", "{{exam.date|date('Y-m-d')}} {{exam.end|date('H:i:s')}}");
+		timer = new Timer({{exam.duration}} ,"{{taker.timecard[2]|date('Y-m-d H:i:s')}}", "{{exam.date|date('Y-m-d')}} {{exam.end|date('H:i:s')}}");
 	</script>
 </div>

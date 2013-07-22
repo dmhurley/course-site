@@ -34,9 +34,9 @@ class TestTaker
     /**
      * @var string
      *
-     * @ORM\Column(name="grader", type="privatestring", nullable=true)
+     * @ORM\Column(name="grading", type="privatestring", nullable=true)
      */
-    private $grader;
+    private $grading;
 
     /**
      * @var integer
@@ -55,12 +55,36 @@ class TestTaker
     /**
      * @var array
      *
+     * @ORM\Column(name="timecard", type="array")
+     */
+    private $timecard;
+
+    /**
+     * @var array
+     *
      * @ORM\Column(name="vars", type="array")
      */
     private $vars;
 
+    /**
+     * @var array
+     *
+     * @ORM\Column(name="answers", type="array")
+     */
+    private $answers;
+
+    /**
+     * @var array
+     *
+     * @ORM\Column(name="points", type="array")
+     */
+    private $points;
+
     public function __construct() {
         $this->vars = array();
+        $this->timecard = array();
+        $this->answers = array();
+        $this->points = array();
         $this->grader = null;
     }
 
@@ -81,7 +105,10 @@ class TestTaker
      * @return TestTaker
      */
     public function setStatus($status)
-    {
+    {   
+        if (!isset($this->timecard[$status])) {
+            $this->timecard[$status] = new \DateTime();
+        }
         $this->status = $status;
     
         return $this;
@@ -181,25 +208,107 @@ class TestTaker
     }
 
     /**
-     * Set grader
+     * Set grading
      *
-     * @param privatestring $grader
+     * @param privatestring $grading
      * @return TestTaker
      */
-    public function setGrader($grader)
+    public function setGrading($grading)
     {
-        $this->grader = $grader;
+        $this->grading = $grading;
     
         return $this;
     }
 
     /**
-     * Get grader
+     * Get grading
      *
      * @return privatestring 
      */
-    public function getGrader()
+    public function getGrading()
     {
-        return $this->grader;
+        return $this->grading;
+    }
+
+    /**
+     * Set timecard
+     *
+     * @param array $timecard
+     * @return TestTaker
+     */
+    public function setTimecard($timecard)
+    {
+        $this->timecard = $timecard;
+    
+        return $this;
+    }
+
+    /**
+     * Get timecard
+     *
+     * @return array 
+     */
+    public function getTimecard($id = null)
+    {   
+        if ($id) {
+            return $this->timecard[$id];
+        }
+        return $this->timecard;
+    }
+
+    /**
+     * Set answers
+     *
+     * @param array $answers
+     * @return TestTaker
+     */
+    public function setAnswers($answers)
+    {
+        $this->answers = $answers;
+    
+        return $this;
+    }
+
+    /**
+     * Get answers
+     *
+     * @return array 
+     */
+    public function getAnswers()
+    {
+        return $this->answers;
+    }
+
+    /**
+     * Set points
+     *
+     * @param array $points
+     * @return TestTaker
+     */
+    public function setPoints($points)
+    {
+        $this->points = $points;
+    
+        return $this;
+    }
+
+    public function addPoint($grader, $points) {
+        $this->points[$grader] = $points;
+
+        return $this;
+    }
+
+    public function getPoint($grader) {
+        return $this->points[$grader];
+    }
+
+    /**
+     * Get points
+     *
+     * @return array 
+     */
+    public function getPoints()
+    {
+        return $this->points;
     }
 }
