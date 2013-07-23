@@ -43,7 +43,7 @@ class DefaultController extends Controller
 				$expanded = '';
 			}
 
-			return array('expanded' => $expanded, 'options' => $options, 'role' => 'admin');
+			return array('expanded' => $expanded, 'options' => $options);
 
 		} else {
 			$db = new Database($this, 'BioFolderBundle:Folder');
@@ -52,7 +52,7 @@ class DefaultController extends Controller
 			$db = new Database($this, 'BioInfoBundle:Link');
 			$links = $db->find(array('location' => 'sidebar'), array(), false);
 
-			return array('root' => $root, 'links' => $links, 'role' => 'user');
+			return array('root' => $root, 'links' => $links);
 		}
 	}
 
