@@ -25,7 +25,7 @@
 			{% endfor %}
 		</ul>
 	</div>
-{% elseif role == 'user' %}
+{% else %}
 	<div class="content">
 		<ul class="trunk">
 			<li class="branch"><a href="{{ path('main_page') }}">Home</a></li>
@@ -36,7 +36,11 @@
 					<a href="{{ path('public_folder', {'id' : 1}) }}">Folders</a>
 					<ul class="twig">
 						{% for folder in root.folders %}
-							<li class="leaf"><a href="{{ path('public_folder', {'id' : folder.id}) }}">{{folder.name}}</a></li>
+							{% if folder.name[:7]|lower != 'private' %}
+								<li class="leaf">
+									<a href="{{ path('public_folder', {'id' : folder.id}) }}">{{folder.name}}</a>
+								</li>
+							{% endif %}
 						{% endfor %}
 					</ul>
 				</li>
