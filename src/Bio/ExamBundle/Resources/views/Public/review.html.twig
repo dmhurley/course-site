@@ -2,7 +2,7 @@
 
 {% block head %}
 	{{ parent() }}
-	{% stylesheets 'bundles/biostudent/css/form.css' 'bundles/bioexam/css/exam.css' filter="cssrewrite" output="css/*.css" %}
+	{% stylesheets 'bundles/bioexam/css/exam.css' filter="cssrewrite" output="css/*.css" %}
 		<link rel="stylesheet" href="{{ asset_url }}" />
 	{% endstylesheets %}
 {% endblock %}
@@ -10,15 +10,14 @@
 {% block content %}
 		{% for question in exam.questions %}
 			<div class="question tableStyle">
-				<h2>Question {{loop.index}}</h2> <h4>{{question.points}} points</h4>
+				<h2 style="float:left;">Question {{loop.index}}</h2> <h2 style="float:right;">{{question.points}} points</h2>
 				<div class="q">
 					{{ question.question|raw }}
 				</div>
 				<div class="line"></div>
+				<h2>Answer</h2>
 				<div class="a">
-					<p>
-					{{taker.answers[question.id]}}
-					</p>
+					<textarea disabled="disabled">{{taker.answers[question.id]}}</textarea>
 				</div>
 			</div>
 		{% endfor %}

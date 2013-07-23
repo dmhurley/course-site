@@ -2,7 +2,8 @@
 {% block title %}{{name}}{% endblock %}
 
 {% block head %}
-	{% stylesheets 'bundles/biostyle/css/page.css' filter="cssrewrite" output="css/*.css" %}
+	{% stylesheets 'bundles/biostyle/css/page.css' 
+				   'bundles/biostyle/css/form.css' filter="cssrewrite" output="css/*.css" %}
 		<link rel="stylesheet" href="{{ asset_url }}" />
 	{% endstylesheets %}
 {% endblock %}

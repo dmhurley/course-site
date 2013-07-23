@@ -1,12 +1,5 @@
 {% extends 'BioExamBundle:Public:main.html.twig' %}
 
-{% block head %}
-	{{ parent() }}
-	{% stylesheets 'bundles/biostudent/css/form.css' filter="cssrewrite" output="css/*.css" %}
-		<link rel="stylesheet" href="{{ asset_url }}" />
-	{% endstylesheets %}
-{% endblock %}
-
 {% block content %}
 	<p> Welcome student #{{app.session.get('sid')}}, once you begin this test you will have {{exam.duration}} minutes to complete it. There will be more text here about what happens after the test, and what rules there are during the test, open notes, open book, etc... Maybe some more words about the the test... The start button will appear, and you can begin <b><span id="time"></span></b>.</p>
 	<div id="hidden" style="display:none;">

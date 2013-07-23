@@ -2,7 +2,7 @@
 
 {% block head %}
 	{{ parent() }}
-		{% stylesheets 'bundles/biostudent/css/form.css' 'bundles/biostyle/css/instruction.css' filter="cssrewrite" output="css/*.css" %}
+		{% stylesheets 'bundles/biostyle/css/instruction.css' filter="cssrewrite" output="css/*.css" %}
 			<link rel="stylesheet" href="{{ asset_url }}" />
 		{% endstylesheets %}
 
