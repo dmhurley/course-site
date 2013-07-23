@@ -45,9 +45,20 @@ class File
      */
     private $parent;
 
+    /**
+     * @var boolean
+     * 
+     * @ORM\Column(name="private", type="boolean")
+     */
+    private $private;
+
     // are not persisted!
     private $file;
     private $temp;
+
+    public function __contruct() {
+        $this->private = false;
+    }
 
     /**
      * Get id
@@ -203,5 +214,28 @@ class File
         if ($file = $this->getAbsolutePath()) {
             unlink($file);
         }
+    }
+
+    /**
+     * Set private
+     *
+     * @param boolean $private
+     * @return File
+     */
+    public function setPrivate($private)
+    {
+        $this->private = $private;
+    
+        return $this;
+    }
+
+    /**
+     * Get private
+     *
+     * @return boolean 
+     */
+    public function getPrivate()
+    {
+        return $this->private;
     }
 }

@@ -10,13 +10,19 @@
 	{% set full = '' %}
 {% endif %}
 
+{% if root.private %}
+	{% set private = 'private' %}
+{% else %}
+	{% set private = '' %}
+{% endif %}
+
 {% if root.folders is defined and root.id == selected %}
 	{% set id = 'selected' %}
 {% else %}
 	{% set id = '' %}
 {% endif %}
 
-<li class="{{type}} {{full}}" id="{{id}}">
+<li class="{{type}} {{private}} {{full}}" id="{{id}}">
 
 {% if root.folders is defined %}
 	<a href="{{ path('view_folders', {'id' : root.id}) }}">
