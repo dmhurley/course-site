@@ -119,7 +119,7 @@ class DefaultController extends Controller
                     $request->getSession()->getFlashBag()->set('failure', "Folder could not be added.");
                 }
             }
-            return $this->redirect($this->generateUrl('view_folders').'?id='.$form->get('id')->getData()."&private=".$form->get('private')->getData());
+            return $this->redirect($this->generateUrl('view_folders').'?id='.$form->get('id')->getData().($parent?"&private=".$parent->getPrivate():''));
 	    }
         return $this->redirect($this->generateUrl('view_folders'));
     }
@@ -156,7 +156,7 @@ class DefaultController extends Controller
                      $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
                 }
             }
-            return $this->redirect($this->generateUrl('view_folders').'?id='.$form->get('id')->getData()."&private=".$form->get('private')->getData());
+            return $this->redirect($this->generateUrl('view_folders').'?id='.$form->get('id')->getData().($parent?"&private=".$parent->getPrivate():""));
 	    }
         return $this->redirect($this->generateUrl('view_folders'));
     }
