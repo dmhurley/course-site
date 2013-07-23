@@ -190,7 +190,7 @@ class Hours extends Base
     }
 
     public function addToForm(FormBuilder $builder) {
-        $builder->add('person', 'entity', array('class' => 'BioInfoBundle:Person', 'property' => 'lName', 'label' => 'Instructor:'))
+        $builder->add('person', 'entity', array('class' => 'BioInfoBundle:Person', 'property' => 'fullName', 'label' => 'Instructor:'))
             ->add('days', 'text', array('label' => 'Days:'))
             ->add('start', 'time', array('label' => 'Start Time:'))
             ->add('end', 'time', array('label' => 'End Time:'))
