@@ -1,4 +1,4 @@
-{% if root.private != true %}
+{% if root.folders is not defined or root.private != true %}
 	{% if root.folders is defined %}
 		{% set type = 'folder' %}
 	{% else %}

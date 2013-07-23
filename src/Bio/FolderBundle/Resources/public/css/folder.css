@@ -26,10 +26,6 @@
 	list-style-image: url('../images/folder_private.png');
 }
 
-.file.private {
-	list-style-image: url('../images/file_private.png');
-}
-
 .empty:after {
 	content: '  -empty';
 	font-size: 8pt;

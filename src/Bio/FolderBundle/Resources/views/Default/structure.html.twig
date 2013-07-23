@@ -10,7 +10,7 @@
 	{% set full = '' %}
 {% endif %}
 
-{% if root.private %}
+{% if root.folders is defined and root.private %}
 	{% set private = 'private' %}
 {% else %}
 	{% set private = '' %}

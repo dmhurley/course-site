@@ -57,7 +57,6 @@ class DefaultController extends Controller
     		->setAction($this->generateUrl('add_file'))
     		->add('file', 'file')
     		->add('name', 'text')
-            ->add('private', 'checkbox', array('required' => false, 'attr' => $private?array('checked' => 'checked'):array()))
     		->add('id', 'hidden', array('mapped' => false, 'data' => $selected))
     		->add('upload', 'submit')
     		->getForm();
@@ -134,7 +133,6 @@ class DefaultController extends Controller
 	    	$form = $this->createFormBuilder($file)
     		->add('file', 'file')
     		->add('name', 'text')
-            ->add('private', 'checkbox', array('required' => false))
     		->add('id', 'hidden', array('mapped' => false))
     		->getForm();
 
