@@ -25,7 +25,7 @@
 <li class="{{type}} {{private}} {{full}}" id="{{id}}">
 
 {% if root.folders is defined %}
-	<a href="{{ path('view_folders', {'id' : root.id}) }}">
+	<a href="{{ path('view_folders', {'id' : root.id})}}{% if root.private %}&private=1{% endif %}">
 		{{ root.name }}
 	</a>
 {% else %}
