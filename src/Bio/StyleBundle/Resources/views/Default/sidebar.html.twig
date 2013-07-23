@@ -2,26 +2,22 @@
 	<div class="content">
 		<ul class="trunk">
 			{% for key,value in options %}
-				{% if key != expanded and expanded != 'all' %}
-					<li class="branch"><a href="{{ path(options[key][key]['route']) }}">{{key|capitalize}}</a></li>
-				{% else %}
-					<li class="branch top">
-						<a href="{{ path(options[key][key]['route']) }}">{{key}}</a>
-						{% if options[key]|length > 1 %}
-							<ul class="twig">
-								{% for key1,value1 in options[key] %}
-									{% if key1 != key %}
-										{% if value1['vars'] %}
-											<li class="leaf"><a href="{{ path(value1['route'], value1['vars']) }}">{{key1}}</a></li>
-										{% else %}
-											<li class="leaf"><a href="{{ path(value1['route']) }}">{{ key1}}</a></li>
-										{% endif %}
+				<li class="branch">
+					<a href="{{ path(options[key][key]['route']) }}">{{key}}</a>
+					{% if options[key]|length > 1 %}
+						<ul class="twig">
+							{% for key1,value1 in options[key] %}
+								{% if key1 != key %}
+									{% if 'vars' in value1|keys  %}
+										<li class="leaf"><a href="{{ path(value1['route'], value1['vars']) }}">{{key1}}</a></li>
+									{% else %}
+										<li class="leaf"><a href="{{ path(value1['route']) }}">{{ key1}}</a></li>
 									{% endif %}
-								{% endfor %}
-							</ul>
-						{% endif %}
-					</li>
-				{% endif %}
+								{% endif %}
+							{% endfor %}
+						</ul>
+					{% endif %}
+				</li>
 			{% endfor %}
 		</ul>
 	</div>
