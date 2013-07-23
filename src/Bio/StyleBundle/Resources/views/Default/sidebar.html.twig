@@ -1,31 +1,27 @@
-{% if role == 'admin' %}
+{% if is_granted('ROLE_ADMIN') %}
 	<div class="content">
 		<ul class="trunk">
 			{% for key,value in options %}
-				{% if key != expanded and expanded != 'all' %}
-					<li class="branch"><a href="{{ path(options[key][key]['route']) }}">{{key|capitalize}}</a></li>
-				{% else %}
-					<li class="branch top">
-						<a href="{{ path(options[key][key]['route']) }}">{{key}}</a>
-						{% if options[key]|length > 1 %}
-							<ul class="twig">
-								{% for key1,value1 in options[key] %}
-									{% if key1 != key %}
-										{% if value1['vars'] %}
-											<li class="leaf"><a href="{{ path(value1['route'], value1['vars']) }}">{{key1}}</a></li>
-										{% else %}
-											<li class="leaf"><a href="{{ path(value1['route']) }}">{{ key1}}</a></li>
-										{% endif %}
+				<li class="branch">
+					<a href="{{ path(options[key][key]['route']) }}">{{key}}</a>
+					{% if options[key]|length > 1 %}
+						<ul class="twig">
+							{% for key1,value1 in options[key] %}
+								{% if key1 != key %}
+									{% if 'vars' in value1|keys  %}
+										<li class="leaf"><a href="{{ path(value1['route'], value1['vars']) }}">{{key1}}</a></li>
+									{% else %}
+										<li class="leaf"><a href="{{ path(value1['route']) }}">{{ key1}}</a></li>
 									{% endif %}
-								{% endfor %}
-							</ul>
-						{% endif %}
-					</li>
-				{% endif %}
+								{% endif %}
+							{% endfor %}
+						</ul>
+					{% endif %}
+				</li>
 			{% endfor %}
 		</ul>
 	</div>
-{% elseif role == 'user' %}
+{% else %}
 	<div class="content">
 		<ul class="trunk">
 			<li class="branch"><a href="{{ path('main_page') }}">Home</a></li>
@@ -36,7 +32,11 @@
 					<a href="{{ path('public_folder', {'id' : 1}) }}">Folders</a>
 					<ul class="twig">
 						{% for folder in root.folders %}
-							<li class="leaf"><a href="{{ path('public_folder', {'id' : folder.id}) }}">{{folder.name}}</a></li>
+							{% if folder.private != true %}
+								<li class="leaf">
+									<a href="{{ path('public_folder', {'id' : folder.id}) }}">{{folder.name}}</a>
+								</li>
+							{% endif %}
 						{% endfor %}
 					</ul>
 				</li>
@@ -48,7 +48,9 @@
 					<a href="{{ path('public_folder', {'id' : 1}) }}">Files</a>
 					<ul class="twig">
 						{% for file in root.files %}
-							<li class="leaf"><a href="{{ path('download', {'filename' : file.path}) }}">{{file.name}}</a></li>
+							<li class="leaf">
+								<a href="{{ path('download', {'filename' : file.path}) }}">{{file.name}}</a>
+							</li>
 						{% endfor %}
 					</ul>
 				</li>

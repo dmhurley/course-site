@@ -15,7 +15,7 @@
 		{% for person in hourss %}
 			{% if person.hours|length != 0 %}
 			<tr>
-				<td rowspan={{person.hours|length}}>{{person.fName}} {{person.lName}}</td>
+				<td rowspan={{person.hours|length}}>{{person.fullName}}</td>
 				{% if (person.hours|first).byAppointment %}
 					<td colspan=3>By Appointment</td>
 				{% else %}

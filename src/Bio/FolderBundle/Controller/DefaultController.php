@@ -33,11 +33,14 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {	
+        $selected = 1;
+        $private = false;
     	if ($request->query->get('id')) {
     		$selected = $request->query->get('id');
-    	} else {
-    		$selected = 1;
-    	}
+            if ($request->query->get('private')){
+                $private = true;
+            }
+    	} 
     	$db = new Database($this, 'BioFolderBundle:Folder');
 
     	$root = $db->findOne(array('id' => 1));
@@ -45,6 +48,7 @@ class DefaultController extends Controller
     	$form = $this->createFormBuilder()
     		->setAction($this->generateUrl('add_folder'))
     		->add('name', 'text')
+            ->add('private', 'checkbox', array('required' => false, 'attr' => $private?array('checked' => 'checked'):array()))
     		->add('add', 'submit')
     		->add('id', 'hidden', array('mapped' => false, 'data'=>$selected))
     		->getForm();
@@ -92,6 +96,7 @@ class DefaultController extends Controller
 
 	    	$form = $this->createFormBuilder($folder)
 	    		->add('name', 'text')
+                ->add('private', 'checkbox', array('required' => false))
 	    		->add('id', 'hidden', array('mapped' => false))
 	    		->getForm();
 
@@ -113,7 +118,7 @@ class DefaultController extends Controller
                     $request->getSession()->getFlashBag()->set('failure', "Folder could not be added.");
                 }
             }
-            return $this->redirect($this->generateUrl('view_folders').'?id='.$form->get('id')->getData());
+            return $this->redirect($this->generateUrl('view_folders').'?id='.$form->get('id')->getData().($parent?"&private=".$parent->getPrivate():''));
 	    }
         return $this->redirect($this->generateUrl('view_folders'));
     }
@@ -149,7 +154,7 @@ class DefaultController extends Controller
                      $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
                 }
             }
-            return $this->redirect($this->generateUrl('view_folders').'?id='.$form->get('id')->getData());
+            return $this->redirect($this->generateUrl('view_folders').'?id='.$form->get('id')->getData().($parent?"&private=".$parent->getPrivate():""));
 	    }
         return $this->redirect($this->generateUrl('view_folders'));
     }

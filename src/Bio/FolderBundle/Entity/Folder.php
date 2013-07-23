@@ -44,6 +44,16 @@ class Folder
      */
     private $parent;
 
+    /**
+     * @var boolean
+     * 
+     * @ORM\Column(name="private", type="boolean")
+     */
+    private $private;
+
+    public function __contruct() {
+        $this->private = false;
+    }
 
     /**
      * Get id
@@ -179,5 +189,28 @@ class Folder
     public function getFiles()
     {
         return $this->files;
+    }
+
+    /**
+     * Set private
+     *
+     * @param boolean $private
+     * @return Folder
+     */
+    public function setPrivate($private)
+    {
+        $this->private = $private;
+    
+        return $this;
+    }
+
+    /**
+     * Get private
+     *
+     * @return boolean 
+     */
+    public function getPrivate()
+    {
+        return $this->private;
     }
 }

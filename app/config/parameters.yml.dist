@@ -19,14 +19,11 @@ parameters:
         "Admin":
             "Admin":
                 route: main_admin_page
-                vars: ~
         "Course Info":
             "Course Info":
                 route: info_instruct
-                vars: ~
             "Edit Info":
                 route: edit_info
-                vars: ~
             "Announcements":
                 route: view
                 vars:
@@ -51,70 +48,50 @@ parameters:
         "Students":
             "Students":
                 route: students_instruct
-                vars: ~
             "Display":
                 route: display_students
-                vars: ~
             "Find":
                 route: find_student
-                vars: ~
             "Add":
                 route: add_student
-                vars: ~
             "Upload":
                 route: upload_student
-                vars: ~
 
         "Clickers":
             "Clickers":
                 route: clicker_instruct
-                vars: ~
             "Register":
                 route: register_clicker
-                vars: ~
             "Download":
                 route: download_list
-                vars: ~
             "Clear":
                 route: clear_list
-                vars: ~
 
         "Scores":
             "Scores":
                 route: scores_instruct
-                vars: ~
             "Upload":
                 route: scores
-                vars: ~
             "Find Scores":
                 route: find_score
-                vars: ~
 
         "Folders":
             "Folders":
                 route: folders_instruct
-                vars: ~
             "Manage":
                 route: view_folders
-                vars: ~
             "Clear":
                 route: clear_folders
-                vars: ~
 
         "Users":
             "Users":
                 route: view_users
-                vars: ~
         "Exams":
             "Exams":
                 route: exam_instruct
-                vars: ~
             "Manage Exams":
                 route: view_exams
-                vars: ~
             "Manage Questions":
                 route: view_questions
-                vars: ~
             "Start Exam":
                 route: exam_entrance
-                vars: ~

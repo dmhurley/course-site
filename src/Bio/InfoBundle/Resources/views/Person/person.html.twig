@@ -15,7 +15,7 @@
 		</tr>
 		{% for person in persons %}
 			<tr>
-				<td>{{person.fName}} {{person.lName}}</td>
+				<td>{{ person.fullName }}</td>
 				<td>{{person.email}}</td>
 				<td><a href="http://www.washington.edu/maps/?{{person.bldg|split("	")[0]}}">{{person.bldg}}</a></td>
 				<td>{{person.room}}</td>

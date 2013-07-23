@@ -50,7 +50,7 @@
 			<h2>Instructors</h2>
 			{% for inst in instructors %}
 				<ul>
-					<li>{{inst.fName}} {{inst.lName}}</li>
+					<li>{{inst.fullName}}</li>
 					<ul>
 						<li><a href="http://www.washington.edu/maps/?{{inst.bldg|split("	")[0]}}">{{inst.bldg}}</a> - {{inst.room}}</li>
 						<li><a href="mailto:{{inst.email}}">{{inst.email}}</a></li>
@@ -76,7 +76,7 @@
 				<h2>TAs</h2>
 				{% for inst in tas %}
 					<ul>
-						<li>{{inst.fName}} {{inst.lName}}</li>
+						<li>{{inst.fullName}}</li>
 						<ul>
 							<li><a href="http://www.washington.edu/maps/?{{inst.bldg|split("	")[0]}}">{{inst.bldg}}</a> - {{inst.room}}</li>
 							<li><a href="mailto:{{inst.email}}">{{inst.email}}</a></li>
@@ -103,7 +103,7 @@
 				<h2>Coordinators</h2>
 				{% for inst in coordinators %}
 					<ul>
-						<li>{{inst.fName}} {{inst.lName}}</li>
+						<li>{{inst.fullName}}</li>
 						<ul>
 							<li><a href="http://www.washington.edu/maps/?{{inst.bldg|split("	")[0]}}">{{inst.bldg}}</a> - {{inst.room}}</li>
 							<li><a href="mailto:{{inst.email}}">{{inst.email}}</a></li>

@@ -31,6 +31,10 @@
 #content > table td, .tableStyle table td {
 	border-bottom: solid 1px #A591D9;
 }
+/* no border on last td */
+#content > table tr:last-child td, .tableStyle table tr:last-child td {
+	border-bottom: none;
+}
 
 #form ul {
 	float:right;
