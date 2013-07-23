@@ -93,6 +93,10 @@ class Person extends Base
         return $this;
     }
 
+    public function getFullName() {
+        return $this->fName." ".$this->lName;
+    }
+
     /**
      * Set fName
      *

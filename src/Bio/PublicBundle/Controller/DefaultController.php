@@ -124,6 +124,15 @@ class DefaultController extends Controller
         $db = new Database($this, 'BioFolderBundle:Folder');
         $root = $db->findOne(array('id' => $id));
 
+        if (!$root || $root->getPrivate()) {
+            $request->getSession()->getFlashBag()->set('failure', 'Folder does not exist.');
+            if ($request->headers->get('referer')) {
+                return $this->redirect($request->headers->get('referer'));
+            } else {
+                return $this->redirect($this->generateUrl('public_folder', array('id' => 1)));
+            }
+        }
+
         return array('root' => $root, 'title' => $root->getName().' Folder');
     }
 
