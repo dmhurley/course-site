@@ -290,15 +290,18 @@ class PublicController extends Controller
 	public function checkAction(Request $request) {
 
 		// check if proper request
-		if ($request->isXmlHttpRequest() && $request->request->has('sid') && $request->request->has('exam')) {
+		if ($request->request->has('id') && $request->request->has('sid') && $request->request->has('exam')) {
+			$id = $request->request->get('id');
+			$sid = $request->request->get('sid');
+			$exam = $request->request->get('exam');
 
 			// get the person
 			$db = new Database($this, 'BioExamBundle:TestTaker');
-			$you = $db->findOne(array('sid' => $request->request->get('sid'), 'exam' => $request->request->get('exam')));
+			$you = $db->findOne(array('id' => $id, 'sid' => $sid, 'exam' => $exam));
 
 			// if you don't exist
 			if (!$you) {
-				return array('error' => true, 'message' => 'Cannot find entry with that sid and exam.');
+				return array('error' => true, 'message' => 'Invalid credentials.');
 			}
 
 			// if they got assigned someone between checks
@@ -306,56 +309,41 @@ class PublicController extends Controller
 				return array('error' => false, 'message' => "HOORAY", 'sid' => $you->getGrading());
 			}
 
-			// get everyone else
+			// get all test takers who have finished there test, are taking the asked for exam, and are not the person asking
+			// order by status code ascending first, breaking ties by times graded.
+			$em = $this->getDoctrine()->getManager();
+			$query = $em->createQueryBuilder()
+				->select('p')
+				->from('BioExamBundle:TestTaker', 'p')
+				->where('p.status >= 4')
+				->andWhere('p.exam = :exam')
+				->andWhere('p.id <> :id')
+				->addOrderBy('p.status', 'ASC') // ungraded people first // might be unnecessary
+				->addOrderBy('p.points', 'ASC') // people graded least first. Longtext that holds array starts with a<number of entries> BUG if count >= 10
+				->setParameter('exam', $exam)
+				->setParameter('id', $id)
+				->getQuery();
+			$targets = $query->getResult();
 
-			// if they force it
-			if ($request->request->has('force') && $request->request->get('force') === 'force'){
+			if (count($targets) === 0) {
+				return array('error' => true, 'message' => 'No tests to grade.');
+			}
 
-				// get everyone who's finished a test and at least started grading
-				$em = $this->getDoctrine()->getManager();
-				$query = $em->createQueryBuilder()
-					->select('p')
-					->from('BioExamBundle:TestTaker', 'p')
-					->where('p.status >= 5')
-					->andWhere('p.exam = :eid')
-					->setParameter('eid', $request->request->get('exam'))
-					->getQuery();
-				$targets = $query->getResult();
+			if ((count($targets[0]->getPoints()) !== 0 && $request->request->has('force') && 
+					$request->request->get('force') === 'force') || count($targets[0]->getPoints()) === 0) {
 
-				// if there's literally nobody
-				if (count($targets) === 0) {
-					return array('error' => true, 'message' => 'No other test takers.');
-				}
-
-				// choose person randomly
-				$target = $targets[rand(0, count($targets) - 1)];
-
-			// if they ask nicely
+				$target = $targets[0];
 			} else {
+				return array('error' => true, 'message' => 'No open tests to grade.');
+			} 
 
-				// get everyone unpaired
-				$targets = $db->find(array('status' => 4, 'exam' => $request->request->get('exam'), 'grading' => ''), array(), false);
-
-				// get person who's not yourself from targets
-				if (count($targets) < 2) {
-					return array('error' => true, 'message' => 'No other test takers.');
-				} else {
-					if ($targets[0]->getSid() === $you->getSid()) {
-						$target = $targets[1];
-					} else {
-						$target = $targets[0];
-					}
-				}
-
-
-			// make a cute pairing
+			$you->setGrading($target->getSid());
+			if ($target->getGrading() === '') {
 				$target->setGrading($you->getSid());
 			}
-			$you->setGrading($target->getSid());
 			$db->close();
-			
+			return array('error' => false, 'message' => 'Test Found', 'sid' => $target->getSid());
 
-			return array('error' => false, 'message' => "HOORAY", 'sid' => $you->getGrading());
 		}
 
 		return array('error' => true, 'message' => 'Improper request.');
