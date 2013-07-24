@@ -9,6 +9,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 
 use Bio\StudentBundle\Entity\Student;
+use Bio\StudentBundle\Form\StudentType;
 use Bio\DataBundle\Exception\BioException;
 
 use Bio\DataBundle\Objects\Database;
@@ -31,14 +32,7 @@ class DefaultController extends Controller
      * @Template("BioStudentBundle:Default:delete.html.twig")
      */
     public function findAction(Request $request){
-        $form = $this->createFormBuilder(new Student())
-            ->add('sid', 'text', array('label' => "Student ID:", 'required' => false, 'attr' => array('pattern' => '[0-9]{7}', 'title' => '7 digit student ID')))
-            ->add('fName', 'text', array('label' => "First Name:", 'required' => false))
-            ->add('lName', 'text', array('label' => "Last Name:", 'required' => false))
-            ->add('section', 'text', array('label' => "Section:", 'required' => false))
-            ->add('email', 'email', array('label' => "Email:", 'required' => false))
-            ->add('Find', 'submit')
-            ->getForm();
+        $form = $this->createForm(new StudentType(), new Student(), array('label' => 'find', 'required' => true));
 
         if ($request->getMethod() === "POST") {
             $values = $request->request->get('form');
@@ -66,14 +60,7 @@ class DefaultController extends Controller
     public function addAction(Request $request)
     {
     	$entity = new Student();
-    	$form = $this->createFormBuilder($entity)
-    		->add('sid', 'text', array('label' => "Student ID:", 'attr' => array('pattern' => '[0-9]{7}', 'title' => '7 digit student ID')))
-    		->add('fName', 'text', array('label' => "First Name:"))
-    		->add('lName', 'text', array('label' => "Last Name:"))
-            ->add('section', 'text', array('label' => "Section:"))
-    		->add('email', 'email', array('label' => "Email:"))
-    		->add('Add', 'submit')
-    		->getForm();
+    	$form = $this->createForm(new StudentType(), $entity, array('label' => 'add'));
 
     	$cloned = clone $form;
 
@@ -135,14 +122,7 @@ class DefaultController extends Controller
         }
 
         if ($entity) {
-        	$form = $this->createFormBuilder($entity)
-        		->add('sid', 'text', array('label' => "Student ID:", 'read_only'=> true))
-        		->add('fName', 'text', array('label' => "First Name:"))
-        		->add('lName', 'text', array('label' => "Last Name:"))
-                ->add('section', 'text', array('label' => "Section:"))
-        		->add('email', 'email', array('label' => "Email:"))
-        		->add('Edit', 'submit')
-        		->getForm();
+        	$form = $this->createForm(new StudentType(), $entity, array('title' => 'edit', 'edit' => true));
 
         	if ($request->getMethod() === "POST") {		// if request was sent
         		$form->handleRequest($request);
