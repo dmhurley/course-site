@@ -290,7 +290,7 @@ class PublicController extends Controller
 	public function checkAction(Request $request) {
 
 		// check if proper request
-		if ($request->request->has('sid') && $request->request->has('exam')) {
+		if ($request->isXmlHttpRequest() && $request->request->has('sid') && $request->request->has('exam')) {
 
 			// get the person
 			$db = new Database($this, 'BioExamBundle:TestTaker');
