@@ -292,13 +292,13 @@ class AdminController extends Controller
         $db = new Database($this, 'BioExamBundle:TestTaker');
         $takers = $db->find(array('exam' => $id), array('sid' => 'ASC'), false);
 
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename='.$exam->getName().'.txt');
-        header('Content-Transfer-Encoding: binary');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate');
-        header('Pragma: public');
+        // header('Content-Description: File Transfer');
+        // header('Content-Type: application/octet-stream');
+        // header('Content-Disposition: attachment; filename='.$exam->getName().'.txt');
+        // header('Content-Transfer-Encoding: binary');
+        // header('Expires: 0');
+        // header('Cache-Control: must-revalidate');
+        // header('Pragma: public');
 
         echo "sid\t";
         echo "status\t";
@@ -318,17 +318,17 @@ class AdminController extends Controller
         foreach ($takers as $taker) {
             echo $taker->getSid()."\t";
             echo $taker->getStatus()."\t";
-            echo $taker->getGrading()."\t";
+            echo implode(array_keys($taker->getGrading(), true), ', ')."\t";
 
             if (count($taker->getAnswers()) === $numQuestions) {
                 foreach(array_keys($taker->getAnswers()) as $key) {
                     echo $taker->getAnswers()[$key]."\t";
                     if (count($taker->getPoints()) > 0) {
                         $points = 0;
-                        foreach(array_keys($taker->getPoints()) as $grader) {
+                        foreach(array_keys($taker->getPoints(), true, false) as $grader) {
                             $points += $taker->getPoints()[$grader][$key];
                         }
-                        echo $points/count($taker->getPoints()); // tab on next line
+                        echo $points/count(array_keys($taker->getPoints(), true, false)); // tab on next line
                     }
                     echo "\t";
                 }

@@ -32,9 +32,9 @@ class TestTaker
     private $sid;
 
     /**
-     * @var string
+     * @var array
      *
-     * @ORM\Column(name="grading", type="privatestring", nullable=true)
+     * @ORM\Column(name="grading", type="array")
      */
     private $grading;
 
@@ -85,7 +85,7 @@ class TestTaker
         $this->timecard = array();
         $this->answers = array();
         $this->points = array();
-        $this->grader = null;
+        $this->grading = array();
     }
 
     /**
@@ -208,29 +208,6 @@ class TestTaker
     }
 
     /**
-     * Set grading
-     *
-     * @param privatestring $grading
-     * @return TestTaker
-     */
-    public function setGrading($grading)
-    {
-        $this->grading = $grading;
-    
-        return $this;
-    }
-
-    /**
-     * Get grading
-     *
-     * @return privatestring 
-     */
-    public function getGrading()
-    {
-        return $this->grading;
-    }
-
-    /**
      * Set timecard
      *
      * @param array $timecard
@@ -310,5 +287,32 @@ class TestTaker
     public function getPoints()
     {
         return $this->points;
+    }
+
+    /**
+     * Set grading
+     *
+     * @param array $grading
+     * @return TestTaker
+     */
+    public function setGrading($grading)
+    {
+        $this->grading = $grading;
+    
+        return $this;
+    }
+
+    public function setGrader($grader, $graded = false) {
+        $this->grading[$grader] = $graded;
+    }
+
+    /**
+     * Get grading
+     *
+     * @return array 
+     */
+    public function getGrading()
+    {
+        return $this->grading;
     }
 }

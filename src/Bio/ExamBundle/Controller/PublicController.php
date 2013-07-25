@@ -135,7 +135,7 @@ class PublicController extends Controller
 		return $this->render('BioExamBundle:Public:sign.html.twig', array('form' => $form->createView(), 'title' => 'Log In'));
 	}
 
-	
+	//status 1
 	private function startAction(Request $request, $exam, $taker, $db) {
 		$form = $this->createFormBuilder()
 			->add('start', 'submit')
@@ -162,6 +162,7 @@ class PublicController extends Controller
 		return $this->render('BioExamBundle:Public:start.html.twig', array('form' => $form->createView(), 'exam' => $exam, 'title' => 'Begin Test'));
 	}
 
+	// status 2
 	private function examAction(Request $request, $exam, $taker, $db) {
 		// if they pressed submit
 		if ($request->getMethod() === "POST") {
@@ -188,6 +189,7 @@ class PublicController extends Controller
 		return $this->render('BioExamBundle:Public:exam.html.twig', array('exam' => $exam, 'taker' => $taker, 'title' => $exam->getName()));
 	}
 
+	// status 3
 	private function reviewAction(Request $request, $exam, $taker, $db) {
 		$form = $this->createFormBuilder()
 			->add('edit', 'submit')
@@ -228,11 +230,12 @@ class PublicController extends Controller
 		return $this->render('BioExamBundle:Public:review.html.twig', array('form'=>$form->createView(), 'exam' => $exam, 'taker' => $taker, 'title' => 'Review Answers.'));
 	}
 
+	// status 4
 	private function confirmationAction(Request $request, $exam, $taker, $db) {
 		// if they pressed the grade button
 		if ($request->getMethod() === "POST") {
 			// if they haven't cheated set them up and forward them
-			if ($taker->getGrading() !== '') {
+			if ( in_array(false, $taker->getGrading()) ) {
 				$taker->setStatus(5);
 				$db->close();
 
@@ -244,10 +247,12 @@ class PublicController extends Controller
 		return $this->render('BioExamBundle:Public:confirmation.html.twig', array('taker' => $taker, 'exam' => $exam, 'title' => 'Exam Submitted'));
 	}
 
+	// status 5
 	private function gradeAction(Request $request, $exam, $taker, $db) {
 		// finds the person they're grading
 		$db = new Database($this, 'BioExamBundle:TestTaker');
-		$target = $db->findOne(array('sid' => $taker->getGrading()));
+		$target = $db->findOne(array('sid' => array_search(false, $taker->getGrading())) );
+		// handle not finding target???
 
 		// if they pressed submit
 		if ($request->getMethod() === "POST") {
@@ -272,12 +277,17 @@ class PublicController extends Controller
 			}
 
 			$target->addPoint($taker->getSid(), $points);
-			$taker->setStatus(6);
+
+			$taker->setGrader($target->getSid(), true);
+
+			if ( count($taker->getGrading()) === 2 && !in_array(false, $taker->getGrading()) ) {
+					$taker->setStatus(6);
+			} else {
+				$request->getSession()->getFlashBag()->set('success', 'Exam Graded. Grade '.(2-count($taker->getGrading())).' more.' );
+				$taker->setStatus(4);
+			}
 			$db->close();
-
-			$request->getSession()->getFlashBag()->set('success', 'Completed.');
 			return $this->redirect($this->generateUrl('exam_entrance'));
-
 		}
 
 		return $this->render('BioExamBundle:Public:grade.html.twig', array('exam' => $exam, 'taker' => $target, 'title' => 'Grade Exam'));
@@ -304,9 +314,9 @@ class PublicController extends Controller
 				return array('error' => true, 'message' => 'Invalid credentials.');
 			}
 
-			// if they got assigned someone between checks
-			if ($you->getGrading() !== '') {
-				return array('error' => false, 'message' => "HOORAY", 'sid' => $you->getGrading());
+			// if they have someone to grade, find first
+			if ( ($grader = array_search(false, $you->getGrading())) !== false ) {
+				return array('error' => false, 'message' => "HOORAY", 'sid' => $grader );
 			}
 
 			// get all test takers who have finished there test, are taking the asked for exam, and are not the person asking
@@ -318,8 +328,7 @@ class PublicController extends Controller
 				->where('p.status >= 4')
 				->andWhere('p.exam = :exam')
 				->andWhere('p.id <> :id')
-				->addOrderBy('p.status', 'ASC') // ungraded people first // might be unnecessary
-				->addOrderBy('p.points', 'ASC') // people graded least first. Longtext that holds array starts with a<number of entries> BUG if count >= 10
+				->addOrderBy('p.points', 'ASC') //order people by amount of people grading them
 				->setParameter('exam', $exam)
 				->setParameter('id', $id)
 				->getQuery();
@@ -329,18 +338,13 @@ class PublicController extends Controller
 				return array('error' => true, 'message' => 'No tests to grade.');
 			}
 
-			if ((count($targets[0]->getPoints()) !== 0 && $request->request->has('force') && 
-					$request->request->get('force') === 'force') || count($targets[0]->getPoints()) === 0) {
+			$target = $targets[0];
+			// } else {
+			// 	return array('error' => true, 'message' => 'No open tests to grade.');
+			// } 
 
-				$target = $targets[0];
-			} else {
-				return array('error' => true, 'message' => 'No open tests to grade.');
-			} 
-
-			$you->setGrading($target->getSid());
-			if ($target->getGrading() === '') {
-				$target->setGrading($you->getSid());
-			}
+			$you->setGrader($target->getSid(), false);
+			$target->addPoint($you->getSid(), null);
 			$db->close();
 			return array('error' => false, 'message' => 'Test Found', 'sid' => $target->getSid());
 
