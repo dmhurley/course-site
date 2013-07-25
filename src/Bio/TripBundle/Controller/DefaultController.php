@@ -48,4 +48,52 @@ class DefaultController extends Controller
     	$trips = $db->find(array(), array(), false);
         return array('form' => $form->createView(), 'trips' => $trips, 'title' => "Manage Trips");
     }
+
+    /**
+     * @Route("/edit", name="edit_trip")
+     * @Template()
+     */
+    public function editAction(Request $request) {
+    	$db = new Database($this, 'BioTripBundle:Trip');
+
+    	if ($request->getMethod() === "GET" && $request->query->get('id')) {
+    		$id = $request->query->get('id');
+    		$entity = $db->findOne(array('id' => $id));
+    	} else {
+    		$entity = new Trip();
+    	}
+
+    	$form = $this->createFormBuilder($entity)
+    		->add('title', 'text', array('label' => 'Title:'))
+    		->add('shortSum', 'textarea', array('label' => 'Short Summary:'))
+    		->add('longSum', 'textarea', array('label' => 'Long Summary:'))
+    		->add('start', 'datetime', array('label' => 'Start:', 'attr' => array('class' => 'datetime')))
+    		->add('end', 'datetime', array('label' => 'End:', 'attr' => array('class' => 'datetime')))
+    		->add('max', 'integer', array('label' => 'Limit:'))
+    		->add('email', 'email', array('label' => 'Leader Email:'))
+    		->add('id', 'hidden')
+    		->add('edit', 'submit')
+    		->getForm();
+
+    	if ($request->getMethod() === "POST") {
+    		$form->handleRequest($request);
+
+    		if ($form->isValid()) {
+    			$dbEntity = $db->findOne(array('id' => $entity->getId()));
+    			$dbEntity->setTitle($entity->getTitle())
+    				->setShortSum($entity->getShortSum())
+    				->setLongSum($entity->getLongSum())
+    				->setStart($entity->getStart())
+    				->setEnd($entity->getEnd())
+    				->setMax($entity->getMax())
+    				->setEmail($entity->getEmail());
+
+    			$db->close();
+
+    			return $this->redirect($this->generateUrl('manage_trips'));
+    		}
+    	}
+
+    	return array('form' => $form->createView(), 'title' => 'Edit Trip');
+    }
 }

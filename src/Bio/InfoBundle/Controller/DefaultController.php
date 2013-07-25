@@ -62,8 +62,10 @@ class DefaultController extends Controller
         } else {
             $entities = $db->find(array(), array(), false);
         }
+
+        $plural = $uc[strlen($uc)-1]==='s'?$uc:$uc.'s';
         return $this->render('BioInfoBundle:'.$uc.':'.$lc.'.html.twig', 
-                array('form' => $formclone->createView(), $lc.'s' => $entities, 'title' => 'Edit '.$uc));
+                array('form' => $formclone->createView(), $lc.'s' => $entities, 'title' => 'Manage '.$plural));
     }
 
     /**
@@ -132,6 +134,6 @@ class DefaultController extends Controller
         }
 
         return $this->render('BioInfoBundle:'.$uc.':edit.html.twig', 
-                array('form' => $form->createView(), 'title' => 'Edit Announcement'));
+                array('form' => $form->createView(), 'title' => 'Edit '.$uc));
     }
 }
