@@ -14,8 +14,9 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Debug\Debug;
 
-use Bio\DataBundle\Commands\SetupCommand;
-use Bio\DataBundle\Commands\AccountCommand;
+use Bio\DataBundle\Command\SetupCommand;
+use Bio\DataBundle\Command\AccountCommand;
+use Bio\DataBundle\Command\InstallCommand;
 
 $input = new ArgvInput();
 $env = $input->getParameterOption(array('--env', '-e'), getenv('SYMFONY_ENV') ?: 'dev');
@@ -29,4 +30,5 @@ $kernel = new AppKernel($env, $debug);
 $application = new Application($kernel);
 $application->add(new SetupCommand());
 $application->add(new AccountCommand());
+$application->add(new InstallCommand());
 $application->run($input);

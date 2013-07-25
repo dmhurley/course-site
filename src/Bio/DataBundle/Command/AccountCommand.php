@@ -1,5 +1,5 @@
 <?php
-namespace Bio\DataBundle\Commands;
+namespace Bio\DataBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
