@@ -328,7 +328,10 @@ class PublicController extends Controller
 				->where('p.status >= 4')
 				->andWhere('p.exam = :exam')
 				->andWhere('p.id <> :id')
-				->addOrderBy('p.points', 'ASC') //order people by amount of people grading them
+				//order people by amount of people grading them
+				// a serialized array starts with 'a:<length>:{stuff inside array....' so string comparison
+				// works as long as <length> doesn't go about 9, or else the string 9 will come before 10
+				->addOrderBy('p.points', 'ASC')
 				->setParameter('exam', $exam)
 				->setParameter('id', $id)
 				->getQuery();
@@ -339,9 +342,15 @@ class PublicController extends Controller
 			}
 
 			$target = $targets[0];
-			// } else {
-			// 	return array('error' => true, 'message' => 'No open tests to grade.');
-			// } 
+			$index = 0;
+			// if you've already graded them, get the next
+			while(array_key_exists($targets[$index]->getSid(), $you->getGrading()) ) {
+				try {
+					$target = $targets[++$index];
+				} catch(\Exception $e) {
+					return array('error' => true, 'message' => "No one left to grade");
+				}
+			}
 
 			$you->setGrader($target->getSid(), false);
 			$target->addPoint($you->getSid(), null);

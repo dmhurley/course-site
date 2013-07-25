@@ -318,6 +318,7 @@ class AdminController extends Controller
         foreach ($takers as $taker) {
             echo $taker->getSid()."\t";
             echo $taker->getStatus()."\t";
+            // get everyone who they actually graded
             echo implode(array_keys($taker->getGrading(), true), ', ')."\t";
 
             if (count($taker->getAnswers()) === $numQuestions) {
@@ -325,6 +326,7 @@ class AdminController extends Controller
                     echo $taker->getAnswers()[$key]."\t";
                     if (count($taker->getPoints()) > 0) {
                         $points = 0;
+                        // skip if the value for the key is null
                         foreach(array_keys($taker->getPoints(), true, false) as $grader) {
                             $points += $taker->getPoints()[$grader][$key];
                         }
