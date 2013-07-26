@@ -15,7 +15,7 @@ use Bio\TripBundle\Entity\Trip;
 /** 
  * @Route("/admin/trip")
  */
-class DefaultController extends Controller
+class AdminController extends Controller
 {
     /**
      * @Route("/manage", name="manage_trips")

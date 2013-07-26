@@ -1,0 +1,31 @@
+{% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block content %}
+	<table>
+		<tr>
+			<th>Trip</th>
+			<th>Summary</th>
+			<th>Start</th>
+			<th>End</th>
+			<th>Spots</th>
+			<th>View</th>
+			<th>Join</th>
+		</tr>
+		{% for trip in trips %}
+			<tr>
+				<td>{{ trip.title }}</td>
+				<td>{{ trip.shortSum }}</td>
+				<td>{{ trip.start|date('d-m-y H:i:s') }}</td>
+				<td>{{ trip.end|date('d-m-y H:i:s') }}</td>
+				<td>{{ trip.max - trip.students|length }}</td>
+				<td><a href="">view</a></td>
+				<td> {% if trip.max - trip.students|length > 0 %}
+						<a href="">join</a>
+					 {% else %}
+					 	join
+					 {% endif %}
+				</td>
+			</tr>
+		{% endfor %}
+	</table>
+{% endblock %}
