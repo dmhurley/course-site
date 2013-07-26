@@ -67,7 +67,7 @@ class Trip
      * @ORM\ManyToMany(targetEntity="\Bio\StudentBundle\Entity\Student")
      * @ORM\JoinTable(name="trips_students",
      *      joinColumns={@ORM\JoinColumn(name="trip_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="student_id", referencedColumnName="id",
+     *      inverseJoinColumns={@ORM\JoinColumn(name="student_id", referencedColumnName="id", onDelete="CASCADE",
      *      unique=true)})
      */
     private $students;

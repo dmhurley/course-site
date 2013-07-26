@@ -20,7 +20,7 @@
 				<td>{{ trip.max - trip.students|length }}</td>
 				<td><a href="">view</a></td>
 				<td> {% if trip.max - trip.students|length > 0 %}
-						<a href="">join</a>
+						<a href="{{ path('join_trip') }}?id={{trip.id}}">join</a>
 					 {% else %}
 					 	join
 					 {% endif %}

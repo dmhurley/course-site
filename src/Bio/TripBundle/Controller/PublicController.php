@@ -55,6 +55,7 @@ class PublicController extends Controller
     			$student = $db->findOne(array('sid' => $sid, 'lName' => $lName));
     			if ($student) {
     				$request->getSession()->set('studentID', $student->getId());
+    				return $this->redirect($this->generateUrl('trip_entrance'));
     			} else {
     				$request->getSession()->getFlashBag()->set('failure', 'Could not find a student with that last name and student ID.');
     			}
@@ -66,13 +67,51 @@ class PublicController extends Controller
 
     private function tripAction(Request $request, $id) {
     	$db = new Database($this, 'BioTripBundle:Trip');
-    	// find field trip
-    	if (false) {
+    	$trips = $db->find(array(), array('start' => 'ASC', 'end' => 'ASC'), false);
+    	$trip = null;
+    	foreach ($trips as $t) {
+    		foreach($t->getStudents() as $student) {
+    			if ($student->getId() === $id) {
+    				$trip = $t;
+    				break 2;
+    			}
+    		}
+    	}
 
+
+    	if ($trip) {
+    		return $this->render('BioTripBundle:Public:onetrip.html.twig', array('trip' => $trip, 'title' => 'Sign Up'));
     	} else {
-    		$trips = $db->find(array(), array('start' => 'ASC', 'end' => 'ASC'), false);
     		return $this->render('BioTripBundle:Public:browse.html.twig', array('trips' => $trips, 'title' => 'Sign Up'));
     	}
+    }
+
+    /**
+     * @Route("/join", name="join_trip")
+     */
+    public function joinAction(Request $request) {
+    	if (!$request->getSession()->has('studentID')) {
+    		$request->getSession()->getFlashBag()->set('failure', 'Not signed in.');
+    	} else if (!$request->query->has('id')) {
+    		$request->getSession()->getFlashBag()->set('failure', 'No trip specified.');
+    	} else {
+    		$tripID = $request->query->get('id');
+    		$studentID = $request->getSession()->get('studentID');
+
+    		$db = new Database($this, 'BioStudentBundle:Student');
+    		$student = $db->findOne(array('id' => $studentID));
+
+    		$db = new Database($this, 'BioTripBundle:Trip');
+    		$trip = $db->findOne(array('id' => $tripID));
+
+    		if (!$student || !$trip) {
+    			$request->getSession()->getFlashBag()->set('failure', 'No trip found.');
+    		} else {
+    			$trip->addStudent($student);
+    			$db->close();
+    		}
+    	}
+    	return $this->redirect($this->generateUrl('trip_entrance'));
     }
 
 }
