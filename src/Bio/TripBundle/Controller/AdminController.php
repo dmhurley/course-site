@@ -94,6 +94,32 @@ class AdminController extends Controller
     		}
     	}
 
-    	return array('form' => $form->createView(), 'title' => 'Edit Trip');
+    	return array('form' => $form->createView(), 'students' => $entity->getStudents(), 'title' => 'Edit Trip');
+    }
+
+    /**
+     * @Route("/delete", name="delete_trip")
+     */
+    public function deleteAction(Request $request) {
+        if ($request->query->get('id')){
+            $db = new Database($this, 'BioTripBundle:Trip');
+            $trip = $db->findOne(array('id' => $request->query->get('id')));
+
+            if (!$trip) {
+                $request->getSession()->getFlashBag()->set('failure', 'Could not find that trip.');
+            } else {
+                $db->delete($trip);
+                $db->close();
+                $request->getSession()->getFlashBag()->set('success', 'Trip deleted.');
+            }
+        } else {
+            $request->getSession()->getFlashBag()->set('success', 'Question deleted.');
+        }
+
+        if ($request->headers->get('referer')){
+            return $this->redirect($request->headers->get('referer'));
+        } else {
+            return $this->redirect($this->generateUrl('manage_trips'));
+        }
     }
 }

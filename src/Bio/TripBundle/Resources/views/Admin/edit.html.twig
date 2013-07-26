@@ -13,14 +13,19 @@
 		{% for student in students %}
 			<tr>
 				<td>{{student.sid}}</td>
-				<td>{{student.fullname}}</td>
-				<td>{{student.email}}</td>
-				<td><a href="mailto:{{student.email}}">remove</a></td>
+				<td>{{student.fName}} {{student.lName}}</td>
+				<td><a href="mailto:{{student.email}}">{{student.email}}</a></td>
+				<td><a href="">remove</a></td>
 			</tr>
 		{% endfor %}
 		{% if students|length > 1 %}
 			<tr>
-				<td colspan=4 style="text-align:center;"><a href="">email all</a></td>
+				<td colspan=4 style="text-align:center;">
+					{% spaceless %}
+						<a href="mailto:?bcc={% for student in students %}{{student.email}},{% endfor %}">
+					{% endspaceless %}
+					email all
+					</a></td>
 			</tr>
 		{% endif %}
 	</table>
