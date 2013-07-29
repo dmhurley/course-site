@@ -119,4 +119,12 @@ class PublicController extends Controller
     	return $this->redirect($this->generateUrl('trip_entrance'));
     }
 
+    /**
+     * @Route("/view", name="view_trip")
+     * @Template()
+     */
+    public function viewAction(Request $request) {
+    	
+    }
+
 }

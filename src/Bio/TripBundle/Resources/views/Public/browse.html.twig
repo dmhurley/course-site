@@ -1,31 +1,37 @@
 {% extends 'BioStyleBundle:Default:main.html.twig' %}
 
+{% block head %}
+	{{ parent() }}
+	{% stylesheets 'bundles/biotrip/css/trip.css' filter="cssrewrite" output="css/*.css" %}
+		<link rel="stylesheet" href="{{ asset_url }}" />
+	{% endstylesheets %}
+{% endblock %}
+
 {% block content %}
-	<table>
-		<tr>
-			<th>Trip</th>
-			<th>Summary</th>
-			<th>Start</th>
-			<th>End</th>
-			<th>Spots</th>
-			<th>View</th>
-			<th>Join</th>
-		</tr>
-		{% for trip in trips %}
-			<tr>
-				<td>{{ trip.title }}</td>
-				<td>{{ trip.shortSum }}</td>
-				<td>{{ trip.start|date('d-m-y H:i:s') }}</td>
-				<td>{{ trip.end|date('d-m-y H:i:s') }}</td>
-				<td>{{ trip.max - trip.students|length }}</td>
-				<td><a href="">view</a></td>
-				<td> {% if trip.max - trip.students|length > 0 %}
-						<a href="{{ path('join_trip') }}?id={{trip.id}}">join</a>
-					 {% else %}
-					 	join
-					 {% endif %}
-				</td>
-			</tr>
-		{% endfor %}
-	</table>
+	{% set numPassed = 0 %}
+
+	{% for trip in trips %}
+		{% if date(trip.start) > date() %}
+			<div class="trip">
+				<h2>{{trip.title}}</h2>
+				<h2>{{trip.start|date('m/d H:i')}} - {{trip.end|date('m/d H:i')}}</h2>
+				<p style="clear:both;">{{trip.shortSum}}</p>
+				<a href="{{ path('view_trip') }}?id={{trip.id}}">View Trip</a>
+				- {{trip.max - trip.students|length}} spots left.
+			</div>
+		{% else %}
+			{% set numPassed = numPassed + 1 %}
+		{% endif %}
+	{% endfor %}
+
+	{% for trip in trips if numPassed > 0 %}
+		<div class="trip passed">
+				<h2>{{trip.title}}</h2>
+				<h2>{{trip.start|date('m/d H:i')}} - {{trip.end|date('m/d H:i')}}</h2>
+				<p style="clear:both;">{{trip.shortSum}}</p>
+				<a href="{{ path('view_trip') }}?id={{trip.id}}">View Trip</a>
+				- trip over.
+			</div>
+		{% set numPassed = numPassed - 1 %}
+	{% endfor %}
 {% endblock %}

@@ -1,0 +1,28 @@
+.trip {
+	border-top: solid 3px #A591D9;
+	padding: 10px;
+}
+
+.passed {
+	opacity: .5;
+}
+
+.trip h2 {
+	float:right;
+}
+
+.trip h2:first-child {
+	float:left;
+}
+
+.trip p {
+	clear:both;
+}
+
+.trip .center {
+	text-align:center;
+}
+
+.trip a {
+	text-align:right;
+}
