@@ -122,4 +122,30 @@ class AdminController extends Controller
             return $this->redirect($this->generateUrl('manage_trips'));
         }
     }
+
+    // TODO error handling
+    /**
+     * @Route("/edit/remove", name="remove_student")
+     */
+    public function removeStudentAction(Request $request) {
+        if ($request->query->has('id') && $request->query->has('tid')) {
+            $studentID = $request->query->get('id');
+            $tripID = $request->query->get('tid');
+
+            $db = new Database($this, 'BioStudentBundle:Student');
+            $student = $db->findOne(array('id' => $studentID));
+
+            $db = new Database($this, 'BioTripBundle:Trip');
+            $trip = $db->findOne(array('id' => $tripID));
+
+            $trip->removeStudent($student);
+            $db->close();
+        }
+
+        if ($request->headers->get('referer')){
+            return $this->redirect($request->headers->get('referer'));
+        } else {
+            return $this->redirect($this->generateUrl('edit_trip').'?id='.$tripID);
+        }
+    }
 }

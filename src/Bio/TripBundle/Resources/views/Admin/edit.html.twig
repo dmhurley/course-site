@@ -15,7 +15,7 @@
 				<td>{{student.sid}}</td>
 				<td>{{student.fName}} {{student.lName}}</td>
 				<td><a href="mailto:{{student.email}}">{{student.email}}</a></td>
-				<td><a href="">remove</a></td>
+				<td><a href="{{ path('remove_student') }}?id={{student.id}}&tid={{app.request.query.get('id')}}">remove</a></td>
 			</tr>
 		{% endfor %}
 		{% if students|length > 1 %}

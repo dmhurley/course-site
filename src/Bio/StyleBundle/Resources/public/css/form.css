@@ -50,3 +50,9 @@ button {
 .datetime {
 	padding-left: 115px; /*equal to the width + the padding-right of the label*/
 }
+
+#form textarea {
+	width: 40%;
+	height: 100px;
+	padding: 10px;
+}

@@ -80,7 +80,12 @@ class PublicController extends Controller
 
 
     	if ($trip) {
-    		return $this->render('BioTripBundle:Public:onetrip.html.twig', array('trip' => $trip, 'title' => 'Sign Up'));
+    		$form = $this->createFormBuilder()
+    			->add('confirm', 'checkbox', array('mapped' => false))
+    			->add('leave trip', 'submit')
+    			->getForm();
+
+    		return $this->render('BioTripBundle:Public:view.html.twig', array('trip' => $trip, 'form' => $form->createView(), 'title' => $trip->getTitle()));
     	} else {
     		return $this->render('BioTripBundle:Public:browse.html.twig', array('trips' => $trips, 'title' => 'Sign Up'));
     	}
