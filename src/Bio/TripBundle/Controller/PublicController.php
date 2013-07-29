@@ -102,19 +102,22 @@ class PublicController extends Controller
     		if (!$student || !$trip) {
     			$request->getSession()->getFlashBag()->set('failure', 'No trip found.');
     		} else {
-    			$trip->addStudent($student);
-    			try {
-    				$db->close();
-    				$request->getSession()->getFlashBag()->set('success', 'Joined trip.');
-    			} catch (BioException $e) {
-    				$request->getSession()->getFlashBag()->set('failure', 'You are already signed up for another trip.');
-    			}
+    			if (count($trip->getStudents()) >= $trip->getMax()) {
+    				$request->getSession()->getFlashBag()->set('failure', 'Trip is full.');
+    			} else {
+	    			$trip->addStudent($student);
+	    			try {
+	    				$db->close();
+	    				$request->getSession()->getFlashBag()->set('success', 'Joined trip.');
+	    			} catch (BioException $e) {
+	    				$request->getSession()->getFlashBag()->set('failure', 'You are already signed up for another trip.');
+	    			}
+	    		}
     		}
     	}
     	return $this->redirect($this->generateUrl('trip_entrance'));
     }
 
-    // todo error checking
     /**
      * @Route("/leave", name="leave_trip")
      */

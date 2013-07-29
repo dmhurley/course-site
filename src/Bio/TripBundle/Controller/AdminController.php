@@ -45,7 +45,7 @@ class AdminController extends Controller
     			$db->close();
     		}
     	}
-    	$trips = $db->find(array(), array(), false);
+    	$trips = $db->find(array(), array('start' => 'ASC', 'end' => 'ASC'), false);
         return array('form' => $form->createView(), 'trips' => $trips, 'title' => "Manage Trips");
     }
 

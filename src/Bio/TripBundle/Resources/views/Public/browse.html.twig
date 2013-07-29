@@ -46,4 +46,10 @@
 	</div>
 {% endfor %}
 
+{% if app.session.has('studentID') %}
+	<div style="text-align:center">
+	<a href="?logout">Sign out?</a>
+	</div>
+{% endif %}
+
 {% endblock %}
