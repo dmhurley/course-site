@@ -6,15 +6,9 @@
 	<h3>Description</h3>
 	<p>{{trip.shortSum}}</p>
 	<p>{{trip.longSum}}</p>
-	<h3><b>{{trip.max - trip.students|length}}</b> spots left.</h3>
-
-	{% if form is defined %}
-		<p>Talk about leaving, how if you do it within 24 hours of the trip starting you'll lose points. Talk about more stuff, yadayadayda.</p>
-		{{ form(form) }}
-	{% else %}
-		<form method="GET" action="{{ url('join_trip') }}">
-			<input type="hidden" name="id" value={{trip.id}}>
-			<input type="submit" value="Join">
-		</form>
+	{% if date(trip.start) < date() %}
+		<h3>Trip Over</h3>
+	{% else %} 
+		<h3><b>{{trip.max - trip.students|length}}</b> spots left.</h3>
 	{% endif %}
 {% endblock %}

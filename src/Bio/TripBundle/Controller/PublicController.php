@@ -78,17 +78,7 @@ class PublicController extends Controller
     		}
     	}
 
-
-    	if ($trip) {
-    		$form = $this->createFormBuilder()
-    			->add('confirm', 'checkbox', array('mapped' => false))
-    			->add('leave trip', 'submit')
-    			->getForm();
-
-    		return $this->render('BioTripBundle:Public:view.html.twig', array('trip' => $trip, 'form' => $form->createView(), 'title' => $trip->getTitle()));
-    	} else {
-    		return $this->render('BioTripBundle:Public:browse.html.twig', array('trips' => $trips, 'title' => 'Sign Up'));
-    	}
+    	return $this->render('BioTripBundle:Public:browse.html.twig', array('trips' => $trips, 'current' => $trip, 'title' => 'Sign Up'));
     }
 
     /**
@@ -124,7 +114,20 @@ class PublicController extends Controller
      * @Template()
      */
     public function viewAction(Request $request) {
-    	
+    	if ($request->query->has('id')) {
+    		$id = $request->query->get('id');
+
+    		$db = new Database($this, 'BioTripBundle:Trip');
+    		$trip = $db->findOne(array('id' => $id));
+
+    		return array('trip' => $trip, 'title' => $trip->getTitle());
+    	}
+
+    	if ($request->headers->get('referer')){
+            return $this->redirect($request->headers->get('referer'));
+        } else {
+            return $this->redirect($this->generateUrl('trip_entrance'));
+        }
     }
 
 }

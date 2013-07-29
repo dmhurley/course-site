@@ -7,6 +7,10 @@
 	opacity: .5;
 }
 
+.current {
+	background-color: rgb(200, 256, 200);
+}
+
 .trip h2 {
 	float:right;
 }
@@ -24,5 +28,10 @@
 }
 
 .trip a {
-	text-align:right;
+	float:right;
+	padding-right:4px;
+}
+
+.trip a:first-of-type {
+	float:left;
 }

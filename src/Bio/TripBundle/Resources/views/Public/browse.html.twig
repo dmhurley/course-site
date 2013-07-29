@@ -8,30 +8,38 @@
 {% endblock %}
 
 {% block content %}
-	{% set numPassed = 0 %}
 
-	{% for trip in trips %}
-		{% if date(trip.start) > date() %}
-			<div class="trip">
-				<h2>{{trip.title}}</h2>
-				<h2>{{trip.start|date('m/d H:i')}} - {{trip.end|date('m/d H:i')}}</h2>
-				<p style="clear:both;">{{trip.shortSum}}</p>
-				<a href="{{ path('view_trip') }}?id={{trip.id}}">View Trip</a>
-				- {{trip.max - trip.students|length}} spots left.
-			</div>
+{% for trip in trips %}
+	{% if trip.id == current.id %}
+		{% set cur = 'current' %}
+	{% else %}
+		{% set cur = '' %}
+	{% endif %}
+
+	{% if date(trip.start) < date() %}
+		{% set passed = 'passed' %}
+	{% else %}
+		{% set passed = '' %}
+	{% endif %}
+
+	<div class="trip {{cur}} {{passed}}">
+		<h2>{{trip.title}}</h2>
+		<h2>{{trip.start|date('m/d H:i')}} - {{trip.end|date('m/d H:i')}}</h2>
+
+		<p style="clear:both;">{{trip.shortSum}}</p>
+
+		{% if current is defined and trip.id == current.id %}
+			<a href="{{ path('join_trip') }}?id={{trip.id}}">Leave Trip</a>
+			- {{trip.max - trip.students|length}} spots left.
+		{% elseif date(trip.start) < date()%}
+			<a>Join Trip</a>
+			- trip over.
 		{% else %}
-			{% set numPassed = numPassed + 1 %}
+			<a href="{{ path('join_trip') }}?id={{trip.id}}">Join Trip</a>
+			- {{trip.max - trip.students|length}} spots left.
 		{% endif %}
-	{% endfor %}
+		<a href="{{ path('view_trip') }}?id={{trip.id}}">View Trip</a>
+	</div>
+{% endfor %}
 
-	{% for trip in trips if numPassed > 0 %}
-		<div class="trip passed">
-				<h2>{{trip.title}}</h2>
-				<h2>{{trip.start|date('m/d H:i')}} - {{trip.end|date('m/d H:i')}}</h2>
-				<p style="clear:both;">{{trip.shortSum}}</p>
-				<a href="{{ path('view_trip') }}?id={{trip.id}}">View Trip</a>
-				- trip over.
-			</div>
-		{% set numPassed = numPassed - 1 %}
-	{% endfor %}
 {% endblock %}
