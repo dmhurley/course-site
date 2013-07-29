@@ -1,0 +1,55 @@
+{% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block head %}
+	{{ parent() }}
+	{% stylesheets 'bundles/biotrip/css/trip.css' filter="cssrewrite" output="css/*.css" %}
+		<link rel="stylesheet" href="{{ asset_url }}" />
+	{% endstylesheets %}
+{% endblock %}
+
+{% block content %}
+
+{% for trip in trips %}
+	{% if current != null and trip.id == current.id %}
+		{% set cur = 'current' %}
+	{% else %}
+		{% set cur = '' %}
+	{% endif %}
+
+	{% if date(trip.start) < date() %}
+		{% set passed = 'passed' %}
+	{% else %}
+		{% set passed = '' %}
+	{% endif %}
+
+	<div class="trip {{cur}} {{passed}}">
+		<h2>{{trip.title}}</h2>
+		<h2>{{trip.start|date('m/d H:i')}} - {{trip.end|date('m/d H:i')}}</h2>
+
+		<p style="clear:both;">{{trip.shortSum}}</p>
+
+		{% if current != null and trip.id == current.id %}
+			<a href="{{ path('leave_trip') }}?id={{trip.id}}">Leave Trip</a>
+			- {{trip.max - trip.students|length}} spots left.
+		{% elseif date(trip.start) < date()%}
+			<a>Join Trip</a>
+			- trip over.
+		{% else %}
+			{% if current != null %}
+				<a>Join Trip</a>
+			{% else %}
+				<a href="{{ path('join_trip') }}?id={{trip.id}}">Join Trip</a>
+			{% endif %}
+			- {{trip.max - trip.students|length}} spots left.
+		{% endif %}
+		<a href="{{ path('view_trip') }}?id={{trip.id}}">View Trip</a>
+	</div>
+{% endfor %}
+
+{% if app.session.has('studentID') %}
+	<div style="text-align:center">
+	<a href="?logout">Sign out?</a>
+	</div>
+{% endif %}
+
+{% endblock %}

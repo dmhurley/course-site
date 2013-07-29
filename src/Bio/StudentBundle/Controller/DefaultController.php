@@ -223,11 +223,11 @@ class DefaultController extends Controller
 
     private function uploadStudentList($file) {
         $db = new Database($this, 'BioStudentBundle:Student');
-        $entities = $db->truncate();
+        $dbEnts = $db->find(array(), array(), false);
        
         $sids = [];
         $emails = [];
-
+        $ents = [];
         for ($i = 1; $i < count($file); $i++) {
             list($sid, $name, $section, $credits, $gender, $class, $major, $email) = preg_split('/","|,"|",|"/', $file[$i], -1, PREG_SPLIT_NO_EMPTY);
             list($lName, $fName) = explode(", ", $name);
@@ -243,16 +243,39 @@ class DefaultController extends Controller
             if (!in_array($sid, $sids) && !in_array($email, $emails)) {
                 $sids[] = $sid;
                 $emails[] = $email;
-                $db->add($entity);
+                $ents[] = $entity;
             } else {
-                $db->clear();
-                for ($j = 0; $j < count($entities); $j++) {
-                    $db->add($entities[$j]);
-                }
-                $db->close();
                 throw new BioException("The file contained duplicate Student IDs or emails.");
             }
         }
+
+        foreach ($ents as $ent) {
+            if ($dbEnt = $this->getBySid($dbEnts, $ent)) {
+                $dbEnt->setLName($ent->getLName())
+                    ->setFName($ent->getFName())
+                    ->setSection($ent->getSection())
+                    ->setEmail($ent->getEmail());
+            } else {
+                $db->add($ent);
+            }
+        }
+
+        foreach ($dbEnts as $dbEnt) {
+            if (!$this->getBySid($ents, $dbEnt)) {
+                $db->delete($dbEnt);
+            }
+        }
+
         $db->close();
+    }
+
+    // does array contain student, searching by Sid
+    private function getBySid($array, $student) {
+        foreach ($array as $a) {
+            if ($a->getSid() === $student->getSid()) {
+                return $a;
+            }
+        }
+        return false;
     }
 }

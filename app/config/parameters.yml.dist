@@ -44,7 +44,6 @@ parameters:
                 route: view
                 vars:
                     entityName: section
-
         "Students":
             "Students":
                 route: students_instruct
@@ -56,7 +55,6 @@ parameters:
                 route: add_student
             "Upload":
                 route: upload_student
-
         "Clickers":
             "Clickers":
                 route: clicker_instruct
@@ -66,7 +64,6 @@ parameters:
                 route: download_list
             "Clear":
                 route: clear_list
-
         "Scores":
             "Scores":
                 route: scores_instruct
@@ -74,7 +71,6 @@ parameters:
                 route: scores
             "Find Scores":
                 route: find_score
-
         "Folders":
             "Folders":
                 route: folders_instruct
@@ -82,7 +78,6 @@ parameters:
                 route: view_folders
             "Clear":
                 route: clear_folders
-
         "Users":
             "Users":
                 route: view_users
@@ -95,3 +90,10 @@ parameters:
                 route: view_questions
             "Start Exam":
                 route: exam_entrance
+        "Trips":
+            "Trips":
+                route: main_page
+            "Manage Trips":
+                route: manage_trips
+            "Field Trips":
+                route: trip_entrance

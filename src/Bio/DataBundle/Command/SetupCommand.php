@@ -109,6 +109,7 @@ $output->writeln('<question>--------------------------------------------</questi
 
             $root = new Folder();
             $root->setName('root');
+            $root->setPrivate(false);
 
             $instructor = new Person();
             $instructor->setfName('John')

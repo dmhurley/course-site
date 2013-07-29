@@ -292,13 +292,13 @@ class AdminController extends Controller
         $db = new Database($this, 'BioExamBundle:TestTaker');
         $takers = $db->find(array('exam' => $id), array('sid' => 'ASC'), false);
 
-        // header('Content-Description: File Transfer');
-        // header('Content-Type: application/octet-stream');
-        // header('Content-Disposition: attachment; filename='.$exam->getName().'.txt');
-        // header('Content-Transfer-Encoding: binary');
-        // header('Expires: 0');
-        // header('Cache-Control: must-revalidate');
-        // header('Pragma: public');
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename='.$exam->getName().'.txt');
+        header('Content-Transfer-Encoding: binary');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
 
         echo "sid\t";
         echo "status\t";
