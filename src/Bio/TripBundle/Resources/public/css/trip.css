@@ -1,0 +1,37 @@
+.trip {
+	border-top: solid 3px #A591D9;
+	padding: 10px;
+}
+
+.passed {
+	opacity: .5;
+}
+
+.current {
+	background-color: rgb(200, 256, 200);
+}
+
+.trip h2 {
+	float:right;
+}
+
+.trip h2:first-child {
+	float:left;
+}
+
+.trip p {
+	clear:both;
+}
+
+.trip .center {
+	text-align:center;
+}
+
+.trip a {
+	float:right;
+	padding-right:4px;
+}
+
+.trip a:first-of-type {
+	float:left;
+}

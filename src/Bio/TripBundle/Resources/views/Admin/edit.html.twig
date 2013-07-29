@@ -1,0 +1,32 @@
+{% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block content %}
+	{{ form(form) }}
+
+	<table>
+		<tr>
+			<th>Student ID</th>
+			<th>Name</th>
+			<th>Email</th>
+			<th>Remove</th>
+		</tr>
+		{% for student in students %}
+			<tr>
+				<td>{{student.sid}}</td>
+				<td>{{student.fName}} {{student.lName}}</td>
+				<td><a href="mailto:{{student.email}}">{{student.email}}</a></td>
+				<td><a href="{{ path('remove_student') }}?id={{student.id}}&tid={{app.request.query.get('id')}}">remove</a></td>
+			</tr>
+		{% endfor %}
+		{% if students|length > 1 %}
+			<tr>
+				<td colspan=4 style="text-align:center;">
+					{% spaceless %}
+						<a href="mailto:?bcc={% for student in students %}{{student.email}},{% endfor %}">
+					{% endspaceless %}
+					email all
+					</a></td>
+			</tr>
+		{% endif %}
+	</table>
+{% endblock %}

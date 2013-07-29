@@ -1,0 +1,14 @@
+{% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block content %}
+	<h3>From</h3>
+	<p>{{ trip.start|date('m/d H:i') }} to {{ trip.end|date('m/d H:i') }}</p>
+	<h3>Description</h3>
+	<p>{{trip.shortSum}}</p>
+	<p>{{trip.longSum}}</p>
+	{% if date(trip.start) < date() %}
+		<h3>Trip Over</h3>
+	{% else %} 
+		<h3><b>{{trip.max - trip.students|length}}</b> spots left.</h3>
+	{% endif %}
+{% endblock %}
