@@ -138,8 +138,12 @@ class AdminController extends Controller
             $db = new Database($this, 'BioTripBundle:Trip');
             $trip = $db->findOne(array('id' => $tripID));
 
-            $trip->removeStudent($student);
-            $db->close();
+            if (!$trip || !$student) {
+                $request->getSession()->getFlashBag()->set('failure', 'Could not find that trip or student.');
+            } else {
+                $trip->removeStudent($student);
+                $db->close();
+            }
         }
 
         if ($request->headers->get('referer')){

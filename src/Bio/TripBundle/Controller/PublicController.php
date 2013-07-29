@@ -103,7 +103,12 @@ class PublicController extends Controller
     			$request->getSession()->getFlashBag()->set('failure', 'No trip found.');
     		} else {
     			$trip->addStudent($student);
-    			$db->close();
+    			try {
+    				$db->close();
+    				$request->getSession()->getFlashBag()->set('success', 'Joined trip.');
+    			} catch (BioException $e) {
+    				$request->getSession()->getFlashBag()->set('failure', 'You are already signed up for another trip.');
+    			}
     		}
     	}
     	return $this->redirect($this->generateUrl('trip_entrance'));
@@ -115,9 +120,9 @@ class PublicController extends Controller
      */
     public function leaveAction(Request $request) {
     	if (!$request->getSession()->has('studentID')) {
-
+    		$request->getSession()->getFlashBag()->set('failure', 'Not signed in.');
     	} else if (!$request->query->has('id')) {
-
+    		$request->getSession()->getFlashBag()->set('failure', 'No trip specified.');
     	} else {
     		$studentID = $request->getSession()->get('studentID');
     		$tripID = $request->query->get('id');
@@ -128,8 +133,13 @@ class PublicController extends Controller
     		$db = new Database($this, 'BioTripBundle:Trip');
     		$trip = $db->findOne(array('id' => $tripID));
 
-    		$trip->removeStudent($student);
-    		$db->close();
+    		if (!$student || !$trip) {
+    			$request->getSession()->getFlashBag()->set('failure', 'No trip found.');
+    		} else {
+	    		$trip->removeStudent($student);
+	    		$db->close();
+	    		$request->getSession()->getFlashBag()->set('success', 'Left trip.');
+	    	}
     	}
 
 
@@ -147,7 +157,10 @@ class PublicController extends Controller
     		$db = new Database($this, 'BioTripBundle:Trip');
     		$trip = $db->findOne(array('id' => $id));
 
-    		return array('trip' => $trip, 'title' => $trip->getTitle());
+    		if ($trip){
+    			return array('trip' => $trip, 'title' => $trip->getTitle());
+    		}
+    		$request->getSession()->getFlashBag()->set('failure', 'Could not find that trip.');
     	}
 
     	return $this->redirect($this->generateUrl('trip_entrance'));

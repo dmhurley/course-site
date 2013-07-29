@@ -35,7 +35,11 @@
 			<a>Join Trip</a>
 			- trip over.
 		{% else %}
-			<a href="{{ path('join_trip') }}?id={{trip.id}}">Join Trip</a>
+			{% if current != null %}
+				<a>Join Trip</a>
+			{% else %}
+				<a href="{{ path('join_trip') }}?id={{trip.id}}">Join Trip</a>
+			{% endif %}
 			- {{trip.max - trip.students|length}} spots left.
 		{% endif %}
 		<a href="{{ path('view_trip') }}?id={{trip.id}}">View Trip</a>
