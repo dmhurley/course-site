@@ -10,7 +10,7 @@
 {% block content %}
 
 {% for trip in trips %}
-	{% if trip.id == current.id %}
+	{% if current != null and trip.id == current.id %}
 		{% set cur = 'current' %}
 	{% else %}
 		{% set cur = '' %}
@@ -28,8 +28,8 @@
 
 		<p style="clear:both;">{{trip.shortSum}}</p>
 
-		{% if current is defined and trip.id == current.id %}
-			<a href="{{ path('join_trip') }}?id={{trip.id}}">Leave Trip</a>
+		{% if current != null and trip.id == current.id %}
+			<a href="{{ path('leave_trip') }}?id={{trip.id}}">Leave Trip</a>
 			- {{trip.max - trip.students|length}} spots left.
 		{% elseif date(trip.start) < date()%}
 			<a>Join Trip</a>

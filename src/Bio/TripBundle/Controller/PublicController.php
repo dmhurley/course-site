@@ -109,6 +109,33 @@ class PublicController extends Controller
     	return $this->redirect($this->generateUrl('trip_entrance'));
     }
 
+    // todo error checking
+    /**
+     * @Route("/leave", name="leave_trip")
+     */
+    public function leaveAction(Request $request) {
+    	if (!$request->getSession()->has('studentID')) {
+
+    	} else if (!$request->query->has('id')) {
+
+    	} else {
+    		$studentID = $request->getSession()->get('studentID');
+    		$tripID = $request->query->get('id');
+
+    		$db = new Database($this, 'BioStudentBundle:Student');
+    		$student = $db->findOne(array('id' => $studentID));
+
+    		$db = new Database($this, 'BioTripBundle:Trip');
+    		$trip = $db->findOne(array('id' => $tripID));
+
+    		$trip->removeStudent($student);
+    		$db->close();
+    	}
+
+
+    	return $this->redirect($this->generateUrl('trip_entrance'));
+    }
+
     /**
      * @Route("/view", name="view_trip")
      * @Template()
@@ -123,11 +150,7 @@ class PublicController extends Controller
     		return array('trip' => $trip, 'title' => $trip->getTitle());
     	}
 
-    	if ($request->headers->get('referer')){
-            return $this->redirect($request->headers->get('referer'));
-        } else {
-            return $this->redirect($this->generateUrl('trip_entrance'));
-        }
+    	return $this->redirect($this->generateUrl('trip_entrance'));
     }
 
 }
