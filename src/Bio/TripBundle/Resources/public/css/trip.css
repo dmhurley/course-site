@@ -11,6 +11,20 @@
 	background-color: rgb(200, 256, 200);
 }
 
+.current.passed {
+	opacity: 1;
+	background-color: rgb(235, 356, 235);
+}
+
+.current.passed * {
+	opacity: .5;
+}
+
+.current.passed .eval {
+	opacity: 1;
+	font-size: 12pt;
+}
+
 .trip h2 {
 	float:right;
 }
@@ -34,4 +48,8 @@
 
 .trip a:first-of-type {
 	float:left;
+}
+
+.trip .eval {
+	opacity: 1;
 }

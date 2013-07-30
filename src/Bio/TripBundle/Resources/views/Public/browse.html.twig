@@ -28,12 +28,16 @@
 
 		<p style="clear:both;">{{trip.shortSum}}</p>
 
-		{% if current != null and trip.id == current.id %}
+		{% if date(trip.start) < date() %}
+			{% if current != null and trip.id == current.id %}
+				<a class="eval" href="{{ path('eval_trip', {'tripID': trip.id, 'tripTitle': trip.title|replace({" " : "_"})}) }}">Evaluate Trip</a>
+			{% else %}
+				<a>Join Trip</a>
+			{% endif %}
+				- trip over.
+		{% elseif current != null and trip.id == current.id %}
 			<a href="{{ path('leave_trip') }}?id={{trip.id}}">Leave Trip</a>
 			- {{trip.max - trip.students|length}} spots left.
-		{% elseif date(trip.start) < date()%}
-			<a>Join Trip</a>
-			- trip over.
 		{% else %}
 			{% if current != null %}
 				<a>Join Trip</a>

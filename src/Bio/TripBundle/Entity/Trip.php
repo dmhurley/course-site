@@ -72,6 +72,12 @@ class Trip
      */
     private $students;
 
+    
+    /**
+     * @ORM\OneToMany(targetEntity="Evaluation", mappedBy="trip", cascade={"remove"})
+     */
+    private $evals;
+
     /**
      * @var string
      *
@@ -84,6 +90,7 @@ class Trip
         $this->start = new \DateTime();
         $this->end = new \DateTime('+1 day');
         $this->students = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->evals = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -317,5 +324,38 @@ class Trip
     public function getStudents()
     {
         return $this->students;
+    }
+
+    /**
+     * Add evals
+     *
+     * @param \Bio\TripBundle\Entity\Evaluation $evals
+     * @return Trip
+     */
+    public function addEval(\Bio\TripBundle\Entity\Evaluation $evals)
+    {
+        $this->evals[] = $evals;
+    
+        return $this;
+    }
+
+    /**
+     * Remove evals
+     *
+     * @param \Bio\TripBundle\Entity\Evaluation $evals
+     */
+    public function removeEval(\Bio\TripBundle\Entity\Evaluation $evals)
+    {
+        $this->evals->removeElement($evals);
+    }
+
+    /**
+     * Get evals
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getEvals()
+    {
+        return $this->evals;
     }
 }
