@@ -1,0 +1,7 @@
+Scores:
+    Scores:
+        route: scores_instruct
+    Upload:
+        route: scores
+    'Find Scores':
+        route: find_score

@@ -1,0 +1,11 @@
+Students:
+    Students:
+        route: students_instruct
+    Display:
+        route: display_students
+    Find:
+        route: find_student
+    Add:
+        route: add_student
+    Upload:
+        route: upload_student

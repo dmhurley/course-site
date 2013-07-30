@@ -18,15 +18,19 @@ class InstallCommand extends ContainerAwareCommand
             ->setName('bio:install')
             ->setDescription('Install optional bundles')
             ->addOption(
+                'default',
+                '-d',
+                InputOption::VALUE_NONE,
+                'Install default Bundles.'
+            ) ->addOption(
                 'all',
                 '-a',
                 InputOption::VALUE_NONE,
-                'Install all available bundles?'
-            )
-            ->addArgument(
+                'Install all Bundles.'
+            ) ->addArgument(
                 'bundles',
                 InputArgument::IS_ARRAY,
-                'exam|trip'
+                'info folder student clicker score exam trip user'
             )
         ;
     }
@@ -34,11 +38,16 @@ class InstallCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $bundles = $input->getArgument('bundles');
-
-        if ($input->getOption('all')) {
-            $output->writeln('Installing all bundles');
+        if ($input->getOption('default')) {
+             $output->writeln('Installing default bundles');
+             $bundles = array('info', 'folder', 'student', 'clicker', 'score', 'user');
             $this->setSidebar(array('exam', 'trip'), $output);
             $this->setRouting(array('exam', 'trip'), $output);
+        } else if ($input->getOption('all')) {
+            $output->writeln('Installing all bundles');
+            $bundles = array('info', 'folder', 'student', 'clicker', 'score', 'exam', 'trip', 'user');
+            $this->setSidebar($bundles, $output);
+            $this->setRouting($bundles, $output);
         } else {
             if (count($bundles) === 0) {
                 $output->writeln("OHNOES");
@@ -50,60 +59,46 @@ class InstallCommand extends ContainerAwareCommand
         }
     }
 
+    private function setConfig($bundles, $output, $thing, $pre = null) {
+        $distribution = 'app/config/'.$thing.'.yml.dist';
+        $destination = 'app/config/'.$thing.'.yml';
+
+        if (file_exists($distribution)) {
+            $dist = Yaml::parse($distribution);
+        } else {
+            $output->writeln($distribution." does not exist. Generating empty array.");
+            $dist = array();    
+        }
+
+        foreach($bundles as $bundleName) {
+            $configFileName = 'src/Bio/'.ucFirst($bundleName).'Bundle/Resources/config/'.$thing.'.yml';
+            if (file_exists($configFileName)) {
+                $src = Yaml::parse($configFileName);
+                foreach (array_keys($src) as $key){
+                    $dist[$key] = $src[$key];
+                }
+            } else {
+                $output->writeln("Could not find file: ".getcwd().$configFileName);
+            }
+        }
+
+        file_put_contents($destination, Yaml::dump($dist, 6, 4));
+    }
+
     private function setSidebar(array $bundles, OutputInterface $output) {
         $distribution = 'app/config/parameters.yml.dist';
         $destination = 'app/config/parameters.yml';
-
-        if (!file_exists($distribution) || !file_exists($destination)) {
-            $output->writeln("Couldn't find parameters.yml[.dist] file.");
-        } else {
-            $dist = Yaml::parse($distribution);
-            $dest = Yaml::parse($destination);
-
-            $dest['parameters']['sidebar'] = $dist['parameters']['sidebar'];
-
-            foreach($bundles as $bundleName) {
-                $configFileName = 'src/Bio/'.ucFirst($bundleName).'Bundle/Resources/config/sidebar.yml';
-                if (file_exists($configFileName)){
-                    $src = Yaml::parse($configFileName);
-                    $srcKeys = array_keys($src);
-
-                    $dest['parameters']['sidebar'][$srcKeys[0]] = $src[$srcKeys[0]];
-
-                } else {
-                    $output->writeln('Could not find file: '.getcwd().'/'.$configFileName);
-                }
-            }
-
-            file_put_contents($destination, Yaml::dump($dest, 6, 4));
-        }
+        $thing = 'sidebar';
+        
+        $this->setConfig($bundles, $output, $thing);
     }
 
     private function setRouting(array $bundles, OutputInterface $output) {
         $distribution = 'app/config/routing.yml.dist';
         $destination = 'app/config/routing.yml';
+        $thing = 'routing';
 
-        if (!file_exists($distribution) || !file_exists($destination)) {
-            $output->writeln("Couldn't find parameters.yml[.dist] file.");
-        } else {
-            $dist = Yaml::parse($distribution);
-            $dest = Yaml::parse($destination);
-
-            foreach ($bundles as $bundleName) {
-                $configFileName = 'src/Bio/'.ucFirst($bundleName).'Bundle/Resources/config/routing.yml';
-
-                if (file_exists($configFileName)) {
-                    $src = Yaml::parse($configFileName);
-                    $srcKeys = array_keys($src);
-
-                    $dest[$srcKeys[0]]= $src[$srcKeys[0]];
-                } else {
-                    $output->writeln('Could not find file: '.getcwd().'/'.$configFileName);
-                }
-            }
-
-            file_put_contents($destination, Yaml::dump($dest, 6, 4));
-        }
+        $this->setConfig($bundles, $output, $thing);
     }
         
 }

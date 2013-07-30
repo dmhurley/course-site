@@ -1,0 +1,4 @@
+bio_folder:
+    resource: '@BioFolderBundle/Controller/'
+    type: annotation
+    prefix: /

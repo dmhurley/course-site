@@ -1,0 +1,25 @@
+'Course Info':
+    'Course Info':
+        route: info_instruct
+    'Edit Info':
+        route: edit_info
+    Announcements:
+        route: view
+        vars:
+            entityName: announcement
+    Links:
+        route: view
+        vars:
+            entityName: link
+    Instructors:
+        route: view
+        vars:
+            entityName: person
+    Hours:
+        route: view
+        vars:
+            entityName: hours
+    Sections:
+        route: view
+        vars:
+            entityName: section

@@ -1,0 +1,7 @@
+Folders:
+    Folders:
+        route: folders_instruct
+    Manage:
+        route: view_folders
+    Clear:
+        route: clear_folders
