@@ -1,0 +1,31 @@
+{% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block head %}
+	{{ parent() }}
+	{% stylesheets 'bundles/biotrip/css/trip.css' filter="cssrewrite" output="css/*.css" %}
+		<link rel="stylesheet" href="{{ asset_url }}" />
+	{% endstylesheets %}
+{% endblock %}
+
+{% block content %}
+	<table>
+		<tr>
+			<th>Trip</th>
+			<th>Summary</th>
+			<th>Evaluations</th>
+			<th>Download</th>
+		</tr>
+		{% for trip in trips %}
+		{% if date(trip.end) < date() %}
+			<tr>
+		{% else %}
+			<tr class="passed">
+		{% endif %}
+				<td>{{trip.title}}</td>
+				<td>{{trip.shortSum}}</td>
+				<td>{{trip.evals|length}}/{{trip.students|length}}</td>
+				<td><a href="{{ path('trip_download', {'id': trip.id}) }}">download</a></td>
+			</tr>
+		{% endfor %}
+	</table>
+{% endblock %}

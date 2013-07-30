@@ -152,4 +152,39 @@ class AdminController extends Controller
             return $this->redirect($this->generateUrl('edit_trip').'?id='.$tripID);
         }
     }
+
+    /**
+     * @Route("/evals", name="trip_evals")
+     * @Template()
+     */
+    public function evalsAction(Request $request) {
+        $db = new Database($this, 'BioTripBundle:Trip');
+        $trips = $db->find(array(), array('start' => 'ASC', 'end' => 'ASC'), false);
+
+        return array('trips' => $trips, 'title' => 'Evaluations');
+    }
+
+    /**
+     * @Route("/download/{id}", name="trip_download")
+     * @Template("BioFolderBundle:Download:download.html.twig")
+     */
+    public function downloadAction(Request $request, $id) {
+        $db = new Database($this, 'BioTripBundle:Trip');
+        $trip = $db->findOne(array('id' => $id));
+
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename='.$trip->getTitle().'Evals.txt');
+        header('Content-Transfer-Encoding: binary');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+
+        echo "sid\teval\n";
+        foreach ($trip->getEvals() as $eval) {
+            echo $eval->getStudent()->getSid()."\t";
+            echo $eval->getEval()."\n";
+        }
+        return array('text' => '');
+    }
 }
