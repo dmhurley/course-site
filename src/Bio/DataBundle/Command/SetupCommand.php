@@ -25,12 +25,6 @@ class SetupCommand extends ContainerAwareCommand
         $this
             ->setName('bio:setup')
             ->setDescription('Setup a biology course page.')
-            ->addOption(
-               'all',
-               null,
-               InputOption::VALUE_NONE,
-               'If set, the task will yell in uppercase letters'
-            )
             ->addArgument(
                 'username',
                 InputArgument::REQUIRED,
@@ -56,12 +50,12 @@ class SetupCommand extends ContainerAwareCommand
         $bundles = $input->getArgument('bundles');
 $output->writeln('<info>Installing Bundles</info>');
 $output->writeln('<question>--------------------------------------------</question>');
-        if (count($bundles) === 0 || array_search('default', $bundles)) {
+        if (count($bundles) === 0 || array_search('default', $bundles) !== false) {
             $process = new Process('php app/console bio:install -d', null, null, null, 300);
-        } else if (array_search('all', $bundles)) {
+        } else if (array_search('all', $bundles) !== false) {
             $process = new Process('php app/console bio:install -a', null, null, null, 300);
         } else {
-            $process = new Process('php app/console bio:install'.implode(' ', $bundles), null, null, null, 300);
+            $process = new Process('php app/console bio:install '.implode(' ', $bundles), null, null, null, 300);
         }
         $process->run(function($type, $buffer){echo $buffer;});
 

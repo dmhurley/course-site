@@ -85,14 +85,6 @@ class InstallCommand extends ContainerAwareCommand
         file_put_contents($destination, Yaml::dump($dist, 6, 4));
     }
 
-    private function findValueRecursive($key, $array) {
-        $object = null;
-        array_walk_recursive($array, function() {
-
-        }, $object);
-        return $object;
-    }
-
     private function setSidebar(array $bundles, OutputInterface $output) {
         $distribution = 'app/config/parameters.yml.dist';
         $destination = 'app/config/parameters.yml';
