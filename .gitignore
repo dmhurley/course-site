@@ -17,3 +17,5 @@ composer.phar
 *.php~
 
 app/config/routing.yml
+
+app/config/sidebar.yml
