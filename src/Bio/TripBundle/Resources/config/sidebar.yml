@@ -5,3 +5,5 @@
         route: manage_trips
     "Field Trips":
         route: trip_entrance
+    "Evaluations":
+        route: trip_evals

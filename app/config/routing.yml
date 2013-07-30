@@ -1,53 +1,52 @@
 bio_score:
-    resource: "@BioScoreBundle/Controller/"
-    type:     annotation
-    prefix:   /
-
+    resource: '@BioScoreBundle/Controller/'
+    type: annotation
+    prefix: /
 find_score:
-    path:     /scores/find
-    defaults: { _controller: BioScoreBundle:Default:find }
-
+    path: /scores/find
+    defaults:
+        _controller: 'BioScoreBundle:Default:find'
 bio_user:
-    resource: "@BioUserBundle/Controller/"
-    type:     annotation
-    prefix:   /
-
+    resource: '@BioUserBundle/Controller/'
+    type: annotation
+    prefix: /
 bio_public:
-    resource: "@BioPublicBundle/Controller/"
-    type:     annotation
-    prefix:   /
-
+    resource: '@BioPublicBundle/Controller/'
+    type: annotation
+    prefix: /
 login_check:
-    pattern:   /check
-
+    pattern: /check
 logout:
-    pattern:   /logout
-
+    pattern: /logout
 bio_folder:
-    resource: "@BioFolderBundle/Controller/"
-    type:     annotation
-    prefix:   /
-
+    resource: '@BioFolderBundle/Controller/'
+    type: annotation
+    prefix: /
 bio_clicker:
-    resource: "@BioClickerBundle/Controller/"
-    type:     annotation
-    prefix:   /
-
+    resource: '@BioClickerBundle/Controller/'
+    type: annotation
+    prefix: /
 register_clicker:
-    path:     /clicker/register
-    defaults: { _controller: BioClickerBundle:Default:register }
-
+    path: /clicker/register
+    defaults:
+        _controller: 'BioClickerBundle:Default:register'
 bio_student:
-    resource: "@BioStudentBundle/Controller/"
-    type:     annotation
-    prefix:   /
-
+    resource: '@BioStudentBundle/Controller/'
+    type: annotation
+    prefix: /
 bio_style:
-    resource: "@BioStyleBundle/Controller/"
-    type:     annotation
-    prefix:   /
-
+    resource: '@BioStyleBundle/Controller/'
+    type: annotation
+    prefix: /
 bio_info:
-    resource: "@BioInfoBundle/Controller/"
-    type:     annotation
-    prefix:   /
+    resource: '@BioInfoBundle/Controller/'
+    type: annotation
+    prefix: /
+bio_exam:
+    resource: '@BioExamBundle/Controller/'
+    type: annotation
+    prefix: /
+bio_trip:
+    resource: '@BioTripBundle/Controller/'
+    type: annotation
+    prefix: /
