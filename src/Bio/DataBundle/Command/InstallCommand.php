@@ -21,12 +21,12 @@ class InstallCommand extends ContainerAwareCommand
                 'all',
                 '-a',
                 InputOption::VALUE_NONE,
-                'Install all available bundles?'
+                'Install all Bundles?'
             )
             ->addArgument(
                 'bundles',
                 InputArgument::IS_ARRAY,
-                'exam|trip'
+                'info folder student clicker score exam trip user'
             )
         ;
     }
@@ -38,13 +38,13 @@ class InstallCommand extends ContainerAwareCommand
         if ($input->getOption('all')) {
             $output->writeln('Installing all bundles');
             $this->setSidebar(array('exam', 'trip'), $output);
-            $this->setRouting(array('exam', 'trip'), $output);
+            // $this->setRouting(array('exam', 'trip'), $output);
         } else {
             if (count($bundles) === 0) {
                 $output->writeln("OHNOES");
             } else {
                 $this->setSidebar($bundles, $output);
-                $this->setRouting($bundles, $output);
+                // $this->setRouting($bundles, $output);
             }
             $output->writeln(implode($bundles, " "));
         }
@@ -60,20 +60,19 @@ class InstallCommand extends ContainerAwareCommand
             $output->writeln($distribution." does not exist. Generating empty array.");
             $dist = array();    
         }
-        $dest = array();
 
         foreach($bundles as $bundleName) {
             $configFileName = 'src/Bio/'.ucFirst($bundleName).'Bundle/Resources/config/'.$thing.'.yml';
             if (file_exists($configFileName)) {
                 $src = Yaml::parse($configFileName);
                 $srcKeys = array_keys($src);
-                $dest[$srcKeys[0]] = $src[$srcKeys[0]];
+                $dist[$srcKeys[0]] = $src[$srcKeys[0]];
             } else {
                 $output->writeln("Could not find file: ".getcwd().$configFileName);
             }
         }
 
-        file_put_contents($destination, Yaml::dump($dest, 6, 4));
+        file_put_contents($destination, Yaml::dump($dist, 6, 4));
     }
 
     private function findValueRecursive($key, $array) {

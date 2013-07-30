@@ -1,0 +1,4 @@
+bio_user:
+    resource: '@BioUserBundle/Controller/'
+    type: annotation
+    prefix: /
