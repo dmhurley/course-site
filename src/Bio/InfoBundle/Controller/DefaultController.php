@@ -16,10 +16,11 @@ use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 
 /**
- * @Route("/admin/{entityName}")
+ * @Route("/admin/{entityName}", requirements={
+ *      "entityName" = "^announcement|hours|link|person|section$",
+ * })
  */
-class DefaultController extends Controller
-{ // starting letter has to be higher than C
+class DefaultController extends Controller {
 	/**
      * @Route("/", name="view")
      */

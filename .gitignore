@@ -15,3 +15,5 @@ app/config/parameters.yml
 .DS_Store
 composer.phar
 *.php~
+
+app/config/routing.yml
