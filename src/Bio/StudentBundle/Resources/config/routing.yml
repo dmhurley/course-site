@@ -1,0 +1,4 @@
+bio_student:
+    resource: '@BioStudentBundle/Controller/'
+    type: annotation
+    prefix: /

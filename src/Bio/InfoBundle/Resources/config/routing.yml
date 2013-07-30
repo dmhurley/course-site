@@ -1,0 +1,4 @@
+bio_info:
+    resource: '@BioInfoBundle/Controller/'
+    type: annotation
+    prefix: /

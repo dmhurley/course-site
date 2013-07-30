@@ -1,83 +1,14 @@
 parameters:
-    database_driver:   pdo_mysql
-    database_host:     127.0.0.1
-    database_port:     ~
-    database_name:     symfony
-    database_user:     root
-    database_password: ~
-
-    mailer_transport:  smtp
-    mailer_host:       127.0.0.1
-    mailer_user:       ~
-    mailer_password:   ~
-
-    locale:            en
-    secret:            ThisTokenIsNotSoSecretChangeIt
-
-    site_name:         Bio 999
-    sidebar:
-        "Admin":
-            "Admin":
-                route: main_admin_page
-        "Course Info":
-            "Course Info":
-                route: info_instruct
-            "Edit Info":
-                route: edit_info
-            "Announcements":
-                route: view
-                vars:
-                    entityName: announcement
-            "Links":
-                route: view
-                vars:
-                    entityName: link
-            "Instructors":
-                route: view
-                vars:
-                    entityName: person
-            "Hours":
-                route: view
-                vars:
-                    entityName: hours
-            "Sections":
-                route: view
-                vars:
-                    entityName: section
-        "Students":
-            "Students":
-                route: students_instruct
-            "Display":
-                route: display_students
-            "Find":
-                route: find_student
-            "Add":
-                route: add_student
-            "Upload":
-                route: upload_student
-        "Clickers":
-            "Clickers":
-                route: clicker_instruct
-            "Register":
-                route: register_clicker
-            "Download":
-                route: download_list
-            "Clear":
-                route: clear_list
-        "Scores":
-            "Scores":
-                route: scores_instruct
-            "Upload":
-                route: scores
-            "Find Scores":
-                route: find_score
-        "Folders":
-            "Folders":
-                route: folders_instruct
-            "Manage":
-                route: view_folders
-            "Clear":
-                route: clear_folders
-        "Users":
-            "Users":
-                route: view_users
+    database_driver: pdo_mysql
+    database_host: 127.0.0.1
+    database_port: null
+    database_name: Symfony
+    database_user: null
+    database_password: null
+    mailer_transport: smtp
+    mailer_host: 127.0.0.1
+    mailer_user: null
+    mailer_password: null
+    locale: en
+    secret: ThisTokenIsNotSoSecretChangeIt
+    site_name: 'Bio 999'

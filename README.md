@@ -32,9 +32,9 @@ Once all major problems are fixed you're ready to set up the project.
 
 #### The Easy Way
 
-		php app/console bio:setup username password
+		php app/console bio:setup username password bundles
 
-This command will do the complete basic setup for you. Install assets, create the database tables and columns, and initialize any entities that are necessary for the site to run Finally the command will store the username and hashed password in `app/config/security.yml` allowing you to access the admin pages.
+This command will do the complete basic setup for you. Install bundles & assets, create the database tables and columns, and initialize any entities that are necessary for the site to run Finally the command will store the username and hashed password in `app/config/security.yml` allowing you to access the admin pages. The `bundles` option takes in the same options as `bio:install` (explained later) except the key words `default` and `all` take the place of `--default` and `--all`.
 
 #### The Hard Way
 
@@ -72,9 +72,9 @@ Make sure that the root folder has an Id of `1`, or it will not be recognized.
 
 There are several optional bundles included with the site that are by default not enabled. Use the command 
 
-		php app/console bio:install [bundles|-a]
+		php app/console bio:install [-d|--default] [-a|--all] [bundles1] ... [bundlesN]
 		
-to install them. `bundles` should be replaced with any combination of `trip` and `exam`. This command adds the necessary lines to `app/config/parameters.yml` and `app/config/routing.yml`. The `-a` shortcut install alls available bundles.
+to install them. `bundles` should be replaced with any combination of `info`, `folder`, `student`, `clicker`, `score`, `exam` and `trip`. This command adds the necessary lines to `app/config/parameters.yml` and `app/config/routing.yml`. The `-a` shortcut install alls available bundles, while `-d` installs only the default.
 
 #### Notes
 
@@ -92,4 +92,4 @@ to install them. `bundles` should be replaced with any combination of `trip` and
     3. `ROLE_SUPER_ADMIN`: can promote, demote, or delete users.
     4. `ROLE_SETUP`: Used for debugging. Can't be seen or deleted on the User admin screen. Can switch roles.
 
-* The order of the sidebar may not be in the desired order (especially after using `bio:install`). Currently the only way to change the order is to move the lines manually. Make sure not to mess up the indentation.
+* The order of the sidebar will be the same order you write the bundle names down. You can use `bio:install` to change the order or move the lines in `app/config/sidebar.yml` manually.

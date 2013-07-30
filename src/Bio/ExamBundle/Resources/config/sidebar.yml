@@ -1,9 +1,9 @@
-"Exams":
-    "Exams":
+Exams:
+    Exams:
         route: exam_instruct
-    "Manage Exams":
+    'Manage Exams':
         route: view_exams
-    "Manage Questions":
+    'Manage Questions':
         route: view_questions
-    "Start Exam":
+    'Start Exam':
         route: exam_entrance
