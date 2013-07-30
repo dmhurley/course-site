@@ -81,19 +81,3 @@ parameters:
         "Users":
             "Users":
                 route: view_users
-        "Exams":
-            "Exams":
-                route: exam_instruct
-            "Manage Exams":
-                route: view_exams
-            "Manage Questions":
-                route: view_questions
-            "Start Exam":
-                route: exam_entrance
-        "Trips":
-            "Trips":
-                route: main_page
-            "Manage Trips":
-                route: manage_trips
-            "Field Trips":
-                route: trip_entrance
