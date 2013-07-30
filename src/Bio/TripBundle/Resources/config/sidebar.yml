@@ -1,0 +1,9 @@
+"Trips":
+    "Trips":
+        route: main_page
+    "Manage Trips":
+        route: manage_trips
+    "Field Trips":
+        route: trip_entrance
+    "Evaluations":
+        route: trip_evals

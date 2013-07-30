@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 use Bio\TripBundle\Entity\Trip;
+use Bio\TripBundle\Entity\Evaluation;
 
 /** 
  * @Route("/trip")
@@ -167,6 +168,58 @@ class PublicController extends Controller
     	}
 
     	return $this->redirect($this->generateUrl('trip_entrance'));
+    }
+
+    /**
+     * @Route("/eval/{tripID}/{tripTitle}", name="eval_trip")
+     * @Template()
+     */
+    public function evalAction(Request $request, $tripID) {
+    	if (!$request->getSession()->has('studentID')) {
+    		$request->getSession()->getFlashBag()->set('failure', 'Not signed in.');
+    		return $this->redirect($this->generateUrl('trip_entrance'));
+    	} else {
+    		$db = new Database($this, 'BioStudentBundle:Student');
+    		$student = $db->findOne(array('id' => $request->getSession()->get('studentID')));
+
+    		$db = new Database($this, 'BioTripBundle:Trip');
+    		$trip = $db->findOne(array('id' => $tripID));
+
+    		if (!$student || !$trip) {
+    			$request->getSession()->getFlashBag()->set('failure', 'Could find trip or student.');
+    			return $this->redirect($this->generateUrl('trip_entrance'));
+    		}
+
+    		$entity = new Evaluation();
+    		$entity->setTimestamp(new \DateTime());
+    		$form = $this->createFormBuilder($entity)
+    			->add('eval', 'textarea')
+    			->add('submit', 'submit')
+    			->getForm();
+
+
+    		if ($request->getMethod() === "POST") {
+    			$form->handleRequest($request);
+    			if ($form->isValid()) {
+
+    				$entity->setStudent($student);
+    				$entity->setTrip($trip);
+    				$trip->addEval($entity);
+    				$db->add($entity);
+
+    				try {
+    					$db->close();
+    					$request->getSession()->getFlashBag()->set('failure', 'Evaluation saved.');
+    				} catch (BioException $e) {
+    					$request->getSession()->getFlashBag()->set('failure', 'You can only write an evaluation once.');
+    				}
+
+    				return $this->redirect($this->generateUrl('trip_entrance'));
+    			}
+    		}
+
+    		return array('form' => $form->createView(), 'title' => 'Trip Evaluation');
+    	}
     }
 
 }

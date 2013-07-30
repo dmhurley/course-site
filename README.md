@@ -68,6 +68,14 @@ You must then persist at least these entities.
 
 Make sure that the root folder has an Id of `1`, or it will not be recognized.
 
+#### Optional Bundles
+
+There are several optional bundles included with the site that are by default not enabled. Use the command 
+
+		php app/console bio:install [bundles|-a]
+		
+to install them. `bundles` should be replaced with any combination of `trip` and `exam`. This command adds the necessary lines to `app/config/parameters.yml` and `app/config/routing.yml`. The `-a` shortcut install alls available bundles.
+
 #### Notes
 
 * If `bio:setup` fails after creating the database. Make sure to drop the database before running it again.
@@ -83,3 +91,5 @@ Make sure that the root folder has an Id of `1`, or it will not be recognized.
     2. `ROLE_ADMIN`: can edit all aspects of the site ***except*** for other users.
     3. `ROLE_SUPER_ADMIN`: can promote, demote, or delete users.
     4. `ROLE_SETUP`: Used for debugging. Can't be seen or deleted on the User admin screen. Can switch roles.
+
+* The order of the sidebar may not be in the desired order (especially after using `bio:install`). Currently the only way to change the order is to move the lines manually. Make sure not to mess up the indentation.
