@@ -53,21 +53,14 @@ class InstallCommand extends ContainerAwareCommand
     private function setConfig($bundles, $output, $thing, $pre = null) {
         $distribution = 'app/config/'.$thing.'.yml.dist';
         $destination = 'app/config/'.$thing.'.yml';
+
         if (file_exists($distribution)) {
             $dist = Yaml::parse($distribution);
         } else {
             $output->writeln($distribution." does not exist. Generating empty array.");
             $dist = array();    
         }
-        if (file_exists($destination)) {
-            $dest = Yaml::parse($destination);
-        } else {
-            $output->writeln($destination." does not exist. Generating empty array.");
-            $dest = array();    
-        }
-
-        $output->writeln(print_r($dest));
-        $output->writeln(print_r($dist));
+        $dest = array();
 
         foreach($bundles as $bundleName) {
             $configFileName = 'src/Bio/'.ucFirst($bundleName).'Bundle/Resources/config/'.$thing.'.yml';
