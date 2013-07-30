@@ -25,21 +25,26 @@ class SetupCommand extends ContainerAwareCommand
         $this
             ->setName('bio:setup')
             ->setDescription('Setup a biology course page.')
-            ->addArgument(
-                'username',
-                InputArgument::REQUIRED,
-                'Username?'
-            )
-            ->addArgument(
-                'password',
-                InputArgument::REQUIRED,
-                'Password?'
-            )
             ->addOption(
                'all',
                null,
                InputOption::VALUE_NONE,
                'If set, the task will yell in uppercase letters'
+            )
+            ->addArgument(
+                'username',
+                InputArgument::REQUIRED,
+                'username'
+            )
+            ->addArgument(
+                'password',
+                InputArgument::REQUIRED,
+                'user password'
+            )
+            ->addArgument(
+                'bundles',
+                InputArgument::IS_ARRAY,
+                'default|all|[info folder student clicker score exam trip user]'
             )
         ;
     }
@@ -48,7 +53,17 @@ class SetupCommand extends ContainerAwareCommand
     {
         $username = $input->getArgument('username');
         $password = $input->getArgument('password');
-
+        $bundles = $input->getArgument('bundles');
+$output->writeln('<info>Installing Bundles</info>');
+$output->writeln('<question>--------------------------------------------</question>');
+        if (count($bundles) === 0 || array_search('default', $bundles)) {
+            $process = new Process('php app/console bio:install -d', null, null, null, 300);
+        } else if (array_search('all', $bundles)) {
+            $process = new Process('php app/console bio:install -a', null, null, null, 300);
+        } else {
+            $process = new Process('php app/console bio:install'.implode(' ', $bundles), null, null, null, 300);
+        }
+        $process->run(function($type, $buffer){echo $buffer;});
 
 $output->writeln('<info>Installing assets</info>');
 $output->writeln('<question>--------------------------------------------</question>');
