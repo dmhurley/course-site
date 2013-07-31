@@ -39,16 +39,16 @@
 					self.tries = self.tries-1;
 					console.log(self.tries + " tries left.");
 				} else {
-					console.log("{{taker.sid}}" + "->" + response.sid);
+					console.log("{{taker.student.sid}}" + "->" + response.sid);
 					clearInterval(self.interval);
 					document.getElementById('loadMessage').style.display="none";
 					document.getElementById('button').style.display = "block";
 				}
 			};
 			if (this.tries > 0) {
-				ajax.send("id={{taker.id}}&sid={{taker.sid}}&exam={{taker.exam.id}}");
+				ajax.send("id={{taker.id}}&sid={{taker.student.sid}}&exam={{taker.exam.id}}");
 			} else {
-				ajax.send("id={{taker.id}}&sid={{taker.sid}}&exam={{taker.exam.id}}&force=force");
+				ajax.send("id={{taker.id}}&sid={{taker.student.sid}}&exam={{taker.exam.id}}&force=force");
 			}
 		}
 		this.interval = setInterval(

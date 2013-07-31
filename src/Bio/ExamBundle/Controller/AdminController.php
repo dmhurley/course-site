@@ -290,7 +290,7 @@ class AdminController extends Controller
         $exam = $db->findOne(array('id' => $id));
 
         $db = new Database($this, 'BioExamBundle:TestTaker');
-        $takers = $db->find(array('exam' => $id), array('sid' => 'ASC'), false);
+        $takers = $db->find(array('exam' => $id), array(), false);
 
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');
@@ -316,7 +316,7 @@ class AdminController extends Controller
         echo "late\n";
 
         foreach ($takers as $taker) {
-            echo $taker->getSid()."\t";
+            echo $taker->getStudent()->getSid()."\t";
             echo $taker->getStatus()."\t";
             // get everyone who they actually graded
             echo implode(array_keys($taker->getGrading(), true), ', ')."\t";

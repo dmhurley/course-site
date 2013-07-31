@@ -25,11 +25,10 @@ class TestTaker
 
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="sid", type="privatestring")
-     */
-    private $sid;
+     * @ORM\ManyToOne(targetEntity="\Bio\StudentBundle\Entity\Student")
+     * @ORM\JoinColumn(name="studentID", referencedColumnName="id", onDelete="CASCADE")
+     **/
+    private $student;
 
     /**
      * @var array
@@ -158,29 +157,6 @@ class TestTaker
     public function getVars()
     {
         return $this->vars;
-    }
-
-    /**
-     * Set sid
-     *
-     * @param privatestring $sid
-     * @return TestTaker
-     */
-    public function setSid($sid)
-    {
-        $this->sid = $sid;
-    
-        return $this;
-    }
-
-    /**
-     * Get sid
-     *
-     * @return privatestring 
-     */
-    public function getSid()
-    {
-        return $this->sid;
     }
 
     /**
@@ -313,5 +289,28 @@ class TestTaker
     public function getExam()
     {
         return $this->exam;
+    }
+
+    /**
+     * Set student
+     *
+     * @param \Bio\StudentBundle\Entity\Student $student
+     * @return TestTaker
+     */
+    public function setStudent(\Bio\StudentBundle\Entity\Student $student = null)
+    {
+        $this->student = $student;
+    
+        return $this;
+    }
+
+    /**
+     * Get student
+     *
+     * @return \Bio\StudentBundle\Entity\Student 
+     */
+    public function getStudent()
+    {
+        return $this->student;
     }
 }

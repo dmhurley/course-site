@@ -37,9 +37,11 @@ class PublicController extends Controller
 			$session->invalidate();
 		}
 
-		if ($session->has('sid') && $session->has('exam')){
+		if ($session->has('sid') && $session->has('exam') && $session->get('exam') === $exam->getId()){
+			$db = new Database($this, 'BioStudentBundle:Student');
+			$student = $db->findOne(array('sid' => $session->get('sid')));
 			$db = new Database($this, 'BioExamBundle:TestTaker');
-			$taker = $db->findOne(array('sid' => $session->get('sid'), 'exam' => $session->get('exam')));
+			$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
 
 			if ($taker) {
 				// route to page based on status
@@ -103,9 +105,9 @@ class PublicController extends Controller
 
 				// check to see if student exists
 				$db = new Database($this, 'BioStudentBundle:Student');
-				try {
-					$db->find(array('sid' => $form->get('sid')->getData(), 'lName' => $form->get('lName')->getData()));
-				} catch (BioException $e) {
+				$student = $db->findOne(array('sid' => $form->get('sid')->getData(), 'lName' => $form->get('lName')->getData()));
+				
+				if (!$student) {
 					$request->getSession()->getFlashBag()->set('failure', "Could not find anyone with that student ID and last name.");
 					return $this->render('BioExamBundle:Public:sign.html.twig', array('form' => $form->createView(), 'title' => 'Log In'));
 				}
@@ -113,10 +115,10 @@ class PublicController extends Controller
 				// check to see if they've already logged in
 				// add to database if they haven't
 				$db = new Database($this, 'BioExamBundle:TestTaker');
-				$taker = $db->findOne(array('sid' => $form->get('sid')->getData(), 'exam' => $exam->getId()));
+				$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
 				if (!$taker) {
 					$taker = new TestTaker();
-					$taker->setSid($form->get('sid')->getData())
+					$taker->setStudent($student)
 						->setExam($exam)
 						->setStatus(1);
 					$db->add($taker);
@@ -125,7 +127,7 @@ class PublicController extends Controller
 
 				// overwrite session in case multiple people go in succession
 				$session = $request->getSession();
-				$session->set('sid', $taker->getSid());
+				$session->set('sid', $student->getSid());
 				$session->set('exam', $exam->getId());
 
 				return $this->redirect($this->generateUrl('exam_entrance'));
@@ -250,8 +252,11 @@ class PublicController extends Controller
 	// status 5
 	private function gradeAction(Request $request, $exam, $taker, $db) {
 		// finds the person they're grading
+		$db = new Database($this, 'BioStudentBundle:Student');
+		$student = $db->findOne(array('sid' => array_search(false, $taker->getGrading())));
+
 		$db = new Database($this, 'BioExamBundle:TestTaker');
-		$target = $db->findOne(array('sid' => array_search(false, $taker->getGrading())) );
+		$target = $db->findOne(array('student' => $student ));
 		// handle not finding target???
 
 		// if they pressed submit
@@ -276,9 +281,9 @@ class PublicController extends Controller
 				}
 			}
 
-			$target->addPoint($taker->getSid(), $points);
+			$target->addPoint($taker->getStudent()->getSid(), $points);
 
-			$taker->setGrader($target->getSid(), true);
+			$taker->setGrader($target->getStudent()->getSid(), true);
 
 			if ( count($taker->getGrading()) === 2 && !in_array(false, $taker->getGrading()) ) {
 					$taker->setStatus(6);
@@ -306,8 +311,11 @@ class PublicController extends Controller
 			$exam = $request->request->get('exam');
 
 			// get the person
+			$db = new Database($this, 'BioStudentBundle:Student');
+			$student = $db->findOne(array('sid' => $sid));
+
 			$db = new Database($this, 'BioExamBundle:TestTaker');
-			$you = $db->findOne(array('id' => $id, 'sid' => $sid, 'exam' => $exam));
+			$you = $db->findOne(array('id' => $id, 'student' => $student, 'exam' => $exam));
 
 			// if you don't exist
 			if (!$you) {
@@ -344,7 +352,7 @@ class PublicController extends Controller
 			$target = $targets[0];
 			$index = 0;
 			// if you've already graded them, get the next
-			while(array_key_exists($targets[$index]->getSid(), $you->getGrading()) ) {
+			while(array_key_exists($targets[$index]->getStudent()->getSid(), $you->getGrading()) ) {
 				try {
 					$target = $targets[++$index];
 				} catch(\Exception $e) {
@@ -352,10 +360,10 @@ class PublicController extends Controller
 				}
 			}
 
-			$you->setGrader($target->getSid(), false);
-			$target->addPoint($you->getSid(), null);
+			$you->setGrader($target->getStudent()->getSid(), false);
+			$target->addPoint($you->getStudent()->getSid(), null);
 			$db->close();
-			return array('error' => false, 'message' => 'Test Found', 'sid' => $target->getSid());
+			return array('error' => false, 'message' => 'Test Found', 'sid' => $target->getStudent()->getSid());
 
 		}
 
