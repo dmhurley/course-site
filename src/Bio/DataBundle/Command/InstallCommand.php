@@ -30,7 +30,7 @@ class InstallCommand extends ContainerAwareCommand
             ) ->addArgument(
                 'bundles',
                 InputArgument::IS_ARRAY,
-                'info folder student clicker score exam trip user'
+                'info folder student clicker score newExam trip user'
             )
         ;
     }
@@ -45,7 +45,7 @@ class InstallCommand extends ContainerAwareCommand
             $this->setRouting(array('exam', 'trip'), $output);
         } else if ($input->getOption('all')) {
             $output->writeln('Installing all bundles');
-            $bundles = array('info', 'folder', 'student', 'clicker', 'score', 'exam', 'trip', 'user');
+            $bundles = array('info', 'folder', 'student', 'clicker', 'score', 'newExam', 'trip', 'user');
             $this->setSidebar($bundles, $output);
             $this->setRouting($bundles, $output);
         } else {

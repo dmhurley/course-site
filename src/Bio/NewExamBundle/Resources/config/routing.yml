@@ -1,4 +1,4 @@
 bio_exam:
-    resource: "@BioExamBundle/Controller/"
+    resource: "@BioNewExamBundle/Controller/"
     type:     annotation
     prefix:   /
