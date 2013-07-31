@@ -14,11 +14,13 @@ use Bio\NewExamBundle\Entity\Exam;
 use Bio\NewExamBundle\Entity\Question;
 
 /**
- * @Route("/exam", name="exam_entrance")
+ * @Route("/exam")
  */
 class PublicController extends Controller
 {
-
+	/**
+	 * @route("", name="exam_entrance")
+	 */
 	public function indexAction(Request $request) {
 		$session = $request->getSession();
 		$flash = $session->getFlashBag();
@@ -26,7 +28,7 @@ class PublicController extends Controller
 		// see if there is an exam within the next 24 hours
 		// if not, redirect to main page with error
 		try {
-			$exam = $this->getNextExam(); // try
+			$exam = $this->getNextExam();
 		} catch (BioException $e) {
 			$flash->set('failure', $e->getMessage());
 			return $this->redirect($this->generateUrl('main_page'));
@@ -70,26 +72,64 @@ class PublicController extends Controller
 					// done! redirect to main page with confirmation
 				}
 			} else {
-				// not signed in
+				$flash->set('failure', 'Not signed in.');
 			}
 		}
 
-		// redirect to sign in page
+		return $this->signAction($request, $exam);
 	}
 
 	/**
 	 * Requests sid and last name of user, creates TestTaker entity and session on success
-	 * @status null
-	 *
-	 * @Template()
+	 * 
+	 * status null
 	 */
 	private function signAction(Request $request, $exam) {
+		// create form
+		$form = $this->createFormBuilder()
+			->add('sid', 'text', array('label' => 'Student ID:', 'mapped' => false, 'attr' => array('pattern' => '[0-9]{7}', 'title' => 'Seven digit student ID.')))
+			->add('lName', 'text', array('label' => 'Last Name:', 'mapped' => false))
+			->add('sign in', 'submit')
+			->getForm();
 
+		// if form was submitted
+		if ($request->getMethod() === "POST") {
+			$form->handleRequest($request);
+			// get form data
+			$sid = $form->get('sid')->getData();
+			$lName = $form->get('lName')->getData();
+
+			// find student
+			$db = new Database($this, 'BioStudentBundle:Student');
+			$student = $db->findOne(array('sid' => $sid, 'lName' => $lName));
+
+			// if student exists
+			if ($student) {
+
+				// create and add
+				$taker = new TestTaker();
+				$taker->setStatus(1)
+					->setStudent($student)
+					->setExam($exam);
+
+				$db->add($taker);	
+				$db->close();
+
+				// make session and set flash message
+				$request->getSession()->set('student', $student);
+				$request->getSession()->getFlashBag()->set('success', 'Signed in.');
+
+				return $this->redirect($this->generateUrl('exam_entrance'));
+			}
+		}
+
+
+		return $this->render('BioNewExamBundle:Public:sign.html.twig', array('form' => $form->createView(), 'title' => 'Sign In'));
 	}
 
 	/**
 	 * Counts down to test start, then makes start button available
-	 * @status 1
+	 * status 1
 	 *
 	 * @Template()
 	 */
@@ -99,7 +139,7 @@ class PublicController extends Controller
 
 	/**
 	 * Allows user to take exam and submit answers
-	 * @status 2
+	 * status 2
 	 *
 	 * @Template()
 	 */
@@ -109,7 +149,7 @@ class PublicController extends Controller
 
 	/**
 	 * Allows user to review exam and either go back to change or submit answers
-	 * @status 3
+	 * status 3
 	 *
 	 * @Template()
 	 */
@@ -119,7 +159,7 @@ class PublicController extends Controller
 
 	/**
 	 * User waits here until they have someone to grade
-	 * @status 4
+	 * status 4
 	 *
 	 * @Template()
 	 */
@@ -129,7 +169,7 @@ class PublicController extends Controller
 
 	/**
 	 * User grades another users' test, status is incremented up/down depending on tests graded
-	 * @status 5
+	 * status 5
 	 *
 	 * @Template()
 	 */
@@ -151,11 +191,13 @@ class PublicController extends Controller
 		$em = $this->getDoctrine()->getManager();
 		$query = $em->createQueryBuilder()
 			->select('p')
-			->from('BioNewExamBundle:TestTaker', 'p')
-			->where('p.date >= CURRENT_DATE()')
-			->and('p.end >= CURRENT_TIME()')
+			->from('BioNewExamBundle:Exam', 'p')
+			->where('p.date >= :date')
+			->andWhere('p.end >= :time')
 			->addOrderBy('p.date', 'ASC')
 			->addOrderBy('p.start', 'ASC')
+			->setParameter('date', new \DateTime(), \Doctrine\DBAL\Types\Type::DATE)
+			->setParameter('time', new \DateTime(), \Doctrine\DBAL\Types\Type::TIME)
 			->getQuery();
 		$result = $query->getResult();
 
