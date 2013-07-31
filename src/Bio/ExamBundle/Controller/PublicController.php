@@ -13,6 +13,7 @@ use Bio\DataBundle\Exception\BioException;
 use Bio\ExamBundle\Entity\Exam;
 use Bio\ExamBundle\Entity\Question;
 use Bio\ExamBundle\Entity\TestTaker;
+use Bio\ExamBundle\Entity\Answer;
 
 /**
  * @Route("/exam")
@@ -170,8 +171,15 @@ class PublicController extends Controller
 
 			// add their answers to array by key value IF the keys match the exam
 			foreach($request->request->keys() as $key) {
-				if ($this->arrayContainsId($exam->getQuestions()->toArray(), $key)){
-					$answers[$key] = $request->request->get($key);
+				if ($questionArray = $exam->getQuestions()->filter(function($q) use($key) {
+					return $q->getId() === $key;
+				})){
+					$answer = new Answer();
+					$answer->setQuestion($questionArray[0])
+						->setAnswer($request->request->get($key))
+						->setTestTaker($taker);
+					$taker->addAnswer($answer);
+					$db->add($answer);
 				} else {
 					$request->getSession()->getFlashBag()->set('failure', 'Error');
 					return $this->render('BioExamBundle:Public:exam.html.twig', array('exam' => $exam, 'taker' => $taker, 'title' => $exam->getName()));
@@ -179,7 +187,6 @@ class PublicController extends Controller
 			}
 
 			// save stuff
-			$taker->setAnswers($answers);
 			$taker->setStatus(3);
 			$db->close();
 
@@ -269,19 +276,24 @@ class PublicController extends Controller
 				return $this->render('BioExamBundle:Public:grade.html.twig', array('exam' => $exam, 'taker' => $target, 'title' => 'Grade Exam'));
 			}
 
+
+
 			// make sure all ids in form match questions in exam
 			foreach($request->request->keys() as $key) {
-				if (!$this->arrayContainsId($exam->getQuestions()->toArray(), $key)) {
+				if ($answerArray = $taker->getAnswers()->filter(function($a) use($key) {
+					return $a->getId() === $key;
+				})) {
+					var_dump($answerArray);
+					$answerArray[0]->addPoint($request->request->get($key));
+				} else {
 					$request->getSession()->getFlashBag()->set('failure', 'Error');
 					return $this->render('BioExamBundle:Public:grade.html.twig', array('exam' => $exam, 'taker' => $target, 'title' => 'Grade Exam'));
-				} else {
-					$points[$key] = $request->request->get($key);
 				}
 			}
 
-			$target->addPoint($taker->getStudent()->getSid(), $points);
+			// $target-> ($taker->getStudent()->getSid(), $points);
 
-			$taker->setGrader($target->getStudent()->getSid(), true);
+			// $taker->setGrader($target->getStudent()->getSid(), true);
 
 			if ( count($taker->getGrading()) === 2 && !in_array(false, $taker->getGrading()) ) {
 					$taker->setStatus(6);
@@ -337,7 +349,7 @@ class PublicController extends Controller
 				//order people by amount of people grading them
 				// a serialized array starts with 'a:<length>:{stuff inside array....' so string comparison
 				// works as long as <length> doesn't go about 9, or else the string 9 will come before 10
-				->addOrderBy('p.points', 'ASC')
+				// ->addOrderBy('p.answers', 'ASC')
 				->setParameter('exam', $exam)
 				->setParameter('id', $id)
 				->getQuery();
@@ -359,7 +371,7 @@ class PublicController extends Controller
 			}
 
 			$you->setGrader($target->getStudent()->getSid(), false);
-			$target->addPoint($you->getStudent()->getSid(), null);
+			$target->incrementGraded();
 			$db->close();
 			return array('error' => false, 'message' => 'Test Found', 'sid' => $target->getStudent()->getSid());
 
@@ -367,15 +379,6 @@ class PublicController extends Controller
 
 		return array('error' => true, 'message' => 'Improper request.');
 
-	}
-
-	private function arrayContainsId($array, $id) {
-		foreach($array as $object) {
-			if ($object->getId() === $id) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private function getNextExam() {

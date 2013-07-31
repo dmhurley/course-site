@@ -38,6 +38,12 @@ class TestTaker
     private $grading;
 
     /**
+     * @var integer
+     * @ORM\Column(name="graded", type="integer")
+     */
+    private $gradedCount;
+
+    /**
      * @ORM\ManyToOne(targetEntity="Exam")
      * @ORM\JoinColumn(name="examID", referencedColumnName="id", onDelete="CASCADE")
      **/
@@ -65,24 +71,14 @@ class TestTaker
     private $vars;
 
     /**
-     * @var array
-     *
-     * @ORM\Column(name="answers", type="array")
+     * @ORM\OneToMany(targetEntity="Answer", mappedBy="testTaker", cascade={"remove"})
      */
     private $answers;
-
-    /**
-     * @var array
-     *
-     * @ORM\Column(name="points", type="array")
-     */
-    private $points;
 
     public function __construct() {
         $this->vars = array();
         $this->timecard = array();
         $this->answers = array();
-        $this->points = array();
         $this->grading = array();
     }
 
@@ -209,39 +205,6 @@ class TestTaker
     }
 
     /**
-     * Set points
-     *
-     * @param array $points
-     * @return TestTaker
-     */
-    public function setPoints($points)
-    {
-        $this->points = $points;
-    
-        return $this;
-    }
-
-    public function addPoint($grader, $points) {
-        $this->points[$grader] = $points;
-
-        return $this;
-    }
-
-    public function getPoint($grader) {
-        return $this->points[$grader];
-    }
-
-    /**
-     * Get points
-     *
-     * @return array 
-     */
-    public function getPoints()
-    {
-        return $this->points;
-    }
-
-    /**
      * Set grading
      *
      * @param array $grading
@@ -312,5 +275,57 @@ class TestTaker
     public function getStudent()
     {
         return $this->student;
+    }
+
+    /**
+     * Add answers
+     *
+     * @param \Bio\ExamBundle\Entity\Answer $answers
+     * @return TestTaker
+     */
+    public function addAnswer(\Bio\ExamBundle\Entity\Answer $answers)
+    {
+        $this->answers[] = $answers;
+    
+        return $this;
+    }
+
+    /**
+     * Remove answers
+     *
+     * @param \Bio\ExamBundle\Entity\Answer $answers
+     */
+    public function removeAnswer(\Bio\ExamBundle\Entity\Answer $answers)
+    {
+        $this->answers->removeElement($answers);
+    }
+
+    /**
+     * Set gradedCount
+     *
+     * @param integer $gradedCount
+     * @return TestTaker
+     */
+    public function setGradedCount($gradedCount)
+    {
+        $this->gradedCount = $gradedCount;
+    
+        return $this;
+    }
+
+    /**
+     * Get gradedCount
+     *
+     * @return integer 
+     */
+    public function getGradedCount()
+    {
+        return $this->gradedCount;
+    }
+
+    public function incrementGraded() {
+        $this->gradedCount++;
+
+        return $this;
     }
 }
