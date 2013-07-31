@@ -37,11 +37,9 @@ class PublicController extends Controller
 			$session->invalidate();
 		}
 
-		if ($session->has('sid') && $session->has('exam') && $session->get('exam') === $exam->getId()){
-			$db = new Database($this, 'BioStudentBundle:Student');
-			$student = $db->findOne(array('sid' => $session->get('sid')));
+		if ($session->has('student') && $session->has('exam') && $session->get('exam') === $exam->getId()){
 			$db = new Database($this, 'BioExamBundle:TestTaker');
-			$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
+			$taker = $db->findOne(array('student' => $session->get('student'), 'exam' => $exam));
 
 			if ($taker) {
 				// route to page based on status
@@ -127,7 +125,7 @@ class PublicController extends Controller
 
 				// overwrite session in case multiple people go in succession
 				$session = $request->getSession();
-				$session->set('sid', $student->getSid());
+				$session->set('student', $student);
 				$session->set('exam', $exam->getId());
 
 				return $this->redirect($this->generateUrl('exam_entrance'));
