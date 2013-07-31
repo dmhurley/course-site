@@ -49,12 +49,6 @@ class Question
      */
     private $tags;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="Exam", mappedBy="questions")
-     */
-    private $exams;
-
-
     public function __construct() {
         $this->tags = array();
         $this->points = 3;

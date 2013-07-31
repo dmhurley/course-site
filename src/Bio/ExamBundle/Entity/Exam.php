@@ -57,8 +57,10 @@ class Exam
     private $duration;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Question", inversedBy="exams")
-     * @ORM\JoinTable(name="exam_questions")
+     * @ORM\ManyToMany(targetEntity="Question")
+     * @ORM\JoinTable(name="exam_questions",
+     *      joinColumns={@ORM\JoinColumn(name="testID", referencedColumnName="id", onDelete="CASCADE")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="questionID", referencedColumnName="id", onDelete="CASCADE")})
      */
     private $questions;
 
