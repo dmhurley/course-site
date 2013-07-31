@@ -33,13 +33,12 @@ class DefaultController extends Controller {
     	$clicker = new Clicker();
     	$form = $this->createFormBuilder($clicker)
     		->add('cid', 'text', array('label' => "Clicker ID:", 'attr' => array('pattern' => '[0-9A-Fa-f]{6}', 'title' => '6 digit clicker ID')))
-    		->add('sid', 'text', array('label' => "Student ID:", 'attr' => array('pattern' => '[0-9]{7}', 'title' => '7 digit student ID')))
+    		->add('sid', 'text', array('label' => "Student ID:", 'mapped' => false, 'attr' => array('pattern' => '[0-9]{7}', 'title' => '7 digit student ID')))
     		->add('lName', 'text', array('label' => "Last Name:", 'mapped' => false))
     		->add('Register', 'submit')
     		->getForm();
 
     	if ($request->getMethod() === "POST") {
-    		$this->update();
     		$form->handleRequest($request);
     		
     		if ($form->isValid()){
@@ -47,16 +46,16 @@ class DefaultController extends Controller {
                 $student = $db->findOne(array('sid' => $form->get('sid')->getData(), 'lName' => $form->get('lName')->getData()));
 	    		
 	    		if ($student) {		// if student exists
-					$clickerDb = new Database($this, 'BioClickerBundle:Clicker');
-                    $clicker = $clickerDb->findOne(array('sid' => $student->getSid()));
-                    $request->getSession()->getFlashBag()->set('success', "Clicker ID changed to #".$form->get('cid')->getData());
-                    if (!$clicker) {
-                        $clicker = new Clicker();
-                        $clickerDb->add($clicker);
+					$db = new Database($this, 'BioClickerBundle:Clicker');
+                    if ($dbClicker = $db->findOne(array('student' => $student))){
+                        $request->getSession()->getFlashBag()->set('success', "Clicker ID changed to #".$form->get('cid')->getData());
+                        $clicker = $dbClicker;
+                    } else {
                         $request->getSession()->getFlashBag()->set('success', "Clicker ID #".$form->get('cid')->getData()." registered.");
+                        $db->add($clicker);
+                        $clicker->setStudent($student);
                     }
 					$clicker->setCid($form->get('cid')->getData());
-					$clicker->setSid($student->getSid());
 
 					try {
 						$db->close();
@@ -77,29 +76,28 @@ class DefaultController extends Controller {
     }
 
     /**
-     * @Template()
      * @Route("/download", name="download_list")
+     * @Template()
      */
     public function downloadAction(Request $request) {
-    	$this->update();
-    	$tring = "Last Name\tFirst Name\tclicker ID\tStudent ID\n";
-        $clickerDb = new Database($this, 'BioClickerBundle:Clicker');
-        $studentDb = new Database($this, 'BioStudentBundle:Student');
-    	$clickers = $clickerDb->find(array(), array(), false);
-    	foreach ($clickers as $clicker) {
-    		$student = $studentDb->findOne(array('sid' => $clicker->getSid()));
-    		$tring.= $student->getLName()."\t";
-    		$tring.= $student->getFName()."\t";
-    		$tring.= $clicker->getCid()."\t";
-    		$tring.= $clicker->getSid()."\n";
-    	}
-    	header("Cache-Control: public");
-		header("Content-Description: File Transfer");
-		header("Content-Disposition: attachment; filename=clickerReg.xls");
-		header("Content-Type: application/octet-stream; "); 
-		header("Content-Transfer-Encoding: binary");
+        header("Cache-Control: public");
+        header("Content-Description: File Transfer");
+        header("Content-Disposition: attachment; filename=clickerReg.xls");
+        header("Content-Type: application/octet-stream; "); 
+        header("Content-Transfer-Encoding: binary");
 
-	    return array('test' => $tring);
+        $db = new Database($this, 'BioClickerBundle:Clicker');
+        $clickers = $db->find(array(), array(), false);
+
+    	echo "Last Name\tFirst Name\tclicker ID\tStudent ID\n";
+    	foreach ($clickers as $clicker) {
+    		echo $clicker->getStudent()->getLName()."\t";
+    		echo $clicker->getStudent()->getFName()."\t";
+    		echo $clicker->getCid()."\t";
+    		echo $clicker->getStudent()->getSid()."\n";
+    	}
+
+	    return array('test' => '');
     }
 
     /**
@@ -124,13 +122,5 @@ class DefaultController extends Controller {
     	}
 
     	return array('form' => $form->createView(), 'title' => 'Clear Registrations');
-    }
-
-    public function update() {
-    	$em = $this->getDoctrine()->getManager();
-    	$query = $em->createQuery(
-    		'DELETE FROM BioClickerBundle:Clicker c WHERE c.sid NOT IN (SELECT d.sid FROM BioStudentBundle:Student d)'
-    	);
-    	$query->getResult();
     }
 }
