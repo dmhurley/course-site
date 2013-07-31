@@ -46,9 +46,9 @@
 				}
 			};
 			if (this.tries > 0) {
-				ajax.send("id={{taker.id}}&sid={{taker.sid}}&exam={{taker.exam}}");
+				ajax.send("id={{taker.id}}&sid={{taker.sid}}&exam={{taker.exam.id}}");
 			} else {
-				ajax.send("id={{taker.id}}&sid={{taker.sid}}&exam={{taker.exam}}&force=force");
+				ajax.send("id={{taker.id}}&sid={{taker.sid}}&exam={{taker.exam.id}}&force=force");
 			}
 		}
 		this.interval = setInterval(

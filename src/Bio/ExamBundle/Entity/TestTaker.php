@@ -39,10 +39,9 @@ class TestTaker
     private $grading;
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="exam", type="integer")
-     */
+     * @ORM\ManyToOne(targetEntity="Exam")
+     * @ORM\JoinColumn(name="examID", referencedColumnName="id", onDelete="CASCADE")
+     **/
     private $exam;
 
     /**
@@ -159,29 +158,6 @@ class TestTaker
     public function getVars()
     {
         return $this->vars;
-    }
-
-    /**
-     * Set exam
-     *
-     * @param integer $exam
-     * @return TestTaker
-     */
-    public function setExam($exam)
-    {
-        $this->exam = $exam;
-    
-        return $this;
-    }
-
-    /**
-     * Get exam
-     *
-     * @return integer 
-     */
-    public function getExam()
-    {
-        return $this->exam;
     }
 
     /**
@@ -314,5 +290,28 @@ class TestTaker
     public function getGrading()
     {
         return $this->grading;
+    }
+
+    /**
+     * Set exam
+     *
+     * @param \Bio\ExamBundle\Entity\Exam $exam
+     * @return TestTaker
+     */
+    public function setExam(\Bio\ExamBundle\Entity\Exam $exam = null)
+    {
+        $this->exam = $exam;
+    
+        return $this;
+    }
+
+    /**
+     * Get exam
+     *
+     * @return \Bio\ExamBundle\Entity\Exam 
+     */
+    public function getExam()
+    {
+        return $this->exam;
     }
 }

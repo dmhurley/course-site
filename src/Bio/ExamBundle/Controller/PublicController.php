@@ -117,7 +117,7 @@ class PublicController extends Controller
 				if (!$taker) {
 					$taker = new TestTaker();
 					$taker->setSid($form->get('sid')->getData())
-						->setExam($exam->getId())
+						->setExam($exam)
 						->setStatus(1);
 					$db->add($taker);
 					$db->close();
