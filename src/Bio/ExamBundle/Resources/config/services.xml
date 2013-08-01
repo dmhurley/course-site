@@ -6,11 +6,11 @@
 
     <!--
     <parameters>
-        <parameter key="bio_exam.example.class">Bio\ExamBundle\Example</parameter>
+        <parameter key="bio_new_exam.example.class">Bio\ExamBundle\Example</parameter>
     </parameters>
 
     <services>
-        <service id="bio_exam.example" class="%bio_exam.example.class%">
+        <service id="bio_new_exam.example" class="%bio_new_exam.example.class%">
             <argument type="service" id="service_id" />
             <argument>plain_value</argument>
             <argument>%parameter_name%</argument>

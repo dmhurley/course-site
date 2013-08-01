@@ -18,7 +18,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('bio_exam');
+        $rootNode = $treeBuilder->root('bio_new_exam');
 
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for

@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-	{% if app.session.has('student') and app.session.has('exam') %}
+	{% if app.session.has('student') %}
 		<div id="signedin">
 		Signed in as {{app.session.get('student').fName}}. <a href="?logout">not right?</a>
 		</div>

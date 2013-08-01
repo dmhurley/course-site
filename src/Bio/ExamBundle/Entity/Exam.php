@@ -24,26 +24,26 @@ class Exam
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\Column(name="title", type="string", length=255)
      */
-    private $name;
+    private $title;
 
     /**
-     * @var \Date
+     * @var \DateTime
      *
      * @ORM\Column(name="date", type="date")
      */
     private $date;
 
     /**
-     * @var \Time
+     * @var \DateTime
      *
      * @ORM\Column(name="start", type="time")
      */
     private $start;
 
     /**
-     * @var \Time
+     * @var \DateTime
      *
      * @ORM\Column(name="end", type="time")
      */
@@ -59,15 +59,15 @@ class Exam
     /**
      * @ORM\ManyToMany(targetEntity="Question")
      * @ORM\JoinTable(name="exam_questions",
-     *      joinColumns={@ORM\JoinColumn(name="testID", referencedColumnName="id", onDelete="CASCADE")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="questionID", referencedColumnName="id", onDelete="CASCADE")})
+     *      joinColumns={@ORM\JoinColumn(name="test_id", referencedColumnName="id", onDelete="CASCADE")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="question_id", referencedColumnName="id", onDelete="CASCADE")})
      */
     private $questions;
 
     public function __construct() {
+        $this->date = new \DateTime();
         $this->questions = new \Doctrine\Common\Collections\ArrayCollection();
     }
-
 
     /**
      * Get id
@@ -86,26 +86,49 @@ class Exam
     }
 
     /**
-     * Set name
+     * Set title
      *
-     * @param string $name
+     * @param string $title
      * @return Exam
      */
-    public function setName($name)
+    public function setTitle($title)
     {
-        $this->name = $name;
+        $this->title = $title;
     
         return $this;
     }
 
     /**
-     * Get name
+     * Get title
      *
      * @return string 
      */
-    public function getName()
+    public function getTitle()
     {
-        return $this->name;
+        return $this->title;
+    }
+
+    /**
+     * Set date
+     *
+     * @param \DateTime $date
+     * @return Exam
+     */
+    public function setDate($date)
+    {
+        $this->date = $date;
+    
+        return $this;
+    }
+
+    /**
+     * Get date
+     *
+     * @return \DateTime 
+     */
+    public function getDate()
+    {
+        return $this->date;
     }
 
     /**
@@ -178,36 +201,6 @@ class Exam
     }
 
     /**
-     * Set date
-     *
-     * @param \DateTime $date
-     * @return Exam
-     */
-    public function setDate($date)
-    {
-        $this->date = $date;
-    
-        return $this;
-    }
-
-    /**
-     * Get date
-     *
-     * @return \DateTime 
-     */
-    public function getDate()
-    {
-        return $this->date;
-    }
-
-    public function setQuestions($questions) {
-        $this->questions = new \Doctrine\Common\Collections\ArrayCollection();
-        foreach ($questions as $q) {
-            $this->addQuestion($q);
-        }
-    }
-
-    /**
      * Add questions
      *
      * @param \Bio\ExamBundle\Entity\Question $questions
@@ -238,5 +231,14 @@ class Exam
     public function getQuestions()
     {
         return $this->questions;
+    }
+
+    public function setQuestions($questions) {
+        $this->questions = new \Doctrine\Common\Collections\ArrayCollection();
+        foreach ($questions as $question) {
+            $this->addQuestion($question);
+        }
+
+        return $this;
     }
 }

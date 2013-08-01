@@ -12,6 +12,7 @@
 {% endblock %}
 
 {% block content %}
+
 	{{ form_start(form) }}
 		<div class="questioncontainer">
 			<input type="text" id="tag">
@@ -32,12 +33,14 @@
 			</div>
 		</div>
 		<div id="form">
-			{{ form_row(form.name) }}
+			{{ form_row(form.title) }}
 			{{ form_row(form.date) }}
 			{{ form_row(form.start)}}
 			{{ form_row(form.end)}}
 			{{ form_row(form.duration)}}
 			{{ form_row(form.edit) }}
 		</div>
+		<!-- so it doesn't render a random label when there are no questions -->
+		<div style="display:none;">{{form_row(form.questions)}}</div>
 	{{ form_end(form) }}
 {% endblock %}
