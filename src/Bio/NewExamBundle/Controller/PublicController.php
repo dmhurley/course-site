@@ -332,13 +332,12 @@ class PublicController extends Controller
 
 		$em = $this->getDoctrine()->getManager();
 		$query = $em->createQuery('
-				SELECT t, COUNT(a) as c
+				SELECT t, COUNT(g) as c
 				FROM BioNewExamBundle:TestTaker t 
-				LEFT JOIN t.answers a 
+				LEFT JOIN t.gradedBy g 
 				WHERE t.exam = :exam
 				AND t.id <> :id
 				AND t.status >= 4
-				GROUP BY t.id
 				ORDER BY c
 			');
 		// do we need group by ^
@@ -354,7 +353,7 @@ class PublicController extends Controller
 
 		$target = null;
 		for ($i = 0; $i < count($targets); $i++) {
-			if (!$you->getGraded()->contains($targets[$i]) ) {
+			if (!$you->getGraded()->contains($targets[$i][0]) ) {
 				$target = $targets[$i];
 				break;
 			}
