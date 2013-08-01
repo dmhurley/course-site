@@ -9,29 +9,29 @@
 
 {% block content %}
 	<form method="POST">
-		{% for question in exam.questions %}
+		{% for answer in taker.answers %}
 			<div class="question tableStyle">
-				<h2 style="float:left;">Question {{loop.index}}</h2> <h2 style="float:right;">{{question.points}} points</h2>
+				<h2 style="float:left;">Question {{loop.index}}</h2> <h2 style="float:right;">{{answer.question.points}} points</h2>
 				<div class="q">
-					{{ question.question|raw }}
+					{{ answer.question.question|raw }}
 				</div>
 				<div class="line"></div>
 				<h2>Answer</h2>
 				<div class="a review">
 					<div class="score">
-						<select required="required" name="{{question.id}}">
+						<select required="required" name="{{answer.id}}">
 							<option selected="selected" disabled="disabled">-</option>
-							 {% for i in 0..question.points %}
+							 {% for i in 0..answer.question.points %}
 							 	<option val={{i}}>{{i}}</option>
 							 {% endfor %}
 						</select>
 					</div>
-					<textarea disabled="disabled" style="width:84%;">{% if question.id in taker.answers|keys %}{{ taker.answers[question.id] }}{% endif %}</textarea>
+					<textarea disabled="disabled" style="width:84%;">{{ answer.answer }}</textarea>
 				</div>
 				<div class="line"></div>
 				<h2>Rubric</h2>
 				<div class="a">
-					{{question.answer|raw}}
+					{{answer.question.answer|raw}}
 				</div>
 			</div>
 		{% endfor %}

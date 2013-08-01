@@ -8,16 +8,16 @@
 {% endblock %}
 
 {% block content %}
-		{% for question in exam.questions %}
+		{% for answer in taker.answers %}
 			<div class="question tableStyle">
-				<h2 style="float:left;">Question {{loop.index}}</h2> <h2 style="float:right;">{{question.points}} points</h2>
+				<h2 style="float:left;">Question {{loop.index}}</h2> <h2 style="float:right;">{{answer.question.points}} points</h2>
 				<div class="q">
-					{{ question.question|raw }}
+					{{ answer.question.question|raw }}
 				</div>
 				<div class="line"></div>
 				<h2>Answer</h2>
 				<div class="a">
-					<textarea disabled="disabled">{{taker.answers[question.id]}}</textarea>
+					<textarea disabled="disabled">{{answer.answer}}</textarea>
 				</div>
 			</div>
 		{% endfor %}

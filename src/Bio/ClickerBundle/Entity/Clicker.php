@@ -32,12 +32,10 @@ class Clicker
     private $cid;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="sid", type="privatestring", unique=true)
-     * @Assert\NotBlank()
+     * @ORM\OneToOne(targetEntity="\Bio\StudentBundle\Entity\Student")
+     * @ORM\JoinColumn(name="studentID", referencedColumnName="id", onDelete="CASCADE")
      */
-    private $sid;
+    private $student;
 
 
     /**
@@ -73,28 +71,30 @@ class Clicker
         return $this->cid;
     }
 
+    public function getSid() {
+        return $this->student->getSid();
+    }
+
     /**
-     * Set sid
+     * Set student
      *
-     * @param string $sid
+     * @param \Bio\StudentBundle\Entity\Student $student
      * @return Clicker
      */
-    public function setSid($sid)
+    public function setStudent(\Bio\StudentBundle\Entity\Student $student = null)
     {
-        $this->sid = $sid;
+        $this->student = $student;
     
         return $this;
     }
 
     /**
-     * Get sid
+     * Get student
      *
-     * @return string 
+     * @return \Bio\StudentBundle\Entity\Student 
      */
-    public function getSid()
+    public function getStudent()
     {
-        return $this->sid;
+        return $this->student;
     }
-
-
 }

@@ -26,7 +26,6 @@
 {% block java %}
 	<script>
 	function Checker() {
-		this.tries = 8;
 		this.check = function() {
 			var ajax = new XMLHttpRequest();
 			ajax.open('POST', '{{ url("check") }}', true);
@@ -35,21 +34,15 @@
 			ajax.onload = function() {
 				console.log(this.responseText);
 				var response = JSON.parse(this.responseText);
-				if (response.error) {
-					self.tries = self.tries-1;
-					console.log(self.tries + " tries left.");
+				if (!response.success) {
+
 				} else {
-					console.log("{{taker.sid}}" + "->" + response.sid);
 					clearInterval(self.interval);
 					document.getElementById('loadMessage').style.display="none";
 					document.getElementById('button').style.display = "block";
 				}
 			};
-			if (this.tries > 0) {
-				ajax.send("id={{taker.id}}&sid={{taker.sid}}&exam={{taker.exam}}");
-			} else {
-				ajax.send("id={{taker.id}}&sid={{taker.sid}}&exam={{taker.exam}}&force=force");
-			}
+			ajax.send("a={{taker.id}}");
 		}
 		this.interval = setInterval(
 				(function(self) {
@@ -59,6 +52,6 @@
 				})(this), 30000);
 		this.check();
 	}
-	checker = new Checker();
+	new Checker();
 	</script>
 {% endblock %}

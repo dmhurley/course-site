@@ -18,7 +18,7 @@ use Bio\ExamBundle\Entity\Question;
  */
 class AdminController extends Controller
 {
-    /**
+	/**
      * @Route("/", name="exam_instruct")
      * @Template()
      */
@@ -28,19 +28,22 @@ class AdminController extends Controller
     }
 
     /**
-     * @Route("/manage", name="view_exams")
+     * @Route("/manage", name="manage_exams")
      * @Template()
      */
-    public function examsAction(Request $request) {
-    	$exam = new Exam();
+    public function examAction(Request $request)
+    {
+        $exam = new Exam();
     	$form = $this->createFormBuilder($exam)
-    		->add('name', 'text', array('label'=>'Exam Name:'))
+    		->add('title', 'text', array('label'=>'Exam Name:'))
     		->add('date', 'date', array('label' => 'Date:'))
     		->add('start', 'time', array('label'=>'Start Time:'))
     		->add('end', 'time', array('label'=>'End Time:'))
     		->add('duration', 'integer', array('label'=>'Duration (m):'))
    			->add('add', 'submit')
    			->getForm();
+
+   		$emptyForm = clone $form;
 
    		$db = new Database($this, 'BioExamBundle:Exam');
 
@@ -58,6 +61,7 @@ class AdminController extends Controller
    			} else {
                 $request->getSession()->getFlashBag()->set('failure', 'Form is invalid.');
             }
+            $form = $emptyForm;
    		}
 
    		$exams = $db->find(array(), array('date' => 'ASC'), false);
@@ -85,7 +89,7 @@ class AdminController extends Controller
     	if ($request->headers->get('referer')){
     		return $this->redirect($request->headers->get('referer'));
     	} else {
-    		return $this->redirect($this->generateUrl('view_exams'));
+    		return $this->redirect($this->generateUrl('manage_exams'));
     	}
     }
 
@@ -102,19 +106,19 @@ class AdminController extends Controller
     		$exam = $db->findOne(array('id' => $id));
             if (!$exam) {
                 $request->getSession()->getFlashBag()->set('failure', 'Unable to find that exam.');
-                return $this->redirect($this->generateUrl('view_exams'));
+                return $this->redirect($this->generateUrl('manage_exams'));
             }
     	} else {
     		$exam = new Exam();
     	}
 
 		$form = $this->createFormBuilder($exam)
-			->add('name', 'text', array('label'=>'Exam Name:'))
+			->add('title', 'text', array('label'=>'Exam Name:'))
     		->add('date', 'date', array('label' => 'Date:'))
     		->add('start', 'time', array('label'=>'Start Time:'))
     		->add('end', 'time', array('label'=>'End Time:'))
     		->add('duration', 'integer', array('label'=>'Duration (m):'))
-    		->add('questions', 'entity', array('label' => 'Questions:', 'class' => 'BioExamBundle:Question', 'property'=>'formattedQuestion', 'multiple' => true, 'expanded'=> true))
+    		->add('questions', 'entity', array('class' => 'BioExamBundle:Question', 'property'=>'formattedQuestion', 'multiple' => true, 'expanded'=> true))
     		->add('id', 'hidden')
    			->add('edit', 'submit')
    			->getForm();
@@ -124,7 +128,7 @@ class AdminController extends Controller
 
 	   		if ($form->isValid()) {
 	   			$dbExam = $db->findOne(array('id' => $exam->getId()));
-	   			$dbExam->setName($exam->getName())
+	   			$dbExam->setTitle($exam->getTitle())
 	   				->setDate($exam->getDate())
 	   				->setStart($exam->getStart())
 	   				->setEnd($exam->getEnd())
@@ -136,7 +140,7 @@ class AdminController extends Controller
                     } catch (BioException $e) {
                         $request->getSession()->getFlashBag()->set('failure', 'Unable to save changes.');
                     }
-	   				return $this->redirect($this->generateUrl('view_exams'));
+	   				return $this->redirect($this->generateUrl('manage_exams'));
 	   		} else {
                 $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
             }
@@ -146,7 +150,7 @@ class AdminController extends Controller
     }
 
     /**
-     * @Route("/questions", name="view_questions")
+     * @Route("/questions/manage", name="manage_questions")
      * @Template()
      */
     public function questionAction(Request $request) {
@@ -158,6 +162,8 @@ class AdminController extends Controller
             ->add('tags', 'text', array('label' => 'Tags:', 'mapped' => false, 'required' => false, 'attr' => array('pattern' => '[a-z\s]+', 'title' => 'Lower case tags seperated by spaces. a-z only.')))
     		->add('add', 'submit')
     		->getForm();
+
+    	$emptyForm = clone $form;
 
     	$db = new Database($this, 'BioExamBundle:Question');
 
@@ -175,6 +181,7 @@ class AdminController extends Controller
     		} else {
                 $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
             }
+            $form = $emptyForm;
     	}
 
     	$questions = $db->find(array(), array(), false);
@@ -202,7 +209,7 @@ class AdminController extends Controller
     	if ($request->headers->get('referer')){
     		return $this->redirect($request->headers->get('referer'));
     	} else {
-    		return $this->redirect($this->generateUrl('view_questions'));
+    		return $this->redirect($this->generateUrl('manage_questions'));
     	}
     }
 
@@ -245,7 +252,7 @@ class AdminController extends Controller
                     } catch (BioException $e) {
                         $request->getSession()->getFlashBag()->set('failure', 'Unable to save changes.');
                     }
-	   				return $this->redirect($this->generateUrl('view_questions'));
+	   				return $this->redirect($this->generateUrl('manage_questions'));
 	   		} else {
                 $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
             }
@@ -278,19 +285,18 @@ class AdminController extends Controller
             }
             return $this->redirect($this->generateUrl('view_'.$type.'s'));
         }
-        return $this->redirect($this->generateUrl('view_exams'));
+        return $this->redirect($this->generateUrl('manage_exams'));
     }
 
     /**
-     * @Route("/download/{id}", name="exam_download")
+     * @Route("/download/{id}", name="download_exam")
      * @Template("BioFolderBundle:Download:download.html.twig")
      */
     public function downloadAction(Request $request, $id) {
         $db = new Database($this, 'BioExamBundle:Exam');
         $exam = $db->findOne(array('id' => $id));
-
         $db = new Database($this, 'BioExamBundle:TestTaker');
-        $takers = $db->find(array('exam' => $id), array('sid' => 'ASC'), false);
+        $takers = $db->find(array('exam' => $id), array(), false);
 
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');
@@ -300,64 +306,27 @@ class AdminController extends Controller
         header('Cache-Control: must-revalidate');
         header('Pragma: public');
 
-        echo "sid\t";
-        echo "status\t";
-        echo "graded\t";
-
-        $numQuestions = count($exam->getQuestions()->toArray());
-        for($i = 1; $i <= $numQuestions; $i++) {
-            echo "q".$i." answer\t";
-            echo "q".$i." points/".$exam->getQuestions()->toArray()[$i-1]->getPoints()."\t";
+        echo "sid\tstatus\t";
+        for($i = 1; $i <= count($exam->getQuestions()); $i++) {
+            echo "q".$i."\ta".$i."\t";
         }
-        echo "started test\t";
-        echo "ended test\t";
-        echo "finished\t";
-        echo "edited\t";
-        echo "late\n";
+        echo "started\tfinished\tedited\late\n";
 
         foreach ($takers as $taker) {
-            echo $taker->getSid()."\t";
+            echo $taker->getStudent()->getSid()."\t";
             echo $taker->getStatus()."\t";
-            // get everyone who they actually graded
-            echo implode(array_keys($taker->getGrading(), true), ', ')."\t";
-
-            if (count($taker->getAnswers()) === $numQuestions) {
-                foreach(array_keys($taker->getAnswers()) as $key) {
-                    echo $taker->getAnswers()[$key]."\t";
-                    if (count($taker->getPoints()) > 0) {
-                        $points = 0;
-                        // skip if the value for the key is null
-                        foreach(array_keys($taker->getPoints(), true, false) as $grader) {
-                            $points += $taker->getPoints()[$grader][$key];
-                        }
-                        echo $points/count(array_keys($taker->getPoints(), true, false)); // tab on next line
-                    }
-                    echo "\t";
-                }
-            } else {
-                for ($i = 0; $i < $numQuestions*2; $i++) {
-                    echo "\t";
-                }
+            foreach($taker->getAnswers() as $answer) {
+                echo $answer->getQuestion()->getQuestion()."\t";
+                echo $answer->getAnswer()."\t";
             }
-
-            if (isset($taker->getTimecard()[2])){
-                echo $taker->getTimecard()[2]->format('Y-m-d H:i:s'); // tab on next line
-            }
+            // echo $taker->getTimecard()[2]."\t";
+            // echo $taker->getTimecard()[6]."\t";
             echo "\t";
-
-            if (isset($taker->getTimecard()[4])) {
-                    echo $taker->getTimecard()[4]->format('Y-m-d H:i:s'); // tab on next line
-            }
             echo "\t";
-
-            if(isset($taker->getTimecard()[6])) {
-                echo $taker->getTimecard()[6]->format('Y-m-d H:i:s'); // tab on next line
-            }
-            echo "\t";
-
-            echo ($taker->hasVar('edited')?'true':'false')."\t";
-            echo ($taker->hasVar('late')?'true':'false')."\n";
+            echo $taker->getVars()['edited']."\t";
+            echo "false\n";
         }
+
         return array('text' => '');
     }
 }

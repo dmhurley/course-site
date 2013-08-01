@@ -49,15 +49,9 @@ class Question
      */
     private $tags;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="Exam", mappedBy="questions")
-     */
-    private $exams;
-
-
     public function __construct() {
-        $this->tags = array();
         $this->points = 3;
+        $this->tags = array();
     }
 
     /**
@@ -71,7 +65,7 @@ class Question
     }
 
     public function setId($id) {
-        $this->$id = $id;
+        $this->id = $id;
 
         return $this;
     }
@@ -173,38 +167,5 @@ class Question
     public function getTags()
     {
         return $this->tags;
-    }
-
-    /**
-     * Add exams
-     *
-     * @param \Bio\ExamBundle\Entity\Exam $exams
-     * @return Question
-     */
-    public function addExam(\Bio\ExamBundle\Entity\Exam $exams)
-    {
-        $this->exams[] = $exams;
-    
-        return $this;
-    }
-
-    /**
-     * Remove exams
-     *
-     * @param \Bio\ExamBundle\Entity\Exam $exams
-     */
-    public function removeExam(\Bio\ExamBundle\Entity\Exam $exams)
-    {
-        $this->exams->removeElement($exams);
-    }
-
-    /**
-     * Get exams
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getExams()
-    {
-        return $this->exams;
     }
 }
