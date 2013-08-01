@@ -45,10 +45,16 @@ class TestTaker
     /**
      * @ORM\ManyToMany(targetEntity="TestTaker", mappedBy="gradedBy")
      */
+    private $graded;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="TestTaker")
+     * @ORM\JoinColumn(name="target_id", referencedColumnName="id", onDelete="CASCADE")
+     */
     private $grading;
 
     /** 
-     * @ORM\ManyToMany(targetEntity="TestTaker", inversedBy="grading")
+     * @ORM\ManyToMany(targetEntity="TestTaker", inversedBy="graded")
      * @ORM\JoinTable(name="graders",
      *      joinColumns={@ORM\JoinColumn(name="grader_id", referencedColumnName="id", onDelete="CASCADE")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="target_id", referencedColumnName="id", onDelete="CASCADE")}
@@ -168,44 +174,11 @@ class TestTaker
      */
     public function __construct()
     {
-        $this->grading = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->graded = new \Doctrine\Common\Collections\ArrayCollection();
         $this->gradedBy = new \Doctrine\Common\Collections\ArrayCollection();
         $this->answers = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
-    /**
-     * Add grading
-     *
-     * @param \Bio\NewExamBundle\Entity\TestTaker $grading
-     * @return TestTaker
-     */
-    public function addGrading(\Bio\NewExamBundle\Entity\TestTaker $grading)
-    {
-        $this->grading[] = $grading;
-    
-        return $this;
-    }
-
-    /**
-     * Remove grading
-     *
-     * @param \Bio\NewExamBundle\Entity\TestTaker $grading
-     */
-    public function removeGrading(\Bio\NewExamBundle\Entity\TestTaker $grading)
-    {
-        $this->grading->removeElement($grading);
-    }
-
-    /**
-     * Get grading
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getGrading()
-    {
-        return $this->grading;
-    }
-
     /**
      * Add gradedBy
      *
@@ -325,5 +298,61 @@ class TestTaker
             }
         }
         return null;
+    }
+
+    /**
+     * Add graded
+     *
+     * @param \Bio\NewExamBundle\Entity\TestTaker $graded
+     * @return TestTaker
+     */
+    public function addGraded(\Bio\NewExamBundle\Entity\TestTaker $graded)
+    {
+        $this->graded[] = $graded;
+    
+        return $this;
+    }
+
+    /**
+     * Remove graded
+     *
+     * @param \Bio\NewExamBundle\Entity\TestTaker $graded
+     */
+    public function removeGraded(\Bio\NewExamBundle\Entity\TestTaker $graded)
+    {
+        $this->graded->removeElement($graded);
+    }
+
+    /**
+     * Get graded
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getGraded()
+    {
+        return $this->graded;
+    }
+
+    /**
+     * Set grading
+     *
+     * @param \Bio\NewExamBundle\Entity\TestTaker $grading
+     * @return TestTaker
+     */
+    public function setGrading(\Bio\NewExamBundle\Entity\TestTaker $grading = null)
+    {
+        $this->grading = $grading;
+    
+        return $this;
+    }
+
+    /**
+     * Get grading
+     *
+     * @return \Bio\NewExamBundle\Entity\TestTaker 
+     */
+    public function getGrading()
+    {
+        return $this->grading;
     }
 }

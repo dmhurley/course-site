@@ -63,7 +63,7 @@ class PublicController extends Controller
 				}
 
 				if ($taker->getStatus() === 4) {
-					// redirect to wait for grade page
+					return $this->waitAction($request, $exam, $taker);
 				}
 
 				if ($taker->getStatus() === 5) {
@@ -181,24 +181,25 @@ class PublicController extends Controller
 			// if the number of keys match up
 			if (count($request->request->keys()) === count($exam->getQuestions())){
 				foreach($request->request->keys() as $key) {
-
+					echo "hey";
 					// check if the question ids match the questions in the exam
 					if ($questionArray = $exam->getQuestions()->filter(function($q) use ($key) {
 						return $q->getId() === $key;
 					})->toArray()){
-
 						// check if the taker has already answered the question
-						$question = $questionArray[0];
+						reset($questionArray);
+						$question = current($questionArray);
 						if ($answerArray = $taker->getAnswers()->filter(function($a) use ($question) {
 							return $a->getQuestion() === $question;
 						})->toArray()) {
 							// if they have update the answer
-							$answer = $answerArray[0];
+							reset($answerArray);
+							$answer = current($answerArray);
 							$answer->setAnswer($request->request->get($key));
 						} else {
 							// if they haven't update the answer
 							$answer = new Answer();
-							$answer->setQuestion($questionArray[0])
+							$answer->setQuestion($question)
 								->setAnswer($request->request->get($key))
 								->setTestTaker($taker);
 							$taker->addAnswer($answer);
@@ -249,18 +250,9 @@ class PublicController extends Controller
 			// if they want to submit their answers
 			} else if ($form->get('submit')->isClicked()) {
 				$taker->setStatus(4); // increment
-
-				// check to see if they went over the timelimit
-				$diff = date_diff($taker->getTimecard()[4], $taker->getTimecard()[2]);
-				$duration = new \DateInterval('PT'.$exam->getDuration()."M");
-				if ($diff->format('%Y-%M-%D %H:%I:%S') > $duration->format('%Y-%M-%D %H:%I:%S') ){
-					$request->getSession()->getFlashBag()->set('success', 'Went over time limit. Answers saved.');
-					$taker->setVar('late', true);
-				} else {
-					$request->getSession()->getFlashBag()->set('success', 'Exam submitted.');
-				}
 				$db->close();
 
+				$request->getSession()->getFlashBag()->set('success', 'Exam submitted.');
 				return $this->redirect($this->generateUrl('exam_entrance'));
 			}
 		}
@@ -274,7 +266,27 @@ class PublicController extends Controller
 	 * status 4
 	 */
 	private function waitAction(Request $request, $exam, $taker) {
+		// if they pressed the grade button
+		$target = null;
+		try {
+			$target = $this->match($taker);
+		} catch (BioException $e) {
+		}
 
+		// if the pressed submit
+		if ($request->getMethod() === "POST") {
+			// if there actually was a match
+			if ($target !== null) {
+				$db = new Database($this, 'BioNewExamBundle:TestTaker');
+				$taker->setStatus(5)
+					->setGrading($target);
+				$db->close();
+
+				return $this->redirect($this->generateUrl('exam_entrance'));
+			}
+		}
+
+		return $this->render('BioNewExamBundle:Public:wait.html.twig', array('taker' => $taker, 'exam' => $exam, 'title' => 'Exam Submitted'));
 	}
 
 	/**
@@ -289,11 +301,69 @@ class PublicController extends Controller
 	/**
 	 * Recieves a post request containing student_id, exam_id. Attempts to find someone for user to grade
 	 *
-	 * @Route("/check.json", name="check")
-	 * @Template()
+	 * @Route("/check?a={$", name="check")
+	 * @Template("BioNewExamBundle:Public:check.json.twig")
 	 */
 	public function checkAction(Request $request) {
+		if ($request->request->has('a')) {
+			$id = $request->request->get('a');
 
+			$db = new Database($this, 'BioNewExamBundle:TestTaker');
+			$you = $db->findOne(array('id' => $id));
+
+			if (!$you) {
+				return array('success' => false, 'message' => 'Invalid Id.');
+			}
+
+			try {
+				$this->match($you);
+			} catch (BioException $e) {
+				return array('success' => false, 'message' => $e->getMessage());
+			}
+			return array('success' => true);
+		}
+		return array('success' => false, 'message' => 'Invalid post request.');
+	}
+
+	private function match($you) {
+		if ($you->getGrading() ) {
+			return $you->getGrading();
+		}
+
+		$em = $this->getDoctrine()->getManager();
+		$query = $em->createQuery('
+				SELECT t, COUNT(a) as c
+				FROM BioNewExamBundle:TestTaker t 
+				LEFT JOIN t.answers a 
+				WHERE t.exam = :exam
+				AND t.id <> :id
+				AND t.status >= 4
+				GROUP BY t.id
+				ORDER BY c
+			');
+		// do we need group by ^
+
+		$query->setParameter('exam', $you->getExam());
+		$query->setParameter('id', $you->getId());
+
+		$targets = $query->getResult();
+
+		if (count($targets) === 0) {
+			throw new BioException("No other tests.");
+		}
+
+		$target = null;
+		for ($i = 0; $i < count($targets); $i++) {
+			if (!$you->getGraded()->contains($targets[$i]) ) {
+				$target = $targets[$i];
+				break;
+			}
+		}
+
+		if ($target === null) {
+			throw new BioException("No other tests.");
+		}
+		return $target[0];
 	}
 
 	private function getNextExam() {
