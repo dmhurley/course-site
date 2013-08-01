@@ -306,4 +306,13 @@ class TestTaker
     {
         return $this->answers;
     }
+
+    public function getAnswer(\Bio\NewExamBundle\Entity\Question $question) {
+        foreach ($this->answers as $answer) {
+            if ($answer->getQuestion() === $question) {
+                return $answer;
+            }
+        }
+        return null;
+    }
 }

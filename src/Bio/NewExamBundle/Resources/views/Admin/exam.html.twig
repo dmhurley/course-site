@@ -18,7 +18,7 @@
 		{% for exam in exams %}
 			<tr>
 				{% if date() > date(exam.date|date('Y-m-d')~' '~exam.end|date('H:i:s')) %}
-					<td><a href="{{ path('exam_download', {'id' : exam.id}) }}">{{exam.title}}</a></td>
+					<td><a href="{{ path('download_exam', {'id' : exam.id}) }}">{{exam.title}}</a></td>
 				{% else %}
 					<td>{{exam.title}}</td>
 				{% endif %}

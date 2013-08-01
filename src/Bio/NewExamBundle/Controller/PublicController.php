@@ -12,6 +12,8 @@ use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 use Bio\NewExamBundle\Entity\Exam;
 use Bio\NewExamBundle\Entity\Question;
+use Bio\NewExamBundle\Entity\TestTaker;
+use Bio\NewExamBundle\Entity\Answer;
 
 /**
  * @Route("/exam")
@@ -44,16 +46,16 @@ class PublicController extends Controller
 
 			// get the appropriate test taker for the student/exam combo
 			$db = new Database($this, 'BioNewExamBundle:TestTaker');
-			$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
+			$taker = $db->findOne(array('student' => $session->get('student'), 'exam' => $exam));
 
 			if ($taker) {
 
 				if ($taker->getStatus() === 1) {
-					// redirect to start page
+					return $this->startAction($request, $exam, $taker);
 				}
 
 				if ($taker->getStatus() === 2) {
-					// redirect to test page
+					return $this->examAction($request, $exam, $taker);
 				}
 
 				if ($taker->getStatus() === 3) {
@@ -84,7 +86,7 @@ class PublicController extends Controller
 	 * 
 	 * status null
 	 */
-	private function signAction(Request $request, $exam) {
+	private function signAction(Request $request, $exam) { // TODO FIX THIS SHIT
 		// create form
 		$form = $this->createFormBuilder()
 			->add('sid', 'text', array('label' => 'Student ID:', 'mapped' => false, 'attr' => array('pattern' => '[0-9]{7}', 'title' => 'Seven digit student ID.')))
@@ -106,20 +108,29 @@ class PublicController extends Controller
 			// if student exists
 			if ($student) {
 
-				// create and add
-				$taker = new TestTaker();
-				$taker->setStatus(1)
-					->setStudent($student)
-					->setExam($exam);
+				// see if they've already started the exam
+				$db = new Database($this, 'BioNewExamBundle:TestTaker');
+				$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
 
-				$db->add($taker);	
-				$db->close();
+				// if not, create and add
+				if (!$taker) {
+					$taker = new TestTaker();
+					$taker->setStatus(1)
+						->setStudent($student)
+						->setExam($exam);
+
+					$db->add($taker);	
+					$db->close();
+				}
 
 				// make session and set flash message
+				$request->getSession()->invalidate();
 				$request->getSession()->set('student', $student);
 				$request->getSession()->getFlashBag()->set('success', 'Signed in.');
 
 				return $this->redirect($this->generateUrl('exam_entrance'));
+			} else {
+				$request->getSession()->getFlashBag()->set('failure', 'Could not find anyone with that last name or student ID.');
 			}
 		}
 
@@ -129,12 +140,32 @@ class PublicController extends Controller
 
 	/**
 	 * Counts down to test start, then makes start button available
+	 * 
 	 * status 1
-	 *
-	 * @Template()
 	 */
 	private function startAction(Request $request, $exam, $taker) {
+		// create form
+		$form = $this->createFormBuilder()
+			->add('start', 'submit')
+			->getForm();
 
+		// if they pressed submit
+		if ($request->getMethod() === "POST") {
+
+			// if the exam has started
+			if ($exam->getStart() <= new \DateTime()) {
+				$db = new Database($this, 'BioNewExamBundle:TestTaker'); // so I can close it
+				$taker->setStatus(2);
+				$db->close();
+
+				$request->getSession()->getFlashBag()->set('success', 'Exam started.');
+				return $this->redirect($this->generateUrl('exam_entrance'));
+			} else {
+				// INSPECT ELEMENT CHEATERS GO HERE!
+				$request->getSession()->getFlashBag()->set('failure', 'Exam has not started yet.');
+			}
+		}
+		return $this->render('BioNewExamBundle:Public:start.html.twig', array('form' => $form->createView(), 'exam' => $exam, 'title' => 'Begin Test'));
 	}
 
 	/**
@@ -144,14 +175,54 @@ class PublicController extends Controller
 	 * @Template()
 	 */
 	private function examAction(Request $request, $exam, $taker) {
+		// if they submitted the exam
+		if ($request->getMethod() === "POST") {
+			$db = new Database($this, 'BioNewExamBundle:Answer');
+			// if the number of keys match up
+			if (count($request->request->keys()) === count($exam->getQuestions())){
+				foreach($request->request->keys() as $key) {
 
+					// check if the question ids match the questions in the exam
+					if ($questionArray = $exam->getQuestions()->filter(function($q) use ($key) {
+						return $q->getId() === $key;
+					})->toArray()){
+
+						// check if the taker has already answered the question
+						$question = $questionArray[0];
+						if ($answerArray = $taker->getAnswers()->filter(function($a) use ($question) {
+							return $a->getQuestion() === $question;
+						})->toArray()) {
+							$answer = $answerArray[0];
+							$answer->setAnswer($request->request->get($key));
+						} else {
+							$answer = new Answer();
+							$answer->setQuestion($questionArray[0])
+								->setAnswer($request->request->get($key))
+								->setTestTaker($taker);
+							$taker->addAnswer($answer);
+							$db->add($answer);
+						}
+					} else {
+
+						// if they don't match, fail
+						$request->getSession()->getFlashBag()->set('failure', 'Error');
+						return $this->render('BioNewExamBundle:Public:exam.html.twig', array('exam' => $exam, 'taker' => $taker, 'title' => $exam->getName()));
+					}
+				}
+				$taker->setStatus(3);
+				$db->close();
+				return $this->redirect($this->generateUrl('exam_entrance'));
+			} else {
+				$request->getSession()->getFlashBag()->set('failure', 'You need to fill out every question.');
+			}
+		}
+		return $this->render('BioNewExamBundle:Public:exam.html.twig', array('exam' => $exam, 'taker' => $taker, 'title' => $exam->getTitle()));
 	}
 
 	/**
 	 * Allows user to review exam and either go back to change or submit answers
-	 * status 3
 	 *
-	 * @Template()
+	 * status 3
 	 */
 	private function reviewAction(Request $request, $exam, $taker) {
 
@@ -159,9 +230,8 @@ class PublicController extends Controller
 
 	/**
 	 * User waits here until they have someone to grade
-	 * status 4
 	 *
-	 * @Template()
+	 * status 4
 	 */
 	private function waitAction(Request $request, $exam, $taker) {
 
@@ -169,9 +239,8 @@ class PublicController extends Controller
 
 	/**
 	 * User grades another users' test, status is incremented up/down depending on tests graded
-	 * status 5
 	 *
-	 * @Template()
+	 * status 5
 	 */
 	private function gradeAction(Request $request, $exam, $taker) {
 

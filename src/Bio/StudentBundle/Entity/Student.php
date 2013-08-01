@@ -20,7 +20,7 @@ class Student
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
@@ -28,7 +28,7 @@ class Student
      * @ORM\Column(name="sid", type="privatestring", unique=true)
      * @Assert\NotBlank()
      */
-    private $sid;
+    protected $sid;
 
     /**
      * @var string
@@ -36,7 +36,7 @@ class Student
      * @ORM\Column(name="fName", type="string", length=50)
      * @Assert\NotBlank()
      */
-    private $fName;
+    protected $fName;
 
     /**
      * @var string
@@ -44,7 +44,7 @@ class Student
      * @ORM\Column(name="lName", type="string", length=50)
      * @Assert\NotBlank()
      */
-    private $lName;
+    protected $lName;
 
     /**
      * @var string
@@ -52,7 +52,7 @@ class Student
      *@ORM\Column(name="section", type="string", length=2)
      *@Assert\NotBlank()
      */
-    private $section;
+    protected $section;
 
     /**
      * @var string
@@ -60,7 +60,7 @@ class Student
      * @ORM\Column(name="email", type="privatestring", unique=true)
      * @Assert\NotBlank()
      */
-    private $email;
+    protected $email;
 
 
     /**
