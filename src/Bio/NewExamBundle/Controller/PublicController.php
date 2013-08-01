@@ -51,27 +51,27 @@ class PublicController extends Controller
 			if ($taker) {
 
 				if ($taker->getStatus() === 1) {
-					return $this->startAction($request, $exam, $taker);
+					return $this->startAction($request, $exam, $taker, $db);
 				}
 
 				if ($taker->getStatus() === 2) {
-					return $this->examAction($request, $exam, $taker);
+					return $this->examAction($request, $exam, $taker, $db);
 				}
 
 				if ($taker->getStatus() === 3) {
-					return $this->reviewAction($request, $exam, $taker);
+					return $this->reviewAction($request, $exam, $taker, $db);
 				}
 
 				if ($taker->getStatus() === 4) {
-					return $this->waitAction($request, $exam, $taker);
+					return $this->waitAction($request, $exam, $taker, $db);
 				}
 
 				if ($taker->getStatus() === 5) {
-					// redirect to grade page
+					return $this->gradeAction($request, $exam, $taker, $db);
 				}
 
 				if ($taker->getStatus() === 6) {
-					// done! redirect to main page with confirmation
+					$flash->set('success', "You've already finished this exam.");
 				}
 			} else {
 				$flash->set('failure', 'Not signed in.');
@@ -143,7 +143,7 @@ class PublicController extends Controller
 	 * 
 	 * status 1
 	 */
-	private function startAction(Request $request, $exam, $taker) {
+	private function startAction(Request $request, $exam, $taker, $db) {
 		// create form
 		$form = $this->createFormBuilder()
 			->add('start', 'submit')
@@ -154,7 +154,6 @@ class PublicController extends Controller
 
 			// if the exam has started
 			if ($exam->getStart() <= new \DateTime()) {
-				$db = new Database($this, 'BioNewExamBundle:TestTaker'); // so I can close it
 				$taker->setStatus(2);
 				$db->close();
 
@@ -174,10 +173,9 @@ class PublicController extends Controller
 	 *
 	 * @Template()
 	 */
-	private function examAction(Request $request, $exam, $taker) {
+	private function examAction(Request $request, $exam, $taker, $db) {
 		// if they submitted the exam
 		if ($request->getMethod() === "POST") {
-			$db = new Database($this, 'BioNewExamBundle:Answer');
 			// if the number of keys match up
 			if (count($request->request->keys()) === count($exam->getQuestions())){
 				foreach($request->request->keys() as $key) {
@@ -227,7 +225,7 @@ class PublicController extends Controller
 	 *
 	 * status 3
 	 */
-	private function reviewAction(Request $request, $exam, $taker) {
+	private function reviewAction(Request $request, $exam, $taker, $db) {
 		// make form
 		$form = $this->createFormBuilder()
 			->add('edit', 'submit')
@@ -237,7 +235,6 @@ class PublicController extends Controller
 		// if they pressed a button (doesn't matter which)
 		if ($request->getMethod() === "POST") {
 			$form->handleRequest($request);
-			$db = new Database($this, 'BioNewExamBundle:TestTaker');
 
 			// if they want to edit their answers
 			if ($form->get('edit')->isClicked()) {
@@ -265,7 +262,7 @@ class PublicController extends Controller
 	 *
 	 * status 4
 	 */
-	private function waitAction(Request $request, $exam, $taker) {
+	private function waitAction(Request $request, $exam, $taker, $db) {
 		// if they pressed the grade button
 		$target = null;
 		try {
@@ -277,9 +274,9 @@ class PublicController extends Controller
 		if ($request->getMethod() === "POST") {
 			// if there actually was a match
 			if ($target !== null) {
-				$db = new Database($this, 'BioNewExamBundle:TestTaker');
 				$taker->setStatus(5)
 					->setGrading($target);
+				$target->addGradedBy($taker);
 				$db->close();
 
 				return $this->redirect($this->generateUrl('exam_entrance'));
@@ -294,8 +291,39 @@ class PublicController extends Controller
 	 *
 	 * status 5
 	 */
-	private function gradeAction(Request $request, $exam, $taker) {
+	private function gradeAction(Request $request, $exam, $taker, $db) {
+		if ($request->getMethod() === "POST") {
+			if (count($request->request->keys()) !== count($exam->getQuestions())) {
+				// throw error
+			}
+			$targetAnswers = $taker->getGrading()->getAnswers();
+			foreach($request->request->keys() as $key) { // keys are answer ids
+				// finds the answer from the possible answers using the answer key
+				if ($answerArray = $targetAnswers->filter(function($a) use($key) {
+					return $a->getId() === $key;
+				})->toArray()){
+					reset($answerArray);
+					$answer = current($answerArray);
+					$answer->addPoint($request->request->get($key));
+				} else {
+					// throw error
+				}
+			}
+			$taker->addGraded($taker->getGrading())
+				->setGrading(null);
 
+			if (count($taker->getGrading()) < 2) {
+				$request->getSession()->getFlashBag()->set('success', 'Test graded. '.(2-count($taker->getGraded()).' left.'));
+				$taker->setStatus(4);
+			} else {
+				$request->getSession()->getFlashBag()->set('success', 'Finished.');
+				$taker->setStatus(6);
+			}
+			$db->close();
+			return $this->redirect($this->generateUrl('exam_entrance'));
+		}
+
+		return $this->render('BioNewExamBundle:Public:grade.html.twig', array('exam' => $exam, 'taker' => $taker->getGrading(), 'title' => 'Grade Exam'));
 	}
 
 	/**
@@ -316,11 +344,11 @@ class PublicController extends Controller
 			}
 
 			try {
-				$this->match($you);
+				
+				return array('success' => true, 'message' => $this->match($you)->getStudent()->getSid());
 			} catch (BioException $e) {
 				return array('success' => false, 'message' => $e->getMessage());
 			}
-			return array('success' => true);
 		}
 		return array('success' => false, 'message' => 'Invalid post request.');
 	}
@@ -340,7 +368,6 @@ class PublicController extends Controller
 				AND t.status >= 4
 				ORDER BY c
 			');
-		// do we need group by ^
 
 		$query->setParameter('exam', $you->getExam());
 		$query->setParameter('id', $you->getId());
@@ -354,7 +381,7 @@ class PublicController extends Controller
 		$target = null;
 		for ($i = 0; $i < count($targets); $i++) {
 			if (!$you->getGraded()->contains($targets[$i][0]) ) {
-				$target = $targets[$i];
+				$target = $targets[$i][0];
 				break;
 			}
 		}
@@ -362,7 +389,7 @@ class PublicController extends Controller
 		if ($target === null) {
 			throw new BioException("No other tests.");
 		}
-		return $target[0];
+		return $target;
 	}
 
 	private function getNextExam() {

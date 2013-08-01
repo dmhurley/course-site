@@ -93,6 +93,10 @@ class Answer
         return $this;
     }
 
+    public function addPoint($point) {
+        $this->points[] = $point;
+    }
+
     /**
      * Get points
      *
