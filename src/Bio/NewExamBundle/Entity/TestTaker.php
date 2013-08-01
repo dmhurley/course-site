@@ -42,8 +42,12 @@ class TestTaker
      */
     private $vars;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="TestTaker", mappedBy="gradedBy")
+    /** 
+     * @ORM\ManyToMany(targetEntity="TestTaker")
+     * @ORM\JoinTable(name="graded",
+     *      joinColumns={@ORM\JoinColumn(name="you_id", referencedColumnName="id", onDelete="CASCADE")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="target_id", referencedColumnName="id", onDelete="CASCADE")}
+     * )
      */
     private $graded;
 
@@ -54,9 +58,9 @@ class TestTaker
     private $grading;
 
     /** 
-     * @ORM\ManyToMany(targetEntity="TestTaker", inversedBy="graded")
-     * @ORM\JoinTable(name="graders",
-     *      joinColumns={@ORM\JoinColumn(name="grader_id", referencedColumnName="id", onDelete="CASCADE")},
+     * @ORM\ManyToMany(targetEntity="TestTaker")
+     * @ORM\JoinTable(name="graded_by",
+     *      joinColumns={@ORM\JoinColumn(name="you_id", referencedColumnName="id", onDelete="CASCADE")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="target_id", referencedColumnName="id", onDelete="CASCADE")}
      * )
      */

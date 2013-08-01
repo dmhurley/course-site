@@ -294,7 +294,8 @@ class PublicController extends Controller
 	private function gradeAction(Request $request, $exam, $taker, $db) {
 		if ($request->getMethod() === "POST") {
 			if (count($request->request->keys()) !== count($exam->getQuestions())) {
-				// throw error
+				$request->getSession()->getFlashBag()->set('failure', 'Answer all the questions.');
+				return $this->render('BioNewExamBundle:Public:grade.html.twig', array('exam' => $exam, 'taker' => $taker->getGrading(), 'title' => 'Grade Exam'));
 			}
 			$targetAnswers = $taker->getGrading()->getAnswers();
 			foreach($request->request->keys() as $key) { // keys are answer ids
@@ -306,13 +307,14 @@ class PublicController extends Controller
 					$answer = current($answerArray);
 					$answer->addPoint($request->request->get($key));
 				} else {
-					// throw error
+					$request->getSession()->getFlashBag()->set('failure', "Error.");
+				return $this->render('BioNewExamBundle:Public:grade.html.twig', array('exam' => $exam, 'taker' => $taker->getGrading(), 'title' => 'Grade Exam'));
 				}
 			}
 			$taker->addGraded($taker->getGrading())
 				->setGrading(null);
 
-			if (count($taker->getGrading()) < 2) {
+			if (count($taker->getGraded()) < 2) {
 				$request->getSession()->getFlashBag()->set('success', 'Test graded. '.(2-count($taker->getGraded()).' left.'));
 				$taker->setStatus(4);
 			} else {
@@ -344,7 +346,6 @@ class PublicController extends Controller
 			}
 
 			try {
-				
 				return array('success' => true, 'message' => $this->match($you)->getStudent()->getSid());
 			} catch (BioException $e) {
 				return array('success' => false, 'message' => $e->getMessage());
@@ -366,6 +367,7 @@ class PublicController extends Controller
 				WHERE t.exam = :exam
 				AND t.id <> :id
 				AND t.status >= 4
+				GROUP BY t.id
 				ORDER BY c
 			');
 
@@ -375,7 +377,7 @@ class PublicController extends Controller
 		$targets = $query->getResult();
 
 		if (count($targets) === 0) {
-			throw new BioException("No other tests.");
+			throw new BioException("No other ssss.");
 		}
 
 		$target = null;
