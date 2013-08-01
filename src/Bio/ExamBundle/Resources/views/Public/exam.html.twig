@@ -1,4 +1,4 @@
-{% extends 'BioNewExamBundle:Public:main.html.twig' %}
+{% extends 'BioExamBundle:Public:main.html.twig' %}
 
 {% block head %}
 	{{ parent() }}
@@ -33,6 +33,6 @@
 	</form>
 	{{parent()}}
 	{% if taker is defined %}
-		{% include 'BioNewExamBundle:Public:timer.html.twig' %}
+		{% include 'BioExamBundle:Public:timer.html.twig' %}
 	{% endif %}
 {% endblock %}

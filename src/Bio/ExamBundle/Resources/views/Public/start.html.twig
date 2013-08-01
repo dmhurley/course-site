@@ -1,4 +1,4 @@
-{% extends 'BioNewExamBundle:Public:main.html.twig' %}
+{% extends 'BioExamBundle:Public:main.html.twig' %}
 
 {% block content %}
 	<p> Welcome {{app.session.get('student').fName}}, once you begin this test you will have either {{exam.duration}} minutes or until {{exam.end|date('H:i:s')}} to complete it. There will be more text here about what happens after the test, and what rules there are during the test, open notes, open book, etc... Maybe some more words about the the test... The start button will appear, and you can begin <b><span id="time"></span></b>.</p>

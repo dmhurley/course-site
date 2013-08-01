@@ -29,18 +29,11 @@ class Answer
     private $answer;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Question")
-     * @ORM\JoinColumn(name="questionID", referencedColumnName="id", onDelete="CASCADE")
-     **/
-    private $question;
-
-    /**
-     * @ORM\ManyToMany(targetEntity="TestTaker")
-     * @ORM\JoinTable(name="answer_graders",
-     *      joinColumns={@ORM\JoinColumn(name="answerID", referencedColumnName="id", onDelete="CASCADE")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="takerID", referencedColumnName="id", onDelete="CASCADE")})
-     **/
-    private $graders;
+     * @var array
+     *
+     * @ORM\Column(name="points", type="array")
+     */
+    private $points;
 
     /**
      * @ORM\ManyToOne(targetEntity="TestTaker", inversedBy="answers")
@@ -49,16 +42,10 @@ class Answer
     private $testTaker;
 
     /**
-     * @var array
-     *
-     * @ORM\Column(name="points", type="array")
-     */
-    private $points;
-
-    public function __construct() {
-        $this->graders = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->points = array();
-    }
+     * @ORM\ManyToOne(targetEntity="Question")
+     * @ORM\JoinColumn(name="questionID", referencedColumnName="id", onDelete="CASCADE")
+     **/
+    private $question;
 
     /**
      * Get id
@@ -106,6 +93,10 @@ class Answer
         return $this;
     }
 
+    public function addPoint($point) {
+        $this->points[] = $point;
+    }
+
     /**
      * Get points
      *
@@ -114,68 +105,6 @@ class Answer
     public function getPoints()
     {
         return $this->points;
-    }
-
-    public function addPoint($point) {
-        $this->points[0] = $point;
-
-        return $this;
-    }
-
-    /**
-     * Set question
-     *
-     * @param \Bio\ExamBundle\Entity\Question $question
-     * @return Answer
-     */
-    public function setQuestion(\Bio\ExamBundle\Entity\Question $question = null)
-    {
-        $this->question = $question;
-    
-        return $this;
-    }
-
-    /**
-     * Get question
-     *
-     * @return \Bio\ExamBundle\Entity\Question 
-     */
-    public function getQuestion()
-    {
-        return $this->question;
-    }
-
-    /**
-     * Add graders
-     *
-     * @param \Bio\ExamBundle\Entity\TestTaker $graders
-     * @return Answer
-     */
-    public function addGrader(\Bio\ExamBundle\Entity\TestTaker $graders)
-    {
-        $this->graders[] = $graders;
-    
-        return $this;
-    }
-
-    /**
-     * Remove graders
-     *
-     * @param \Bio\ExamBundle\Entity\TestTaker $graders
-     */
-    public function removeGrader(\Bio\ExamBundle\Entity\TestTaker $graders)
-    {
-        $this->graders->removeElement($graders);
-    }
-
-    /**
-     * Get graders
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getGraders()
-    {
-        return $this->graders;
     }
 
     /**
@@ -199,5 +128,28 @@ class Answer
     public function getTestTaker()
     {
         return $this->testTaker;
+    }
+
+    /**
+     * Set question
+     *
+     * @param \Bio\ExamBundle\Entity\Question $question
+     * @return Answer
+     */
+    public function setQuestion(\Bio\ExamBundle\Entity\Question $question = null)
+    {
+        $this->question = $question;
+    
+        return $this;
+    }
+
+    /**
+     * Get question
+     *
+     * @return \Bio\ExamBundle\Entity\Question 
+     */
+    public function getQuestion()
+    {
+        return $this->question;
     }
 }
