@@ -14,7 +14,7 @@ use Bio\ExamBundle\Entity\Exam;
 use Bio\ExamBundle\Entity\Question;
 
 /**
- * @Route("/admin/newexam")
+ * @Route("/admin/exam")
  */
 class AdminController extends Controller
 {
@@ -305,6 +305,27 @@ class AdminController extends Controller
         header('Expires: 0');
         header('Cache-Control: must-revalidate');
         header('Pragma: public');
+
+        echo "sid\tstatus\t";
+        for($i = 1; $i <= count($exam->getQuestions()); $i++) {
+            echo "q".$i."\ta".$i."\t";
+        }
+        echo "started\tfinished\tedited\late\n";
+
+        foreach ($takers as $taker) {
+            echo $taker->getStudent()->getSid()."\t";
+            echo $taker->getStatus()."\t";
+            foreach($taker->getAnswers() as $answer) {
+                echo $answer->getQuestion()->getQuestion()."\t";
+                echo $answer->getAnswer()."\t";
+            }
+            // echo $taker->getTimecard()[2]."\t";
+            // echo $taker->getTimecard()[6]."\t";
+            echo "\t";
+            echo "\t";
+            echo $taker->getVars()['edited']."\t";
+            echo "false\n";
+        }
 
         return array('text' => '');
     }
