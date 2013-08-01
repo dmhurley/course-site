@@ -59,7 +59,7 @@ class PublicController extends Controller
 				}
 
 				if ($taker->getStatus() === 3) {
-					// redirect to review page
+					return $this->reviewAction($request, $exam, $taker);
 				}
 
 				if ($taker->getStatus() === 4) {
@@ -86,7 +86,7 @@ class PublicController extends Controller
 	 * 
 	 * status null
 	 */
-	private function signAction(Request $request, $exam) { // TODO FIX THIS SHIT
+	private function signAction(Request $request, $exam) {
 		// create form
 		$form = $this->createFormBuilder()
 			->add('sid', 'text', array('label' => 'Student ID:', 'mapped' => false, 'attr' => array('pattern' => '[0-9]{7}', 'title' => 'Seven digit student ID.')))
@@ -192,9 +192,11 @@ class PublicController extends Controller
 						if ($answerArray = $taker->getAnswers()->filter(function($a) use ($question) {
 							return $a->getQuestion() === $question;
 						})->toArray()) {
+							// if they have update the answer
 							$answer = $answerArray[0];
 							$answer->setAnswer($request->request->get($key));
 						} else {
+							// if they haven't update the answer
 							$answer = new Answer();
 							$answer->setQuestion($questionArray[0])
 								->setAnswer($request->request->get($key))
@@ -225,7 +227,45 @@ class PublicController extends Controller
 	 * status 3
 	 */
 	private function reviewAction(Request $request, $exam, $taker) {
+		// make form
+		$form = $this->createFormBuilder()
+			->add('edit', 'submit')
+			->add('submit', 'submit')
+			->getForm();
 
+		// if they pressed a button (doesn't matter which)
+		if ($request->getMethod() === "POST") {
+			$form->handleRequest($request);
+			$db = new Database($this, 'BioNewExamBundle:TestTaker');
+
+			// if they want to edit their answers
+			if ($form->get('edit')->isClicked()) {
+				$taker->setStatus(2); // decrement status
+				$taker->setVar('edited', true); // save that they edited it
+				$db->close();
+				$request->getSession()->getFlashBag()->set('success', 'Answers saved.');
+				return $this->redirect($this->generateUrl('exam_entrance'));
+
+			// if they want to submit their answers
+			} else if ($form->get('submit')->isClicked()) {
+				$taker->setStatus(4); // increment
+
+				// check to see if they went over the timelimit
+				$diff = date_diff($taker->getTimecard()[4], $taker->getTimecard()[2]);
+				$duration = new \DateInterval('PT'.$exam->getDuration()."M");
+				if ($diff->format('%Y-%M-%D %H:%I:%S') > $duration->format('%Y-%M-%D %H:%I:%S') ){
+					$request->getSession()->getFlashBag()->set('success', 'Went over time limit. Answers saved.');
+					$taker->setVar('late', true);
+				} else {
+					$request->getSession()->getFlashBag()->set('success', 'Exam submitted.');
+				}
+				$db->close();
+
+				return $this->redirect($this->generateUrl('exam_entrance'));
+			}
+		}
+
+		return $this->render('BioNewExamBundle:Public:review.html.twig', array('form' => $form->createView(), 'taker' => $taker, 'exam' => $exam));
 	}
 
 	/**

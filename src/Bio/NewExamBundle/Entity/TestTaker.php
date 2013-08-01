@@ -143,6 +143,12 @@ class TestTaker
         return $this;
     }
 
+    public function setVar($key, $value) {
+        $this->vars[$key] = $value;
+
+        return $this;
+    }
+
     /**
      * Get vars
      *
@@ -152,6 +158,11 @@ class TestTaker
     {
         return $this->vars;
     }
+
+    public function getVar($key) {
+        return $this->vars[$key];
+    }
+
     /**
      * Constructor
      */
