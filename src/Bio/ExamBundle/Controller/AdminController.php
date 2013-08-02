@@ -12,6 +12,7 @@ use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 use Bio\ExamBundle\Entity\Exam;
 use Bio\ExamBundle\Entity\Question;
+use Bio\ExamBundle\Entity\ExamGlobal;
 
 /**
  * @Route("/admin/exam")
@@ -34,38 +35,62 @@ class AdminController extends Controller
     public function examAction(Request $request)
     {
         $exam = new Exam();
-    	$form = $this->createFormBuilder($exam)
+    	$form = $this->get('form.factory')->createNamedBuilder('form', 'form', $exam)
     		->add('title', 'text', array('label'=>'Exam Name:'))
-    		->add('date', 'date', array('label' => 'Date:'))
-    		->add('start', 'time', array('label'=>'Start Time:'))
-    		->add('end', 'time', array('label'=>'End Time:'))
-    		->add('duration', 'integer', array('label'=>'Duration (m):'))
+    		->add('tDate', 'date', array('label' => 'Test Date:'))
+    		->add('tStart', 'time', array('label'=>'Test Start:'))
+    		->add('tEnd', 'time', array('label'=>'Test End:'))
+    		->add('tDuration', 'integer', array('label'=>'Test Length (m):'))
+            ->add('gDate', 'date', array('label' => 'Grading Date:'))
+            ->add('gStart', 'time', array('label'=>'Grading Start:'))
+            ->add('gEnd', 'time', array('label'=>'Grading End:'))
+            ->add('gDuration', 'integer', array('label'=>'Grade Length (m):'))
    			->add('add', 'submit')
    			->getForm();
 
+        $db = new Database($this, 'BioExamBundle:ExamGlobal');
+        $global = $db->findOne(array());
+        $globalForm = $this->get('form.factory')->createNamedBuilder('global', 'form', $global)
+            ->add('grade', 'integer', array('label' => "Tests To Grade:"))
+            ->add('rules', 'textarea', array('label' => "Test Rules:"))
+            ->add('set', 'submit')
+            ->getForm();
+
    		$emptyForm = clone $form;
 
-   		$db = new Database($this, 'BioExamBundle:Exam');
-
    		if ($request->getMethod() === "POST") {
-   			$form->handleRequest($request);
+            if ($request->request->has('form')) {
+       			$form->handleRequest($request);
 
-   			if ($form->isValid()) {
-   				$db->add($exam);
-                try {
-   				    $db->close();
-                    $request->getSession()->getFlashBag()->set('success', 'Exam added.');
-                } catch (BioException $e) {
-                    $request->getSession()->getFlashBag()->set('failure', 'Unable to save exam.');
+       			if ($form->isValid()) {
+       				$db->add($exam);
+       			} else {
+                    $request->getSession()->getFlashBag()->set('failure', 'Form is invalid.');
                 }
-   			} else {
-                $request->getSession()->getFlashBag()->set('failure', 'Form is invalid.');
+                $form = $emptyForm;
             }
-            $form = $emptyForm;
-   		}
 
-   		$exams = $db->find(array(), array('date' => 'ASC'), false);
-    	return array('form' => $form->createView(), 'exams' => $exams, 'title' => 'Manage Exams');
+            if ($request->request->has('global')) {
+                $globalForm->handleRequest($request);
+
+                if ($form->isValid()) {
+                    $dbGlobal = $db->findOne(array());
+
+                    $dbGlobal->setGrade($global->getGrade())
+                        ->setRules($global->getRules());
+                }
+            }
+   		}
+        try {
+            $db->close();
+            $request->getSession()->getFlashBag()->set('success', 'Saved change.');
+        } catch (BioException $e) {
+            $request->getSession()->getFlashBag()->set('failure', 'Unable to save change.');
+        }
+
+        $db = new Database($this, 'BioExamBundle:Exam');
+   		$exams = $db->find(array(), array('tDate' => 'ASC'), false);
+    	return array('form' => $form->createView(), 'globalForm' => $globalForm->createView(), 'exams' => $exams, 'title' => 'Manage Exams');
     }
 
     /**
@@ -114,10 +139,14 @@ class AdminController extends Controller
 
 		$form = $this->createFormBuilder($exam)
 			->add('title', 'text', array('label'=>'Exam Name:'))
-    		->add('date', 'date', array('label' => 'Date:'))
-    		->add('start', 'time', array('label'=>'Start Time:'))
-    		->add('end', 'time', array('label'=>'End Time:'))
-    		->add('duration', 'integer', array('label'=>'Duration (m):'))
+    		->add('tDate', 'date', array('label' => 'Date:'))
+    		->add('tStart', 'time', array('label'=>'Start Time:'))
+    		->add('tEnd', 'time', array('label'=>'End Time:'))
+    		->add('tDuration', 'integer', array('label'=>'Duration (m):'))
+            ->add('gDate', 'date', array('label' => 'Grading Date:'))
+            ->add('gStart', 'time', array('label'=>'Grading Start:'))
+            ->add('gEnd', 'time', array('label'=>'Grading End:'))
+            ->add('gDuration', 'integer', array('label'=>'Grade Length (m):'))
     		->add('questions', 'entity', array('class' => 'BioExamBundle:Question', 'property'=>'formattedQuestion', 'multiple' => true, 'expanded'=> true))
     		->add('id', 'hidden')
    			->add('edit', 'submit')
@@ -129,10 +158,14 @@ class AdminController extends Controller
 	   		if ($form->isValid()) {
 	   			$dbExam = $db->findOne(array('id' => $exam->getId()));
 	   			$dbExam->setTitle($exam->getTitle())
-	   				->setDate($exam->getDate())
-	   				->setStart($exam->getStart())
-	   				->setEnd($exam->getEnd())
-	   				->setDuration($exam->getDuration())
+	   				->setTDate($exam->getTDate())
+	   				->setTStart($exam->getTStart())
+	   				->setTEnd($exam->getTEnd())
+	   				->setTDuration($exam->getTDuration())
+                    ->setGDate($exam->getGDate())
+                    ->setGStart($exam->getGStart())
+                    ->setGEnd($exam->getGEnd())
+                    ->setGDuration($exam->getGDuration())
 	   				->setQuestions($exam->getQuestions());
                     try {
 	   				    $db->close();

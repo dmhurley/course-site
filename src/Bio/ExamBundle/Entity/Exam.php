@@ -31,30 +31,58 @@ class Exam
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="date", type="date")
+     * @ORM\Column(name="tdate", type="date")
      */
-    private $date;
+    private $tDate;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="start", type="time")
+     * @ORM\Column(name="tstart", type="time")
      */
-    private $start;
+    private $tStart;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="end", type="time")
+     * @ORM\Column(name="tend", type="time")
      */
-    private $end;
+    private $tEnd;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="duration", type="integer")
+     * @ORM\Column(name="tduration", type="integer")
      */
-    private $duration;
+    private $Tduration;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="gdate", type="date")
+     */
+    private $gDate;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="gstart", type="time")
+     */
+    private $gStart;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="gend", type="time")
+     */
+    private $gEnd;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="gduration", type="integer")
+     */
+    private $gduration;
 
     /**
      * @ORM\ManyToMany(targetEntity="Question")
@@ -65,7 +93,8 @@ class Exam
     private $questions;
 
     public function __construct() {
-        $this->date = new \DateTime();
+        $this->tDate = new \DateTime();
+        $this->gDate = new \DateTime();
         $this->questions = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
@@ -109,98 +138,6 @@ class Exam
     }
 
     /**
-     * Set date
-     *
-     * @param \DateTime $date
-     * @return Exam
-     */
-    public function setDate($date)
-    {
-        $this->date = $date;
-    
-        return $this;
-    }
-
-    /**
-     * Get date
-     *
-     * @return \DateTime 
-     */
-    public function getDate()
-    {
-        return $this->date;
-    }
-
-    /**
-     * Set start
-     *
-     * @param \DateTime $start
-     * @return Exam
-     */
-    public function setStart($start)
-    {
-        $this->start = $start;
-    
-        return $this;
-    }
-
-    /**
-     * Get start
-     *
-     * @return \DateTime 
-     */
-    public function getStart()
-    {
-        return $this->start;
-    }
-
-    /**
-     * Set end
-     *
-     * @param \DateTime $end
-     * @return Exam
-     */
-    public function setEnd($end)
-    {
-        $this->end = $end;
-    
-        return $this;
-    }
-
-    /**
-     * Get end
-     *
-     * @return \DateTime 
-     */
-    public function getEnd()
-    {
-        return $this->end;
-    }
-
-    /**
-     * Set duration
-     *
-     * @param integer $duration
-     * @return Exam
-     */
-    public function setDuration($duration)
-    {
-        $this->duration = $duration;
-    
-        return $this;
-    }
-
-    /**
-     * Get duration
-     *
-     * @return integer 
-     */
-    public function getDuration()
-    {
-        return $this->duration;
-    }
-
-    /**
      * Add questions
      *
      * @param \Bio\ExamBundle\Entity\Question $questions
@@ -240,5 +177,189 @@ class Exam
         }
 
         return $this;
+    }
+
+    /**
+     * Set tDate
+     *
+     * @param \DateTime $tDate
+     * @return Exam
+     */
+    public function setTDate($tDate)
+    {
+        $this->tDate = $tDate;
+    
+        return $this;
+    }
+
+    /**
+     * Get tDate
+     *
+     * @return \DateTime 
+     */
+    public function getTDate()
+    {
+        return $this->tDate;
+    }
+
+    /**
+     * Set tStart
+     *
+     * @param \DateTime $tStart
+     * @return Exam
+     */
+    public function setTStart($tStart)
+    {
+        $this->tStart = $tStart;
+    
+        return $this;
+    }
+
+    /**
+     * Get tStart
+     *
+     * @return \DateTime 
+     */
+    public function getTStart()
+    {
+        return $this->tStart;
+    }
+
+    /**
+     * Set tEnd
+     *
+     * @param \DateTime $tEnd
+     * @return Exam
+     */
+    public function setTEnd($tEnd)
+    {
+        $this->tEnd = $tEnd;
+    
+        return $this;
+    }
+
+    /**
+     * Get tEnd
+     *
+     * @return \DateTime 
+     */
+    public function getTEnd()
+    {
+        return $this->tEnd;
+    }
+
+    /**
+     * Set Tduration
+     *
+     * @param integer $tduration
+     * @return Exam
+     */
+    public function setTduration($tduration)
+    {
+        $this->Tduration = $tduration;
+    
+        return $this;
+    }
+
+    /**
+     * Get Tduration
+     *
+     * @return integer 
+     */
+    public function getTduration()
+    {
+        return $this->Tduration;
+    }
+
+    /**
+     * Set gDate
+     *
+     * @param \DateTime $gDate
+     * @return Exam
+     */
+    public function setGDate($gDate)
+    {
+        $this->gDate = $gDate;
+    
+        return $this;
+    }
+
+    /**
+     * Get gDate
+     *
+     * @return \DateTime 
+     */
+    public function getGDate()
+    {
+        return $this->gDate;
+    }
+
+    /**
+     * Set gStart
+     *
+     * @param \DateTime $gStart
+     * @return Exam
+     */
+    public function setGStart($gStart)
+    {
+        $this->gStart = $gStart;
+    
+        return $this;
+    }
+
+    /**
+     * Get gStart
+     *
+     * @return \DateTime 
+     */
+    public function getGStart()
+    {
+        return $this->gStart;
+    }
+
+    /**
+     * Set gEnd
+     *
+     * @param \DateTime $gEnd
+     * @return Exam
+     */
+    public function setGEnd($gEnd)
+    {
+        $this->gEnd = $gEnd;
+    
+        return $this;
+    }
+
+    /**
+     * Get gEnd
+     *
+     * @return \DateTime 
+     */
+    public function getGEnd()
+    {
+        return $this->gEnd;
+    }
+
+    /**
+     * Set gduration
+     *
+     * @param integer $gduration
+     * @return Exam
+     */
+    public function setGduration($gduration)
+    {
+        $this->gduration = $gduration;
+    
+        return $this;
+    }
+
+    /**
+     * Get gduration
+     *
+     * @return integer 
+     */
+    public function getGduration()
+    {
+        return $this->gduration;
     }
 }
