@@ -12,10 +12,9 @@
 	<table>
 		<tr>
 			<th>Name</th>
+			<th>Section</th>
 			<th>Date</th>
 			<th>Start</th>
-			<th>End</th>
-			<th>Duration</th>
 			<th>Questions</th>
 			<th>Preview</th>
 			<th>Edit</th>
@@ -28,10 +27,9 @@
 				{% else %}
 					<td>{{exam.title}}</td>
 				{% endif %}
+				<td>{{exam.section}}</td>
 				<td>{{exam.tDate|date('m-d-y')}}</td>
 				<td>{{exam.tStart|date('h:i')}}</td>
-				<td>{{exam.tEnd|date('h:i')}}</td>
-				<td>{{exam.tDuration}} m</td>
 				<td>{{exam.questions|length}}</td>
 				<td><a href="{{ path('preview') }}?id={{exam.id}}&type=exam">preview</a></td>
 				<td><a href="{{ path('edit_exam') }}?id={{exam.id}}">edit</a></td>

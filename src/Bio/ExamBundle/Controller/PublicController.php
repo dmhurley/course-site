@@ -27,15 +27,6 @@ class PublicController extends Controller
 		$session = $request->getSession();
 		$flash = $session->getFlashBag();
 
-		// see if there is an exam in the future
-		// if not, redirect to main page with error
-		try {
-			$exam = $this->getNextExam();
-		} catch (BioException $e) {
-			$flash->set('failure', $e->getMessage());
-			return $this->redirect($this->generateUrl('main_page'));
-		}
-
 		// if url ends with ?logout, sign user out
 		if ($request->query->has('logout')) {
 			$session->invalidate();
@@ -43,6 +34,23 @@ class PublicController extends Controller
 
 		// if signed in
 		if ($session->has('student')) {
+
+			// get all exams where the grading period hasn't ended.
+			try {
+				$exams = $this->getNextExam($session->get('student'));
+			} catch (BioException $e) {
+				$flash->set('failure', $e->getMessage());
+				return $this->signAction($request);
+			}
+
+			$section = $session->get('student')->getSection();
+			
+
+			if (count($exams) === 0) {
+				
+			}
+
+			$exam = $exams[0];
 
 			// get the appropriate test taker for the student/exam combo
 			$db = new Database($this, 'BioExamBundle:TestTaker');
@@ -85,7 +93,7 @@ class PublicController extends Controller
 			}
 		}
 
-		return $this->signAction($request, $exam);
+		return $this->signAction($request);
 	}
 
 	/**
@@ -93,7 +101,7 @@ class PublicController extends Controller
 	 * 
 	 * status null
 	 */
-	private function signAction(Request $request, $exam) {
+	private function signAction(Request $request, $exam = null) {
 		// create form
 		$form = $this->createFormBuilder()
 			->add('sid', 'text', array('label' => 'Student ID:', 'mapped' => false, 'attr' => array('pattern' => '[0-9]{7}', 'title' => 'Seven digit student ID.')))
@@ -114,7 +122,14 @@ class PublicController extends Controller
 
 			// if student exists
 			if ($student) {
-
+				if ($exam === null) {
+					try {
+						$exam = $this->getNextExam($student);
+					} catch (BioException $e) {
+						$request->getSession()->getFlashBag()->set('failure', $e->getMessage());
+						return $this->redirect($this->generateUrl('exam_entrance'));
+					}
+				}
 				// see if they've already started the exam
 				$db = new Database($this, 'BioExamBundle:TestTaker');
 				$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
@@ -321,8 +336,11 @@ class PublicController extends Controller
 			$taker->addGraded($taker->getGrading())
 				->setGrading(null);
 
-			if (count($taker->getGraded()) < 2) {
-				$request->getSession()->getFlashBag()->set('success', 'Test graded. '.(2-count($taker->getGraded()).' left.'));
+			$db = new Database($this, 'BioExamBundle:ExamGlobal');
+			$global = $db->findOne(array());
+
+			if (count($taker->getGraded()) < $global->getGrade()) {
+				$request->getSession()->getFlashBag()->set('success', 'Test graded. '.($global->getGrade()-count($taker->getGraded()).' left.'));
 				$taker->setStatus(4);
 			} else {
 				$request->getSession()->getFlashBag()->set('success', 'Finished.');
@@ -401,31 +419,27 @@ class PublicController extends Controller
 		return $target;
 	}
 
-	private function getNextExam() {
+	private function getNextExam($student) {
 		$em = $this->getDoctrine()->getManager();
 		$query = $em->createQueryBuilder()
 			->select('p')
 			->from('BioExamBundle:Exam', 'p')
 			->where('p.gDate >= :date')
-			// ->andWhere('p.gEnd >= :time')
 			->addOrderBy('p.tDate', 'ASC')
 			->addOrderBy('p.tStart', 'ASC')
 			->setParameter('date', new \DateTime(), \Doctrine\DBAL\Types\Type::DATE)
-			// ->setParameter('time', new \DateTime(), \Doctrine\DBAL\Types\Type::TIME)
 			->getQuery();
 		$result = $query->getResult();
 
-		if (count($result) === 0) {
-			throw new BioException('No more scheduled exams.');
-		} else {
-			$exam = $result[0];
+		$section = $student->getSection();
+		$exams = array_filter($result, function($exam) use($section) {
+				return strpos($section, $exam->getSection()) === 0;
+			});
+
+		if (count($exams) === 0) {
+			throw new BioException("No more exams scheduled.");
 		}
 
-		// $diff = date_diff($exam->getTDate(), new \DateTime());
-		// if ($diff->days > 0) {
-		// 	throw new BioException('No scheduled exam in the next 24 hours.');
-		// } else {
-			return $exam;
-		// }
+		return $result;
 	}
 }

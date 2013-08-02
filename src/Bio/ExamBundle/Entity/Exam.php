@@ -29,6 +29,13 @@ class Exam
     private $title;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="section", type="string", length=2)
+     */
+    private $section;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="tdate", type="date")
@@ -361,5 +368,28 @@ class Exam
     public function getGduration()
     {
         return $this->gduration;
+    }
+
+    /**
+     * Set section
+     *
+     * @param string $section
+     * @return Exam
+     */
+    public function setSection($section)
+    {
+        $this->section = $section;
+    
+        return $this;
+    }
+
+    /**
+     * Get section
+     *
+     * @return string 
+     */
+    public function getSection()
+    {
+        return $this->section;
     }
 }
