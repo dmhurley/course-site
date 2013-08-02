@@ -1,9 +1,15 @@
 {% extends 'BioExamBundle:Public:main.html.twig' %}
 
 {% block content %}
-	<p> Welcome {{app.session.get('student').fName}}, once you begin this test you will have either {{exam.tDuration}} minutes or until {{exam.tEnd|date('H:i:s')}} to complete it.</p>
-
 	<p>{{global.rules}}</p>
+
+	<p>Once you begin this test you will have {{exam.tDuration}} minutes or until {{exam.tEnd|date('h:i a')}} to complete it. Grading will begin 
+	{% if date(exam.tDate|date('Y-m-d')~' '~exam.tStart|date('H:i:s')) >= date(exam.gDate|date('Y-m-d')~' '~exam.gStart|date('H:i:s')) %}
+		after you finish the test
+	{% else %}
+		{{exam.gDate|date('m/d')}} at {{exam.gStart|date('h:i a')}}
+	{% endif %} 
+	and lasts for {{exam.gDuration}} minutes or until {{exam.gEnd|date('h:i a')}}.</p>
 
 	<p>You can begin <b><span id="time"></span></b>.</p>
 	<div id="hidden" style="display:none;">

@@ -63,6 +63,13 @@ class PublicController extends Controller
 				}
 
 				if ($taker->getStatus() === 4) {
+					$date = new \DateTime();
+					$gradeStart = new \DateTime($exam->getGDate()->format("Y-m-d")." ".$exam->getGStart()->format("H:i:s"));
+
+					if ($date < $gradeStart) {
+						$flash->set('success', 'Answers submitted. Grading starts at '.$gradeStart->format('m/d').' at '. $gradeStart->format('h:i a').'.');
+						return $this->signAction($request, $exam);
+					}
 					return $this->waitAction($request, $exam, $taker, $db);
 				}
 
@@ -264,15 +271,14 @@ class PublicController extends Controller
 	 * status 4
 	 */
 	private function waitAction(Request $request, $exam, $taker, $db) {
-		// if they pressed the grade button
-		$target = null;
-		try {
-			$target = $this->match($taker);
-		} catch (BioException $e) {
-		}
-
 		// if the pressed submit
 		if ($request->getMethod() === "POST") {
+			$target = null;
+			try {
+				$target = $this->match($taker);
+			} catch (BioException $e) {
+			}
+
 			// if there actually was a match
 			if ($target !== null) {
 				$taker->setStatus(5)
@@ -400,7 +406,7 @@ class PublicController extends Controller
 		$query = $em->createQueryBuilder()
 			->select('p')
 			->from('BioExamBundle:Exam', 'p')
-			->where('p.tDate >= :date')
+			->where('p.gDate >= :date')
 			// ->andWhere('p.gEnd >= :time')
 			->addOrderBy('p.tDate', 'ASC')
 			->addOrderBy('p.tStart', 'ASC')
