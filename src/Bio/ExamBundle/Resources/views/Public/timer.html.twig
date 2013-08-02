@@ -27,6 +27,6 @@
 					})(this), 300);
 			this.updateTime();
 		}
-		timer = new Timer({{exam.duration}} ,"{{taker.timecard[2]|date('Y-m-d H:i:s')}}", "{{exam.date|date('Y-m-d')}} {{exam.end|date('H:i:s')}}");
+		timer = new Timer({{duration}} ,"{{taker.timecard[2]|date('Y-m-d H:i:s')}}", "{{end}}");
 	</script>
 </div>
