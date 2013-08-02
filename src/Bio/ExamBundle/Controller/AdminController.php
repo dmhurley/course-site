@@ -62,6 +62,12 @@ class AdminController extends Controller
    		if ($request->getMethod() === "POST") {
             if ($request->request->has('form')) {
        			$form->handleRequest($request);
+                try {
+                    $this->checkDates($exam);
+                } catch (BioException $e) {
+                    $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
+                    return $this->redirect($this->generateUrl('manage_exams'));
+                }
 
        			if ($form->isValid()) {
        				$db->add($exam);
@@ -81,13 +87,14 @@ class AdminController extends Controller
                         ->setRules($global->getRules());
                 }
             }
+
+            try {
+                $db->close();
+                $request->getSession()->getFlashBag()->set('success', 'Saved change.');
+            } catch (BioException $e) {
+                $request->getSession()->getFlashBag()->set('failure', 'Unable to save change.');
+            }
    		}
-        try {
-            $db->close();
-            $request->getSession()->getFlashBag()->set('success', 'Saved change.');
-        } catch (BioException $e) {
-            $request->getSession()->getFlashBag()->set('failure', 'Unable to save change.');
-        }
 
         $db = new Database($this, 'BioExamBundle:Exam');
    		$exams = $db->find(array(), array('tDate' => 'ASC'), false);
@@ -127,7 +134,7 @@ class AdminController extends Controller
 
     	$db = new Database($this, 'BioExamBundle:Exam');
 
-    	if ($request->getMethod() === "GET" && $request->query->get('id')) {
+    	if ($request->query->has('id')) {
     		$id = $request->query->get('id');
     		$exam = $db->findOne(array('id' => $id));
             if (!$exam) {
@@ -135,7 +142,8 @@ class AdminController extends Controller
                 return $this->redirect($this->generateUrl('manage_exams'));
             }
     	} else {
-    		$exam = new Exam();
+            $request->getSession()->getFlashBag()->set('failure', 'No ID given.');
+    		return $this->redirect($this->generateUrl('manage_exams'));
     	}
 
 		$form = $this->createFormBuilder($exam)
@@ -156,6 +164,13 @@ class AdminController extends Controller
 
     	if ($request->getMethod() === "POST") {
 	   		$form->handleRequest($request);
+
+             try {
+                $this->checkDates($exam);
+            } catch (BioException $e) {
+                $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
+                return $this->redirect($this->generateUrl('edit_exam')."?id=".$request->query->get('id'));
+            }
 
 	   		if ($form->isValid()) {
 	   			$dbExam = $db->findOne(array('id' => $exam->getId()));
@@ -364,5 +379,38 @@ class AdminController extends Controller
         }
 
         return array('text' => '');
+    }
+
+    private function checkDates($exam){
+        // exam checks
+        if ($exam->getTStart() >= $exam->getTEnd()) {
+            throw new BioException("Exam end cannot be before exam start.");
+        }
+
+        if (($exam->getTEnd()->getTimestamp() - $exam->getTStart()->getTimestamp())/60 < $exam->getGDuration() ) {
+            throw new BioException("Exam window must be longer than exam duration.");
+        }
+
+        // grading checks
+        if ($exam->getGStart() >= $exam->getGEnd()) {
+            throw new BioException("Grading end cannot be before grading start.");
+        }
+
+        if (($exam->getGEnd()->getTimestamp() - $exam->getGStart()->getTimestamp())/60 < $exam->getGDuration() ) {
+            throw new BioException("Grading window must be longer than grading duration.");
+        }
+
+        $testStart = new \DateTime($exam->getTDate()->format('Y-m-d ').$exam->getTStart()->format('H:i:s'));
+        $testEnd = new \DateTime($exam->getTDate()->format('Y-m-d ').$exam->getTEnd()->format('H:i:s'));
+        $gradeStart = new \DateTime($exam->getGDate()->format('Y-m-d ').$exam->getGStart()->format('H:i:s'));
+        $gradeEnd = new \DateTime($exam->getGDate()->format('Y-m-d ').$exam->getGEnd()->format('H:i:s'));
+
+       if ($gradeEnd <= $testEnd) {
+            throw new BioException("Grading cannot end before exam ends.");
+       }
+
+       if (($gradeEnd->getTimestamp() - $testStart->getTimestamp())/60 < ($exam->getTDuration() + $exam->getGDuration())) {
+            throw new BioException("Total window must be longer than total duration.");
+       }
     }
 }
