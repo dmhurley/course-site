@@ -40,7 +40,7 @@
 		</div>
 	</form>
 	{{parent()}}
-	{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':exam.gDuration, 'end':exam.gDate|date('Y-m-d') ~ ' ' ~ exam.gEnd|date('H:i:s'), 'taker':taker} only %}
+	{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':exam.gDuration, 'end':exam.gDate|date('Y-m-d') ~ ' ' ~ exam.gEnd|date('H:i:s'), 'start':start|date('Y-m-d H:i:s')} only %}
 {% endblock %}
 
 {% block java %}

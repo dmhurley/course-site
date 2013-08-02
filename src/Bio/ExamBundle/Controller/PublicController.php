@@ -37,20 +37,11 @@ class PublicController extends Controller
 
 			// get all exams where the grading period hasn't ended.
 			try {
-				$exams = $this->getNextExam($session->get('student'));
+				$exam = $this->getNextExam($session->get('student'));
 			} catch (BioException $e) {
 				$flash->set('failure', $e->getMessage());
 				return $this->signAction($request);
 			}
-
-			$section = $session->get('student')->getSection();
-			
-
-			if (count($exams) === 0) {
-				
-			}
-
-			$exam = $exams[0];
 
 			// get the appropriate test taker for the student/exam combo
 			$db = new Database($this, 'BioExamBundle:TestTaker');
@@ -317,7 +308,7 @@ class PublicController extends Controller
 		if ($request->getMethod() === "POST") {
 			if (count($request->request->keys()) !== count($exam->getQuestions())) {
 				$request->getSession()->getFlashBag()->set('failure', 'Answer all the questions.');
-				return $this->render('BioExamBundle:Public:grade.html.twig', array('exam' => $exam, 'taker' => $taker->getGrading(), 'title' => 'Grade Exam'));
+				return $this->render('BioExamBundle:Public:grade.html.twig', array('exam' => $exam, 'taker' => $taker->getGrading(), 'start' => $taker->getTimecard()[5], 'title' => 'Grade Exam'));
 			}
 			$targetAnswers = $taker->getGrading()->getAnswers();
 			foreach($request->request->keys() as $key) { // keys are answer ids
@@ -330,7 +321,7 @@ class PublicController extends Controller
 					$answer->addPoint($request->request->get($key));
 				} else {
 					$request->getSession()->getFlashBag()->set('failure', "Error.");
-				return $this->render('BioExamBundle:Public:grade.html.twig', array('exam' => $exam, 'taker' => $taker->getGrading(), 'title' => 'Grade Exam'));
+					return $this->render('BioExamBundle:Public:grade.html.twig', array('exam' => $exam, 'taker' => $taker->getGrading(), 'start' => $taker->getTimecard()[5], 'title' => 'Grade Exam'));
 				}
 			}
 			$taker->addGraded($taker->getGrading())
@@ -350,7 +341,7 @@ class PublicController extends Controller
 			return $this->redirect($this->generateUrl('exam_entrance'));
 		}
 
-		return $this->render('BioExamBundle:Public:grade.html.twig', array('exam' => $exam, 'taker' => $taker->getGrading(), 'title' => 'Grade Exam'));
+		return $this->render('BioExamBundle:Public:grade.html.twig', array('exam' => $exam, 'taker' => $taker->getGrading(), 'start' => $taker->getTimecard()[5], 'title' => 'Grade Exam'));
 	}
 
 	/**
@@ -440,6 +431,6 @@ class PublicController extends Controller
 			throw new BioException("No more exams scheduled.");
 		}
 
-		return $result;
+		return $exams[0];
 	}
 }
