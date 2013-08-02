@@ -27,7 +27,7 @@ class PublicController extends Controller
 		$session = $request->getSession();
 		$flash = $session->getFlashBag();
 
-		// see if there is an exam within the next 24 hours
+		// see if there is an exam in the future
 		// if not, redirect to main page with error
 		try {
 			$exam = $this->getNextExam();
@@ -134,7 +134,6 @@ class PublicController extends Controller
 			}
 		}
 
-
 		return $this->render('BioExamBundle:Public:sign.html.twig', array('form' => $form->createView(), 'title' => 'Sign In'));
 	}
 
@@ -153,7 +152,7 @@ class PublicController extends Controller
 		if ($request->getMethod() === "POST") {
 
 			// if the exam has started
-			if ($exam->getStart() <= new \DateTime()) {
+			if ($exam->getTStart() <= new \DateTime()) {
 				$taker->setStatus(2);
 				$db->close();
 
@@ -164,7 +163,9 @@ class PublicController extends Controller
 				$request->getSession()->getFlashBag()->set('failure', 'Exam has not started yet.');
 			}
 		}
-		return $this->render('BioExamBundle:Public:start.html.twig', array('form' => $form->createView(), 'exam' => $exam, 'title' => 'Begin Test'));
+		$db = new Database($this, 'BioExamBundle:ExamGlobal');
+		$global = $db->findOne(array());
+		return $this->render('BioExamBundle:Public:start.html.twig', array('form' => $form->createView(), 'global'=>$global, 'exam' => $exam, 'title' => 'Begin Test'));
 	}
 
 	/**
@@ -399,12 +400,12 @@ class PublicController extends Controller
 		$query = $em->createQueryBuilder()
 			->select('p')
 			->from('BioExamBundle:Exam', 'p')
-			->where('p.date >= :date')
-			->andWhere('p.end >= :time')
-			->addOrderBy('p.date', 'ASC')
-			->addOrderBy('p.start', 'ASC')
+			->where('p.tDate >= :date')
+			// ->andWhere('p.gEnd >= :time')
+			->addOrderBy('p.tDate', 'ASC')
+			->addOrderBy('p.tStart', 'ASC')
 			->setParameter('date', new \DateTime(), \Doctrine\DBAL\Types\Type::DATE)
-			->setParameter('time', new \DateTime(), \Doctrine\DBAL\Types\Type::TIME)
+			// ->setParameter('time', new \DateTime(), \Doctrine\DBAL\Types\Type::TIME)
 			->getQuery();
 		$result = $query->getResult();
 
@@ -414,11 +415,11 @@ class PublicController extends Controller
 			$exam = $result[0];
 		}
 
-		$diff = date_diff($exam->getDate(), new \DateTime());
-		if ($diff->days > 0) {
-			throw new BioException('No scheduled exam in the next 24 hours.');
-		} else {
+		// $diff = date_diff($exam->getTDate(), new \DateTime());
+		// if ($diff->days > 0) {
+		// 	throw new BioException('No scheduled exam in the next 24 hours.');
+		// } else {
 			return $exam;
-		}
+		// }
 	}
 }

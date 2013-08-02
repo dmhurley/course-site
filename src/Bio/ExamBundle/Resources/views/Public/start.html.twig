@@ -1,7 +1,11 @@
 {% extends 'BioExamBundle:Public:main.html.twig' %}
 
 {% block content %}
-	<p> Welcome {{app.session.get('student').fName}}, once you begin this test you will have either {{exam.duration}} minutes or until {{exam.end|date('H:i:s')}} to complete it. There will be more text here about what happens after the test, and what rules there are during the test, open notes, open book, etc... Maybe some more words about the the test... The start button will appear, and you can begin <b><span id="time"></span></b>.</p>
+	<p> Welcome {{app.session.get('student').fName}}, once you begin this test you will have either {{exam.tDuration}} minutes or until {{exam.tEnd|date('H:i:s')}} to complete it.</p>
+
+	<p>{{global.rules}}</p>
+
+	<p>You can begin <b><span id="time"></span></b>.</p>
 	<div id="hidden" style="display:none;">
 		{{ form(form) }}
 	</div>
@@ -60,6 +64,6 @@
 			return string;
 		}
 
-		new Pinger("{{exam.start|date('Y-m-d H:i:s')}}")
+		new Pinger("{{exam.tStart|date('Y-m-d H:i:s')}}")
 	</script>
 {% endblock %}
