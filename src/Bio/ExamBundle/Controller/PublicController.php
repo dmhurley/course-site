@@ -318,7 +318,7 @@ class PublicController extends Controller
 				})->toArray()){
 					reset($answerArray);
 					$answer = current($answerArray);
-					$answer->addPoint($request->request->get($key));
+					$answer->addPoint($taker->getStudent()->getSid(), $request->request->get($key));
 				} else {
 					$request->getSession()->getFlashBag()->set('failure', "Error.");
 					return $this->render('BioExamBundle:Public:grade.html.twig', array('exam' => $exam, 'taker' => $taker->getGrading(), 'start' => $taker->getTimecard()[5], 'title' => 'Grade Exam'));

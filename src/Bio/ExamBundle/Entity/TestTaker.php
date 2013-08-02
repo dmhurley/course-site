@@ -102,7 +102,10 @@ class TestTaker
     public function setStatus($status)
     {
         $this->status = $status;
-        $this->timecard[$status] = new \DateTime();
+        
+        if (!isset($this->timecard[$status])) {
+            $this->timecard[$status] = new \DateTime();
+        }
     
         return $this;
     }

@@ -341,44 +341,23 @@ class AdminController extends Controller
 
     /**
      * @Route("/download/{id}", name="download_exam")
-     * @Template("BioFolderBundle:Download:download.html.twig")
+     * @Template("BioExamBundle:Admin:download.txt.twig")
      */
     public function downloadAction(Request $request, $id) {
         $db = new Database($this, 'BioExamBundle:Exam');
         $exam = $db->findOne(array('id' => $id));
         $db = new Database($this, 'BioExamBundle:TestTaker');
-        $takers = $db->find(array('exam' => $id), array(), false);
+        $takers = $db->find(array('exam' => $id), array('id' => 'ASC'), false);
 
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename='.$exam->getName().'.txt');
+        header('Content-Disposition: attachment; filename='.$exam->getTitle().'.txt');
         header('Content-Transfer-Encoding: binary');
         header('Expires: 0');
         header('Cache-Control: must-revalidate');
         header('Pragma: public');
 
-        echo "sid\tstatus\t";
-        for($i = 1; $i <= count($exam->getQuestions()); $i++) {
-            echo "q".$i."\ta".$i."\t";
-        }
-        echo "started\tfinished\tedited\late\n";
-
-        foreach ($takers as $taker) {
-            echo $taker->getStudent()->getSid()."\t";
-            echo $taker->getStatus()."\t";
-            foreach($taker->getAnswers() as $answer) {
-                echo $answer->getQuestion()->getQuestion()."\t";
-                echo $answer->getAnswer()."\t";
-            }
-            // echo $taker->getTimecard()[2]."\t";
-            // echo $taker->getTimecard()[6]."\t";
-            echo "\t";
-            echo "\t";
-            echo $taker->getVars()['edited']."\t";
-            echo "false\n";
-        }
-
-        return array('text' => '');
+        return array('takers' => $takers, 'exam' => $exam);
     }
 
     private function checkDates($exam){

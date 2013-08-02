@@ -93,8 +93,8 @@ class Answer
         return $this;
     }
 
-    public function addPoint($point) {
-        $this->points[] = $point;
+    public function addPoint($key, $point) {
+        $this->points[$key] = $point;
     }
 
     /**
