@@ -1,8 +1,0 @@
-ExamID	QuestionID	AnswerID	StudentID	graderID	Name	Section	Did Grade	grader score	Time (elapsed)	Time (seconds)	Time Entered	Time scored	Time scored (seconds)	Answer Count	Grade Time (seconds)	answer	score
-{% for t in takers %}
-{% for a in t.answers %}
-{% for g,p in a.points %}{{ exam.id }}
-	{{a.question.id}}	{{a.id}}	{{t.student.sid}}	{{g}}	{{t.student.lName}}, {{t.student.fName}}	{{t.student.section}}	Yes	0	-	-	-	-	-	-	-	{{a.answer}}	{{p}}
-{% endfor %}
-{% endfor %}
-{% endfor %}

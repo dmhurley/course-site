@@ -346,8 +346,12 @@ class AdminController extends Controller
     public function downloadAction(Request $request, $id) {
         $db = new Database($this, 'BioExamBundle:Exam');
         $exam = $db->findOne(array('id' => $id));
+
         $db = new Database($this, 'BioExamBundle:TestTaker');
         $takers = $db->find(array('exam' => $id), array('id' => 'ASC'), false);
+
+        $db = new Database($this, 'BioExamBundle:ExamGlobal');
+        $global = $db->findOne(array());
 
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');
@@ -357,7 +361,51 @@ class AdminController extends Controller
         header('Cache-Control: must-revalidate');
         header('Pragma: public');
 
-        return array('takers' => $takers, 'exam' => $exam);
+        echo "ExamID\t";
+        echo "QuestionID\t";
+        echo "AnswerID\t";
+        echo "StudentID\t";
+        echo "GraderID\t";
+        echo "Name\t";
+        echo "Section\t";
+        echo "Did Grade\t";
+        echo "grader score\t";
+        echo "Time (elapsed)\t";
+        echo "Time (s)\t";
+        echo "Time Entered\t";
+        echo "Time Scored\t";
+        echo "Time Scored (s)\t";
+        echo "Answer Count\t";
+        echo "Grade Time (s)\t";
+        echo "Answer\t";
+        echo "Score\n";
+
+        foreach ($takers as $taker) {
+            foreach ($taker->getAnswers() as $answer) {
+                foreach(array_keys($answer->getPoints()) as $key) {
+                    echo $exam->getId()."\t";
+                    echo $answer->getQuestion()->getId()."\t";
+                    echo $answer->getId()."\t";
+                    echo $taker->getStudent()->getSid()."\t";
+                    echo $key."\t";
+                    echo $taker->getStudent()->getLName().", ".$taker->getStudent()->getFName()."\t";
+                    echo $taker->getStudent()->getSection()."\t";
+                    echo (($count = count($taker->getGraded()) - $global->getGrade()) <= 0?"Yes":$count)."\t";
+                    echo "0\t";
+                    echo (($taker->getTimecard()[6]->getTimestamp() - $taker->getTimecard()[1]->getTimestamp())/60)."\t";
+                    echo $taker->getTimecard()[6]->getTimestamp() - $taker->getTimecard()[1]->getTimestamp()."\t";
+                    echo $taker->getTimecard()[4]->format("m-d-Y H:i:s")."\t";
+                    echo "-\t";
+                    echo "-\t";
+                    echo count($taker->getAnswers())."\t";
+                    echo "-\t";
+                    echo $answer->getAnswer()."\t";
+                    echo $answer->getPoints()[$key]."\n";
+                }
+            }
+        }
+
+        return array();
     }
 
     private function checkDates($exam){
