@@ -47,6 +47,10 @@ class Answer
      **/
     private $question;
 
+    public function __construct() {
+        $this->points = array();
+    }
+
     /**
      * Get id
      *
