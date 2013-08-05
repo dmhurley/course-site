@@ -377,4 +377,17 @@ class TestTaker
     public function getNumGraded() {
         return $this->numGraded;
     }
+
+    /**
+     * Set numGraded
+     *
+     * @param integer $numGraded
+     * @return TestTaker
+     */
+    public function setNumGraded($numGraded)
+    {
+        $this->numGraded = $numGraded;
+    
+        return $this;
+    }
 }

@@ -29,15 +29,13 @@ class Answer
     private $answer;
 
     /**
-     * @var array
-     *
-     * @ORM\Column(name="points", type="array")
+     * @ORM\OneToMany(targetEntity="Grade", mappedBy="answer", cascade={"remove"})
      */
     private $points;
 
     /**
      * @ORM\ManyToOne(targetEntity="TestTaker", inversedBy="answers")
-     * @ORM\JoinColumn(name="product_id", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="answer_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $testTaker;
 
@@ -48,7 +46,7 @@ class Answer
     private $question;
 
     public function __construct() {
-        $this->points = array();
+        $this->points = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -82,33 +80,6 @@ class Answer
     public function getAnswer()
     {
         return $this->answer;
-    }
-
-    /**
-     * Set points
-     *
-     * @param array $points
-     * @return Answer
-     */
-    public function setPoints($points)
-    {
-        $this->points = $points;
-    
-        return $this;
-    }
-
-    public function addPoint($key, $point) {
-        $this->points[$key] = $point;
-    }
-
-    /**
-     * Get points
-     *
-     * @return array 
-     */
-    public function getPoints()
-    {
-        return $this->points;
     }
 
     /**
@@ -155,5 +126,47 @@ class Answer
     public function getQuestion()
     {
         return $this->question;
+    }
+
+    /**
+     * Remove points
+     *
+     * @param \Bio\ExamBundle\Entity\Grade $points
+     */
+    public function removePoint(\Bio\ExamBundle\Entity\Grade $points)
+    {
+        $this->points->removeElement($points);
+    }
+
+    /**
+     * Add points
+     *
+     * @param \Bio\ExamBundle\Entity\Grade $points
+     * @return Answer
+     */
+    public function addPoint(\Bio\ExamBundle\Entity\Grade $points)
+    {
+        $this->points[] = $points;
+    
+        return $this;
+    }
+
+    /**
+     * Get points
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getPoints()
+    {
+        return $this->points;
+    }
+
+    public function grade($grader, $point) {
+        foreach($this->points as $grade) {
+            if ($grade->getGrader() === $grader) {
+                $grade->setPoints($point);
+                break;
+            }
+        }
     }
 }

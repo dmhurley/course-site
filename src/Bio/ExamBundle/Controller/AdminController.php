@@ -381,7 +381,7 @@ class AdminController extends Controller
         echo "Grade Time (s)\t";    // what?
         echo "Answer\t";            // didn't have to submit
         echo "Score\t";             // didn't have to be graded
-        echo "Average\n";
+        echo "Total Mean\n";
 
         /******* DATA *******/
         $examID = $exam->getId();
@@ -393,59 +393,54 @@ class AdminController extends Controller
             $section = $taker->getStudent()->getSection();
             $didGrade = $taker->getNumGraded() >= $global->getGrade()?"Yes":$taker->getNumGraded();
 
-            if ($taker->getStatus() === 6) {
-                $timeElapsedSeconds = $taker->getTimecard()[6]->getTimestamp() - $taker->getTimecard()[1]->getTimestamp();
+            if ($taker->getStatus() >= 4) {
+                $timeElapsedSeconds = $taker->getTimecard()[4]->getTimestamp() - $taker->getTimecard()[2]->getTimestamp();
                 $timeElapsedMinutes = $timeElapsedSeconds/60;
+                $timeEntered = $taker->getTimecard()[4]->format("m-d-Y H:i:s");
             } else {
                 $timeElapsedSeconds = "";
                 $timeElapsedMinutes = "";
-            }
-
-            if ($taker->getStatus() >= 4) {
-                $timeEntered = $taker->getTimecard()[4]->format("m-d-Y H:i:s");
-            } else {
                 $timeEntered = "";
             }
 
             $answerCount = count($taker->getAnswers());
 
-            if ($answerCount === 0) {
+            if ($answerCount === 0 || $taker->getStatus() < 4) {
                 $this->echoArray(array($examID, '', '', $studentID, '', $name, $section, $didGrade, 0, $timeElapsedMinutes, $timeElapsedSeconds, $timeEntered, '', '', $answerCount, '', '', 0, 0));
             } else {
                 foreach ($taker->getAnswers() as $answer) { // status >= 3
 
-                    $answerText = $answer->getAnswer();
+                    $answerText = str_replace(array("\n", "\t", "\r\n", "\n\r", "\r"), ' ',$answer->getAnswer());
                     $answerID = $answer->getId();
                     $questionID = $answer->getQuestion()->getId();
 
                     if (count($answer->getPoints()) === 0) {
                         $this->echoArray(array($examID, $questionID, $answerID, $studentID, '', $name, $section, $didGrade, 0, $timeElapsedMinutes, $timeElapsedSeconds, $timeEntered, '', '', $answerCount, '', $answerText, "", "NOT GRADED"));
                     } else {
-                        $average = array_sum($answer->getPoints())/count($answer->getPoints());
-                        foreach(array_keys($answer->getPoints()) as $key) { // status >= 4
+                        $totalMean = 0;
+                        foreach($taker->getAnswers() as $answer) {
+                            $average = 0;
+                            foreach($answer->getPoints() as $grade) {
+                                $average += $grade->getPoints();
+                            }
+                            $totalMean = $average/count($answer->getPoints());
+                        }
+                        foreach($answer->getPoints() as $grade) { // status >= 4
 
-                            // find that answers grader by grader ID
-                            $graderArray = $taker->getGradedBy()->filter(function($grader) use($key){
-                                // return $grader->getStudent()->getSid() === "".$key;
-                                return $grader->getId() === $key;
-                            })->toArray();
-
-                            // get data from grader, OR make placeholder text
-                            if (count($graderArray) === 1) {
-                                $grader = current($graderArray);
-                                $graderID = $grader->getStudent()->getSid();
-                                // make this actually work...
-                                $timeScoredSeconds = $grader->getTimecard()[5]->getTimestamp() - $grader->getTimecard()[4]->getTimestamp();
+                            $graderID = $grade->getGrader()->getStudent()->getSid();
+                            // make this actually work...
+                            if ($grade->getEnd() !== null){
+                                $timeScoredSeconds = strtotime($grade->getEnd()->format("H:i:s")) - strtotime($exam->getGDate()->format("Y-m-d"));
                                 $timeScoredMinutes = $timeScoredSeconds/60;
+                                $gradeTime = $grade->getEnd()->getTimestamp() - $grade->getStart()->getTimestamp();
                             } else {
-                                $graderID = "DROPPED";
                                 $timeScoredSeconds = "";
                                 $timeScoredMinutes = "";
+                                $gradeTime = "";
                             }
+                            $points = $grade->getPoints();
 
-                            $points = $answer->getPoints()[$key];
-
-                            $this->echoArray(array($examID, $questionID, $answerID, $studentID, $graderID, $name, $section, $didGrade, 0, $timeElapsedMinutes, $timeElapsedSeconds, $timeEntered, $timeScoredMinutes, $timeScoredSeconds, $answerCount, '-', $answerText, $points, $average));
+                            $this->echoArray(array($examID, $questionID, $answerID, $studentID, $graderID, $name, $section, $didGrade, 0, $timeElapsedMinutes, $timeElapsedSeconds, $timeEntered, $timeScoredMinutes, $timeScoredSeconds, $answerCount, $gradeTime, $answerText, $points, $totalMean));
                         }
                     }
                 }

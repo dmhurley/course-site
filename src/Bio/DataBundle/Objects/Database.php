@@ -76,10 +76,10 @@ class Database {
 	}
 
 	public function close($errorMessage = 'Could not persist objects to database') {
-		try {
+		// try {
 			$this->em->flush();
-		} catch (\Doctrine\DBAL\DBALException $e) {
-			throw new BioException($errorMessage);
-		}
+		// } catch (\Doctrine\DBAL\DBALException $e) {
+			// throw new BioException($errorMessage);
+		// }
 	}
 }
