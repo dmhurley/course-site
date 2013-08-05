@@ -318,7 +318,7 @@ class PublicController extends Controller
 				})->toArray()){
 					reset($answerArray);
 					$answer = current($answerArray);
-					$answer->addPoint($taker->getStudent()->getSid(), $request->request->get($key));
+					$answer->addPoint($taker->getId(), $request->request->get($key));
 				} else {
 					$request->getSession()->getFlashBag()->set('failure', "Error.");
 					return $this->render('BioExamBundle:Public:grade.html.twig', array('exam' => $exam, 'taker' => $taker->getGrading(), 'start' => $taker->getTimecard()[5], 'title' => 'Grade Exam'));
@@ -330,7 +330,7 @@ class PublicController extends Controller
 			$db = new Database($this, 'BioExamBundle:ExamGlobal');
 			$global = $db->findOne(array());
 
-			if (count($taker->getGraded()) < $global->getGrade()) {
+			if ($taker->getNumGraded() < $global->getGrade()) {
 				$request->getSession()->getFlashBag()->set('success', 'Test graded. '.($global->getGrade()-count($taker->getGraded()).' left.'));
 				$taker->setStatus(4);
 			} else {
