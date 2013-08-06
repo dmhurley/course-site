@@ -26,18 +26,25 @@ class PublicController extends Controller
     	$session = $request->getSession();
     	$flash = $session->getFlashBag();
 
-    	if ($request->query->has('logout')) {
-    		$session->invalidate();
-    	}
+        $db = new Database($this, 'BioTripBundle:TripGlobal');
+        $global = $db->findOne(array());
 
-    	if ($session->has('studentID')) {
-    		return $this->tripAction($request, $session->get('studentID'));
-    	}
+        if ($global->getOpening() > new \DateTime()) {
+            $flash->set('failure', 'Field trip signups start '.$global->getOpening()->format('F j, Y \a\t g:i a').'.');
+        } else {
+        	if ($request->query->has('logout')) {
+        		$session->invalidate();
+        	}
 
-    	return $this->signAction($request);
+        	if ($session->has('studentID')) {
+        		return $this->tripAction($request, $session->get('studentID'), $global);
+        	}
+        }
+
+    	return $this->signAction($request, $global);
     }
 
-    private function signAction(Request $request) {
+    private function signAction(Request $request, $global) {
     	$form = $this->createFormBuilder()
     		->add('sid', 'text', array('label' => 'Student ID:', 'mapped' => false))
     		->add('lName', 'text', array('label' => 'Last Name:', 'mapped' => false))
@@ -66,20 +73,28 @@ class PublicController extends Controller
     	return $this->render('BioExamBundle:Public:sign.html.twig', array('form' => $form->createView(), 'title' => 'Log In'));
     }
 
-    private function tripAction(Request $request, $id) {
+    private function tripAction(Request $request, $id, $global) {
     	$db = new Database($this, 'BioTripBundle:Trip');
     	$trips = $db->find(array(), array('start' => 'ASC', 'end' => 'ASC'), false);
-    	$trip = null;
-    	foreach ($trips as $t) {
-    		foreach($t->getStudents() as $student) {
-    			if ($student->getId() === $id) {
-    				$trip = $t;
-    				break 2;
-    			}
-    		}
-    	}
+        $db = new Database($this, 'BioStudentBundle:Student');
+        $student = $db->findOne(array('id' => $id));
 
-    	return $this->render('BioTripBundle:Public:browse.html.twig', array('trips' => $trips, 'current' => $trip, 'title' => 'Sign Up'));
+        if (!$student) {
+            $request->getSession()->invalidate();
+            $request->getSession()->getFlashBag()->set('failure', 'Not signed in.');
+            return $this->redirect($this->generateUrl('trip_entrance'));
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $query = $em->createQuery('
+                SELECT t
+                FROM BioTripBundle:Trip t
+                WHERE :student MEMBER OF t.students
+            ')->setParameter('student', $student);
+
+        $yourTrips = $query->getResult();
+
+    	return $this->render('BioTripBundle:Public:browse.html.twig', array('trips' => $trips, 'current' => $yourTrips, 'global' => $global, 'title' => 'Sign Up'));
     }
 
     /**
@@ -111,7 +126,7 @@ class PublicController extends Controller
 	    				$db->close();
 	    				$request->getSession()->getFlashBag()->set('success', 'Joined trip.');
 	    			} catch (BioException $e) {
-	    				$request->getSession()->getFlashBag()->set('failure', 'You are already signed up for another trip.');
+	    				$request->getSession()->getFlashBag()->set('failure', 'You cannot sign up for any more trips.');
 	    			}
 	    		}
     		}

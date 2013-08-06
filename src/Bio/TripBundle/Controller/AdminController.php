@@ -40,23 +40,43 @@ class AdminController extends Controller
 
         $db = new Database($this, 'BioTripBundle:TripGlobal');
         $global = $db->findOne(array());
-        $globalForm = $this->get('form.factory')->createNamedBuilder('form', 'form', $global)
+        $globalForm = $this->get('form.factory')->createNamedBuilder('global', 'form', $global)
             ->add('opening', 'datetime', array('label' => 'Signup Start:', 'attr' => array('class' => 'datetime')))
             ->add('closing', 'datetime', array('label' => 'Evaluations Due:', 'attr' => array('class' => 'datetime')))
             ->add('tourClosing', 'datetime', array('label' => 'Tour Deadline:', 'attr' => array('class' => 'datetime')))
-            ->add('maxTrips', 'integer')
+            ->add('maxTrips', 'integer', array('label' => "Max Trips:"))
             ->add('set', 'submit')
             ->getForm();
 
     	$db = new Database($this, 'BioTripBundle:Trip');
 
     	if ($request->getMethod() === "POST") {
-    		$form->handleRequest($request);
-    		if ($form->isValid()) {
+            if ($request->request->has('form')){
+        		$form->handleRequest($request);
+        		if ($form->isValid()) {
 
-    			$db->add($trip);
-    			$db->close();
-    		}
+        			$db->add($trip);
+        		}
+            }
+
+            if ($request->request->has('global')) {
+                $globalForm->handleRequest($request);
+
+                if ($form->isValid()) {
+                    $dbGlobal = $db->findOne(array());
+                    $dbGlobal->setOpening($global->getOpening())
+                        ->setClosing($global->getClosing())
+                        ->setTourClosing($global->getTourClosing())
+                        ->setMaxTrips($global->getMaxTrips());
+                }
+            }
+
+            try {
+                $db->close();
+                $request->getSession()->getFlashBag()->set('success', 'Saved change.');
+            } catch (BioException $e) {
+                $request->getSession()->getFlashBag()->set('failure', 'Unable to save change.');
+            }
     	}
     	$trips = $db->find(array(), array('start' => 'ASC', 'end' => 'ASC'), false);
         return array('form' => $form->createView(), 'globalForm' => $globalForm->createView(), 'trips' => $trips, 'title' => "Manage Trips");
@@ -89,27 +109,21 @@ class AdminController extends Controller
     		->getForm();
 
     	if ($request->getMethod() === "POST") {
-            if ($request->request->has('form')) {
-        		$form->handleRequest($request);
+    		$form->handleRequest($request);
 
-        		if ($form->isValid()) {
-        			$dbEntity = $db->findOne(array('id' => $entity->getId()));
-        			$dbEntity->setTitle($entity->getTitle())
-        				->setShortSum($entity->getShortSum())
-        				->setLongSum($entity->getLongSum())
-        				->setStart($entity->getStart())
-        				->setEnd($entity->getEnd())
-        				->setMax($entity->getMax())
-        				->setEmail($entity->getEmail());
+    		if ($form->isValid()) {
+    			$dbEntity = $db->findOne(array('id' => $entity->getId()));
+    			$dbEntity->setTitle($entity->getTitle())
+    				->setShortSum($entity->getShortSum())
+    				->setLongSum($entity->getLongSum())
+    				->setStart($entity->getStart())
+    				->setEnd($entity->getEnd())
+    				->setMax($entity->getMax())
+    				->setEmail($entity->getEmail());
 
-        			$db->close();
+    			$db->close();
 
-        			return $this->redirect($this->generateUrl('manage_trips'));
-        		}
-            }
-
-            if ($request->request->has('global')) {
-                
+    			return $this->redirect($this->generateUrl('manage_trips'));
             }
     	}
 
