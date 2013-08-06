@@ -46,29 +46,6 @@ class Response
     }
 
     /**
-     * Set answer
-     *
-     * @param string $answer
-     * @return Response
-     */
-    public function setResponse($answer)
-    {
-        $this->answer = $answer;
-    
-        return $this;
-    }
-
-    /**
-     * Get answer
-     *
-     * @return string 
-     */
-    public function getResponse()
-    {
-        return $this->answer;
-    }
-
-    /**
      * Set question
      *
      * @param \Bio\TripBundle\Entity\Query $question
@@ -87,6 +64,52 @@ class Response
      * @return \Bio\TripBundle\Entity\Query 
      */
     public function getQuery()
+    {
+        return $this->question;
+    }
+
+    /**
+     * Set answer
+     *
+     * @param string $answer
+     * @return Response
+     */
+    public function setAnswer($answer)
+    {
+        $this->answer = $answer;
+    
+        return $this;
+    }
+
+    /**
+     * Get answer
+     *
+     * @return string 
+     */
+    public function getAnswer()
+    {
+        return $this->answer;
+    }
+
+    /**
+     * Set question
+     *
+     * @param \Bio\TripBundle\Entity\Query $question
+     * @return Response
+     */
+    public function setQuestion(\Bio\TripBundle\Entity\Query $question = null)
+    {
+        $this->question = $question;
+    
+        return $this;
+    }
+
+    /**
+     * Get question
+     *
+     * @return \Bio\TripBundle\Entity\Query 
+     */
+    public function getQuestion()
     {
         return $this->question;
     }

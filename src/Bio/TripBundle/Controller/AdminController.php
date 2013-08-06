@@ -11,6 +11,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 use Bio\TripBundle\Entity\Trip;
+use Bio\TripBundle\Entity\Evaluation;
+use Bio\TripBundle\Entity\Query;
+use Bio\TripBundle\Entity\Response;
 
 /** 
  * @Route("/admin/trip")
@@ -158,10 +161,24 @@ class AdminController extends Controller
      * @Template()
      */
     public function evalsAction(Request $request) {
-        if ($request->getMethod() === "POST") {
-
-        }
         $db = new Database($this, 'BioTripBundle:Query');
+
+        if ($request->getMethod() === "POST") {
+            $evalQuestions = array();
+            foreach($request->request->keys() as $key) {
+                if ($key < 0) {
+                    $query = new Query();
+                    $db->add($query);
+                } else {
+                    $query = $db->findOne(array('id' => $key));
+                }
+                $evalQuestions[] = $query;
+                $query->setQuestion($request->request->get($key));
+            }
+        }
+        // save $evalQuestions to TripGlobal
+        $db->close();
+
         $queries = $db->find(array(), array(), false);
 
         $db = new Database($this, 'BioTripBundle:Trip');

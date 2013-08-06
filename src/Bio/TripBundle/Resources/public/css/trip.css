@@ -54,14 +54,15 @@
 	opacity: 1;
 }
 
-#add {
-	background-image: url(http://b.dryicons.com/images/icon_sets/colorful_stickers_icons_set/png/256x256/add.png);
-	height: 30px;
-	width: 30px;
-	background-size: contain;
-	background-repeat: no-repeat;
-	margin: auto;
+#add, .delete {
 	cursor:pointer;
+	text-decoration:underline;
+	color: rgb(0, 0, 238);
+	text-align:center !important;
+}
+
+table .text {
+	padding: 0px !important;
 }
 
 table textarea {

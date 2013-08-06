@@ -45,7 +45,7 @@ class Query
      * @param string $question
      * @return Query
      */
-    public function setQuery($question)
+    public function setQuestion($question)
     {
         $this->question = $question;
     
@@ -57,7 +57,7 @@ class Query
      *
      * @return string 
      */
-    public function getQuery()
+    public function getQuestion()
     {
         return $this->question;
     }

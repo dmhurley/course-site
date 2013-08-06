@@ -190,4 +190,37 @@ class Evaluation {
     {
         return $this->answers;
     }
+
+    /**
+     * Add answers
+     *
+     * @param \Bio\TripBundle\Entity\Response $answers
+     * @return Evaluation
+     */
+    public function addAnswer(\Bio\TripBundle\Entity\Response $answers)
+    {
+        $this->answers[] = $answers;
+    
+        return $this;
+    }
+
+    /**
+     * Remove answers
+     *
+     * @param \Bio\TripBundle\Entity\Response $answers
+     */
+    public function removeAnswer(\Bio\TripBundle\Entity\Response $answers)
+    {
+        $this->answers->removeElement($answers);
+    }
+
+    /**
+     * Get answers
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getAnswers()
+    {
+        return $this->answers;
+    }
 }

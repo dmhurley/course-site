@@ -9,33 +9,36 @@
 
 {% block content %}
 	<h2>Create Evaluation</h2>
-	<table>
-		<thead>
-			<tr>
-				<th>Question</th>
-				<th>Delete</th>
-			</tr>
-		</thead>
-		<tbody id="body">
-			{% for query in queries %}
+	<form method="POST" class="tableStyle">
+		<table>
+			<thead>
 				<tr>
-					<td><textarea name="{{query.id}}">{{query.question}}</textarea><td>
-					<td><a href="">delete</a></td>
+					<th>Question</th>
+					<th>Delete</th>
 				</tr>
-			{% endfor %}
-		</tbody>
-		<tfoot>
-			<tr>
-				<td colspan=2>
-					<table>
-						<tr>
-							<td style="text-align:center;"><div id="add"></div></td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-		</tfoot>
-	</table>
+			</thead>
+			<tbody id="body">
+				{% for query in queries %}
+					<tr>
+						<td class="text"><textarea name="{{query.id}}">{{query.question}}</textarea></td>
+						<td class="delete">delete</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan=2>
+						<table>
+							<tr>
+								<td id="add">add question</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+		<input type="submit" value="Edit" />
+	</form>
 
 	<h2>Download Evaluations</h2>
 	<table>
@@ -62,16 +65,32 @@
 
 {% block java %}
 	<script>
-		var button = document.getElementById('add');
+		var addButton = document.getElementById('add');
+		var deleteButtons = document.getElementsByClassName('delete');
 		var body = document.getElementById('body');
-		button.onclick = function() {
+		var index = -1;
+
+		var deleteFunction = function(event) {
+			var tr = event.target.parentElement;
+			tr.parentElement.removeChild(tr);
+		}
+
+		for(var i = 0; i < deleteButtons.length; i++) {
+			deleteButtons[i].onclick = deleteFunction;
+		}
+
+
+		addButton.onclick = function() {
 			var row = body.insertRow(-1);
 			var deleteCell = row.insertCell();
 			var textCell = row.insertCell();
 
-			textCell.innerHTML = "<textarea></textarea>";
+			textCell.classList.add('text');
+			textCell.innerHTML = "<textarea name="+ index-- +"></textarea>";
 
-			deleteCell.innerHTML = '<a href="">delete</a>';
+			deleteCell.classList.add('delete');
+			deleteCell.innerHTML = 'delete';
+			deleteCell.onclick = deleteFunction;
 		}
 	</script>
 {% endblock %}
