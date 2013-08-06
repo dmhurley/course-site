@@ -344,15 +344,23 @@ class AdminController extends Controller
      * @Template("BioExamBundle:Admin:download.txt.twig")
      */
     public function downloadAction(Request $request, $id) {
+
+        // get exam if it exists
         $db = new Database($this, 'BioExamBundle:Exam');
         $exam = $db->findOne(array('id' => $id));
+        if (!$exam) {
+            $request->getSession()->getFlashBag()->set('failure', 'Exam does not exist.');
+            return $this->redirect($this->generateUrl('manage_exams'));
+        }
 
+        // get all test takers from exam, get global settings
         $db = new Database($this, 'BioExamBundle:TestTaker');
         $takers = $db->find(array('exam' => $id), array('id' => 'ASC'), false);
-
         $db = new Database($this, 'BioExamBundle:ExamGlobal');
         $global = $db->findOne(array());
 
+
+        // create header
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');
         header('Content-Disposition: attachment; filename='.$exam->getTitle().'.txt');
@@ -385,9 +393,9 @@ class AdminController extends Controller
 
         /******* DATA *******/
         $examID = $exam->getId();
-
         foreach ($takers as $taker) {   // status >= 1
 
+            /**** TAKER DATA ****/
             $name = $taker->getStudent()->getLName().", ".$taker->getStudent()->getFName();
             $studentID = $taker->getStudent()->getSid();
             $section = $taker->getStudent()->getSection();
@@ -404,31 +412,44 @@ class AdminController extends Controller
             }
 
             $answerCount = count($taker->getAnswers());
+            /**** END TAKER DATA ****/
 
+            // if the person never submitted their test, return now with lots of things blank
             if ($answerCount === 0 || $taker->getStatus() < 4) {
                 $this->echoArray(array($examID, '', '', $studentID, '', $name, $section, $didGrade, 0, $timeElapsedMinutes, $timeElapsedSeconds, $timeEntered, '', '', $answerCount, '', '', 0, 0));
             } else {
                 foreach ($taker->getAnswers() as $answer) { // status >= 3
 
+                    /**** ANSWER DATA ****/
                     $answerText = str_replace(array("\n", "\t", "\r\n", "\n\r", "\r"), ' ',$answer->getAnswer());
                     $answerID = $answer->getId();
                     $questionID = $answer->getQuestion()->getId();
+                    /**** END ANSWER DATA ****/
 
-                    if (count($answer->getPoints()) === 0) {
+                    // if the person finished their test but was never graded
+                    if (!$answer->isGraded()) {
                         $this->echoArray(array($examID, $questionID, $answerID, $studentID, '', $name, $section, $didGrade, 0, $timeElapsedMinutes, $timeElapsedSeconds, $timeEntered, '', '', $answerCount, '', $answerText, "", "NOT GRADED"));
                     } else {
+
+                        /**** POINTS DATA ****/
                         $totalMean = 0;
-                        foreach($taker->getAnswers() as $answer) {
+                        foreach($taker->getAnswers() as $a) {
                             $average = 0;
-                            foreach($answer->getPoints() as $grade) {
-                                $average += $grade->getPoints();
+                            $realGraders = 0;
+                            foreach($a->getPoints() as $g) {
+                                if ($g->getPoints() !== null) {
+                                    $average += $g->getPoints();
+                                    $realGraders++;
+                                }
                             }
-                            $totalMean = $average/count($answer->getPoints());
+                            $totalMean+= $average/$realGraders;
                         }
+                        /**** END POINTS DATA ****/
+
                         foreach($answer->getPoints() as $grade) { // status >= 4
 
+                            /**** GRADE DATA ****/
                             $graderID = $grade->getGrader()->getStudent()->getSid();
-                            // make this actually work...
                             if ($grade->getEnd() !== null){
                                 $timeScoredSeconds = strtotime($grade->getEnd()->format("H:i:s")) - strtotime($exam->getGDate()->format("Y-m-d"));
                                 $timeScoredMinutes = $timeScoredSeconds/60;
@@ -438,7 +459,13 @@ class AdminController extends Controller
                                 $timeScoredMinutes = "";
                                 $gradeTime = "";
                             }
-                            $points = $grade->getPoints();
+
+                            if ($grade->getPoints() !== null) {
+                                $points = $grade->getPoints();
+                            } else {
+                                $points = '';
+                            }
+                            /**** END GRADE DATA ****/
 
                             $this->echoArray(array($examID, $questionID, $answerID, $studentID, $graderID, $name, $section, $didGrade, 0, $timeElapsedMinutes, $timeElapsedSeconds, $timeEntered, $timeScoredMinutes, $timeScoredSeconds, $answerCount, $gradeTime, $answerText, $points, $totalMean));
                         }

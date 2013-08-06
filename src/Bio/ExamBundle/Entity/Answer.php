@@ -169,4 +169,13 @@ class Answer
             }
         }
     }
+
+    public function isGraded() {
+        foreach($this->points as $grade) {
+            if ($grade->getPoints() !== null) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

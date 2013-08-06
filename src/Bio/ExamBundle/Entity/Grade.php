@@ -44,13 +44,13 @@ class Grade
 
     /**
      * @ORM\ManyToOne(targetEntity="Answer", inversedBy="points")
-     * @ORM\JoinColumn(name="grade_id", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="answer_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $answer;
 
     /**
      * @ORM\ManyToOne(targetEntity="TestTaker")
-     * @ORM\JoinColumn(name="taker_id", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="grader_id", referencedColumnName="id", onDelete="CASCADE")
      **/
     private $grader;
 
