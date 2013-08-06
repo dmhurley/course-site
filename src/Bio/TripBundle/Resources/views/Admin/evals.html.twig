@@ -20,7 +20,7 @@
 			<tbody id="body">
 				{% for query in queries %}
 					<tr>
-						<td class="text"><textarea name="{{query.id}}">{{query.question}}</textarea></td>
+						<td class="text"><textarea required="required" name="{{query.id}}">{{query.question}}</textarea></td>
 						<td class="delete">delete</td>
 					</tr>
 				{% endfor %}
@@ -30,8 +30,8 @@
 					<td colspan=2>
 						<table>
 							<tr>
-								<td id="add">add question</td>
-								<td id="multiple">add multiple choice</td>
+								<td style="text-align:center;"><span id="add">add question</span></td>
+								<td style="text-align:center;"><span id="multiple">add multiple choice</span></td>
 							</tr>
 						</table>
 					</td>
@@ -66,32 +66,71 @@
 
 {% block java %}
 	<script>
-		var addButton = document.getElementById('add');
-		var deleteButtons = document.getElementsByClassName('delete');
-		var body = document.getElementById('body');
-		var index = -1;
+		(function() {
+			var addButton = document.getElementById('add');
+			var multiButton = document.getElementById('multiple');
+			var deleteButtons = document.getElementsByClassName('delete');
+			var body = document.getElementById('body');
+			var index = -1;
 
-		var deleteFunction = function(event) {
-			var tr = event.target.parentElement;
-			tr.parentElement.removeChild(tr);
-		}
+			var deleteFunction = function(event) {
+				var tr = event.target.parentElement;
+				tr.parentElement.removeChild(tr);
+			}
 
-		for(var i = 0; i < deleteButtons.length; i++) {
-			deleteButtons[i].onclick = deleteFunction;
-		}
+			for(var i = 0; i < deleteButtons.length; i++) {
+				deleteButtons[i].onclick = deleteFunction;
+			}
 
 
-		addButton.onclick = function() {
-			var row = body.insertRow(-1);
-			var deleteCell = row.insertCell();
-			var textCell = row.insertCell();
+			addButton.onclick = function() {
+				var row = body.insertRow(-1);
+				var deleteCell = row.insertCell();
+				var textCell = row.insertCell();
 
-			textCell.classList.add('text');
-			textCell.innerHTML = "<textarea name="+ index-- +"></textarea>";
+				textCell.classList.add('text');
+				textCell.innerHTML = "<textarea required='required' name="+ index-- +"></textarea>";
 
-			deleteCell.classList.add('delete');
-			deleteCell.innerHTML = 'delete';
-			deleteCell.onclick = deleteFunction;
-		}
+				deleteCell.classList.add('delete');
+				deleteCell.innerHTML = 'delete';
+				deleteCell.onclick = deleteFunction;
+			}
+
+			multiButton.onclick = function() {
+				var row = body.insertRow(-1);
+				var deleteCell = row.insertCell();
+				var multiCell = row.insertCell();
+
+				deleteCell.classList.add('delete');
+				deleteCell.innerHTML = 'delete';
+				deleteCell.onclick = deleteFunction;
+
+				var inputLabel = document.createElement('label');
+				inputLabel.innerHTML = "Question:";
+
+				var div1 = document.createElement('div');
+					var input = document.createElement('input');
+					input.type = 'text';
+					input.name=index-- + "[1]";
+					input.required = "required";
+				div1.appendChild(inputLabel);
+				div1.appendChild(input);
+
+				var div2 = document.createElement('div');
+					var rangeLabel = document.createElement('label');
+					rangeLabel.innerHTML = "Max Score:";
+					var range = document.createElement('input');
+					range.type = 'number';
+					range.value = 5;
+					range.required = 'required';
+					range.name=index-- +"[2]";
+				div2.appendChild(rangeLabel);
+				div2.appendChild(range);
+
+				multiCell.appendChild(div1);
+				multiCell.appendChild(div2);
+			}
+
+		})();
 	</script>
 {% endblock %}

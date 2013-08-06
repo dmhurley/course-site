@@ -58,7 +58,6 @@
 	cursor:pointer;
 	text-decoration:underline;
 	color: rgb(0, 0, 238);
-	text-align:center !important;
 }
 
 table .text {
@@ -71,6 +70,23 @@ table textarea {
 	height: 55px;
 	padding: 7px;
 }
+
+table div label {
+	display:block;
+	float:left;
+	width: 100px;
+	text-align:right;
+	padding-right: 15px;
+}
+
+table div {
+	margin: 10px;
+}
+
+table div input[type=text] {
+	width: 320px;
+}
+
 
 #form textarea {
 	width: 90%;
