@@ -191,6 +191,8 @@ class AdminController extends Controller
      * @Template()
      */
     public function evalsAction(Request $request) {
+        $db = new Database($this, 'BioTripBundle:TripGlobal');
+        $global = $db->findOne(array());
         $db = new Database($this, 'BioTripBundle:Query');
 
         if ($request->getMethod() === "POST") {
@@ -205,14 +207,21 @@ class AdminController extends Controller
                 $evalQuestions[] = $query;
                 $query->setQuestion($request->request->get($key));
             }
+            $global->setEvalQueries($evalQuestions);
+
+            /** DELETE ORPHANS **
+             *      O --"OK"   *
+             *    *-|-*        *
+             *     /\          *
+            ********************/
+
+            $db->close();
         }
-        // save $evalQuestions to TripGlobal
-        $db->close();
 
-        $queries = $db->find(array(), array(), false);
-
+        $queries = $global->getEvalQueries();        
         $db = new Database($this, 'BioTripBundle:Trip');
         $trips = $db->find(array(), array('start' => 'ASC', 'end' => 'ASC'), false);
+
 
         return array('trips' => $trips, 'queries' => $queries, 'title' => 'Evaluations');
     }

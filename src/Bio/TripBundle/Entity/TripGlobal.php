@@ -50,6 +50,15 @@ class TripGlobal
     private $maxTrips;
 
     /**
+     * @ORM\ManyToMany(targetEntity="Query")
+     * @ORM\JoinTable(name="default_queries",
+     *      joinColumns={@ORM\JoinColumn(name="global", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="query_id", referencedColumnName="id", unique=true, onDelete="CASCADE")}
+     *      )
+     */
+    private $evalQueries;
+
+    /**
      * Get id
      *
      * @return integer 
@@ -195,5 +204,54 @@ class TripGlobal
     public function getMaxTrips()
     {
         return $this->maxTrips;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->evalQueries = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    /**
+     * Add evalQueries
+     *
+     * @param \Bio\TripBundle\Entity\Query $evalQueries
+     * @return TripGlobal
+     */
+    public function addEvalQuerie(\Bio\TripBundle\Entity\Query $evalQueries)
+    {
+        $this->evalQueries[] = $evalQueries;
+    
+        return $this;
+    }
+
+    public function setEvalQueries(array $queries) {
+        $this->evalQueries = new \Doctrine\Common\Collections\ArrayCollection();
+        foreach($queries as $query) {
+            $this->addEvalQuerie($query);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove evalQueries
+     *
+     * @param \Bio\TripBundle\Entity\Query $evalQueries
+     */
+    public function removeEvalQuerie(\Bio\TripBundle\Entity\Query $evalQueries)
+    {
+        $this->evalQueries->removeElement($evalQueries);
+    }
+
+    /**
+     * Get evalQueries
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getEvalQueries()
+    {
+        return $this->evalQueries;
     }
 }
