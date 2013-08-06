@@ -27,7 +27,7 @@ class AdminController extends Controller
     public function indexAction(Request $request)
     {	
     	$trip = new Trip();
-    	$form = $this->createFormBuilder($trip)
+    	$form = $this->get('form.factory')->createNamedBuilder('form', 'form', $trip)
     		->add('title', 'text', array('label' => 'Title:'))
     		->add('shortSum', 'textarea', array('label' => 'Short Summary:'))
     		->add('longSum', 'textarea', array('label' => 'Long Summary:'))
@@ -37,6 +37,16 @@ class AdminController extends Controller
     		->add('email', 'email', array('label' => 'Leader Email:'))
     		->add('add', 'submit')
     		->getForm();
+
+        $db = new Database($this, 'BioTripBundle:TripGlobal');
+        $global = $db->findOne(array());
+        $globalForm = $this->get('form.factory')->createNamedBuilder('form', 'form', $global)
+            ->add('opening', 'datetime', array('label' => 'Signup Start:', 'attr' => array('class' => 'datetime')))
+            ->add('closing', 'datetime', array('label' => 'Evaluations Due:', 'attr' => array('class' => 'datetime')))
+            ->add('tourClosing', 'datetime', array('label' => 'Tour Deadline:', 'attr' => array('class' => 'datetime')))
+            ->add('maxTrips', 'integer')
+            ->add('set', 'submit')
+            ->getForm();
 
     	$db = new Database($this, 'BioTripBundle:Trip');
 
@@ -49,7 +59,7 @@ class AdminController extends Controller
     		}
     	}
     	$trips = $db->find(array(), array('start' => 'ASC', 'end' => 'ASC'), false);
-        return array('form' => $form->createView(), 'trips' => $trips, 'title' => "Manage Trips");
+        return array('form' => $form->createView(), 'globalForm' => $globalForm->createView(), 'trips' => $trips, 'title' => "Manage Trips");
     }
 
     /**
@@ -79,22 +89,28 @@ class AdminController extends Controller
     		->getForm();
 
     	if ($request->getMethod() === "POST") {
-    		$form->handleRequest($request);
+            if ($request->request->has('form')) {
+        		$form->handleRequest($request);
 
-    		if ($form->isValid()) {
-    			$dbEntity = $db->findOne(array('id' => $entity->getId()));
-    			$dbEntity->setTitle($entity->getTitle())
-    				->setShortSum($entity->getShortSum())
-    				->setLongSum($entity->getLongSum())
-    				->setStart($entity->getStart())
-    				->setEnd($entity->getEnd())
-    				->setMax($entity->getMax())
-    				->setEmail($entity->getEmail());
+        		if ($form->isValid()) {
+        			$dbEntity = $db->findOne(array('id' => $entity->getId()));
+        			$dbEntity->setTitle($entity->getTitle())
+        				->setShortSum($entity->getShortSum())
+        				->setLongSum($entity->getLongSum())
+        				->setStart($entity->getStart())
+        				->setEnd($entity->getEnd())
+        				->setMax($entity->getMax())
+        				->setEmail($entity->getEmail());
 
-    			$db->close();
+        			$db->close();
 
-    			return $this->redirect($this->generateUrl('manage_trips'));
-    		}
+        			return $this->redirect($this->generateUrl('manage_trips'));
+        		}
+            }
+
+            if ($request->request->has('global')) {
+                
+            }
     	}
 
     	return array('form' => $form->createView(), 'students' => $entity->getStudents(), 'title' => 'Edit Trip');

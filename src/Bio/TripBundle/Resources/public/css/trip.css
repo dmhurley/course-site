@@ -71,3 +71,7 @@ table textarea {
 	height: 55px;
 	padding: 15px;
 }
+
+#form textarea {
+	width: 90%;
+}
