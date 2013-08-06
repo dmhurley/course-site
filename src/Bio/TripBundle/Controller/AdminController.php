@@ -158,10 +158,16 @@ class AdminController extends Controller
      * @Template()
      */
     public function evalsAction(Request $request) {
+        if ($request->getMethod() === "POST") {
+
+        }
+        $db = new Database($this, 'BioTripBundle:Query');
+        $queries = $db->find(array(), array(), false);
+
         $db = new Database($this, 'BioTripBundle:Trip');
         $trips = $db->find(array(), array('start' => 'ASC', 'end' => 'ASC'), false);
 
-        return array('trips' => $trips, 'title' => 'Evaluations');
+        return array('trips' => $trips, 'queries' => $queries, 'title' => 'Evaluations');
     }
 
     /**

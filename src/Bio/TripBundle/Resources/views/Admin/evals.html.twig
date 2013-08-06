@@ -8,6 +8,36 @@
 {% endblock %}
 
 {% block content %}
+	<h2>Create Evaluation</h2>
+	<table>
+		<thead>
+			<tr>
+				<th>Question</th>
+				<th>Delete</th>
+			</tr>
+		</thead>
+		<tbody id="body">
+			{% for query in queries %}
+				<tr>
+					<td><textarea name="{{query.id}}">{{query.question}}</textarea><td>
+					<td><a href="">delete</a></td>
+				</tr>
+			{% endfor %}
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan=2>
+					<table>
+						<tr>
+							<td style="text-align:center;"><div id="add"></div></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</tfoot>
+	</table>
+
+	<h2>Download Evaluations</h2>
 	<table>
 		<tr>
 			<th>Trip</th>
@@ -28,4 +58,20 @@
 			</tr>
 		{% endfor %}
 	</table>
+{% endblock %}
+
+{% block java %}
+	<script>
+		var button = document.getElementById('add');
+		var body = document.getElementById('body');
+		button.onclick = function() {
+			var row = body.insertRow(-1);
+			var deleteCell = row.insertCell();
+			var textCell = row.insertCell();
+
+			textCell.innerHTML = "<textarea></textarea>";
+
+			deleteCell.innerHTML = '<a href="">delete</a>';
+		}
+	</script>
 {% endblock %}
