@@ -14,6 +14,7 @@ use Bio\ExamBundle\Entity\Exam;
 use Bio\ExamBundle\Entity\Question;
 use Bio\ExamBundle\Entity\TestTaker;
 use Bio\ExamBundle\Entity\Answer;
+use Bio\ExamBundle\Entity\Grade;
 
 /**
  * @Route("/exam")
@@ -287,9 +288,20 @@ class PublicController extends Controller
 
 			// if there actually was a match
 			if ($target !== null) {
+				$grade = new Grade();
+
 				$taker->setStatus(5)
 					->setGrading($target);
 				$target->addGradedBy($taker);
+
+				foreach($target->getAnswers() as $answer) {
+					$grade = new Grade();
+					$grade->setGrader($taker)
+						->setAnswer($answer);
+					$answer->addPoint($grade);
+					$db->add($grade);
+				}
+
 				$db->close();
 
 				return $this->redirect($this->generateUrl('exam_entrance'));
@@ -318,7 +330,7 @@ class PublicController extends Controller
 				})->toArray()){
 					reset($answerArray);
 					$answer = current($answerArray);
-					$answer->addPoint($request->request->get($key));
+					$answer->grade($taker, $request->request->get($key));
 				} else {
 					$request->getSession()->getFlashBag()->set('failure', "Error.");
 					return $this->render('BioExamBundle:Public:grade.html.twig', array('exam' => $exam, 'taker' => $taker->getGrading(), 'start' => $taker->getTimecard()[5], 'title' => 'Grade Exam'));
@@ -330,7 +342,7 @@ class PublicController extends Controller
 			$db = new Database($this, 'BioExamBundle:ExamGlobal');
 			$global = $db->findOne(array());
 
-			if (count($taker->getGraded()) < $global->getGrade()) {
+			if ($taker->getNumGraded() < $global->getGrade()) {
 				$request->getSession()->getFlashBag()->set('success', 'Test graded. '.($global->getGrade()-count($taker->getGraded()).' left.'));
 				$taker->setStatus(4);
 			} else {

@@ -341,44 +341,147 @@ class AdminController extends Controller
 
     /**
      * @Route("/download/{id}", name="download_exam")
-     * @Template("BioFolderBundle:Download:download.html.twig")
+     * @Template("BioExamBundle:Admin:download.txt.twig")
      */
     public function downloadAction(Request $request, $id) {
+
+        // get exam if it exists
         $db = new Database($this, 'BioExamBundle:Exam');
         $exam = $db->findOne(array('id' => $id));
-        $db = new Database($this, 'BioExamBundle:TestTaker');
-        $takers = $db->find(array('exam' => $id), array(), false);
+        if (!$exam) {
+            $request->getSession()->getFlashBag()->set('failure', 'Exam does not exist.');
+            return $this->redirect($this->generateUrl('manage_exams'));
+        }
 
+        // get all test takers from exam, get global settings
+        $db = new Database($this, 'BioExamBundle:TestTaker');
+        $takers = $db->find(array('exam' => $id), array('id' => 'ASC'), false);
+        $db = new Database($this, 'BioExamBundle:ExamGlobal');
+        $global = $db->findOne(array());
+
+
+        // create header
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename='.$exam->getName().'.txt');
+        header('Content-Disposition: attachment; filename='.$exam->getTitle().'.txt');
         header('Content-Transfer-Encoding: binary');
         header('Expires: 0');
         header('Cache-Control: must-revalidate');
         header('Pragma: public');
 
-        echo "sid\tstatus\t";
-        for($i = 1; $i <= count($exam->getQuestions()); $i++) {
-            echo "q".$i."\ta".$i."\t";
-        }
-        echo "started\tfinished\tedited\late\n";
 
-        foreach ($takers as $taker) {
-            echo $taker->getStudent()->getSid()."\t";
-            echo $taker->getStatus()."\t";
-            foreach($taker->getAnswers() as $answer) {
-                echo $answer->getQuestion()->getQuestion()."\t";
-                echo $answer->getAnswer()."\t";
+        /******* COLUMN NAMES *******/
+        echo "ExamID\t";            // guaranteed
+        echo "QuestionID\t";        // guaranteed
+        echo "AnswerID\t";          // guaranteed?
+        echo "StudentID\t";         // guaranteed
+        echo "GraderID\t";          // guaranteed
+        echo "Name\t";              // guaranteed
+        echo "Section\t";           // guaranteed
+        echo "Did Grade\t";         // guaranteed
+        echo "grader score\t";      // 0
+        echo "Time (elapsed)\t";    // possible to not finish (status 6)
+        echo "Time (s)\t";          // ..
+        echo "Time Entered\t";      // possible to not submit scores (status 4)
+        echo "Time Scored\t";       // can only estimate
+        echo "Time Scored (s)\t";   // can only estimate
+        echo "Answer Count\t";      // ?
+        echo "Grade Time (s)\t";    // what?
+        echo "Answer\t";            // didn't have to submit
+        echo "Score\t";             // didn't have to be graded
+        echo "Total Mean\n";
+
+        /******* DATA *******/
+        $examID = $exam->getId();
+        foreach ($takers as $taker) {   // status >= 1
+
+            /**** TAKER DATA ****/
+            $name = $taker->getStudent()->getLName().", ".$taker->getStudent()->getFName();
+            $studentID = $taker->getStudent()->getSid();
+            $section = $taker->getStudent()->getSection();
+            $didGrade = $taker->getNumGraded() >= $global->getGrade()?"Yes":$taker->getNumGraded();
+
+            if ($taker->getStatus() >= 4) {
+                $timeElapsedSeconds = $taker->getTimecard()[4]->getTimestamp() - $taker->getTimecard()[2]->getTimestamp();
+                $timeElapsedMinutes = $timeElapsedSeconds/60;
+                $timeEntered = $taker->getTimecard()[4]->format("m-d-Y H:i:s");
+            } else {
+                $timeElapsedSeconds = "";
+                $timeElapsedMinutes = "";
+                $timeEntered = "";
             }
-            // echo $taker->getTimecard()[2]."\t";
-            // echo $taker->getTimecard()[6]."\t";
-            echo "\t";
-            echo "\t";
-            echo $taker->getVars()['edited']."\t";
-            echo "false\n";
+
+            $answerCount = count($taker->getAnswers());
+            /**** END TAKER DATA ****/
+
+            // if the person never submitted their test, return now with lots of things blank
+            if ($answerCount === 0 || $taker->getStatus() < 4) {
+                $this->echoArray(array($examID, '', '', $studentID, '', $name, $section, $didGrade, 0, $timeElapsedMinutes, $timeElapsedSeconds, $timeEntered, '', '', $answerCount, '', '', 0, 0));
+            } else {
+                foreach ($taker->getAnswers() as $answer) { // status >= 3
+
+                    /**** ANSWER DATA ****/
+                    $answerText = str_replace(array("\n", "\t", "\r\n", "\n\r", "\r"), ' ',$answer->getAnswer());
+                    $answerID = $answer->getId();
+                    $questionID = $answer->getQuestion()->getId();
+                    /**** END ANSWER DATA ****/
+
+                    // if the person finished their test but was never graded
+                    if (!$answer->isGraded()) {
+                        $this->echoArray(array($examID, $questionID, $answerID, $studentID, '', $name, $section, $didGrade, 0, $timeElapsedMinutes, $timeElapsedSeconds, $timeEntered, '', '', $answerCount, '', $answerText, "", "NOT GRADED"));
+                    } else {
+
+                        /**** POINTS DATA ****/
+                        $totalMean = 0;
+                        foreach($taker->getAnswers() as $a) {
+                            $average = 0;
+                            $realGraders = 0;
+                            foreach($a->getPoints() as $g) {
+                                if ($g->getPoints() !== null) {
+                                    $average += $g->getPoints();
+                                    $realGraders++;
+                                }
+                            }
+                            $totalMean+= $average/$realGraders;
+                        }
+                        /**** END POINTS DATA ****/
+
+                        foreach($answer->getPoints() as $grade) { // status >= 4
+
+                            /**** GRADE DATA ****/
+                            $graderID = $grade->getGrader()->getStudent()->getSid();
+                            if ($grade->getEnd() !== null){
+                                $timeScoredSeconds = strtotime($grade->getEnd()->format("H:i:s")) - strtotime($exam->getGDate()->format("Y-m-d"));
+                                $timeScoredMinutes = $timeScoredSeconds/60;
+                                $gradeTime = $grade->getEnd()->getTimestamp() - $grade->getStart()->getTimestamp();
+                            } else {
+                                $timeScoredSeconds = "";
+                                $timeScoredMinutes = "";
+                                $gradeTime = "";
+                            }
+
+                            if ($grade->getPoints() !== null) {
+                                $points = $grade->getPoints();
+                            } else {
+                                $points = '';
+                            }
+                            /**** END GRADE DATA ****/
+
+                            $this->echoArray(array($examID, $questionID, $answerID, $studentID, $graderID, $name, $section, $didGrade, 0, $timeElapsedMinutes, $timeElapsedSeconds, $timeEntered, $timeScoredMinutes, $timeScoredSeconds, $answerCount, $gradeTime, $answerText, $points, $totalMean));
+                        }
+                    }
+                }
+            }
         }
 
-        return array('text' => '');
+        return array();
+    }
+
+    private function echoArray(array $args) {
+        for ($i = 0; $i < count($args) - 1; $i++) {
+            echo $args[$i]."\t";
+        }
+        echo $args[count($args) - 1]."\n";
     }
 
     private function checkDates($exam){

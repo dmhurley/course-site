@@ -128,9 +128,15 @@ $output->writeln('<question>--------------------------------------------</questi
                 ->setRoom('101')
                 ->setTitle('instructor');
 
+            $examGlobal = new ExamGlobal();
+            $examGlobal->setGrade(2)
+                ->setRules("Exam rules go here.");
+
+
         $db->add($info);
         $db->add($root);
         $db->add($instructor);
+        $db->add($examGlobal);
 
         $db->close();
     }
