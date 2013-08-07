@@ -5,7 +5,7 @@ namespace Bio\TripBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Eval
+ * Evaluation
  *
  * @ORM\Table()
  * @ORM\Entity()
@@ -28,16 +28,18 @@ class Evaluation {
 
     /**
      * @ORM\ManyToOne(targetEntity="Trip", inversedBy="evals")
-     * @ORM\JoinColumn(name="tripID", referencedColumnName="id")
+     * @ORM\JoinColumn(name="tripID", referencedColumnName="id", onDelete="CASCADE")
      */
     private $trip;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="eval", type="text")
+     * @ORM\ManyToMany(targetEntity="Response", cascade={"remove"})
+     * @ORM\JoinTable(name="eval_answers",
+     *      joinColumns={@ORM\JoinColumn(name="eval_id", referencedColumnName="id", onDelete="CASCADE")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="answer_id", referencedColumnName="id", onDelete="CASCADE")}
+     *      )
      */
-    private $eval;
+    private $answers;
 
     /**
      * @var \DateTime
@@ -46,6 +48,12 @@ class Evaluation {
      */
     private $timestamp;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="score", type="integer", nullable=true)
+     */
+    private $score;
 
     /**
      * Get id
@@ -61,9 +69,9 @@ class Evaluation {
      * Set eval
      *
      * @param string $eval
-     * @return Eval
+     * @return Response
      */
-    public function setEval($eval)
+    public function setResponse($eval)
     {
         $this->eval = $eval;
     
@@ -75,7 +83,7 @@ class Evaluation {
      *
      * @return string 
      */
-    public function getEval()
+    public function getResponse()
     {
         return $this->eval;
     }
@@ -84,7 +92,7 @@ class Evaluation {
      * Set timestamp
      *
      * @param \DateTime $timestamp
-     * @return Eval
+     * @return Response
      */
     public function setTimestamp($timestamp)
     {
@@ -147,5 +155,101 @@ class Evaluation {
     public function getTrip()
     {
         return $this->trip;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->answers = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    /**
+     * Add answers
+     *
+     * @param \Bio\TripBundle\Entity\Response $answers
+     * @return Evaluation
+     */
+    public function addResponse(\Bio\TripBundle\Entity\Response $answers)
+    {
+        $this->answers[] = $answers;
+    
+        return $this;
+    }
+
+    /**
+     * Remove answers
+     *
+     * @param \Bio\TripBundle\Entity\Response $answers
+     */
+    public function removeResponse(\Bio\TripBundle\Entity\Response $answers)
+    {
+        $this->answers->removeElement($answers);
+    }
+
+    /**
+     * Get answers
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getResponses()
+    {
+        return $this->answers;
+    }
+
+    /**
+     * Add answers
+     *
+     * @param \Bio\TripBundle\Entity\Response $answers
+     * @return Evaluation
+     */
+    public function addAnswer(\Bio\TripBundle\Entity\Response $answers)
+    {
+        $this->answers[] = $answers;
+    
+        return $this;
+    }
+
+    /**
+     * Remove answers
+     *
+     * @param \Bio\TripBundle\Entity\Response $answers
+     */
+    public function removeAnswer(\Bio\TripBundle\Entity\Response $answers)
+    {
+        $this->answers->removeElement($answers);
+    }
+
+    /**
+     * Get answers
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getAnswers()
+    {
+        return $this->answers;
+    }
+
+    /**
+     * Set score
+     *
+     * @param integer $score
+     * @return Evaluation
+     */
+    public function setScore($score)
+    {
+        $this->score = $score;
+    
+        return $this;
+    }
+
+    /**
+     * Get score
+     *
+     * @return integer 
+     */
+    public function getScore()
+    {
+        return $this->score;
     }
 }

@@ -1,8 +1,12 @@
-#form > div {
+#form > div, #global > div{
 	margin: 10px;
 }
 
-#form > div label {
+#form.side, #global.side {
+	
+}
+
+#form > div label, #global > div label{
 	display:block;
 	float: left;
 	width: 100px;
@@ -10,7 +14,7 @@
 	padding-right: 15px;
 }
 
-#form > div:last-of-type {
+#form > div:last-of-type, #global > div:last-of-type {
 	margin-left: 200px;
 }
 
@@ -36,7 +40,7 @@
 	border-bottom: none;
 }
 
-#form ul {
+#form ul, #global ul {
 	float:right;
 	margin-right: 275px;
 	color:red;
@@ -51,8 +55,9 @@ button {
 	padding-left: 115px; /*equal to the width + the padding-right of the label*/
 }
 
-#form textarea {
+#form textarea, #global textarea{
 	width: 40%;
 	height: 100px;
 	padding: 10px;
+	resize: vertical;
 }

@@ -1,7 +1,21 @@
 {% extends 'BioStyleBundle:Default:main.html.twig' %}
 
+{% block head %}
+	{{ parent() }}
+	{% stylesheets 'bundles/biotrip/css/trip.css' filter="cssrewrite" output="css/*.css" %}
+		<link rel="stylesheet" href="{{ asset_url }}" />
+	{% endstylesheets %}
+{% endblock %}
+
 {% block content %}
-	{{ form(form) }}
+	<div style="float:left; width:42%;">
+		<h4>Add Trip</h4>
+		{{ form(form) }}
+	</div>
+	<div style="float:left; width: 58%;">
+		<h4>Global Settings</h4>
+		{{ form(globalForm) }}
+	</div>
 
 	<table>
 		<tr>

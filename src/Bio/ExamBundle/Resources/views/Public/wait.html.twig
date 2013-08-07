@@ -20,7 +20,9 @@
 			</div>
 		</div>
 		{{parent()}}
-		{% include 'BioExamBundle:Public:timer.html.twig' %}
+		{% if taker.grading != null or taker.graded|length != 0 %}
+			{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':exam.gDuration, 'end':exam.gDate|date('Y-m-d') ~ ' ' ~ exam.gEnd|date('H:i:s'), 'start':taker.timecard[5]|date('Y-m-d H:i:s')} only %}
+		{% endif %}
 {% endblock %}
 
 {% block java %}

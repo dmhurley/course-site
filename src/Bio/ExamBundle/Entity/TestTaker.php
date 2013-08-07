@@ -51,6 +51,15 @@ class TestTaker
      */
     private $graded;
 
+    // necessary in case someone gets dropped and are removed from the graded column
+    // records that at least this user graded someone even though there's no 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="numGraded", type="integer")
+     */
+    private $numGraded;
+
     /**
      * @ORM\ManyToOne(targetEntity="TestTaker")
      * @ORM\JoinColumn(name="target_id", referencedColumnName="id", onDelete="CASCADE")
@@ -102,7 +111,10 @@ class TestTaker
     public function setStatus($status)
     {
         $this->status = $status;
-        $this->timecard[$status] = new \DateTime();
+        
+        if (!isset($this->timecard[$status])) {
+            $this->timecard[$status] = new \DateTime();
+        }
     
         return $this;
     }
@@ -181,6 +193,7 @@ class TestTaker
         $this->graded = new \Doctrine\Common\Collections\ArrayCollection();
         $this->gradedBy = new \Doctrine\Common\Collections\ArrayCollection();
         $this->answers = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->numGraded = 0;
     }
     
     /**
@@ -313,6 +326,7 @@ class TestTaker
     public function addGraded(\Bio\ExamBundle\Entity\TestTaker $graded)
     {
         $this->graded[] = $graded;
+        $this->numGraded++;
     
         return $this;
     }
@@ -358,5 +372,22 @@ class TestTaker
     public function getGrading()
     {
         return $this->grading;
+    }
+
+    public function getNumGraded() {
+        return $this->numGraded;
+    }
+
+    /**
+     * Set numGraded
+     *
+     * @param integer $numGraded
+     * @return TestTaker
+     */
+    public function setNumGraded($numGraded)
+    {
+        $this->numGraded = $numGraded;
+    
+        return $this;
     }
 }
