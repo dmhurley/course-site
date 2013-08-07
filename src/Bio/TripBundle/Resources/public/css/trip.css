@@ -3,6 +3,10 @@
 	padding: 10px;
 }
 
+.space {
+	margin-top: 20px;
+}
+
 .passed {
 	opacity: .5;
 }
@@ -52,4 +56,71 @@
 
 .trip .eval {
 	opacity: 1;
+}
+
+#add, .delete, #multiple {
+	cursor:pointer;
+	text-decoration:underline;
+	color: rgb(0, 0, 238);
+}
+
+table .text {
+	padding: 1px !important;
+}
+
+table textarea {
+	width: 500px;
+	resize:none;
+	height: 55px;
+	padding: 7px;
+}
+
+table div label {
+	display:block;
+	float:left;
+	width: 100px;
+	text-align:right;
+	padding-right: 15px;
+}
+
+table div {
+	margin: 10px;
+}
+
+table div input[type=text] {
+	width: 320px;
+}
+
+#submit textarea {
+	width: 75%;
+}
+
+#submit select {
+
+}
+
+#submit label {
+	float:none !important;
+	width: auto !important;
+	text-align:left !important;
+}
+
+#submit .horizontal input[type=radio] {
+	float:left !important;
+}
+
+#submit .horizontal label {
+	float: left !important;
+	position: relative;
+	top: 13px;
+	right: 10px;
+}
+
+.horizontal {
+	margin-bottom: 40px;
+}
+
+
+#content > form #form textarea {
+	width: 90%;
 }

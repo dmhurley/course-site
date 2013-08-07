@@ -1,7 +1,17 @@
 {% extends 'BioExamBundle:Public:main.html.twig' %}
 
 {% block content %}
-	<p> Welcome {{app.session.get('student').fName}}, once you begin this test you will have either {{exam.duration}} minutes or until {{exam.end|date('H:i:s')}} to complete it. There will be more text here about what happens after the test, and what rules there are during the test, open notes, open book, etc... Maybe some more words about the the test... The start button will appear, and you can begin <b><span id="time"></span></b>.</p>
+	<p>{{global.rules}}</p>
+
+	<p>Once you begin this test you will have {{exam.tDuration}} minutes or until {{exam.tEnd|date('h:i a')}} to complete it. Grading will begin 
+	{% if date(exam.tDate|date('Y-m-d')~' '~exam.tStart|date('H:i:s')) >= date(exam.gDate|date('Y-m-d')~' '~exam.gStart|date('H:i:s')) %}
+		after you finish the test
+	{% else %}
+		{{exam.gDate|date('m/d')}} at {{exam.gStart|date('h:i a')}}
+	{% endif %} 
+	and lasts for {{exam.gDuration}} minutes or until {{exam.gEnd|date('h:i a')}}.</p>
+
+	<p>You can begin <b><span id="time"></span></b>.</p>
 	<div id="hidden" style="display:none;">
 		{{ form(form) }}
 	</div>
@@ -37,7 +47,7 @@
 			if (ms <= 0) {
 				return "now";
 			} else if (ms < 1000 * 60) {
-				return 'less than 1 minute';
+				return 'in less than 1 minute';
 			}
 
 			var hours = ms/1000/60/60;
@@ -60,6 +70,6 @@
 			return string;
 		}
 
-		new Pinger("{{exam.start|date('Y-m-d H:i:s')}}")
+		new Pinger("{{exam.tStart|date('Y-m-d H:i:s')}}")
 	</script>
 {% endblock %}

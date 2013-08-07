@@ -1,0 +1,66 @@
+{% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block head %}
+	{{ parent() }}
+	{% stylesheets 'bundles/biotrip/css/trip.css' filter="cssrewrite" output="css/*.css" %}
+		<link rel="stylesheet" href="{{ asset_url }}" />
+	{% endstylesheets %}
+{% endblock %}
+
+{% block content %}
+	<h3 class="space">Data</h3>
+	<div>
+		<b>Trip Name:</b> {{eval.trip.title}}
+	</div>
+	<div>
+		<b>Student Name:</b> {{eval.student.fName}} {{eval.student.lName}}
+	</div>
+	<div>
+		<b>Timestamp</b> {{eval.timestamp|date('m-d-Y H:i')}}
+	</div>
+
+	<h3 class="space">Multiple Choice</h4>
+	<table>
+		<thead>
+			<tr>
+				<th>Question</th>
+				<th>Score</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for answer in eval.answers if answer.evalQuestion.type == 'multiple' %}
+				<tr>
+					<td>{{answer.evalQuestion.data[1]}}</td>
+					<td>{{answer.answer}}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+
+	<h3 class="space">Free Response</h4>
+	<table>
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>Question</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for answer in eval.answers if answer.evalQuestion.type == 'response' %}
+				<tr>
+					<td rowspan=2>{{loop.index}}</td>
+					<td><b>{{answer.evalQuestion.data[0]}}</b></td>
+				</tr>
+				<tr>
+					<td><i>{{answer.answer}}</i></td>
+				</tr>
+			{% endfor %}
+				<tr>
+				<td></td>
+				<td></td>
+				</tr>
+		</tbody>
+	</table>
+
+	{{ form(form) }}
+{% endblock %}

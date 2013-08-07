@@ -33,6 +33,6 @@
 	</form>
 	{{parent()}}
 	{% if taker is defined %}
-		{% include 'BioExamBundle:Public:timer.html.twig' %}
+		{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':exam.tDuration, 'end':exam.tDate|date('Y-m-d') ~ ' ' ~ exam.tEnd|date('H:i:s'), 'start':taker.timecard[2]|date('Y-m-d H:i:s')} only %}
 	{% endif %}
 {% endblock %}

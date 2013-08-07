@@ -8,11 +8,62 @@
 {% endblock %}
 
 {% block content %}
+	<h2>Create Evaluation</h2>
+	<form method="POST" class="tableStyle">
+		<table>
+			<thead>
+				<tr>
+					<th>Question</th>
+					<th>Delete</th>
+				</tr>
+			</thead>
+			<tbody id="body">
+				{% for question in questions %}
+					{% if question.type == 'response' %}
+						<tr>
+							<td class="text"><textarea required="required" name="{{question.id}}">{{question.data[0]}}</textarea></td>
+							<td class="delete">delete</td>
+						</tr>
+					{% elseif question.type == 'multiple' %}
+						<tr>
+							<td>
+								<div>
+									<label>Question:</label>
+									<input type="text" name="{{question.id}}[1]" required="required" value="{{question.data[1]}}">
+								</div>
+								<div>
+									<label>Max Score:</label>
+									<input type="number" name="{{question.id}}[2]" required="required" value={{question.data[2]}}>
+								</div>
+							</td>
+							<td class="delete">delete</td>
+						</tr>
+					{% endif %}
+				{% endfor %}
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan=2>
+						<table>
+							<tr>
+								<td style="text-align:center;"><span id="add">add question</span></td>
+								<td style="text-align:center;"><span id="multiple">add multiple choice</span></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+		<input type="submit" value="Edit" />
+	</form>
+
+	<h2>Download Evaluations</h2>
 	<table>
 		<tr>
 			<th>Trip</th>
 			<th>Summary</th>
 			<th>Evaluations</th>
+			<th>Review</th>
 			<th>Download</th>
 		</tr>
 		{% for trip in trips %}
@@ -24,8 +75,80 @@
 				<td>{{trip.title}}</td>
 				<td>{{trip.shortSum}}</td>
 				<td>{{trip.evals|length}}/{{trip.students|length}}</td>
+				<td><a href="{{ path('eval_review', {'id': trip.id, 'title':trip.title}) }}">review</a></td>
 				<td><a href="{{ path('trip_download', {'id': trip.id}) }}">download</a></td>
 			</tr>
 		{% endfor %}
 	</table>
+{% endblock %}
+
+{% block java %}
+	<script>
+		(function() {
+			var addButton = document.getElementById('add');
+			var multiButton = document.getElementById('multiple');
+			var deleteButtons = document.getElementsByClassName('delete');
+			var body = document.getElementById('body');
+			var index = -1;
+
+			var deleteFunction = function(event) {
+				var tr = event.target.parentElement;
+				tr.parentElement.removeChild(tr);
+			}
+
+			for(var i = 0; i < deleteButtons.length; i++) {
+				deleteButtons[i].onclick = deleteFunction;
+			}
+
+
+			addButton.onclick = function() {
+				var row = body.insertRow(-1);
+				var deleteCell = row.insertCell();
+				var textCell = row.insertCell();
+
+				textCell.classList.add('text');
+				textCell.innerHTML = "<textarea required='required' name="+ index-- +"></textarea>";
+
+				deleteCell.classList.add('delete');
+				deleteCell.innerHTML = 'delete';
+				deleteCell.onclick = deleteFunction;
+			}
+
+			multiButton.onclick = function() {
+				var row = body.insertRow(-1);
+				var deleteCell = row.insertCell();
+				var multiCell = row.insertCell();
+
+				deleteCell.classList.add('delete');
+				deleteCell.innerHTML = 'delete';
+				deleteCell.onclick = deleteFunction;
+
+				var inputLabel = document.createElement('label');
+				inputLabel.innerHTML = "Question:";
+
+				var div1 = document.createElement('div');
+					var input = document.createElement('input');
+					input.type = 'text';
+					input.name=index + "[1]";
+					input.required = "required";
+				div1.appendChild(inputLabel);
+				div1.appendChild(input);
+
+				var div2 = document.createElement('div');
+					var rangeLabel = document.createElement('label');
+					rangeLabel.innerHTML = "Max Score:";
+					var range = document.createElement('input');
+					range.type = 'number';
+					range.value = 5;
+					range.required = 'required';
+					range.name=index-- +"[2]";
+				div2.appendChild(rangeLabel);
+				div2.appendChild(range);
+
+				multiCell.appendChild(div1);
+				multiCell.appendChild(div2);
+			}
+
+		})();
+	</script>
 {% endblock %}

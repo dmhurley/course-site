@@ -66,6 +66,16 @@ You must then persist at least these entities.
 		$folder = new Folder();
 		    $folder->setName('root');
 
+		$examGlobal = new ExamGlobal();
+            $examGlobal->setGrade(2)
+                ->setRules("Exam rules go here.");
+
+        $tripGlobal = new TripGlobal();
+            $tripGlobal->setOpening(date('today'))
+                ->setClosing(date('today'))
+                ->setTourClosing(date('today'))
+                ->maxTrips(1);
+
 Make sure that the root folder has an Id of `1`, or it will not be recognized.
 
 #### Optional Bundles
