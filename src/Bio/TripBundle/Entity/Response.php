@@ -29,10 +29,10 @@ class Response
     private $answer;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Query")
+     * @ORM\ManyToOne(targetEntity="EvalQuestion")
      * @ORM\JoinColumn(name="question_id", referencedColumnName="id")
      */
-    private $question;
+    private $evalQuestion;
 
 
     /**
@@ -43,29 +43,6 @@ class Response
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set question
-     *
-     * @param \Bio\TripBundle\Entity\Query $question
-     * @return Response
-     */
-    public function setQuery(\Bio\TripBundle\Entity\Query $question = null)
-    {
-        $this->question = $question;
-    
-        return $this;
-    }
-
-    /**
-     * Get question
-     *
-     * @return \Bio\TripBundle\Entity\Query 
-     */
-    public function getQuery()
-    {
-        return $this->question;
     }
 
     /**
@@ -92,25 +69,25 @@ class Response
     }
 
     /**
-     * Set question
+     * Set evalQuestion
      *
-     * @param \Bio\TripBundle\Entity\Query $question
+     * @param \Bio\TripBundle\Entity\EvalQuestion $evalQuestion
      * @return Response
      */
-    public function setQuestion(\Bio\TripBundle\Entity\Query $question = null)
+    public function setEvalQuestion(\Bio\TripBundle\Entity\EvalQuestion $evalQuestion = null)
     {
-        $this->question = $question;
+        $this->evalQuestion = $evalQuestion;
     
         return $this;
     }
 
     /**
-     * Get question
+     * Get evalQuestion
      *
-     * @return \Bio\TripBundle\Entity\Query 
+     * @return \Bio\TripBundle\Entity\EvalQuestion 
      */
-    public function getQuestion()
+    public function getEvalQuestion()
     {
-        return $this->question;
+        return $this->evalQuestion;
     }
 }

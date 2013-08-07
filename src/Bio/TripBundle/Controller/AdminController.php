@@ -12,7 +12,7 @@ use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 use Bio\TripBundle\Entity\Trip;
 use Bio\TripBundle\Entity\Evaluation;
-use Bio\TripBundle\Entity\Query;
+use Bio\TripBundle\Entity\EvalQuestion;
 use Bio\TripBundle\Entity\Response;
 
 /** 
@@ -193,37 +193,56 @@ class AdminController extends Controller
     public function evalsAction(Request $request) {
         $db = new Database($this, 'BioTripBundle:TripGlobal');
         $global = $db->findOne(array());
-        $db = new Database($this, 'BioTripBundle:Query');
+        $db = new Database($this, 'BioTripBundle:EvalQuestion');
 
         if ($request->getMethod() === "POST") {
             $evalQuestions = array();
             foreach($request->request->keys() as $key) {
                 if ($key < 0) {
-                    $query = new Query();
-                    $db->add($query);
+                    $question = new EvalQuestion();
+                    $db->add($question);
                 } else {
-                    $query = $db->findOne(array('id' => $key));
+                    $question = $db->findOne(array('id' => $key));
                 }
-                $evalQuestions[] = $query;
-                $query->setQuestion($request->request->get($key));
+                $data = $request->request->get($key);
+                $question->setType(is_array($data)?"multiple":"response");
+                if ($question->getType() === 'multiple'){
+                    if (!filter_var($data[2], FILTER_VALIDATE_INT)){
+                        $request->getSession()->getFlashBag()->set('failure', 'Not a number.');
+                        return $this->redirect($this->generateUrl('trip_evals'));
+                    } else {
+                        $data[1] = filter_var($data[1], FILTER_SANITIZE_STRING);
+                    }
+
+                    $question->setData($data);
+                } else {
+                    $data = filter_var($data, FILTER_SANITIZE_STRING);
+                    $question->setData(array($data));
+                }
+
+
+                $evalQuestions[] = $question;
             }
-            $global->setEvalQueries($evalQuestions);
+            $global->setEvalQuestions($evalQuestions);
 
             /** DELETE ORPHANS **
              *      O --"OK"   *
              *    *-|-*        *
              *     /\          *
             ********************/
-
-            $db->close();
+            try {
+                $db->close();
+            } catch (BioException $e) {
+                $request->getSession()->getFlashBag()->set('failure', 'Could not save questions.');
+            }
         }
 
-        $queries = $global->getEvalQueries();        
+        $questions = $global->getEvalQuestions();        
         $db = new Database($this, 'BioTripBundle:Trip');
         $trips = $db->find(array(), array('start' => 'ASC', 'end' => 'ASC'), false);
 
 
-        return array('trips' => $trips, 'queries' => $queries, 'title' => 'Evaluations');
+        return array('trips' => $trips, 'questions' => $questions, 'title' => 'Evaluations');
     }
 
     /**

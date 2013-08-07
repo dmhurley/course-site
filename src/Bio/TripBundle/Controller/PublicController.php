@@ -205,12 +205,19 @@ class PublicController extends Controller
     			return $this->redirect($this->generateUrl('trip_entrance'));
     		}
 
-    		$entity = new Evaluation();
-    		$entity->setTimestamp(new \DateTime());
-    		$form = $this->createFormBuilder($entity)
-    			->add('eval', 'textarea')
-    			->add('submit', 'submit')
-    			->getForm();
+            $db = new Database($this, 'BioTripBundle:TripGlobal');
+            $global = $db->findOne(array());
+
+    		$formBuilder = $this->createFormBuilder();
+    		foreach($global->getEvalQuestions() as $question) {
+                if ($question->getType() === 'multiple') {
+                    $formBuilder->add($question->getId(), 'choice', array('label' => $question->getData()[1], 'choices' => range(0,$question->getData()[2]), 'expanded' => true, 'attr' => array('class' => 'horizontal')));
+                } else if ($question->getType() === 'response') {
+                    $formBuilder->add($question->getId(), 'textarea', array('label' => $question->getData()[0]));
+                }
+            }
+            $formBuilder->add('submit', 'submit');
+            $form = $formBuilder->getForm();
 
 
     		if ($request->getMethod() === "POST") {

@@ -87,7 +87,36 @@ table div input[type=text] {
 	width: 320px;
 }
 
+#submit textarea {
+	width: 75%;
+}
 
-#form textarea {
+#submit select {
+
+}
+
+#submit label {
+	float:none !important;
+	width: auto !important;
+	text-align:left !important;
+}
+
+#submit .horizontal input[type=radio] {
+	float:left !important;
+}
+
+#submit .horizontal label {
+	float: left !important;
+	position: relative;
+	top: 13px;
+	right: 10px;
+}
+
+.horizontal {
+	margin-bottom: 40px;
+}
+
+
+#content > form #form textarea {
 	width: 90%;
 }

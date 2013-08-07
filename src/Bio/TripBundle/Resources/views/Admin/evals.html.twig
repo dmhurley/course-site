@@ -18,11 +18,27 @@
 				</tr>
 			</thead>
 			<tbody id="body">
-				{% for query in queries %}
-					<tr>
-						<td class="text"><textarea required="required" name="{{query.id}}">{{query.question}}</textarea></td>
-						<td class="delete">delete</td>
-					</tr>
+				{% for question in questions %}
+					{% if question.type == 'response' %}
+						<tr>
+							<td class="text"><textarea required="required" name="{{question.id}}">{{question.data[0]}}</textarea></td>
+							<td class="delete">delete</td>
+						</tr>
+					{% elseif question.type == 'multiple' %}
+						<tr>
+							<td>
+								<div>
+									<label>Question:</label>
+									<input type="text" name="{{question.id}}[1]" required="required" value="{{question.data[1]}}">
+								</div>
+								<div>
+									<label>Max Score:</label>
+									<input type="number" name="{{question.id}}[2]" required="required" value={{question.data[2]}}>
+								</div>
+							</td>
+							<td class="delete">delete</td>
+						</tr>
+					{% endif %}
 				{% endfor %}
 			</tbody>
 			<tfoot>
@@ -111,7 +127,7 @@
 				var div1 = document.createElement('div');
 					var input = document.createElement('input');
 					input.type = 'text';
-					input.name=index-- + "[1]";
+					input.name=index + "[1]";
 					input.required = "required";
 				div1.appendChild(inputLabel);
 				div1.appendChild(input);

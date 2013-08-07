@@ -50,13 +50,13 @@ class TripGlobal
     private $maxTrips;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Query")
-     * @ORM\JoinTable(name="default_queries",
+     * @ORM\ManyToMany(targetEntity="EvalQuestion")
+     * @ORM\JoinTable(name="default_questions",
      *      joinColumns={@ORM\JoinColumn(name="global", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="query_id", referencedColumnName="id", unique=true, onDelete="CASCADE")}
      *      )
      */
-    private $evalQueries;
+    private $evalQuestions;
 
     /**
      * Get id
@@ -210,48 +210,48 @@ class TripGlobal
      */
     public function __construct()
     {
-        $this->evalQueries = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-    
-    /**
-     * Add evalQueries
-     *
-     * @param \Bio\TripBundle\Entity\Query $evalQueries
-     * @return TripGlobal
-     */
-    public function addEvalQuerie(\Bio\TripBundle\Entity\Query $evalQueries)
-    {
-        $this->evalQueries[] = $evalQueries;
-    
-        return $this;
+        $this->evalQuestions = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
-    public function setEvalQueries(array $queries) {
-        $this->evalQueries = new \Doctrine\Common\Collections\ArrayCollection();
-        foreach($queries as $query) {
-            $this->addEvalQuerie($query);
+    public function setEvalQuestions(array $questions) {
+        $this->evalQuestions = new \Doctrine\Common\Collections\ArrayCollection();
+        foreach($questions as $question) {
+            $this->addEvalQuestion($question);
         }
 
         return $this;
     }
 
     /**
-     * Remove evalQueries
+     * Add evalQuestions
      *
-     * @param \Bio\TripBundle\Entity\Query $evalQueries
+     * @param \Bio\TripBundle\Entity\EvalQuestion $evalQuestions
+     * @return TripGlobal
      */
-    public function removeEvalQuerie(\Bio\TripBundle\Entity\Query $evalQueries)
+    public function addEvalQuestion(\Bio\TripBundle\Entity\EvalQuestion $evalQuestions)
     {
-        $this->evalQueries->removeElement($evalQueries);
+        $this->evalQuestions[] = $evalQuestions;
+    
+        return $this;
     }
 
     /**
-     * Get evalQueries
+     * Remove evalQuestions
+     *
+     * @param \Bio\TripBundle\Entity\EvalQuestion $evalQuestions
+     */
+    public function removeEvalQuestion(\Bio\TripBundle\Entity\EvalQuestion $evalQuestions)
+    {
+        $this->evalQuestions->removeElement($evalQuestions);
+    }
+
+    /**
+     * Get evalQuestions
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getEvalQueries()
+    public function getEvalQuestions()
     {
-        return $this->evalQueries;
+        return $this->evalQuestions;
     }
 }
