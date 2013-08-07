@@ -63,6 +63,7 @@
 			<th>Trip</th>
 			<th>Summary</th>
 			<th>Evaluations</th>
+			<th>Review</th>
 			<th>Download</th>
 		</tr>
 		{% for trip in trips %}
@@ -74,6 +75,7 @@
 				<td>{{trip.title}}</td>
 				<td>{{trip.shortSum}}</td>
 				<td>{{trip.evals|length}}/{{trip.students|length}}</td>
+				<td><a href="{{ path('eval_review', {'id': trip.id, 'title':trip.title}) }}">review</a></td>
 				<td><a href="{{ path('trip_download', {'id': trip.id}) }}">download</a></td>
 			</tr>
 		{% endfor %}

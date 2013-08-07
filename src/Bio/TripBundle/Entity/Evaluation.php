@@ -33,10 +33,10 @@ class Evaluation {
     private $trip;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Response")
+     * @ORM\ManyToMany(targetEntity="Response", cascade={"remove"})
      * @ORM\JoinTable(name="eval_answers",
-     *      joinColumns={@ORM\JoinColumn(name="eval_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="answer_id", referencedColumnName="id")}
+     *      joinColumns={@ORM\JoinColumn(name="eval_id", referencedColumnName="id", onDelete="CASCADE")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="answer_id", referencedColumnName="id", onDelete="CASCADE")}
      *      )
      */
     private $answers;
@@ -48,6 +48,12 @@ class Evaluation {
      */
     private $timestamp;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="score", type="integer", nullable=true)
+     */
+    private $score;
 
     /**
      * Get id
@@ -222,5 +228,28 @@ class Evaluation {
     public function getAnswers()
     {
         return $this->answers;
+    }
+
+    /**
+     * Set score
+     *
+     * @param integer $score
+     * @return Evaluation
+     */
+    public function setScore($score)
+    {
+        $this->score = $score;
+    
+        return $this;
+    }
+
+    /**
+     * Get score
+     *
+     * @return integer 
+     */
+    public function getScore()
+    {
+        return $this->score;
     }
 }

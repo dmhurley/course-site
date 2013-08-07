@@ -203,7 +203,7 @@ class AdminController extends Controller
                     $db->add($question);
                 } else {
                     $question = $db->findOne(array('id' => $key));
-                    
+
                     if ($question === null) {
                         $request->getSession()->getFlashBag()->set('failure', 'Error.');
                         return $this->redirect($this->generateUrl('trip_evals'));
@@ -258,6 +258,51 @@ class AdminController extends Controller
 
 
         return array('trips' => $trips, 'questions' => $questions, 'title' => 'Evaluations');
+    }
+
+    /**
+     * @Route("/evals/review/{id}/{title}", name="eval_review")
+     * @Template()
+     */
+    public function reviewAction(Request $request, $id, $title) {
+        $em = $this->getDoctrine()->getManager();
+        $query = $em->createQueryBuilder()
+            ->select('e')->from('BioTripBundle:Evaluation', 'e')
+            ->where('e.trip = (SELECT t FROM BioTripBundle:Trip t WHERE t.id = :id)')
+            ->andwhere('e.score IS NULL')
+            ->setParameter('id', $id)
+            ->getQuery();
+
+        try {
+            $eval = $query->getResult()[0];
+        } catch (\Exception $e) {
+            $request->getSession()->getFlashBag()->set('success', 'All Evaluations reviewed for trip: '. $title .'.');
+            return $this->redirect($this->generateUrl('trip_evals'));
+        }
+
+
+        $form = $this->createFormBuilder()
+            ->add('score', 'integer')
+            ->add('i', 'hidden', array('mapped' => false, 'data' => $eval->getId()))
+            ->add('d', 'hidden', array('mapped' => false, 'data' => $eval->getTimestamp()->format('Y-m-d H:i:s')))
+            ->add('grade', 'submit')
+            ->getForm();
+
+        if ($request->getMethod() === "POST") {
+            $form->handleRequest($request);
+
+            if ($form->isValid()) {
+                $db = new Database($this, 'BioTripBundle:Evaluation');
+                $dbEval = $db->findOne(array('id' => $form->get('i')->getData(), 'timestamp' => new \Datetime($form->get('d')->getData())));
+
+                $dbEval->setScore($form->get('score')->getData());
+                $db->close();
+                return $this->redirect($this->generateUrl('eval_review', array('id' => $id, 'title' => $title)));
+            }
+        }
+
+
+        return array('eval' => $eval, 'form' => $form->createView(), 'title' => 'Review');
     }
 
     /**

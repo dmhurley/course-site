@@ -3,6 +3,10 @@
 	padding: 10px;
 }
 
+.space {
+	margin-top: 20px;
+}
+
 .passed {
 	opacity: .5;
 }
