@@ -12,6 +12,7 @@ use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 use Bio\TripBundle\Entity\Trip;
 use Bio\TripBundle\Entity\Evaluation;
+use Bio\TripBundle\Entity\Response;
 
 /** 
  * @Route("/trip")
@@ -26,18 +27,25 @@ class PublicController extends Controller
     	$session = $request->getSession();
     	$flash = $session->getFlashBag();
 
-    	if ($request->query->has('logout')) {
-    		$session->invalidate();
-    	}
+        $db = new Database($this, 'BioTripBundle:TripGlobal');
+        $global = $db->findOne(array());
 
-    	if ($session->has('studentID')) {
-    		return $this->tripAction($request, $session->get('studentID'));
-    	}
+        if ($global->getOpening() > new \DateTime()) {
+            $flash->set('failure', 'Field trip signups start '.$global->getOpening()->format('F j, Y \a\t g:i a').'.');
+        } else {
+        	if ($request->query->has('logout')) {
+        		$session->invalidate();
+        	}
 
-    	return $this->signAction($request);
+        	if ($session->has('studentID')) {
+        		return $this->tripAction($request, $session->get('studentID'), $global);
+        	}
+        }
+
+    	return $this->signAction($request, $global);
     }
 
-    private function signAction(Request $request) {
+    private function signAction(Request $request, $global) {
     	$form = $this->createFormBuilder()
     		->add('sid', 'text', array('label' => 'Student ID:', 'mapped' => false))
     		->add('lName', 'text', array('label' => 'Last Name:', 'mapped' => false))
@@ -66,20 +74,28 @@ class PublicController extends Controller
     	return $this->render('BioExamBundle:Public:sign.html.twig', array('form' => $form->createView(), 'title' => 'Log In'));
     }
 
-    private function tripAction(Request $request, $id) {
+    private function tripAction(Request $request, $id, $global) {
     	$db = new Database($this, 'BioTripBundle:Trip');
     	$trips = $db->find(array(), array('start' => 'ASC', 'end' => 'ASC'), false);
-    	$trip = null;
-    	foreach ($trips as $t) {
-    		foreach($t->getStudents() as $student) {
-    			if ($student->getId() === $id) {
-    				$trip = $t;
-    				break 2;
-    			}
-    		}
-    	}
+        $db = new Database($this, 'BioStudentBundle:Student');
+        $student = $db->findOne(array('id' => $id));
 
-    	return $this->render('BioTripBundle:Public:browse.html.twig', array('trips' => $trips, 'current' => $trip, 'title' => 'Sign Up'));
+        if (!$student) {
+            $request->getSession()->invalidate();
+            $request->getSession()->getFlashBag()->set('failure', 'Not signed in.');
+            return $this->redirect($this->generateUrl('trip_entrance'));
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $query = $em->createQuery('
+                SELECT t
+                FROM BioTripBundle:Trip t
+                WHERE :student MEMBER OF t.students
+            ')->setParameter('student', $student);
+
+        $yourTrips = $query->getResult();
+
+    	return $this->render('BioTripBundle:Public:browse.html.twig', array('trips' => $trips, 'current' => $yourTrips, 'global' => $global, 'title' => 'Sign Up'));
     }
 
     /**
@@ -111,7 +127,7 @@ class PublicController extends Controller
 	    				$db->close();
 	    				$request->getSession()->getFlashBag()->set('success', 'Joined trip.');
 	    			} catch (BioException $e) {
-	    				$request->getSession()->getFlashBag()->set('failure', 'You are already signed up for another trip.');
+	    				$request->getSession()->getFlashBag()->set('failure', 'You cannot sign up for any more trips.');
 	    			}
 	    		}
     		}
@@ -190,26 +206,52 @@ class PublicController extends Controller
     			return $this->redirect($this->generateUrl('trip_entrance'));
     		}
 
-    		$entity = new Evaluation();
-    		$entity->setTimestamp(new \DateTime());
-    		$form = $this->createFormBuilder($entity)
-    			->add('eval', 'textarea')
-    			->add('submit', 'submit')
-    			->getForm();
+            $db = new Database($this, 'BioTripBundle:TripGlobal');
+            $global = $db->findOne(array());
+
+    		$formBuilder = $this->createFormBuilder();
+    		foreach($global->getEvalQuestions() as $question) {
+                if ($question->getType() === 'multiple') {
+                    $formBuilder->add($question->getId(), 'choice', array('label' => $question->getData()[1], 'choices' => range(0,$question->getData()[2]), 'expanded' => true, 'attr' => array('class' => 'horizontal')));
+                } else if ($question->getType() === 'response') {
+                    $formBuilder->add($question->getId(), 'textarea', array('label' => $question->getData()[0]));
+                }
+            }
+            $formBuilder->add('submit', 'submit');
+            $form = $formBuilder->getForm();
 
 
     		if ($request->getMethod() === "POST") {
     			$form->handleRequest($request);
     			if ($form->isValid()) {
+                    print_r($form->getData());
 
-    				$entity->setStudent($student);
-    				$entity->setTrip($trip);
-    				$trip->addEval($entity);
-    				$db->add($entity);
+                    $eval = new Evaluation();
+                    $eval->setTimestamp(new \Datetime())
+                        ->setStudent($student)
+                        ->setTrip($trip);
+
+                    $db = new Database($this, 'BioTripBundle:EvalQuestion');
+                    foreach (array_keys($form->getData()) as $key) {
+                        $question = $db->findOne(array('id' => $key));
+
+                        if (!$question) {
+                            // throw error
+                        }
+
+                        $response = new Response();
+                        $response->setAnswer($form->getData()[$key])
+                            ->setEvalQuestion($question);
+                        $eval->addResponse($response);
+                        $db->add($response);
+                    }
+                    $db->add($eval);
+                    $trip->addEval($eval);
+
 
     				try {
     					$db->close();
-    					$request->getSession()->getFlashBag()->set('failure', 'Evaluation saved.');
+    					$request->getSession()->getFlashBag()->set('success', 'Evaluation saved.');
     				} catch (BioException $e) {
     					$request->getSession()->getFlashBag()->set('failure', 'You can only write an evaluation once.');
     				}

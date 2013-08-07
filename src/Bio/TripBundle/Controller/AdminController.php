@@ -11,6 +11,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 use Bio\TripBundle\Entity\Trip;
+use Bio\TripBundle\Entity\Evaluation;
+use Bio\TripBundle\Entity\EvalQuestion;
+use Bio\TripBundle\Entity\Response;
 
 /** 
  * @Route("/admin/trip")
@@ -24,7 +27,7 @@ class AdminController extends Controller
     public function indexAction(Request $request)
     {	
     	$trip = new Trip();
-    	$form = $this->createFormBuilder($trip)
+    	$form = $this->get('form.factory')->createNamedBuilder('form', 'form', $trip)
     		->add('title', 'text', array('label' => 'Title:'))
     		->add('shortSum', 'textarea', array('label' => 'Short Summary:'))
     		->add('longSum', 'textarea', array('label' => 'Long Summary:'))
@@ -35,18 +38,48 @@ class AdminController extends Controller
     		->add('add', 'submit')
     		->getForm();
 
+        $db = new Database($this, 'BioTripBundle:TripGlobal');
+        $global = $db->findOne(array());
+        $globalForm = $this->get('form.factory')->createNamedBuilder('global', 'form', $global)
+            ->add('opening', 'datetime', array('label' => 'Signup Start:', 'attr' => array('class' => 'datetime')))
+            ->add('closing', 'datetime', array('label' => 'Evaluations Due:', 'attr' => array('class' => 'datetime')))
+            ->add('tourClosing', 'datetime', array('label' => 'Tour Deadline:', 'attr' => array('class' => 'datetime')))
+            ->add('maxTrips', 'integer', array('label' => "Max Trips:"))
+            ->add('set', 'submit')
+            ->getForm();
+
     	$db = new Database($this, 'BioTripBundle:Trip');
 
     	if ($request->getMethod() === "POST") {
-    		$form->handleRequest($request);
-    		if ($form->isValid()) {
+            if ($request->request->has('form')){
+        		$form->handleRequest($request);
+        		if ($form->isValid()) {
 
-    			$db->add($trip);
-    			$db->close();
-    		}
+        			$db->add($trip);
+        		}
+            }
+
+            if ($request->request->has('global')) {
+                $globalForm->handleRequest($request);
+
+                if ($form->isValid()) {
+                    $dbGlobal = $db->findOne(array());
+                    $dbGlobal->setOpening($global->getOpening())
+                        ->setClosing($global->getClosing())
+                        ->setTourClosing($global->getTourClosing())
+                        ->setMaxTrips($global->getMaxTrips());
+                }
+            }
+
+            try {
+                $db->close();
+                $request->getSession()->getFlashBag()->set('success', 'Saved change.');
+            } catch (BioException $e) {
+                $request->getSession()->getFlashBag()->set('failure', 'Unable to save change.');
+            }
     	}
     	$trips = $db->find(array(), array('start' => 'ASC', 'end' => 'ASC'), false);
-        return array('form' => $form->createView(), 'trips' => $trips, 'title' => "Manage Trips");
+        return array('form' => $form->createView(), 'globalForm' => $globalForm->createView(), 'trips' => $trips, 'title' => "Manage Trips");
     }
 
     /**
@@ -91,7 +124,7 @@ class AdminController extends Controller
     			$db->close();
 
     			return $this->redirect($this->generateUrl('manage_trips'));
-    		}
+            }
     	}
 
     	return array('form' => $form->createView(), 'students' => $entity->getStudents(), 'title' => 'Edit Trip');
@@ -158,10 +191,118 @@ class AdminController extends Controller
      * @Template()
      */
     public function evalsAction(Request $request) {
+        $db = new Database($this, 'BioTripBundle:TripGlobal');
+        $global = $db->findOne(array());
+        $db = new Database($this, 'BioTripBundle:EvalQuestion');
+
+        if ($request->getMethod() === "POST") {
+            $evalQuestions = array();
+            foreach($request->request->keys() as $key) {
+                if ($key < 0) {
+                    $question = new EvalQuestion();
+                    $db->add($question);
+                } else {
+                    $question = $db->findOne(array('id' => $key));
+
+                    if ($question === null) {
+                        $request->getSession()->getFlashBag()->set('failure', 'Error.');
+                        return $this->redirect($this->generateUrl('trip_evals'));
+                    }
+                }
+                $data = $request->request->get($key);
+                $question->setType(is_array($data)?"multiple":"response");
+                if ($question->getType() === 'multiple'){
+                    if (!filter_var($data[2], FILTER_VALIDATE_INT)){
+                        $request->getSession()->getFlashBag()->set('failure', 'Not a number.');
+                        return $this->redirect($this->generateUrl('trip_evals'));
+                    } else {
+                        $data[1] = filter_var($data[1], FILTER_SANITIZE_STRING);
+                    }
+
+                    $question->setData($data);
+                } else {
+                    $data = filter_var($data, FILTER_SANITIZE_STRING);
+                    $question->setData(array($data));
+                }
+
+
+                $evalQuestions[] = $question;
+            }
+            $global->setEvalQuestions($evalQuestions);
+
+            /** DELETE ORPHANS **
+             *      O --"OK"   *
+             *    *-|-*        *
+             *     /\          *
+            ********************/
+
+            $em = $this->getDoctrine()->getManager();
+            $query = $em->createQuery('
+                    SELECT q FROM BioTripBundle:EvalQuestion q
+                    WHERE NOT EXISTS(SELECT 1 FROM BioTripBundle:Response t WHERE t.evalQuestion = q.id)
+                    AND NOT EXISTS(SELECT g FROM BioTripBundle:TripGlobal g WHERE q MEMBER OF g.evalQuestions)
+                ');
+            $toDelete = $query->getResult();
+            $db->deleteMany($toDelete);
+
+            try {
+                $db->close();
+            } catch (BioException $e) {
+                $request->getSession()->getFlashBag()->set('failure', 'Could not save questions.');
+            }
+        }
+
+        $questions = $global->getEvalQuestions();        
         $db = new Database($this, 'BioTripBundle:Trip');
         $trips = $db->find(array(), array('start' => 'ASC', 'end' => 'ASC'), false);
 
-        return array('trips' => $trips, 'title' => 'Evaluations');
+
+        return array('trips' => $trips, 'questions' => $questions, 'title' => 'Evaluations');
+    }
+
+    /**
+     * @Route("/evals/review/{id}/{title}", name="eval_review")
+     * @Template()
+     */
+    public function reviewAction(Request $request, $id, $title) {
+        $em = $this->getDoctrine()->getManager();
+        $query = $em->createQueryBuilder()
+            ->select('e')->from('BioTripBundle:Evaluation', 'e')
+            ->where('e.trip = (SELECT t FROM BioTripBundle:Trip t WHERE t.id = :id)')
+            ->andwhere('e.score IS NULL')
+            ->setParameter('id', $id)
+            ->getQuery();
+
+        try {
+            $eval = $query->getResult()[0];
+        } catch (\Exception $e) {
+            $request->getSession()->getFlashBag()->set('success', 'All Evaluations reviewed for trip: '. $title .'.');
+            return $this->redirect($this->generateUrl('trip_evals'));
+        }
+
+
+        $form = $this->createFormBuilder()
+            ->add('score', 'integer')
+            ->add('i', 'hidden', array('mapped' => false, 'data' => $eval->getId()))
+            ->add('d', 'hidden', array('mapped' => false, 'data' => $eval->getTimestamp()->format('Y-m-d H:i:s')))
+            ->add('grade', 'submit')
+            ->getForm();
+
+        if ($request->getMethod() === "POST") {
+            $form->handleRequest($request);
+
+            if ($form->isValid()) {
+                $db = new Database($this, 'BioTripBundle:Evaluation');
+                $dbEval = $db->findOne(array('id' => $form->get('i')->getData(), 'timestamp' => new \Datetime($form->get('d')->getData())));
+
+                $dbEval->setScore($form->get('score')->getData());
+                $db->close();
+                return $this->redirect($this->generateUrl('eval_review', array('id' => $id, 'title' => $title)));
+            }
+        }
+
+
+        return array('eval' => $eval, 'form' => $form->createView(), 'title' => 'Review');
     }
 
     /**
@@ -180,10 +321,16 @@ class AdminController extends Controller
         header('Cache-Control: must-revalidate');
         header('Pragma: public');
 
-        echo "sid\teval\n";
+        echo "trip\tstudentID\tquestion\tanswer\ttimestamp\tscore\n";
         foreach ($trip->getEvals() as $eval) {
-            echo $eval->getStudent()->getSid()."\t";
-            echo $eval->getEval()."\n";
+            foreach($eval->getAnswers() as $answer) {
+                echo $trip->getTitle()."\t";
+                echo $eval->getStudent()->getSid()."\t";
+                echo $answer->getEvalQuestion()->getID()."\t";
+                echo $answer->getAnswer()."\t";
+                echo $eval->getTimestamp()->format('Y-m-d H:i:s')."\t";
+                echo $eval->getScore()."\n";
+            }
         }
         return array('text' => '');
     }

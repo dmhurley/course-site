@@ -3,7 +3,7 @@
         route: main_page
     "Manage Trips":
         route: manage_trips
+    "Manage Evaluations":
+        route: trip_evals
     "Field Trips":
         route: trip_entrance
-    "Evaluations":
-        route: trip_evals
