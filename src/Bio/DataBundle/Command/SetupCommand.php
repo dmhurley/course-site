@@ -132,11 +132,18 @@ $output->writeln('<question>--------------------------------------------</questi
             $examGlobal->setGrade(2)
                 ->setRules("Exam rules go here.");
 
+            $tripGlobal = new TripGlobal();
+            $tripGlobal->setOpening(date('today'))
+                ->setClosing(date('today'))
+                ->setTourClosing(date('today'))
+                ->maxTrips(1);
+
 
         $db->add($info);
         $db->add($root);
         $db->add($instructor);
         $db->add($examGlobal);
+        $db->add($tripGlobal);
 
         $db->close();
     }
