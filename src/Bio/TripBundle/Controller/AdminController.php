@@ -321,10 +321,16 @@ class AdminController extends Controller
         header('Cache-Control: must-revalidate');
         header('Pragma: public');
 
-        echo "sid\teval\n";
+        echo "trip\tstudentID\tquestion\tanswer\ttimestamp\tscore\n";
         foreach ($trip->getEvals() as $eval) {
-            echo $eval->getStudent()->getSid()."\t";
-            echo $eval->getEval()."\n";
+            foreach($eval->getAnswers() as $answer) {
+                echo $trip->getTitle()."\t";
+                echo $eval->getStudent()->getSid()."\t";
+                echo $answer->getEvalQuestion()->getID()."\t";
+                echo $answer->getAnswer()."\t";
+                echo $eval->getTimestamp()->format('Y-m-d H:i:s')."\t";
+                echo $eval->getScore()."\n";
+            }
         }
         return array('text' => '');
     }
