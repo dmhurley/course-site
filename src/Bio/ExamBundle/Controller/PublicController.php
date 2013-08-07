@@ -405,7 +405,7 @@ class PublicController extends Controller
 		$targets = $query->getResult();
 
 		if (count($targets) === 0) {
-			throw new BioException("No other ssss.");
+			throw new BioException("No other exams.");
 		}
 
 		$target = null;

@@ -203,6 +203,11 @@ class AdminController extends Controller
                     $db->add($question);
                 } else {
                     $question = $db->findOne(array('id' => $key));
+                    
+                    if ($question === null) {
+                        $request->getSession()->getFlashBag()->set('failure', 'Error.');
+                        return $this->redirect($this->generateUrl('trip_evals'));
+                    }
                 }
                 $data = $request->request->get($key);
                 $question->setType(is_array($data)?"multiple":"response");
@@ -230,6 +235,16 @@ class AdminController extends Controller
              *    *-|-*        *
              *     /\          *
             ********************/
+
+            $em = $this->getDoctrine()->getManager();
+            $query = $em->createQuery('
+                    SELECT q FROM BioTripBundle:EvalQuestion q
+                    WHERE NOT EXISTS(SELECT 1 FROM BioTripBundle:Response t WHERE t.evalQuestion = q.id)
+                    AND NOT EXISTS(SELECT g FROM BioTripBundle:TripGlobal g WHERE q MEMBER OF g.evalQuestions)
+                ');
+            $toDelete = $query->getResult();
+            $db->deleteMany($toDelete);
+
             try {
                 $db->close();
             } catch (BioException $e) {
