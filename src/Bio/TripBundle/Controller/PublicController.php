@@ -12,6 +12,7 @@ use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 use Bio\TripBundle\Entity\Trip;
 use Bio\TripBundle\Entity\Evaluation;
+use Bio\TripBundle\Entity\Response;
 
 /** 
  * @Route("/trip")
@@ -223,15 +224,34 @@ class PublicController extends Controller
     		if ($request->getMethod() === "POST") {
     			$form->handleRequest($request);
     			if ($form->isValid()) {
+                    print_r($form->getData());
 
-    				$entity->setStudent($student);
-    				$entity->setTrip($trip);
-    				$trip->addEval($entity);
-    				$db->add($entity);
+                    $eval = new Evaluation();
+                    $eval->setTimestamp(new \Datetime())
+                        ->setStudent($student)
+                        ->setTrip($trip);
+
+                    $db = new Database($this, 'BioTripBundle:EvalQuestion');
+                    foreach (array_keys($form->getData()) as $key) {
+                        $question = $db->findOne(array('id' => $key));
+
+                        if (!$question) {
+                            // throw error
+                        }
+
+                        $response = new Response();
+                        $response->setAnswer($form->getData()[$key])
+                            ->setEvalQuestion($question);
+                        $eval->addResponse($response);
+                        $db->add($response);
+                    }
+                    $db->add($eval);
+                    $trip->addEval($eval);
+
 
     				try {
     					$db->close();
-    					$request->getSession()->getFlashBag()->set('failure', 'Evaluation saved.');
+    					$request->getSession()->getFlashBag()->set('success', 'Evaluation saved.');
     				} catch (BioException $e) {
     					$request->getSession()->getFlashBag()->set('failure', 'You can only write an evaluation once.');
     				}
