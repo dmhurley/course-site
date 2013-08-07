@@ -17,6 +17,8 @@ use Bio\InfoBundle\Entity\Section;
 use Bio\InfoBundle\Entity\Hours;
 use Bio\InfoBundle\Entity\Info;
 use Bio\FolderBundle\Entity\Folder;
+use Bio\ExamBundle\Entity\ExamGlobal;
+use Bio\TripBundle\Entity\TripGlobal;
 
 class SetupCommand extends ContainerAwareCommand
 {
@@ -136,7 +138,7 @@ $output->writeln('<question>--------------------------------------------</questi
             $tripGlobal->setOpening(date('today'))
                 ->setClosing(date('today'))
                 ->setTourClosing(date('today'))
-                ->maxTrips(1);
+                ->setMaxTrips(1);
 
 
         $db->add($info);

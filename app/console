@@ -17,6 +17,7 @@ use Symfony\Component\Debug\Debug;
 use Bio\DataBundle\Command\SetupCommand;
 use Bio\DataBundle\Command\AccountCommand;
 use Bio\DataBundle\Command\InstallCommand;
+use Bio\DataBundle\Command\EmailCommand;
 
 $input = new ArgvInput();
 $env = $input->getParameterOption(array('--env', '-e'), getenv('SYMFONY_ENV') ?: 'dev');
@@ -31,4 +32,5 @@ $application = new Application($kernel);
 $application->add(new SetupCommand());
 $application->add(new AccountCommand());
 $application->add(new InstallCommand());
+$application->add(new EmailCommand());
 $application->run($input);
