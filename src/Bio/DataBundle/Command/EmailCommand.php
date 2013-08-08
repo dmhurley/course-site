@@ -25,7 +25,6 @@ class EmailCommand extends ContainerAwareCommand {
 		if ($global->getOpening() < new \DateTime() && $global->getClosing() > new \DateTime()){
 			
 			/******* GET STUDENTS WHO NEED NOTIFICATIONS *******/
-
 			$queryString = '
 					Select s
 					FROM BioStudentBundle:Student s
@@ -45,6 +44,9 @@ class EmailCommand extends ContainerAwareCommand {
 					AND t.end < :high
 					AND t.end > :low';
 				$addParameters = true;
+				$output->writeln("Finding students who have finished a trip > 5 days ago.");
+			} else {
+				$output->writeln("Finding students.");
 			}
 
 			$afterTripQuery = $em->createQuery($queryString);
@@ -52,33 +54,39 @@ class EmailCommand extends ContainerAwareCommand {
 
 			// add parameters if necessary
 			if ($addParameters) {
-				$afterTripQuery->setParameter('high', new \DateTime('-4 days'))
-							   ->setParameter('low', new \DateTime('-5 days'));
+				$afterTripQuery->setParameter('high', new \DateTime('-5 days'))
+							   ->setParameter('low', new \DateTime('-6 days'));
 			}
 
 			$students = $afterTripQuery->getResult();
 
+			if (count($students) !== 0) {
+				/******* SEND EMAILS TO STUDENTS *******/
+				$output->writeln("Sending email(s) to:");
+				foreach ($students as $student){
+					$output->writeln("    ".$student->getEmail());
+				}
+				$message = \Swift_Message::newInstance()
+					->setSubject('Evaluation Reminder')
+					->setFrom('bio@uw.edu')
+					->setSender('bio@uw.edu');
+				foreach($students as $student) {
+					$message->addBcc($student->getEmail(), $student->getFName().' '.$student->getLName());
+				}
+				$message->setBody($this->getContainer()->get('templating')->render('BioDataBundle:Default:email.html.twig', array('global' => $global)))
+					->setPriority('high')
+					->setContentType('text/html');
 
-			/******* SEND EMAILS TO STUDENTS *******/
+				$this->getContainer()->get('mailer')->send($message);
 
-			$message = \Swift_Message::newInstance()
-				->setSubject('Evaluation Reminder')
-				->setFrom('bio@uw.edu')
-				->setSender('bio@uw.edu');
-			foreach($students as $student) {
-				$message->addBcc($student->getEmail(), $student->getFName().' '.$student->getLName());
+
+				$output->writeln("Success.");
+			} else {
+				$output->writeln("All evaluations graded.");
 			}
-			$message->setBody($this->getContainer()->get('templating')->render('BioDataBundle:Default:email.html.twig', array('global' => $global)))
-				->setPriority('high')
-				->setContentType('text/html');
-
-			$this->getContainer()->get('mailer')->send($message);
-
-
-			// output student emails in terminal
-			foreach ($students as $student){
-				$output->writeln($student->getEmail());
-			}
+			
+		} else {
+			$output->writeln("No evaluations can be made.");
 		}
 	}
 }
