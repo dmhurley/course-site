@@ -78,7 +78,8 @@ class PublicController extends Controller
 				}
 
 				if ($taker->getStatus() === 6) {
-					$flash->set('success', "You've already finished this exam.");
+					if (!$flash->has('success'))
+						$flash->set('success', "You've already finished this exam.");
 				}
 			} else {
 				$flash->set('failure', 'Not signed in.');
@@ -346,7 +347,9 @@ class PublicController extends Controller
 				$request->getSession()->getFlashBag()->set('success', 'Test graded. '.($global->getGrade()-count($taker->getGraded()).' left.'));
 				$taker->setStatus(4);
 			} else {
-				$request->getSession()->getFlashBag()->set('success', 'Finished.');
+				$code = $exam->getId().':'.$taker->getId().':'.$taker->getStudent()->getSid();
+				$code = trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, '', $code, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));
+				$request->getSession()->getFlashBag()->set('success', "Finished. Confirmation code:\n".$code);
 				$taker->setStatus(6);
 			}
 			$db->close();
