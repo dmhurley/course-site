@@ -10,7 +10,7 @@ Welcome to a GitHub Repository for the University of Washington Biology Departme
 * PHP version 5.4.1+ must be installed
 * MySQL must installed. Or at least another doctrine compatible database.
 * The latest version of mcrypt and libmcrypt must be installed.
-* The permissions of app/cache and app/log [***must*** be set correctly](http://symfony.com/doc/current/book/installation.html#configuration-and-setup)
+* The permissions of `app/cache`, `app/log`, and `web/files` [***must*** be set correctly](http://symfony.com/doc/current/book/installation.html#configuration-and-setup)
 * if apache does not follow symlinks. Assets must be installed with `php app/console assets:install`
 
 The best way to get this repository running on your computer is to use Composer. If you don't have Composer installed you can run the following commands from the project directory to install the various Bundles this project uses.
@@ -86,20 +86,31 @@ There are several optional bundles included with the site that are by default no
 		
 to install them. `bundles` should be replaced with any combination of `info`, `folder`, `student`, `clicker`, `score`, `exam` and `trip`. This command adds the necessary lines to `app/config/parameters.yml` and `app/config/routing.yml`. The `-a` shortcut install alls available bundles, while `-d` installs only the default.
 
+#### Other Commands
+
+###### Create User
+If you need to add an account, you can run the command
+
+		php app/console bio:create:account username password [ROLE_USER|ROLE_ADMIN|ROLE_SUPER_ADMIN|ROLE_SETUP]
+		
+to create one.
+
+Four roles are possible, `ROLE_USER`, `ROLE_ADMIN`, `ROLE_SUPER_ADMIN`, and `ROLE_SETUP`. With each role inheriting the permissions of the previous.
+
+1. `ROLE_USER`: can log in and that's it. All newly registed accounts start at this role.
+2. `ROLE_ADMIN`: can edit all aspects of the site ***except*** for other users.
+3. `ROLE_SUPER_ADMIN`: can promote, demote, or delete users.
+4. `ROLE_SETUP`: Used for debugging. Can't be seen or deleted on the User admin screen. Can [switch roles](http://symfony.com/doc/current/book/security.html#impersonating-a-user).
+
+
+###### Trip Email Reminder
+
+This command is made to be run as a cron job once every 24 hours. It finds students who are signed up for a trip that has passed and have not yet evaluated it. It sends an email 5 days after their trip, and twice again the two days before evaluations close. The command is:
+
+		php app/console bio:email
+
 #### Notes
 
 * If `bio:setup` fails after creating the database. Make sure to drop the database before running it again.
-
-* If you need to add an account, you can run the command
-
-		php app/console bio:create:account username password [ROLE_USER|ROLE_ADMIN|ROLE_SUPER_ADMIN|ROLE_SETUP]
-
-	or add the necessary information in `app/config/security.yml` yourself.
-	
-* Four roles are possible, `ROLE_USER`, `ROLE_ADMIN`, `ROLE_SUPER_ADMIN`, and `ROLE_SETUP`. With each role inheriting the permissions of the previous.
-    1. `ROLE_USER`: can log in and that's it. All newly registed accounts start at this role.
-    2. `ROLE_ADMIN`: can edit all aspects of the site ***except*** for other users.
-    3. `ROLE_SUPER_ADMIN`: can promote, demote, or delete users.
-    4. `ROLE_SETUP`: Used for debugging. Can't be seen or deleted on the User admin screen. Can switch roles.
 
 * The order of the sidebar will be the same order you write the bundle names down. You can use `bio:install` to change the order or move the lines in `app/config/sidebar.yml` manually.

@@ -282,7 +282,7 @@ class AdminController extends Controller
 
 
         $form = $this->createFormBuilder()
-            ->add('score', 'integer')
+            ->add('score', 'choice', array('choices' => array(0, 15, 25)))
             ->add('i', 'hidden', array('mapped' => false, 'data' => $eval->getId()))
             ->add('d', 'hidden', array('mapped' => false, 'data' => $eval->getTimestamp()->format('Y-m-d H:i:s')))
             ->add('grade', 'submit')

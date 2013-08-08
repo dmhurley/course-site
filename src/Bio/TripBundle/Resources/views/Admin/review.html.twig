@@ -9,15 +9,32 @@
 
 {% block content %}
 	<h3 class="space">Data</h3>
-	<div>
-		<b>Trip Name:</b> {{eval.trip.title}}
-	</div>
-	<div>
-		<b>Student Name:</b> {{eval.student.fName}} {{eval.student.lName}}
-	</div>
-	<div>
-		<b>Timestamp</b> {{eval.timestamp|date('m-d-Y H:i')}}
-	</div>
+	<table>
+		<thead>
+			<tr>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td width="100px">Trip Name</td>
+				<td>{{eval.trip.title}}</td>
+			</tr>
+			<tr>
+				<td>Student Name</td>
+				<td>{{eval.student.fName}} {{eval.student.lName}}</td>
+			</tr>
+			<tr>
+				<td>Student Id</td>
+				<td>{{eval.student.sid}}</td>
+			</tr>
+			<tr>
+				<td>Timestamp</td>
+				<td>{{eval.timestamp|date('m-d-Y H:i')}}</td>
+			</tr>
+		</tbody>
+	</table>
 
 	<h3 class="space">Multiple Choice</h4>
 	<table>
@@ -31,7 +48,7 @@
 			{% for answer in eval.answers if answer.evalQuestion.type == 'multiple' %}
 				<tr>
 					<td>{{answer.evalQuestion.data[1]}}</td>
-					<td>{{answer.answer}}</td>
+					<td width="100px">{{answer.answer}}</td>
 				</tr>
 			{% endfor %}
 		</tbody>
@@ -48,7 +65,7 @@
 		<tbody>
 			{% for answer in eval.answers if answer.evalQuestion.type == 'response' %}
 				<tr>
-					<td rowspan=2>{{loop.index}}</td>
+					<td width="100px" rowspan=2>{{loop.index}}</td>
 					<td><b>{{answer.evalQuestion.data[0]}}</b></td>
 				</tr>
 				<tr>
