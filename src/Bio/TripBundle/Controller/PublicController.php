@@ -178,7 +178,7 @@ class PublicController extends Controller
     		$trip = $db->findOne(array('id' => $id));
 
     		if ($trip){
-    			return array('trip' => $trip, 'title' => $trip->getTitle());
+    			return array('trip' => $trip, 'title' => 'View Trip');
     		}
     		$request->getSession()->getFlashBag()->set('failure', 'Could not find that trip.');
     	}
@@ -191,20 +191,32 @@ class PublicController extends Controller
      * @Template()
      */
     public function evalAction(Request $request, $tripID) {
-    	if (!$request->getSession()->has('studentID')) {
+        $db = new Database($this, 'BioTripBundle:TripGlobal');
+        $global = $db->findOne(array()); 
+    
+        $db = new Database($this, 'BioStudentBundle:Student');
+        $student = $db->findOne(array('id' => $request->getSession()->get('studentID')));
+
+        $db = new Database($this, 'BioTripBundle:Trip');
+        $trip = $db->findOne(array('id' => $tripID));
+
+        $db = new Database($this, 'BioTripBundle:Evaluation');
+        $eval = $db->findOne(array('trip' => $trip, 'student' => $student));
+
+        if (!$student || !$trip) {
+            $request->getSession()->getFlashBag()->set('failure', 'Could find trip or student.');
+            return $this->redirect($this->generateUrl('trip_entrance'));
+        } else if (!$request->getSession()->has('studentID')) {
+            $request->getSession()->invalidate();
     		$request->getSession()->getFlashBag()->set('failure', 'Not signed in.');
     		return $this->redirect($this->generateUrl('trip_entrance'));
-    	} else {
-    		$db = new Database($this, 'BioStudentBundle:Student');
-    		$student = $db->findOne(array('id' => $request->getSession()->get('studentID')));
-
-    		$db = new Database($this, 'BioTripBundle:Trip');
-    		$trip = $db->findOne(array('id' => $tripID));
-
-    		if (!$student || !$trip) {
-    			$request->getSession()->getFlashBag()->set('failure', 'Could find trip or student.');
-    			return $this->redirect($this->generateUrl('trip_entrance'));
-    		}
+    	} else if ($global->getOpening() > new \DateTime()) {
+            $request->getSession()->getFlashBag()->set('failure', 'It is too late to submit evaluations.');
+            return $this->redirect($this->generateUrl('trip_entrance'));
+        } else if ($eval) {
+            $request->getSession()->getFlashBag()->set('failure', 'You have already submitted an evaluation for trip: '.$trip->getTitle().'.');
+            return $this->redirect($this->generateUrl('trip_entrance'));
+        } else {
 
             $db = new Database($this, 'BioTripBundle:TripGlobal');
             $global = $db->findOne(array());

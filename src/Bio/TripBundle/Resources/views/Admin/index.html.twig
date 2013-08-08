@@ -23,7 +23,7 @@
 			<th>Summary</th>
 			<th>Start</th>
 			<th>End</th>
-			<th>Spots Left</th>
+			<th>Spots Taken</th>
 			<th>Edit</th>
 			<th>Delete</th>
 		</tr>
@@ -33,7 +33,7 @@
 				<td>{{ trip.shortSum }}</td>
 				<td>{{ trip.start|date('d-m-y H:i:s') }}</td>
 				<td>{{ trip.end|date('d-m-y H:i:s') }}</td>
-				<td>{{ trip.max - trip.students|length }}</td>
+				<td>{{ trip.students|length }}/{{trip.max}}</td>
 				<td><a href="{{ path('edit_trip') }}?id={{trip.id}}">edit</a></td>
 				<td><a href="{{ path('delete_trip') }}?id={{trip.id}}">delete</a></td>
 			</tr>

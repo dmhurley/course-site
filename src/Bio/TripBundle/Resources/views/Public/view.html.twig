@@ -1,14 +1,48 @@
 {% extends 'BioStyleBundle:Default:main.html.twig' %}
 
 {% block content %}
-	<h3>From</h3>
-	<p>{{ trip.start|date('m/d H:i') }} to {{ trip.end|date('m/d H:i') }}</p>
-	<h3>Description</h3>
-	<p>{{trip.shortSum}}</p>
-	<p>{{trip.longSum}}</p>
-	{% if date(trip.start) < date() %}
-		<h3>Trip Over</h3>
-	{% else %} 
-		<h3><b>{{trip.max - trip.students|length}}</b> spots left.</h3>
-	{% endif %}
+	<table>
+		<thead>
+			<tr>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td width="100px">Trip Name</td>
+				<td>{{trip.title}}</td>
+			</tr>
+			<tr>
+				<td>Start</td>
+				<td>{{trip.start|date('m/d H:i')}}</td>
+			</tr>
+			<tr>
+				<td>End</td>
+				<td>{{trip.end|date('m/d H:i')}}</td>
+			</tr>
+			<tr>
+				<td>Leader Email</td>
+				<td><a href="mailto:{{trip.email}}">{{trip.email}}</a></td>
+			</tr>
+			<tr>
+				<td>Spots Left</td>
+				<td>
+					{% if date(trip.start) < date() %}
+						<i>trip over</i>
+					{% else %} 
+						{{trip.max - trip.students|length}}
+					{% endif %}
+				</td>
+			</tr>
+			<tr>
+				<td>Description</td>
+				<td>
+					<p>{{trip.shortSum}}</p>
+					<p>{{trip.longSum}}</p>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	
 {% endblock %}
