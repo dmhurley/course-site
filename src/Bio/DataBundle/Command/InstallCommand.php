@@ -7,6 +7,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use Symfony\Component\Process\Process;
+
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Yaml\Yaml;
 
@@ -50,12 +52,23 @@ class InstallCommand extends ContainerAwareCommand
             $this->setRouting($bundles, $output);
         } else {
             if (count($bundles) === 0) {
-                $output->writeln("OHNOES");
+                $output->writeln("You cannot install 0 bundles.");
             } else {
+                if (!in_array('user', $bundles)) {
+                    $bundles[] = 'user';
+                }
                 $this->setSidebar($bundles, $output);
                 $this->setRouting($bundles, $output);
             }
             $output->writeln(implode($bundles, " "));
+        }
+
+        $output->writeln("Clearing cache.");
+        $process = new Process('php app/console cache:clear');
+        $process->run(function($type, $buffer){echo $buffer;});
+
+        if (!$process->isSuccessful()) {
+            throw new \Exception('Unable to clear cache. Clear it manually for changes to take effect.');
         }
     }
 
