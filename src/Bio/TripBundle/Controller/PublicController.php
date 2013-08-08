@@ -224,7 +224,6 @@ class PublicController extends Controller
     		if ($request->getMethod() === "POST") {
     			$form->handleRequest($request);
     			if ($form->isValid()) {
-                    print_r($form->getData());
 
                     $eval = new Evaluation();
                     $eval->setTimestamp(new \Datetime())

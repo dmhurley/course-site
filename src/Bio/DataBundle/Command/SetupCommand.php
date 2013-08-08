@@ -136,8 +136,8 @@ $output->writeln('<question>--------------------------------------------</questi
 
             $tripGlobal = new TripGlobal();
             $tripGlobal->setOpening(date('today'))
-                ->setClosing(date('today'))
-                ->setTourClosing(date('today'))
+                ->setClosing(new \Datetime())
+                ->setTourClosing(new \Datetime())
                 ->setMaxTrips(1);
 
 

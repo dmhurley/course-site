@@ -18,27 +18,27 @@ class EmailCommand extends ContainerAwareCommand {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$em = $this->getContainer()->get('doctrine')->getManager();
 		
-		/*
-
-		*/
 		$afterTripQuery = $em->createQuery('
-				Select s 
+				Select s
 				FROM BioStudentBundle:Student s
-				WHERE NOT EXISTS (
-						SELECT e 
-						FROM BioTripBundle:Evaluation e
-						WHERE NOT EXISTS (
-								SELECT t
-								FROM BioTripBundle:Trip t
-								WHERE s MEMBER OF t.students
-								AND e MEMBER OF t.evals
-								AND e.student = s
-								AND t.end > :days
-							)
-					)
-			')->setParameter('days', new \DateTime('-5 days'));
+				LEFT OUTER JOIN BioTripBundle:Trip t
+				WITH s MEMBER OF t.students
+				LEFT OUTER JOIN BioTripBundle:Evaluation e
+				WITH e.student = s
+				AND e MEMBER OF t.evals
+				WHERE t IS NOT NULL
+				AND e IS NULL'
+				.' AND t.end < :high'.
+				' AND t.end > :low'
+			)
+			->setParameter('high', new \DateTime('+1 day'))
+			->setParameter('low', new \DateTime('-1 day'))
+			;
+
 		$students = $afterTripQuery->getResult();
 
-		$output->writeln(count($students));
+		foreach ($students as $student){
+			$output->writeln($student->getEmail());
+		}
 	}
 }

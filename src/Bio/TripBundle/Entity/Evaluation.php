@@ -3,11 +3,12 @@
 namespace Bio\TripBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Evaluation
  *
- * @ORM\Table()
+ * @ORM\Table(uniqueConstraints={@ORM\UniqueConstraint(name="Evaluation", columns={"tripID", "studentID"})})
  * @ORM\Entity()
  */
 class Evaluation {
@@ -21,7 +22,7 @@ class Evaluation {
     private $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="\Bio\StudentBundle\Entity\Student")
+     * @ORM\ManyToOne(targetEntity="\Bio\StudentBundle\Entity\Student")
      * @ORM\JoinColumn(name="studentID", referencedColumnName="id", onDelete="CASCADE")
      */
     private $student;
@@ -109,29 +110,6 @@ class Evaluation {
     public function getTimestamp()
     {
         return $this->timestamp;
-    }
-
-    /**
-     * Set student
-     *
-     * @param \Bio\StudentBundle\Entity\Student $student
-     * @return Evaluation
-     */
-    public function setStudent(\Bio\StudentBundle\Entity\Student $student = null)
-    {
-        $this->student = $student;
-    
-        return $this;
-    }
-
-    /**
-     * Get student
-     *
-     * @return \Bio\StudentBundle\Entity\Student 
-     */
-    public function getStudent()
-    {
-        return $this->student;
     }
 
     /**
@@ -251,5 +229,28 @@ class Evaluation {
     public function getScore()
     {
         return $this->score;
+    }
+
+    /**
+     * Set student
+     *
+     * @param \Bio\StudentBundle\Entity\Student $student
+     * @return Evaluation
+     */
+    public function setStudent(\Bio\StudentBundle\Entity\Student $student = null)
+    {
+        $this->student = $student;
+    
+        return $this;
+    }
+
+    /**
+     * Get student
+     *
+     * @return \Bio\StudentBundle\Entity\Student 
+     */
+    public function getStudent()
+    {
+        return $this->student;
     }
 }
