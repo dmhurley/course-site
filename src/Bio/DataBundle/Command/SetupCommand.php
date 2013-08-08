@@ -135,7 +135,7 @@ $output->writeln('<question>--------------------------------------------</questi
                 ->setRules("Exam rules go here.");
 
             $tripGlobal = new TripGlobal();
-            $tripGlobal->setOpening(date('today'))
+            $tripGlobal->setOpening(new \DateTime())
                 ->setClosing(new \Datetime())
                 ->setTourClosing(new \Datetime())
                 ->setMaxTrips(1);
