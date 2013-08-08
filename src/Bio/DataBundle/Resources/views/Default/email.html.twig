@@ -1,3 +1,5 @@
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam vestibulum suscipit dui, et viverra leo euismod sit amet. Praesent ac bibendum nulla, luctus aliquam libero. Curabitur sed felis nunc. Maecenas at viverra neque, eu blandit arcu. Fusce vestibulum commodo arcu ut vulputate. Cras nisi est, rhoncus quis bibendum vitae, adipiscing ac mauris. Aliquam ut leo adipiscing, sodales eros sit amet, interdum sem. Ut aliquet rhoncus malesuada. Donec eu vestibulum mi. Aenean bibendum nisl urna, sed feugiat justo commodo a. Nullam viverra nibh sapien, feugiat pulvinar tellus rhoncus porttitor.</p>
+<p>This is a reminder that you have one or more field trips left to evaluate. You have until <i>{{ global.closing|date('F jS, Y \a\t H:i a') }}</i> to finish your evaluations. Email your professor if you think there has been an error.</p>
 
-<b>{{ url('trip_entrance') }}</b>
+<p>You can sign in and evaluate your field trip(s) <a href="{{ url('trip_entrance') }}">here</a>. If the link does not work copy and paste this url into your web browser.</p> 
+
+<blockquote><i>{{ url('trip_entrance') }}</i></blockquote>

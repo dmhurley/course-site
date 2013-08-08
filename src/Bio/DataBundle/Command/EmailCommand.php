@@ -52,8 +52,8 @@ class EmailCommand extends ContainerAwareCommand {
 
 			// add parameters if necessary
 			if ($addParameters) {
-				$afterTripQuery->setParameter('high', new \DateTime('+1 day'))
-							   ->setParameter('low', new \DateTime('-1 day'));
+				$afterTripQuery->setParameter('high', new \DateTime('-4 days'))
+							   ->setParameter('low', new \DateTime('-5 days'));
 			}
 
 			$students = $afterTripQuery->getResult();
@@ -68,7 +68,7 @@ class EmailCommand extends ContainerAwareCommand {
 			foreach($students as $student) {
 				$message->addBcc($student->getEmail(), $student->getFName().' '.$student->getLName());
 			}
-			$message->setBody($this->getContainer()->get('templating')->render('BioDataBundle:Default:email.html.twig'))
+			$message->setBody($this->getContainer()->get('templating')->render('BioDataBundle:Default:email.html.twig', array('global' => $global)))
 				->setPriority('high')
 				->setContentType('text/html');
 
