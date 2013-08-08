@@ -18,6 +18,7 @@ class EmailCommand extends ContainerAwareCommand {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$em = $this->getContainer()->get('doctrine')->getManager();
 		
+		// get students who need to be reminded about emails
 		$afterTripQuery = $em->createQuery('
 				Select s
 				FROM BioStudentBundle:Student s
@@ -37,6 +38,22 @@ class EmailCommand extends ContainerAwareCommand {
 
 		$students = $afterTripQuery->getResult();
 
+
+		// send emails
+		$message = \Swift_Message::newInstance()
+			->setSubject('Evaluation Reminder')
+			->setFrom('bio@uw.edu');
+		foreach($students as $student) {
+			$message->addBcc($student->getEmail(), $student->getFName().' '.$student->getLName());
+		}
+		$message->setBody($this->getContainer()->get('templating')->render('BioDataBundle:Default:email.html.twig'))
+			->setPriority('high')
+			->setContentType('text/html');
+
+		$this->getContainer()->get('mailer')->send($message);
+
+
+		// output student emails in terminal
 		foreach ($students as $student){
 			$output->writeln($student->getEmail());
 		}
