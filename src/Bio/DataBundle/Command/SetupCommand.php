@@ -53,11 +53,11 @@ class SetupCommand extends ContainerAwareCommand
 $output->writeln('<info>Installing Bundles</info>');
 $output->writeln('<question>--------------------------------------------</question>');
         if (count($bundles) === 0 || array_search('default', $bundles) !== false) {
-            $process = new Process('php app/console bio:install -d', null, null, null, 300);
+            $process = new Process('php app/console bio:install -d --no-clear', null, null, null, 300);
         } else if (array_search('all', $bundles) !== false) {
-            $process = new Process('php app/console bio:install -a', null, null, null, 300);
+            $process = new Process('php app/console bio:install -a --no-clear', null, null, null, 300);
         } else {
-            $process = new Process('php app/console bio:install '.implode(' ', $bundles), null, null, null, 300);
+            $process = new Process('php app/console bio:install '.implode(' ', $bundles).' --no-clear', null, null, null, 300);
         }
         $process->run(function($type, $buffer){echo $buffer;});
 
@@ -73,16 +73,18 @@ $output->writeln('<info>Creating database</info>');
 $output->writeln('<question>--------------------------------------------</question>');
         $process = new Process('php app/console doctrine:database:create', null, null, null, 300);
         $process->run(function($type, $buffer){echo $buffer;});
-        if (!$process->isSuccessful()) {
-            throw new \Exception('Unable to create database. '.$process->getExitCodeText());
-        }
 
 $output->writeln('<info>Creating schema</info>');
 $output->writeln('<question>--------------------------------------------</question>');
         $process = new Process('php app/console doctrine:schema:create', null, null, null, 300);
         $process->run(function($type, $buffer){echo $buffer;});
         if (!$process->isSuccessful()) {
-            throw new \Exception('Unable to generate schema. '.$process->getExitCodeText());
+            $process = new Process('php app/console doctrine:schema:update --force', null, null, null, 300);
+            $process->run(function($type, $buffer){echo $buffer;});
+
+            if (!$process->isSuccessful()){
+                throw new \Exception('Unable to generate schema. '.$process->getExitCodeText());
+            }
         }
 
 $output->writeln('<info>generating entities</info>');
@@ -100,6 +102,14 @@ $output->writeln('<question>--------------------------------------------</questi
         $process->run(function($type, $buffer){echo $buffer;});
         if (!$process->isSuccessful()) {
             throw new \Exception('Unable to add user. '.$process->getExitCodeText());
+        }
+
+        $output->writeln("Clearing cache.");
+            $process = new Process('php app/console cache:clear');
+            $process->run(function($type, $buffer){echo $buffer;});
+
+        if (!$process->isSuccessful()) {
+            throw new \Exception('Unable to clear cache. Clear it manually for changes to take effect.');
         }
     }
 

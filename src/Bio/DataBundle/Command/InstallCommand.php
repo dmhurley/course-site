@@ -29,6 +29,12 @@ class InstallCommand extends ContainerAwareCommand
                 '-a',
                 InputOption::VALUE_NONE,
                 'Install all Bundles.'
+            ) 
+            -> addOption(
+                'no-clear',
+                null,
+                InputOption::VALUE_NONE,
+                "Don't attempt to clear the cache."
             ) ->addArgument(
                 'bundles',
                 InputArgument::IS_ARRAY,
@@ -63,12 +69,16 @@ class InstallCommand extends ContainerAwareCommand
             $output->writeln(implode($bundles, " "));
         }
 
-        $output->writeln("Clearing cache.");
-        $process = new Process('php app/console cache:clear');
-        $process->run(function($type, $buffer){echo $buffer;});
+        if (!$input->getOption('no-clear')) {
+            $output->writeln("Clearing cache.");
+            $process = new Process('php app/console cache:clear');
+            $process->run(function($type, $buffer){echo $buffer;});
 
-        if (!$process->isSuccessful()) {
-            throw new \Exception('Unable to clear cache. Clear it manually for changes to take effect.');
+            if (!$process->isSuccessful()) {
+                throw new \Exception('Unable to clear cache. Clear it manually for changes to take effect.');
+            }
+        } else {
+            $output->writeln("Don't forget to clear the cache.");
         }
     }
 
