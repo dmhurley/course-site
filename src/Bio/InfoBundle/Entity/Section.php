@@ -205,15 +205,4 @@ class Section extends Base
             ->add('room', 'text', array('label' => 'Room:'));
         return $builder;
     }
-
-    public function setAll($entity) {
-        $this->setName($entity->getName())
-            ->setDay($entity->getDay())
-            ->setStart($entity->getStart())
-            ->setEnd($entity->getEnd())
-            ->setBldg($entity->getBldg())
-            ->setRoom($entity->getRoom());
-
-        return $this;
-    }
 }

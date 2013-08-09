@@ -121,16 +121,17 @@ class DefaultController extends Controller
     	if ($request->getMethod() === "POST") {		// if request was sent
     		$form->handleRequest($request);
     		if ($form->isValid()) {					// and form was valid
-    			try {
-                    $this->editStudent($student);
-                    $request->getSession()->getFlashBag()->set('success', "Student #".$student->getSid()." updated.");
-
-                    // will not save filtering or sorting in display.
+    			$db = new Database($this, 'BioStudentBundle:Student');
+                try {
+                    $db->close();
+                    $request->getSession()->getFlashBag()->set('success', 'Student edited.');
                     return $this->redirect($this->generateUrl('display_students'));
                 } catch (BioException $e) {
-                    $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
+                    $request->getSession()->getFlashBag()->set('failure', 'A student already has that email.');
                 }
-    		}
+    		} else {
+                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+            }
     	}
 
     	return array('form' => $form->createView(), 'title' => "Edit Student");
@@ -189,26 +190,6 @@ class DefaultController extends Controller
 	    	}
     	}
     	return array("form" => $form->createView(), 'title' => "Upload Student List");
-    }
-
-    private function editStudent($entity) {
-        $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('BioStudentBundle:Student');
-        $dbEntity = $repo->findOneBySid($entity->getSid());     // try to find the student in database
-        if (!$dbEntity) {                                       // if student does not exist
-            throw new BioException("We could not find a student with that ID.");
-        } else {                    // student does exist
-            try {
-                $dbEntity->setFName($entity->getFName());
-                $dbEntity->setLName($entity->getLName());
-                $dbEntity->setSection($entity->getSection());
-                $dbEntity->setEmail($entity->getEmail());
-                // for more changes
-                $em->flush();
-            } catch (\Doctrine\DBAL\DBALException $e) {
-                throw new BioException('A student already has that email.');
-            }
-        }
     }
 
     private function uploadStudentList($file) {

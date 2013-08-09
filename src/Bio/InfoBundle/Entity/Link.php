@@ -112,12 +112,4 @@ class Link extends Base
             ->add('location', 'choice', array('choices' => array('sidebar' => 'Sidebar', 'content' => 'Main page'), 'label' => 'Location:'));
         return $builder;
     }
-
-    public function setAll($entity) {
-       $this->setTitle($entity->getTitle())
-            ->setAddress($entity->getAddress())
-            ->setLocation($entity->getLocation());
-
-       return $this;
-    }
 }

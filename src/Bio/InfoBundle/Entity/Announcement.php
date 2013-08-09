@@ -111,12 +111,4 @@ class Announcement extends Base
             ->add('text', 'textarea', array('label' => 'Announcement:'));
         return $builder;
     }
-
-    public function setAll($entity) {
-        $this->setTimestamp($entity->getTimestamp())
-            ->setExpiration($entity->getExpiration())
-            ->setText($entity->getText());
-
-        return $this;
-    }
 }

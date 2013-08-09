@@ -99,25 +99,22 @@ class PublicController extends Controller
     }
 
     /**
-     * @Route("/join", name="join_trip")
+     * @Route("/join/{id}", name="join_trip")
      */
-    public function joinAction(Request $request) {
+    public function joinAction(Request $request, Trip $trip = null) {
     	if (!$request->getSession()->has('studentID')) {
     		$request->getSession()->getFlashBag()->set('failure', 'Not signed in.');
-    	} else if (!$request->query->has('id')) {
-    		$request->getSession()->getFlashBag()->set('failure', 'No trip specified.');
+    	} else if (!$trip) {
+    		$request->getSession()->getFlashBag()->set('failure', 'Trip could not be found.');
     	} else {
-    		$tripID = $request->query->get('id');
     		$studentID = $request->getSession()->get('studentID');
 
     		$db = new Database($this, 'BioStudentBundle:Student');
     		$student = $db->findOne(array('id' => $studentID));
 
-    		$db = new Database($this, 'BioTripBundle:Trip');
-    		$trip = $db->findOne(array('id' => $tripID));
-
-    		if (!$student || !$trip) {
-    			$request->getSession()->getFlashBag()->set('failure', 'No trip found.');
+    		if (!$student) {
+    			$request->getSession()->getFlashBag()->set('failure', 'Not signed in.');
+                $request->getSession()->invalidate();
     		} else {
     			if (count($trip->getStudents()) >= $trip->getMax()) {
     				$request->getSession()->getFlashBag()->set('failure', 'Trip is full.');
@@ -136,25 +133,20 @@ class PublicController extends Controller
     }
 
     /**
-     * @Route("/leave", name="leave_trip")
+     * @Route("/leave/{id}", name="leave_trip")
      */
-    public function leaveAction(Request $request) {
+    public function leaveAction(Request $request, Trip $trip = null) {
     	if (!$request->getSession()->has('studentID')) {
     		$request->getSession()->getFlashBag()->set('failure', 'Not signed in.');
-    	} else if (!$request->query->has('id')) {
-    		$request->getSession()->getFlashBag()->set('failure', 'No trip specified.');
+    	} else if (!$trip) {
+    		$request->getSession()->getFlashBag()->set('failure', 'Trip not found.');
     	} else {
-    		$studentID = $request->getSession()->get('studentID');
-    		$tripID = $request->query->get('id');
-
     		$db = new Database($this, 'BioStudentBundle:Student');
-    		$student = $db->findOne(array('id' => $studentID));
+    		$student = $db->findOne(array('id' => $request->getSession()->get('studentID')));
 
-    		$db = new Database($this, 'BioTripBundle:Trip');
-    		$trip = $db->findOne(array('id' => $tripID));
-
-    		if (!$student || !$trip) {
-    			$request->getSession()->getFlashBag()->set('failure', 'No trip found.');
+    		if (!$student) {
+    			$request->getSession()->getFlashBag()->set('failure', 'Not signed in.');
+                $request->getSession()->invalidate();
     		} else {
 	    		$trip->removeStudent($student);
 	    		$db->close();
@@ -167,38 +159,27 @@ class PublicController extends Controller
     }
 
     /**
-     * @Route("/view", name="view_trip")
+     * @Route("/view/{id}", name="view_trip")
      * @Template()
      */
-    public function viewAction(Request $request) {
-    	if ($request->query->has('id')) {
-    		$id = $request->query->get('id');
-
-    		$db = new Database($this, 'BioTripBundle:Trip');
-    		$trip = $db->findOne(array('id' => $id));
-
-    		if ($trip){
-    			return array('trip' => $trip, 'title' => 'View Trip');
-    		}
-    		$request->getSession()->getFlashBag()->set('failure', 'Could not find that trip.');
-    	}
-
-    	return $this->redirect($this->generateUrl('trip_entrance'));
+    public function viewAction(Request $request, Trip $trip = null) {
+		if ($trip){
+			return array('trip' => $trip, 'title' => 'View Trip');
+		}
+		$request->getSession()->getFlashBag()->set('failure', 'Could not find that trip.');
+        return $this->redirect($this->generateUrl('trip_entrance'));
     }
 
     /**
-     * @Route("/eval/{tripID}/{tripTitle}", name="eval_trip")
+     * @Route("/eval/{id}/{tripTitle}", name="eval_trip")
      * @Template()
      */
-    public function evalAction(Request $request, $tripID) {
+    public function evalAction(Request $request, Trip $trip = null) {
         $db = new Database($this, 'BioTripBundle:TripGlobal');
         $global = $db->findOne(array()); 
     
         $db = new Database($this, 'BioStudentBundle:Student');
         $student = $db->findOne(array('id' => $request->getSession()->get('studentID')));
-
-        $db = new Database($this, 'BioTripBundle:Trip');
-        $trip = $db->findOne(array('id' => $tripID));
 
         $db = new Database($this, 'BioTripBundle:Evaluation');
         $eval = $db->findOne(array('trip' => $trip, 'student' => $student));

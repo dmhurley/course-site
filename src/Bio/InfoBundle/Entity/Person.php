@@ -220,18 +220,7 @@ class Person extends Base
             ->add('title', 'choice', array('choices' => array('instructor' => 'Instructor', 'ta' => 'TA', 'coordinator' => 'Coordinator'), 'label' => 'Title:'));
         return $builder;
     }
-
-    public function setAll($entity) {
-        $this->setFName($entity->getFName())
-            ->setLName($entity->getLName())
-            ->setEmail($entity->getEmail())
-            ->setBldg($entity->getBldg())
-            ->setRoom($entity->getRoom())
-            ->setTitle($entity->getTitle());
-
-        return $this;
-    }
-
+    
     /**
      * Add hours
      *

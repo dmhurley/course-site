@@ -172,13 +172,4 @@ class Hours extends Base
 
         return $builder;
     }
-
-    public function setAll($entity) {
-        $this->setDays($entity->getDays())
-            ->setStart($entity->getStart())
-            ->setEnd($entity->getEnd())
-            ->setByAppointment($entity->getByAppointment());
-
-        return $this;
-    }
 }
