@@ -102,22 +102,17 @@ class AdminController extends Controller
     }
 
     /**
-     * @Route("/delete", name="delete_exam")
+     * @Route("/delete/{id}", name="delete_exam")
      */
-    public function deleteAction(Request $request) {
-    	if ($request->getMethod() === "GET" && $request->query->get('id')) {
-    		$id = $request->query->get('id');
-
-    		$db = new Database($this, 'BioExamBundle:Exam');
-    		$exam = $db->findOne(array('id' => $id));
-    		if ($exam) {
-    			$db->delete($exam);
-    			$db->close();
-    			$request->getSession()->getFlashBag()->set('success', 'Exam deleted.');
-    		} else {
-    			$request->getSession()->getFlashBag()->set('failure', 'Could not find that exam.');
-    		}
-    	}
+    public function deleteAction(Request $request, Exam $exam) {
+		if ($exam) {
+            $db = new Database($this, 'BioExamBundle:Exam');
+			$db->delete($exam);
+			$db->close();
+			$request->getSession()->getFlashBag()->set('success', 'Exam deleted.');
+		} else {
+			$request->getSession()->getFlashBag()->set('failure', 'Could not find that exam.');
+		}
 
     	if ($request->headers->get('referer')){
     		return $this->redirect($request->headers->get('referer'));
@@ -127,24 +122,14 @@ class AdminController extends Controller
     }
 
     /**
-     * @Route("/edit", name="edit_exam")
+     * @Route("/edit/{id}", name="edit_exam")
      * @Template()
      */
-    public function editAction(Request $request) {
-
-    	$db = new Database($this, 'BioExamBundle:Exam');
-
-    	if ($request->query->has('id')) {
-    		$id = $request->query->get('id');
-    		$exam = $db->findOne(array('id' => $id));
-            if (!$exam) {
-                $request->getSession()->getFlashBag()->set('failure', 'Unable to find that exam.');
-                return $this->redirect($this->generateUrl('manage_exams'));
-            }
-    	} else {
-            $request->getSession()->getFlashBag()->set('failure', 'No ID given.');
-    		return $this->redirect($this->generateUrl('manage_exams'));
-    	}
+    public function editAction(Request $request, Exam $exam) {
+        if (!$exam) {
+            $request->getSession()->getFlashBag()->set('failure', 'Unable to find that exam.');
+            return $this->redirect($this->generateUrl('manage_exams'));
+        }
 
 		$form = $this->createFormBuilder($exam)
 			->add('title', 'text', array('label'=>'Exam Name:'))
@@ -169,22 +154,12 @@ class AdminController extends Controller
                 $this->checkDates($exam);
             } catch (BioException $e) {
                 $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
-                return $this->redirect($this->generateUrl('edit_exam')."?id=".$request->query->get('id'));
+                return $this->redirect($this->generateUrl('edit_exam', array('id' => $exam->getId())));
             }
 
 	   		if ($form->isValid()) {
-	   			$dbExam = $db->findOne(array('id' => $exam->getId()));
-	   			$dbExam->setTitle($exam->getTitle())
-                    ->setSection($exam->getSection())
-	   				->setTDate($exam->getTDate())
-	   				->setTStart($exam->getTStart())
-	   				->setTEnd($exam->getTEnd())
-	   				->setTDuration($exam->getTDuration())
-                    ->setGDate($exam->getGDate())
-                    ->setGStart($exam->getGStart())
-                    ->setGEnd($exam->getGEnd())
-                    ->setGDuration($exam->getGDuration())
-	   				->setQuestions($exam->getQuestions());
+                    $db = new Database($this, 'BioExamBundle:Exam');
+ 
                     try {
 	   				    $db->close();
                         $request->getSession()->getFlashBag()->set('success', 'Exam edited.');
@@ -240,22 +215,17 @@ class AdminController extends Controller
     }
 
     /**
-     * @Route("/questions/delete", name="delete_question")
+     * @Route("/questions/delete/{id}", name="delete_question")
      */
-    public function deleteQuestionAction(Request $request) {
-    	if ($request->getMethod() === "GET" && $request->query->get('id')) {
-    		$id = $request->query->get('id');
-
-    		$db = new Database($this, 'BioExamBundle:Question');
-    		$q = $db->findOne(array('id' => $id));
-    		if ($q) {
-    			$db->delete($q);
-    			$db->close();
-    			$request->getSession()->getFlashBag()->set('success', 'Question deleted.');
-    		} else {
-    			$request->getSession()->getFlashBag()->set('failure', 'Could not find that question.');
-    		}
-    	}
+    public function deleteQuestionAction(Request $request, Question $q) {
+		if ($q) {
+            $db = new Database($this, 'BioExamBundle:Question');
+			$db->delete($q);
+			$db->close();
+			$request->getSession()->getFlashBag()->set('success', 'Question deleted.');
+		} else {
+			$request->getSession()->getFlashBag()->set('failure', 'Could not find that question.');
+		}
 
     	if ($request->headers->get('referer')){
     		return $this->redirect($request->headers->get('referer'));
@@ -265,20 +235,10 @@ class AdminController extends Controller
     }
 
     /**
-     * @Route("/questions/edit", name="edit_question")
+     * @Route("/questions/edit/{id}", name="edit_question")
      * @Template()
      */
-    public function editQuestionAction(Request $request) {
-
-    	$db = new Database($this, 'BioExamBundle:Question');
-
-    	if ($request->getMethod() === "GET" && $request->query->get('id')) {
-    		$id = $request->query->get('id');
-
-    		$q = $db->findOne(array('id' => $id));
-    	} else {
-    		$q = new Question();
-    	}
+    public function editQuestionAction(Request $request, Question $q) {
 
 		$form = $this->createFormBuilder($q)
 			->add('question', 'textarea', array('attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
@@ -292,18 +252,14 @@ class AdminController extends Controller
     	if ($request->getMethod() === "POST") {
 	   		$form->handleRequest($request);
 	   		if ($form->isValid()) {
-	   			$dbQ = $db->findOne(array('id' => $form->get('id')->getData()));
-	   			$dbQ->setQuestion($q->getQuestion())
-	   				->setAnswer($q->getAnswer())
-	   				->setPoints($q->getPoints())
-                    ->setTags(explode(' ', $form->get('tags')->getData()));
-                    try {
-	   				    $db->close();
-                        $request->getSession()->getFlashBag()->set('success', 'Question edited.');
-                    } catch (BioException $e) {
-                        $request->getSession()->getFlashBag()->set('failure', 'Unable to save changes.');
-                    }
-	   				return $this->redirect($this->generateUrl('manage_questions'));
+                $db = new Database($this, 'BioExamBundle:Question');
+                try {
+   				    $db->close();
+                    $request->getSession()->getFlashBag()->set('success', 'Question edited.');
+                } catch (BioException $e) {
+                    $request->getSession()->getFlashBag()->set('failure', 'Unable to save changes.');
+                }
+   				return $this->redirect($this->generateUrl('manage_questions'));
 	   		} else {
                 $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
             }
@@ -343,11 +299,8 @@ class AdminController extends Controller
      * @Route("/download/{id}", name="download_exam")
      * @Template("BioExamBundle:Admin:download.txt.twig")
      */
-    public function downloadAction(Request $request, $id) {
+    public function downloadAction(Request $request, Exam $exam) {
 
-        // get exam if it exists
-        $db = new Database($this, 'BioExamBundle:Exam');
-        $exam = $db->findOne(array('id' => $id));
         if (!$exam) {
             $request->getSession()->getFlashBag()->set('failure', 'Exam does not exist.');
             return $this->redirect($this->generateUrl('manage_exams'));
