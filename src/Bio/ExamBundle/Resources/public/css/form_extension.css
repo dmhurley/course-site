@@ -28,7 +28,7 @@
 			margin: 0px;
 		}
 
-.mceEditor table {
-	width: 550px !important;
-	margin:auto !important;
+.mce-tinymce {
+	float: left !important;
+	margin-bottom: 10px !important;
 }

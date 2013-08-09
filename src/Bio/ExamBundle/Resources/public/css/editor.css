@@ -1,20 +1,12 @@
-table, th, td {
-	border: 1px solid black !important;
+table, th, td{
+	border: 1px solid black;
 }
 
 table {
-	margin: 30px 5px 15px 5px !important;
-	text-align: center !important;
-	background-color: rgba(180, 180, 180, .4) !important;
-	border-radius: 5px !important;
-	height: 25px !important;
+	margin: 5px;
+	border-spacing: 0px;
 }
 
-table tr td {
-	padding: 4px !important;
-}
-
-table a {
-	font-weight: bolder !important;
-	text-decoration: none !important; 
+img {
+	margin: 10px;
 }
