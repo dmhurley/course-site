@@ -22,7 +22,7 @@
 				<td>{{ entity.section }}</td>
 				<td><a href="mailto:{{ entity.email }}">{{ entity.email }}</a></td>
 				<td><a href="{{ path('edit_student') }}?sid={{entity.sid}}">edit</td>
-				<td><a href="{{ path('delete_student') }}?sid={{entity.sid}}">delete</td>
+				<td><a href="{{ path('delete_student', {'id': entity.id}) }}">delete</td>
 			</tr>
 		{% endfor %}
 	</table>

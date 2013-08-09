@@ -84,21 +84,21 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/delete", name="delete_student")
+     * @Route("/delete/{id}", name="delete_student")
      */
-    public function deleteAction(Request $request) {
-    	if ($request->getMethod() === "GET" && $request->query->get('sid')) {
-    		$sid = $request->query->get('sid');
+    public function deleteAction(Request $request, Student $student = null) {
+        if ($student !== null){
+            $db = new Database($this, 'BioStudentBundle:Student');
+            $db->delete($student);
+
             try {
-                $db = new Database($this, 'BioStudentBundle:Student');
-                $db->deleteBy(array('sid' => $sid));
-                $db->close("Could not delete student.");
-                $request->getSession()->getFlashBag()->set('success', "Student #".$sid." removed.");
-            } catch (BioException $e) {
-                $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
+                $db->close();
+                $request->getSession()->getFlashBag()->set('success', "Student #".$student->getSid()." removed.");
+            } catch (BioException $e){
+                $request->getSession()->getFlashBag()->set('failure', "Could not delete student");
             }
-    		
-    	}
+        }
+    	
         if (!$request->headers->get('referer')){
             return $this->redirect($this->generateUrl('display_students'));
         } else {
@@ -107,41 +107,31 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/edit", name="edit_student")
+     * @Route("/edit/{id}", name="edit_student")
      * @Template("BioStudentBundle:Default:add.html.twig")
      */
-    public function editAction(Request $request) {
-        $entity = new Student();
-        if ($request->getMethod() === "GET" && $request->query->get('sid')) {
-            try {
-                $db = new Database($this, 'BioStudentBundle:Student');
-                $entity = $db->findOne(array('sid' => $request->query->get('sid')));
-            } catch (BioException $e) {
-                $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
-            }
-        }
-
-        if ($entity) {
-        	$form = $this->createForm(new StudentType(), $entity, array('title' => 'edit', 'edit' => true));
-
-        	if ($request->getMethod() === "POST") {		// if request was sent
-        		$form->handleRequest($request);
-        		if ($form->isValid()) {					// and form was valid
-        			try {
-                        $this->editStudent($entity);
-                        $request->getSession()->getFlashBag()->set('success', "Student #".$entity->getSid()." updated.");
-
-                        // will not save filtering or sorting in display.
-                        return $this->redirect($this->generateUrl('display_students'));
-                    } catch (BioException $e) {
-                        $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
-                    }
-        		}
-        	}
-        } else {
+    public function editAction(Request $request, Student $student = null) {
+        if ($student === null) {
             $request->getSession()->getFlashBag()->set('failure', 'Could not find that student.');
             return $this->redirect($this->generateUrl('display_students'));
         }
+
+    	$form = $this->createForm(new StudentType(), $student, array('title' => 'edit', 'edit' => true));
+
+    	if ($request->getMethod() === "POST") {		// if request was sent
+    		$form->handleRequest($request);
+    		if ($form->isValid()) {					// and form was valid
+    			try {
+                    $this->editStudent($student);
+                    $request->getSession()->getFlashBag()->set('success', "Student #".$student->getSid()." updated.");
+
+                    // will not save filtering or sorting in display.
+                    return $this->redirect($this->generateUrl('display_students'));
+                } catch (BioException $e) {
+                    $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
+                }
+    		}
+    	}
 
     	return array('form' => $form->createView(), 'title' => "Edit Student");
     }
