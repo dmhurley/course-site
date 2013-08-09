@@ -16,14 +16,6 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class Person extends Base
 {
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
 
     /**
      * @var string
@@ -74,23 +66,6 @@ class Person extends Base
 
     public function __construct() {
         $this->products = new ArrayCollection();
-    }
-
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function setId($id) {
-        $this->id = $id;
-
-        return $this;
     }
 
     public function getFullName() {

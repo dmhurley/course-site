@@ -15,14 +15,6 @@ use Symfony\Component\Form\FormBuilder;
  */
 class Link extends Base
 {
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
 
     /**
      * @var string
@@ -44,24 +36,6 @@ class Link extends Base
      * @ORM\Column(name="location", type="string", length=255)
      */
     private $location;
-
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function setId($id)
-    {
-        $this->id = $id;
-    
-        return $this;
-    }
 
     /**
      * Set title

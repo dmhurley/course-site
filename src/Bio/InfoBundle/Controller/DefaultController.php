@@ -5,6 +5,7 @@ namespace Bio\InfoBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 use Symfony\Component\HttpFoundation\Request;
 use Bio\InfoBundle\Entity\Person;
@@ -70,26 +71,24 @@ class DefaultController extends Controller {
     }
 
     /**
-     * @Route("/delete", name="delete")
+     * @Route("/delete/{id}", name="delete")
+     * @ParamConverter("entity", class="BioInfoBundle:Base")
      */
-    public function deleteAction(Request $request, $entityName) {
+    public function deleteAction(Request $request, $entityName, $entity = null) {
         $uc = ucfirst($entityName);
         $lc = strtolower($entityName);
-        $type = 'Bio\InfoBundle\Entity\\'.$uc;
+        if ($entity && is_a($entity, "Bio\InfoBundle\Entity\\".$uc)){
+            $db = new Database($this, 'BioInfoBundle:Info');
+            $db->delete($entity);
 
-        if ($request->getMethod() === "GET" && $request->query->get('id')) {
-            $id = $request->query->get('id');
-
-            $db = new Database($this, 'BioInfoBundle:'.$uc);
-
-            $entity = $db->findOne(array('id'=>$id));
-            if ($entity) {
-                $db->delete($entity);
+            try {
                 $db->close();
                 $request->getSession()->getFlashBag()->set('success', $uc.' deleted.');
-            } else {
-                $request->getSession()->getFlashBag()->set('failure', 'Could not find that '.$lc.'.');
+            } catch (BioException $e) {
+                $request->getSession()->getFlashBag()->set('failure', 'Could not delete that '.$lc.'.');
             }
+        } else {
+            $request->getSession()->getFlashBag()->set('failure', 'Could not find that '.$lc.'.');
         }
 
         if ($request->headers->get('referer')){
@@ -100,41 +99,41 @@ class DefaultController extends Controller {
     }
 
     /**
-     * @Route("/edit", name="edit")
+     * @Route("/edit/{id}", name="edit")
+     * @ParamConverter("entity", class="BioInfoBundle:Base")
      */
-    public function editAction(Request $request, $entityName) {
+    public function editAction(Request $request, $entityName, $entity = null) {
         $uc = ucfirst($entityName);
         $lc = strtolower($entityName);
-        $type = 'Bio\InfoBundle\Entity\\'.$uc;
+        
+        if ($entity && is_a($entity, "Bio\InfoBundle\Entity\\".$uc)) {
+            $form = $entity->addToForm($this->createFormBuilder($entity))
+                ->add('id', 'hidden')
+                ->add('edit', 'submit')
+                ->getForm();
 
-        $db = new Database($this, 'BioInfoBundle:'.$uc);
+            if ($request->getMethod() === "POST") {
+                $form->handleRequest($request);
 
-        if ($request->getMethod() === "GET" && $request->query->get('id')){
-            $id = $request->query->get('id');
-
-            $entity = $db->findOne(array('id' => $id));
-        } else {
-            $entity = new $type;
-        }
-
-        $form = $entity->addToForm($this->createFormBuilder($entity))
-            ->add('id', 'hidden')
-            ->add('edit', 'submit')
-            ->getForm();
-
-        if ($request->getMethod() === "POST") {
-            $form->handleRequest($request);
-
-            if($form->isValid()) {
-                $dbEntity = $db->findOne(array('id' => $entity->getId()));
-                $dbEntity->setAll($entity);
-                $db->close();
-
-                return $this->redirect($this->generateUrl('view', array('entityName' => $lc)));
+                if($form->isValid()) {
+                    $db = new Database($this, 'BioInfoBundle:'.$uc);
+                    $dbEntity = $db->findOne(array('id' => $entity->getId()));
+                    $dbEntity->setAll($entity);
+                    try {
+                        $db->close();
+                        $request->getSession()->getFlashBag()->set('success', 'Edited that '.$lc.'.');
+                    } catch (BioException $e) {
+                        $request->getSession()->getFlashBag()->set('failure', 'Could not edit that '.$lc.'.');
+                    }
+                }
             }
+
+            return $this->render('BioInfoBundle:'.$uc.':edit.html.twig', 
+                    array('form' => $form->createView(), 'title' => 'Edit '.$uc));
+        } else {
+            $request->getSession()->getFlashBag()->set('failure', 'Could not find that '.$lc.'.');
         }
 
-        return $this->render('BioInfoBundle:'.$uc.':edit.html.twig', 
-                array('form' => $form->createView(), 'title' => 'Edit '.$uc));
+        return $this->redirect($this->generateUrl('view', array('entityName' => $lc)));
     }
 }

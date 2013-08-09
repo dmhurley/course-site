@@ -22,8 +22,8 @@
 				<td>{{section.end|date('h:m')}}</td>
 				<td>{{section.bldg}}</td>
 				<td>{{section.room}}
-				<td><a href="{{ path('edit', {'entityName' : 'section'}) }}?id={{ section.id}}">edit</a></td>
-				<td><a href="{{ path('delete', {'entityName' : 'section'}) }}?id={{ section.id }}">delete</a></td>
+				<td><a href="{{ path('edit', {'entityName' : 'section', 'id':section.id}) }}">edit</a></td>
+				<td><a href="{{ path('delete', {'entityName' : 'section', 'id':section.id}) }}">delete</a></td>
 			</tr>
 		{% endfor %}
 	</table>
