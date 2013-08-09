@@ -76,7 +76,7 @@ stfalcon_tinymce:
             bio:
                 plugins:
                     - "advlist autolink lists link image charmap preview pagebreak"
-                    - "visualblocks visualchars code"
+                    - "visualblocks visualchars code autoresize"
                     - "insertdatetime nonbreaking save table contextmenu"
                     - "template paste textcolor"
                 toolbar: "bold italic alignleft aligncenter alignright bullist numlist outdent indent table link image code"
@@ -88,6 +88,8 @@ stfalcon_tinymce:
                 image_advtab: false
                 content_css: "http://localhost/~nick/course-site/web/bundles/BioExam/css/editor.css"
                 forced_root_block: "p"
+                autoresize_min_height: 65
+                autoresize_max_height: 300
 
             # Advanced theme with almost all enabled plugins
             advanced:

@@ -34,7 +34,7 @@
 
 {% if root.name != 'root' %}
 <span>
-	<a href="{{ path('delete_folder')}}?id={{root.id}}&type={{type}}">delete</a>
+	<a href="{{ path('delete_folder', {'id':root.id})}}">delete</a>
 </span>
 {% else %}
 <span>

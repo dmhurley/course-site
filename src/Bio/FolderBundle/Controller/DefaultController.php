@@ -5,6 +5,8 @@ namespace Bio\FolderBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+
 
 use Symfony\Component\HttpFoundation\Request;
 
@@ -65,24 +67,23 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/delete", name="delete_folder")
+     * @Route("/delete/{id}", name="delete_folder")
+     * @ParamConverter("entity", class="BioFolderBundle:FileBase")
      */
-    public function deleteAction(Request $request) {
-    	if ($request->getMethod() === 'GET' && $request->query->get('id') && $request->query->get('type')){
-    		$id = $request->query->get('id');
-    		$type = ucFirst($request->query->get('type'));
-
-    		$db = new Database($this, 'BioFolderBundle:'.$type);
-
-    		$entity = $db->findOne(array('id' => $id));
-    		if($entity && $id !== '1') {
-    			$db->delete($entity);
+    public function deleteAction(Request $request, $entity) {
+		if($entity && (($type = method_exists($entity, 'getFiles')?"Folder":"File") === "File" || $entity->getId() !== 1)) {
+            $db = new Database($this, 'BioFolderBundle:Folder'); 
+			$db->delete($entity);
+            try {
     			$db->close();
     			$request->getSession()->getFlashBag()->set('success', $type.' "'.$entity->getName().'" deleted.');
-    		} else {
-    			$request->getSession()->getFlashBag()->set('failure', "Could not find that ".$type);
-    		}
-    	}
+            } catch (BioException $e) {
+                $request->getSession()->getFlashBag()->set('failure', "Could not delete that ".$entity->getType());
+            }
+
+		} else {
+			$request->getSession()->getFlashBag()->set('failure', "Could not find that ".$type);
+		}
 
         return $this->redirect($this->generateUrl('view_folders'));
     }

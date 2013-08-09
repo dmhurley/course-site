@@ -36,17 +36,17 @@
 			{% endif %}
 				- trip over.
 		{% elseif current != null and trip in current %}
-			<a href="{{ path('leave_trip') }}?id={{trip.id}}">Leave Trip</a>
+			<a href="{{ path('leave_trip', {'id': trip.id}) }}">Leave Trip</a>
 			- {{trip.max - trip.students|length}} spots left.
 		{% else %}
 			{% if current|length >= global.maxTrips %}
 				<a>Join Trip</a>
 			{% else %}
-				<a href="{{ path('join_trip') }}?id={{trip.id}}">Join Trip</a>
+				<a href="{{ path('join_trip', {'id': trip.id}) }}">Join Trip</a>
 			{% endif %}
 			- {{trip.max - trip.students|length}} spots left.
 		{% endif %}
-		<a href="{{ path('view_trip') }}?id={{trip.id}}">View Trip</a>
+		<a href="{{ path('view_trip', {'id': trip.id}) }}">View Trip</a>
 	</div>
 {% endfor %}
 

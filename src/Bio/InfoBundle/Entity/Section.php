@@ -14,14 +14,6 @@ use Symfony\Component\Form\FormBuilder;
  */
 class Section extends Base
 {
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
 
     /**
      * @var string
@@ -64,23 +56,6 @@ class Section extends Base
      * @ORM\Column(name="room", type="string", length=255)
      */
     private $room;
-
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function setId($id) {
-        $this->id = $id;
-
-        return $this;
-    }
 
     /**
      * Set name
@@ -229,16 +204,5 @@ class Section extends Base
             ->add('bldg', 'choice', array('choices' => array_combine($array, $array), 'validation_groups' => false, 'label' => "Building:"))
             ->add('room', 'text', array('label' => 'Room:'));
         return $builder;
-    }
-
-    public function setAll($entity) {
-        $this->setName($entity->getName())
-            ->setDay($entity->getDay())
-            ->setStart($entity->getStart())
-            ->setEnd($entity->getEnd())
-            ->setBldg($entity->getBldg())
-            ->setRoom($entity->getRoom());
-
-        return $this;
     }
 }

@@ -93,18 +93,6 @@ class CourseController extends Controller
     		$form->handleRequest($request);
 
     		if ($form->isValid()) {
-    			$data = $form->getData();
-    			$info->setCourseNumber($data->getCourseNumber());
-    			$info->setTitle($data->getTitle());
-    			$info->setQtr($data->getQtr());
-    			$info->setYear($data->getYear());
-    			$info->setDays($data->getDays());
-    			$info->setStartTime($data->getStartTime());
-    			$info->setEndTime($data->getEndTime());
-    			$info->setBldg($data->getBldg());
-    			$info->setRoom($data->getRoom());
-    			$info->setEmail($data->getEmail());
-
     			try {
     				$db->close("Something broke...");
                     $request->getSession()->getFlashBag()->set('success', 'Course information updated.');
