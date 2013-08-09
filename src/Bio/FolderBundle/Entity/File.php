@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 use Bio\DataBundle\Exception\BioException;
+use Bio\FolderBundle\Entity\FileBase;
 
 /**
  * File
@@ -14,16 +15,8 @@ use Bio\DataBundle\Exception\BioException;
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
  */
-class File
+class File extends FileBase
 {
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
 
     /**
      * @var string
@@ -48,16 +41,6 @@ class File
     // are not persisted!
     private $file;
     private $temp;
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set name
