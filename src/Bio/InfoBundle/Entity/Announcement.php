@@ -16,15 +16,6 @@ use Symfony\Component\Form\FormBuilder;
 class Announcement extends Base
 {
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
-    /**
      * @var \DateTime
      *
      * @ORM\Column(name="timestamp", type="datetime")
@@ -44,23 +35,6 @@ class Announcement extends Base
      * @ORM\Column(name="text", type="text")
      */
     private $text;
-
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function setId($id) {
-        $this->id = $id;
-
-        return $this;
-    }
 
     /**
      * Set timestamp
@@ -136,13 +110,5 @@ class Announcement extends Base
             ->add('expiration', 'datetime', array('attr' => array('class' => 'datetime'), 'label' => 'End Time:'))
             ->add('text', 'textarea', array('label' => 'Announcement:'));
         return $builder;
-    }
-
-    public function setAll($entity) {
-        $this->setTimestamp($entity->getTimestamp())
-            ->setExpiration($entity->getExpiration())
-            ->setText($entity->getText());
-
-        return $this;
     }
 }

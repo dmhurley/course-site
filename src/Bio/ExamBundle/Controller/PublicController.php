@@ -362,7 +362,7 @@ class PublicController extends Controller
 	/**
 	 * Recieves a post request containing student_id, exam_id. Attempts to find someone for user to grade
 	 *
-	 * @Route("/check?a={$", name="check")
+	 * @Route("/check.json", name="check")
 	 * @Template("BioExamBundle:Public:check.json.twig")
 	 */
 	public function checkAction(Request $request) {

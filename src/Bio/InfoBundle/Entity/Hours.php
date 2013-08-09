@@ -15,15 +15,6 @@ use Symfony\Component\Form\FormBuilder;
 class Hours extends Base
 {
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="days", type="string", length=255)
@@ -56,23 +47,6 @@ class Hours extends Base
      * @ORM\JoinColumn(name="person_id", referencedColumnName="id")
      */
     private $person;
-
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function setId($id) {
-        $this->id = $id;
-
-        return $this;
-    }
 
     /**
      * Set days
@@ -197,14 +171,5 @@ class Hours extends Base
             ->add('byAppointment', 'checkbox', array('required' => false, 'label' => 'By Appointment?'));
 
         return $builder;
-    }
-
-    public function setAll($entity) {
-        $this->setDays($entity->getDays())
-            ->setStart($entity->getStart())
-            ->setEnd($entity->getEnd())
-            ->setByAppointment($entity->getByAppointment());
-
-        return $this;
     }
 }

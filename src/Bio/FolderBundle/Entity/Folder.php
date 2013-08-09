@@ -3,6 +3,7 @@
 namespace Bio\FolderBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Bio\FolderBundle\Entity\FileBase;
 
 /**
  * Folder
@@ -10,16 +11,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table()
  * @ORM\Entity
  */
-class Folder
+class Folder extends FileBase
 {
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
 
     /**
      * @var string
@@ -53,22 +46,6 @@ class Folder
 
     public function __contruct() {
         $this->private = false;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function setId($id) {
-        $this->id = $id;
-
-        return $this;
     }
 
     /**

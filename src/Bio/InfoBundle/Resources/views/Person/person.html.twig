@@ -20,8 +20,8 @@
 				<td><a href="http://www.washington.edu/maps/?{{person.bldg|split("	")[0]}}">{{person.bldg}}</a></td>
 				<td>{{person.room}}</td>
 				<td>{{person.title}}</td>
-				<td><a href="{{ path('edit', {'entityName' : 'person'}) }}?id={{ person.id}}">edit</a></td>
-				<td><a href="{{ path('delete', {'entityName' : 'person'}) }}?id={{ person.id }}">delete</a></td>
+				<td><a href="{{ path('edit', {'entityName' : 'person', 'id' : person.id}) }}">edit</a></td>
+				<td><a href="{{ path('delete', {'entityName' : 'person', 'id' : person.id}) }}">delete</a></td>
 			</tr>
 		{% endfor %}
 	</table>

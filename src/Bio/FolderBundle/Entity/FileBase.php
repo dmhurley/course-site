@@ -1,6 +1,6 @@
 <?php
 
-namespace Bio\InfoBundle\Entity;
+namespace Bio\FolderBundle\Entity;
 
 use Symfony\Component\Form\FormBuilder;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,9 +10,9 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap({"base" = "Base", "ann"="Announcement", "link"="Link", "person"="Person", "section"="Section", "hours"="Hours"})
+ * @ORM\DiscriminatorMap({"base" = "FileBase", "folder":"Folder", "file":"File"})
  */
-class Base {
+class FileBase {
 	/**
      * @var integer
      *
@@ -30,9 +30,5 @@ class Base {
     public function getId()
     {
         return $this->id;
-    }
-
-    public function setId($id) {
-    	$this->id = $id;
     }
 }

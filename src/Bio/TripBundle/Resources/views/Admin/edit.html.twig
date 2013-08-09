@@ -10,15 +10,15 @@
 			<th>Email</th>
 			<th>Remove</th>
 		</tr>
-		{% for student in students %}
+		{% for student in trip.students %}
 			<tr>
 				<td>{{student.sid}}</td>
 				<td>{{student.fName}} {{student.lName}}</td>
 				<td><a href="mailto:{{student.email}}">{{student.email}}</a></td>
-				<td><a href="{{ path('remove_student') }}?id={{student.id}}&tid={{app.request.query.get('id')}}">remove</a></td>
+				<td><a href="{{ path('remove_student', {'id': trip.id, 'sid':student.id}) }}">remove</a></td>
 			</tr>
 		{% endfor %}
-		{% if students|length > 1 %}
+		{% if trip.students|length > 1 %}
 			<tr>
 				<td colspan=4 style="text-align:center;">
 					{% spaceless %}
