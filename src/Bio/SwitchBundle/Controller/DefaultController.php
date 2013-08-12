@@ -53,16 +53,15 @@ class DefaultController extends Controller
     				$r->setStatus(1)
     					->setStudent($student)
     					->setCurrent($section);
-
-    			$db->close();
+    				$db->close();
     			}
 
     			if ($r->getStatus() === 1) {
-    				return $this->setRequestAction($request, $r);
+    				return $this->setRequestAction($request, $r, $db);
     			}
 
-    			if ($r->getStatus() === 2) {
-
+    			if ($r->getStatus() === 2) { 
+    				return $this->viewRequestAction($request, $r, $db);
     			}
     		} else {
     			$session->invalidate();
@@ -73,12 +72,62 @@ class DefaultController extends Controller
     	return $this->forward('BioTripBundle:Public:sign', array('request' => $request, 'redirect' => 'request_switch'));
     }
 
-    private function setRequestAction($request, $r) {
+    private function setRequestAction($request, $r, $db) {
     	$form = $this->createFormBuilder()
     		->add('want', 'entity', array('class' => 'BioInfoBundle:Section', 'property' => 'descriptor', 'multiple' => true, 'expanded' => true))
     		->add('request', 'submit')
     		->getForm();
 
-    	return $this->render('BioSwitchBundle:Default:choose.html.twig', array('form' => $form->createView(), 'request' => $r));
+    	if ($request->getMethod() === "POST") {
+    		$form->handleRequest($request);
+
+    		if ($form->isValid()) {
+    			$r->setWants($form->get('want')->getData())
+    				->setStatus(2);
+    			$db->close();
+    			$request->getSession()->getFlashBag()->set('success', 'Requests saved.');
+    			return $this->redirect($this->generateUrl('request_switch'));
+    		}
+    	}
+    	$db->close();
+
+    	return $this->render('BioSwitchBundle:Default:choose.html.twig', array('form' => $form->createView(), 'request' => $r, 'title' => "Request Sections"));
+    }
+
+    private function viewRequestAction($request, $r, $db) {
+    	$em = $this->getDoctrine()->getManager();
+
+    	$ids = array();
+		foreach($r->getWant() as $section) {
+			$ids[] = $section->getId();
+		}
+    	$queryBuilder = $em->createQueryBuilder()
+    		->select('r')
+    		->from('BioSwitchBundle:Request', 'r')
+    		->where('r.current IN (:want)')
+    		->andWhere(':current MEMBER OF r.want')
+    		->andWhere('r.status = 2')
+    		->setParameter('want', $ids)
+    		->setParameter('current', $r->getCurrent());
+
+    	$form = $this->createFormBuilder()
+    		->add('match', 'entity', array('class' => 'BioSwitchBundle:Request', 'property' => 'status', 'query_builder' => $queryBuilder, 'expanded' => true))
+    		->add('submit', 'submit')
+    		->getForm();
+
+    	if ($request->getMethod() === "POST") {
+    		$form->handleRequest($request);
+
+    		if ($form->isValid()) {
+    			$match = $form->get('match')->getData();
+    			$match->setMatch($r)
+    				->setStatus(3);
+    			$r->setMatch($match)
+    				->setStatus(3);
+    			$db->close();
+    		}
+    	}
+
+		return $this->render('BioSwitchBundle:Default:matches.html.twig', array('form' => $form->createView(), 'title' => 'Choose Section'));
     }
 }

@@ -190,11 +190,6 @@ class Request
      */
     public function setMatch(\Bio\SwitchBundle\Entity\Request $match = null)
     {   
-        if ($match === null) {
-            $this->status = 1;
-        } else {
-            $this->status = 2;
-        }
         $this->match = $match;
     
         return $this;
