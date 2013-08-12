@@ -1,0 +1,4 @@
+bio_switch:
+    resource: '@BioSwitchBundle/Controller/'
+    type: annotation
+    prefix: /

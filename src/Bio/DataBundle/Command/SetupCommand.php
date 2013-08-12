@@ -30,7 +30,7 @@ class SetupCommand extends ContainerAwareCommand
             ->addArgument(
                 'bundles',
                 InputArgument::IS_ARRAY,
-                'default|all|[info folder student clicker score exam trip user]'
+                'default|all|[info folder student clicker score exam trip switch user]'
             )
         ;
     }

@@ -84,7 +84,7 @@ There are several optional bundles included with the site that are by default no
 
 		php app/console bio:install [-d|--default] [-a|--all] [--no-clear] [bundles1] ... [bundlesN]
 		
-to install them. `bundles` should be replaced with any combination of `info`, `folder`, `student`, `clicker`, `score`, `exam` and `trip`. This command adds the necessary lines to `app/config/parameters.yml` and `app/config/routing.yml`. The `-a` shortcut install alls available bundles, while `-d` installs only the default. After the installation has been completed the command attempts to clear the cache (unless `--no-clear` is enabled). Usually this step will fail and the cache will have to be cleared manually.
+to install them. `bundles` should be replaced with any combination of `info`, `folder`, `student`, `clicker`, `score`, `exam` `trip`, `switch`, and `user`. This command adds the necessary lines to `app/config/parameters.yml` and `app/config/routing.yml`. The `-a` shortcut install alls available bundles, while `-d` installs only the default. After the installation has been completed the command attempts to clear the cache (unless `--no-clear` is enabled). Usually this step will fail and the cache will have to be cleared manually.
 
 #### Other Commands
 
@@ -114,3 +114,5 @@ to install them. `bundles` should be replaced with any combination of `info`, `f
 * If `bio:setup` fails after creating the database. Make sure to drop the database before running it again.
 
 * The order of the sidebar will be the same order you write the bundle names down. You can use `bio:install` to change the order or move the lines in `app/config/sidebar.yml` manually.
+
+* bio:install will automatically install the `user` bundle at the end if it has not already been added. This is necessary to access any of the admin content.
