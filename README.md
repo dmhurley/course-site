@@ -32,7 +32,7 @@ Once all major problems are fixed you're ready to set up the project.
 
 #### The Easy Way
 
-		php app/console bio:setup username password [ [bundles1] ... [bundlesN] | all | default ]
+		php app/console bio:setup [ [bundles1] ... [bundlesN] | all | default ]
 
 This command will do the complete basic setup for you. Install bundles & assets, create the database tables and columns, and initialize any entities that are necessary for the site to run Finally the command will store the username and hashed password in `app/config/security.yml` allowing you to access the admin pages. The `bundles` option takes in the same options as `bio:install` (explained later) except the key words `default` and `all` take the place of `--default` and `--all`.
 
@@ -91,9 +91,9 @@ to install them. `bundles` should be replaced with any combination of `info`, `f
 * ###### Create User
 	If you need to add an account, you can run the command
 	
-			php app/console bio:create:account username password [ROLE_USER|ROLE_ADMIN|ROLE_SUPER_ADMIN|ROLE_SETUP]
+			php app/console bio:create:account [--username=username] [--password=password] [--role=ROLE]
 			
-	to create one.
+	to create one. You will be prompted by the command line for any options you don't fill in.
 	
 	Four roles are possible, `ROLE_USER`, `ROLE_ADMIN`, `ROLE_SUPER_ADMIN`, and `ROLE_SETUP`. With each role inheriting the permissions of the previous.
  

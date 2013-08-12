@@ -28,16 +28,6 @@ class SetupCommand extends ContainerAwareCommand
             ->setName('bio:setup')
             ->setDescription('Setup a biology course page.')
             ->addArgument(
-                'username',
-                InputArgument::REQUIRED,
-                'username'
-            )
-            ->addArgument(
-                'password',
-                InputArgument::REQUIRED,
-                'user password'
-            )
-            ->addArgument(
                 'bundles',
                 InputArgument::IS_ARRAY,
                 'default|all|[info folder student clicker score exam trip user]'
@@ -47,9 +37,19 @@ class SetupCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $username = $input->getArgument('username');
-        $password = $input->getArgument('password');
+        $dialog = $this->getHelperSet()->get('dialog');
+        $username = $dialog->ask(
+            $output,
+            'Username: ',
+            null
+        );
+        $password = $dialog->askHiddenResponse(
+                $output,
+                'Password: ',
+                false
+            );
         $bundles = $input->getArgument('bundles');
+
 $output->writeln('<info>Installing Bundles</info>');
 $output->writeln('<question>--------------------------------------------</question>');
         if (count($bundles) === 0 || array_search('default', $bundles) !== false) {
@@ -97,7 +97,7 @@ $output->writeln('<question>--------------------------------------------</questi
 
         $output->writeln('<info>Creating Account</info>');
 $output->writeln('<question>--------------------------------------------</question>');
-        $process = new Process('php app/console bio:create:account '.$username.' '.$password, null, null, null, 300);
+        $process = new Process('php app/console bio:create:account --username='.$username.' --password='.$password.' --role=ROLE_SUPER_ADMIN', null, null, null, 300);
         
         $process->run(function($type, $buffer){echo $buffer;});
         if (!$process->isSuccessful()) {

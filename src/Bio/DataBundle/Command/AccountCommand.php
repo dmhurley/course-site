@@ -7,6 +7,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use Symfony\Component\Process\Process;
+
 use Symfony\Component\Security\Core\User\UserInterface;
 use Bio\UserBundle\Entity\User;
 use Bio\DataBundle\Objects\Database;
@@ -18,18 +20,21 @@ class AccountCommand extends ContainerAwareCommand
         $this
             ->setName('bio:create:account')
             ->setDescription('Creates an account')
-            ->addArgument(
+            ->addOption(
                 'username',
-                InputArgument::REQUIRED,
+                null,
+                InputArgument::OPTIONAL,
                 'Username?'
             )
-            ->addArgument(
+            ->addOption(
                 'password',
-                InputArgument::REQUIRED,
+                null,
+                InputArgument::OPTIONAL,
                 'Password?'
             )
-            ->addArgument(
+            ->addOption(
                 'role',
+                null,
                 InputArgument::OPTIONAL,
                 'Role?'
             )
@@ -38,11 +43,30 @@ class AccountCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $username = $input->getArgument('username');
-        $password = $input->getArgument('password');
-        $role = $input->getArgument('role');
-        if (!$role) {
-            $role = 'ROLE_ADMIN';
+        $dialog = $this->getHelperSet()->get('dialog');
+        if (!($username = $input->getOption('username'))) {
+            $username = $dialog->ask(
+                $output,
+                'Username: ',
+                null
+            );
+        }
+        if (!($password = $input->getOption('password'))) {
+            $password = $dialog->askHiddenResponse(
+                    $output,
+                    'Password: ',
+                    false
+                );
+        }
+
+        $roles = array('ROLE_USER', 'ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_SETUP');
+        if (!($role = $input->getOption('role'))) {
+            $role = $roles[$dialog->select(
+                    $output,
+                    'Role: ',
+                    $roles,
+                    1
+                )];
         }
 
         $db = new Database($this->getContainer(), 'BioUserBundle:User');
