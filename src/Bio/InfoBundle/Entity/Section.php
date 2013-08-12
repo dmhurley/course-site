@@ -70,6 +70,10 @@ class Section extends Base
         return $this;
     }
 
+    public function getDescriptor() {
+        return $this->getName()." - ".ucFirst($this->getDay())." (".$this->getStart()->format("H:i")."-".$this->getEnd()->format("H:i").")";
+    }
+
     /**
      * Get name
      *

@@ -4,4 +4,4 @@
     Requests:
         route: switch_requests
     "Switch Sections":
-        route: main_page
+        route: request_switch

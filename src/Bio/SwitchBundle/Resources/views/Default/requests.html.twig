@@ -1,5 +1,31 @@
 {% extends 'BioStyleBundle:Default:main.html.twig' %}
 
 {% block content %}
-
+	<table>
+		<thead>
+			<tr>
+				<th>Student ID</th>
+				<th>Name</th>
+				<th>Section</th>
+				<th>Wants</th>
+				<th>Status</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for request in requests %}
+				<tr>
+					<td rowspan={{request.want|length}}>{{request.student.sid}}</td>
+					<td rowspan={{request.want|length}}>{{request.student.fName}} {{request.student.lName}}</td>
+					<td rowspan={{request.want|length}}>{{request.current.name}}</td>
+					<td>{{(request.want|first).name}}</td>
+					<td rowspan={{request.want|length}}>{{request.status}}</td>
+				</tr>
+				{% for section in request.want if section != request.want|first %}
+					<tr>
+						<td>{{section.name}}</td>
+					</tr>
+				{% endfor %}
+			{% endfor %}
+		</tbody>
+	</table>
 {% endblock %}
