@@ -71,6 +71,10 @@ class DefaultController extends Controller
     			if ($r->getStatus() === 2) { 
     				return $this->viewRequestAction($request, $r, $db);
     			}
+
+    			if ($r->getStatus() === 3 || ($r->getMatch()->getStatus() === 3 && $r->getStatus() === 4)) {
+    				return $this->confirmationAction($request, $r, $db);
+    			}
     		} else {
     			$session->invalidate();
     			$flash->set('failure', 'Not signed in.');
@@ -131,11 +135,54 @@ class DefaultController extends Controller
     			$match->setMatch($r)
     				->setStatus(3);
     			$r->setMatch($match)
-    				->setStatus(3);
+    				->setStatus(4);
     			$db->close();
+
+    			$request->getSession()->getFlashBag()->set('success', 'Request sent.');
+    			return $this->redirect($this->generateUrl('request_switch'));
     		}
     	}
 
 		return $this->render('BioSwitchBundle:Default:matches.html.twig', array('form' => $form->createView(), 'request' => $r, 'title' => 'Choose Section'));
+    }
+
+    private function confirmationAction($request, $r, $db) {
+    	// check if the other requester cancelled request
+    	if ($r->getMatch() === null) {
+    		$r->setStatus(2);
+    		$db->close();
+    		$request->getSession()->getFlashBag()->set('failure', 'Partner cancelled their request.');
+    		return $this->redirect($this->generateUrl('request_switch'));
+    	}
+
+    	if ($request->query->has('decline')) {
+    		$r->getMatch()->setMatch(null);
+
+    		$r->setMatch(null)
+    			->setStatus(2);
+
+    		$db->close();
+    		$request->getSession()->getFlashBag()->set('success', 'Matching declined.');
+    		return $this->redirect($this->generateUrl('request_switch'));
+    	}
+
+    	if ($r->getStatus() === 4 && $r->getMatch()->getStatus() === 3) {
+    		return $this->render('BioSwitchBundle:Default:wait.html.twig', array('request' => $r, 'title' => 'Waiting...'));
+    	}
+
+    	if ($r->getStatus() === 3) {
+    		$form = $this->createFormBuilder()
+    			->add("confirm", 'submit')
+    			->getForm();
+
+	    	if ($request->getMethod() === 'POST') {
+	    		$r->setStatus(4);
+	    		$db->close();
+
+	    		return $this->redirect($this->generateUrl('request_switch'));
+	    	}
+
+    		return $this->render('BioSwitchBundle:Default:confirm.html.twig', array('form'=> $form->createView(), 'request' => $r, 'title' => 'Confirm Pairing'));
+    	}
     }
 }

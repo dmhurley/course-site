@@ -1,0 +1,13 @@
+{% extends 'BioSwitchBundle:Default:main.html.twig' %}
+
+{% block content %}
+	<p>If you wish to switch to section {{request.match.current.name}} on {{request.match.current.day}} from {{request.match.current.start|date('h:i a')}} to {{request.match.current.end|date('h:i a')}}. Click the confirmation button. If you wish to decline the request, click <a href="?decline">here</a>.
+
+	<div style="text-align:center;">
+		{{form_start(form)}}
+		{{ form_widget(form.confirm) }}
+		{{form_end(form)}}
+	</div>
+	<br />
+	{{parent()}}
+{% endblock %}
