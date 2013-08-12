@@ -177,8 +177,23 @@ class DefaultController extends Controller
 
 	    	if ($request->getMethod() === 'POST') {
 	    		$r->setStatus(4);
-	    		$db->close();
+	    		$message = \Swift_Message::newInstance()
+	    			->setSubject('Switch Sections')
+	    			->setFrom('nickclaw@gmail.com')
+	    			->addCc($r->getStudent()->getEmail())
+	    			->addCc($r->getMatch()->getStudent()->getEmail())
+	    			->setBody(
+	    					'talky talky talk.'
+	    				);
 
+	    		$this->get('mailer')->send($message);
+	    		
+	    		$db->delete($r->getMatch());
+	    		$db->delete($r);
+	    		$request->getSession()->invalidate();
+	    		$request->getSession()->getFlashBag()->set('success', 'Contact information sent.');
+
+	    		$db->close();
 	    		return $this->redirect($this->generateUrl('request_switch'));
 	    	}
 
