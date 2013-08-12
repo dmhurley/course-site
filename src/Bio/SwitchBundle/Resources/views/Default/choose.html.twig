@@ -1,0 +1,37 @@
+{% extends 'BioSwitchBundle:Default:main.html.twig' %}
+
+{% block content %}
+
+	{{ form_start(form) }}
+		<div id="form" class="tableStyle">
+			<table>
+				<thead>
+					<tr>
+						<th></th>
+						<th>Name</th>
+						<th>Day</th>
+						<th>Start</th>
+						<th>End</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for choice in form.children['want'].vars.choices %}
+					<tr>
+						{% if request.current == choice.data %}
+							<td></td>
+						{% else %}
+							<td><input type="checkbox" value={{choice.value}} ></td>
+						{% endif %}
+						<td>{{choice.data.name}}</td>
+						<td>{{choice.data.day}}</td>
+						<td>{{choice.data.start|date('h:i a')}}</td>
+						<td>{{choice.data.end|date('h:i a')}}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			{% do form_row(form.want) %}
+			{{form_row(form.request)}}
+		</div>
+	{{ form_end(form) }}
+{% endblock %}

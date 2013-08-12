@@ -29,67 +29,56 @@ class DefaultController extends Controller
      * @Template()
      */
     public function requestAction(\Symfony\Component\HttpFoundation\Request $request) {
-    	$form = $this->createFormBuilder()
-    		->add('sid', 'text', array('label' => 'Student ID:'))
-    		->add('lName', 'text', array('label' => 'Last Name:'))
-    		->add('sections', 'entity', array('class' => 'BioInfoBundle:Section', 'property' => 'descriptor', 'label' => 'Sections Wanted:', 'multiple'=>true))
-    		->add('submit', 'submit', array('label' => 'Send Request'))
-    		->getForm();
+    	$session = $request->getSession();
+    	$flash = $session->getFlashBag();
 
-    	if ($request->getMethod() === "POST") {
-    		$form->handleRequest($request);
+    	if ($request->query->has('logout')) {
+    		$session->invalidate();
+    	}
 
-    		if ($form->isValid()) {
-    			$db = new Database($this, 'BioStudentBundle:Student');
-    			$student = $db->findOne(array('sid' => $form->get('sid')->getData(), 'lName' => $form->get('lName')->getData()));
+    	if ($session->has('studentID')) {
+    		$db = new Database($this, 'BioStudentBundle:Student');
+    		$student = $db->findOne(array('id' => $session->get('studentID')));
 
-    			if (!$student) {
-    				$request->getSession()->getFlashBag()->set('failure', 'Could not find student with that student ID and last name.');
-    				return $this->redirect($this->generateUrl("request_switch"));
-    			}
+    		if ($student) {
+    			$db = new Database($this, 'BioSwitchBundle:Request');
+    			$r = $db->findOne(array('student' => $student));
 
-    			$db = new Database($this, 'BioInfoBundle:Section');
-    			$section = $db->findOne(array('name' => $student->getSection()));
+    			if (!$r) {
+    				$db = new Database($this, 'BioInfoBundle:Section');
+    				$section = $db->findOne(array('name' => $student->getSection()));
 
-    			$r = new Request();
-    			$r->setStatus(1)
-    				->setStudent($student)
-    				->setCurrent($section)
-    				->setWants($form->get('sections')->getData());
-
-    			$db->add($r);
-
-    			/** FIND MATCH? **/
-    			$em = $this->getDoctrine()->getManager();
-
-    			// create array of ids to use IN
-    			// if I used $r->getWant() it'd be comparing id's to objects
-    			$ids = array();
-    			foreach($r->getWant() as $section) {
-    				$ids[] = $section->getId();
-    			}
-
-    			$query = $em->createQuery('
-    					SELECT r
-    					FROM BioSwitchBundle:Request r
-    					WHERE r.current IN (:want)
-    					AND :current MEMBER OF r.want
-    					AND r.match IS NULL
-    				')
-    				->setParameter('want', $ids)
-    				->setParameter('current', $r->getCurrent())
-    				->setMaxResults(1);
-
-    			try {
-    				$match = $query->getSingleResult();
-    				$match->setMatch($r);
-    				$r->setMatch($match);
-    			} catch (\Doctrine\Orm\NoResultException $e) {}
-    			/** ********** **/
+    				$r = new Request();
+    				$db->add($r);
+    				$r->setStatus(1)
+    					->setStudent($student)
+    					->setCurrent($section);
 
     			$db->close();
+    			}
+
+    			if ($r->getStatus() === 1) {
+    				return $this->setRequestAction($request, $r);
+    			}
+
+    			if ($r->getStatus() === 2) {
+
+    			}
+    		} else {
+    			$session->invalidate();
+    			$flash->set('failure', 'Not signed in.');
     		}
     	}
-    	return array('form' => $form->createView(), 'title' => "Switch Sections");
+
+    	return $this->forward('BioTripBundle:Public:sign', array('request' => $request, 'redirect' => 'request_switch'));
+    }
+
+    private function setRequestAction($request, $r) {
+    	$form = $this->createFormBuilder()
+    		->add('want', 'entity', array('class' => 'BioInfoBundle:Section', 'property' => 'descriptor', 'multiple' => true, 'expanded' => true))
+    		->add('request', 'submit')
+    		->getForm();
+
+    	return $this->render('BioSwitchBundle:Default:choose.html.twig', array('form' => $form->createView(), 'request' => $r));
     }
 }
