@@ -10,9 +10,9 @@
 #}
 
 {% block content %}
-	{% if app.session.has('student') %}
-		<div id="signedin">
-		Signed in as {{app.session.get('student').fName}}. <a href="?logout">not right?</a>
+	{% if app.session.has('studentID') %}
+		<div style="text-align:center;">
+			<a href="?logout">Sign out?</a>
 		</div>
 	{% endif %}
 {% endblock %}

@@ -56,6 +56,14 @@ class DefaultController extends Controller
     				$db->close();
     			}
 
+    			if ($request->query->has('cancel')) {
+    				$db->delete($r);
+    				$db->close();
+    				$session->invalidate();
+    				$flash->set('success', 'Request cancelled.');
+    				return $this->redirect($this->generateUrl('request_switch'));
+    			}
+
     			if ($r->getStatus() === 1) {
     				return $this->setRequestAction($request, $r, $db);
     			}
@@ -128,6 +136,6 @@ class DefaultController extends Controller
     		}
     	}
 
-		return $this->render('BioSwitchBundle:Default:matches.html.twig', array('form' => $form->createView(), 'title' => 'Choose Section'));
+		return $this->render('BioSwitchBundle:Default:matches.html.twig', array('form' => $form->createView(), 'request' => $r, 'title' => 'Choose Section'));
     }
 }

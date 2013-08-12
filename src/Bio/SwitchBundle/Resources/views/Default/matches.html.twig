@@ -1,6 +1,7 @@
 {% extends 'BioSwitchBundle:Default:main.html.twig' %}
 
 {% block content %}
+	<p>Select a section you would like to switch into. If your request is approved, you will both be given each others contact information. Continue checking this page as more sections might open up. You may also be notified via your email ({{request.student.email}}) if another student requests you. If you would like to cancel your request click <a href="?cancel">here</a>.</p>
 	{{ form_start(form) }}
 		<div id="form" class="tableStyle">
 			<table>
@@ -36,4 +37,5 @@
 			{{form_row(form.submit)}}
 		</div>
 	{{ form_end(form) }}
+	{{parent()}}
 {% endblock %}
