@@ -58,6 +58,35 @@ class DefaultController extends Controller
     				->setWants($form->get('sections')->getData());
 
     			$db->add($r);
+
+    			/** FIND MATCH? **/
+    			$em = $this->getDoctrine()->getManager();
+
+    			// create array of ids to use IN
+    			// if I used $r->getWant() it'd be comparing id's to objects
+    			$ids = array();
+    			foreach($r->getWant() as $section) {
+    				$ids[] = $section->getId();
+    			}
+
+    			$query = $em->createQuery('
+    					SELECT r
+    					FROM BioSwitchBundle:Request r
+    					WHERE r.current IN (:want)
+    					AND :current MEMBER OF r.want
+    					AND r.match IS NULL
+    				')
+    				->setParameter('want', $ids)
+    				->setParameter('current', $r->getCurrent())
+    				->setMaxResults(1);
+
+    			try {
+    				$match = $query->getSingleResult();
+    				$match->setMatch($r);
+    				$r->setMatch($match);
+    			} catch (\Doctrine\Orm\NoResultException $e) {}
+    			/** ********** **/
+
     			$db->close();
     		}
     	}

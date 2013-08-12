@@ -50,7 +50,7 @@ class Request
 
     /**
      * @ORM\OneToOne(targetEntity="Request")
-     * @ORM\JoinColumn(name="request_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="request_id", referencedColumnName="id", onDelete="SET NULL")
      */
     private $match;
 
@@ -189,7 +189,12 @@ class Request
      * @return Request
      */
     public function setMatch(\Bio\SwitchBundle\Entity\Request $match = null)
-    {
+    {   
+        if ($match === null) {
+            $this->status = 1;
+        } else {
+            $this->status = 2;
+        }
         $this->match = $match;
     
         return $this;
