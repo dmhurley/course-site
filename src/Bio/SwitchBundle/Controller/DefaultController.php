@@ -94,13 +94,17 @@ class DefaultController extends Controller
     		$form->handleRequest($request);
 
     		if ($form->isValid()) {
-    			$r->setWants($form->get('want')->getData())
-    				->setStatus(2);
-                try {
-    			     $db->close();
-    			     $request->getSession()->getFlashBag()->set('success', 'Preferences saved.');
-                } catch (BioException $e) {
-                    $request->getSession()->getFlashBag()->set('failure', 'Could not save preferences.');
+
+                $wants = $form->get('want')->getData();
+                if (count($wants) > 0){
+        			$r->setWants($wants)
+        				->setStatus(2);
+                    try {
+        			     $db->close();
+        			     $request->getSession()->getFlashBag()->set('success', 'Preferences saved.');
+                    } catch (BioException $e) {
+                        $request->getSession()->getFlashBag()->set('failure', 'Could not save preferences.');
+                    }
                 }
 
     			return $this->redirect($this->generateUrl('request_switch'));
@@ -136,16 +140,19 @@ class DefaultController extends Controller
 
     		if ($form->isValid()) {
     			$match = $form->get('match')->getData();
-    			$match->setMatch($r)
-    				->setStatus(3);
-    			$r->setMatch($match)
-    				->setStatus(4);
 
-                try {
-    			    $db->close();
-                    $request->getSession()->getFlashBag()->set('success', 'Request sent.');
-                } catch (BioException $e) {
-                    $request->getSession()->getFlashBag()->set('failure', 'Could not send request.');
+                if ($match){
+        			$match->setMatch($r)
+        				->setStatus(3);
+        			$r->setMatch($match)
+        				->setStatus(4);
+
+                    try {
+        			    $db->close();
+                        $request->getSession()->getFlashBag()->set('success', 'Request sent.');
+                    } catch (BioException $e) {
+                        $request->getSession()->getFlashBag()->set('failure', 'Could not send request.');
+                    }
                 }
 
     			return $this->redirect($this->generateUrl('request_switch'));
@@ -173,8 +180,12 @@ class DefaultController extends Controller
     	if ($request->query->has('decline')) {
     		$r->getMatch()->setMatch(null);
 
-    		$r->setMatch(null)
-    			->setStatus(2);
+    		$r->setStatus(2)
+                ->getMatch()
+                    ->setStatus(2)
+                    ->setMatch(null);
+            $r->setMatch(null);
+            
             try {
     		    $db->close();
                 $request->getSession()->getFlashBag()->set('success', 'Request declined.');
@@ -195,6 +206,9 @@ class DefaultController extends Controller
 
 	    	if ($request->getMethod() === 'POST') {
                 try {
+                    $rEmail = $r->getStudent()->getEmail();
+                    $matchEmail = $r->getMatch()->getStudent()->getEmail();
+
                     // database stuff
     	    		$r->setStatus(4); // probably unnecessary
                     $db->delete($r->getMatch());
@@ -205,8 +219,8 @@ class DefaultController extends Controller
     	    		$message = \Swift_Message::newInstance()
     	    			->setSubject('Switch Sections')
     	    			->setFrom('nickclaw@gmail.com')
-    	    			->addCc($r->getStudent()->getEmail())
-    	    			->addCc($r->getMatch()->getStudent()->getEmail())
+    	    			->addCc($rEmail)
+    	    			->addCc($matchEmail)
     	    			->setBody(
     	    					'talky talky talk.'
     	    				);
