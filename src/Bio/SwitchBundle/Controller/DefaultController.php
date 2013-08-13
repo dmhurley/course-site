@@ -153,6 +153,16 @@ class DefaultController extends Controller
                     } catch (BioException $e) {
                         $request->getSession()->getFlashBag()->set('failure', 'Could not send request.');
                     }
+
+                    $message = \Swift_Message::newInstance()
+                        ->setSubject("Someone wants to switch sections")
+                        ->setFrom("nickclaw@gmail.com")
+                        ->setTo($r->getMatch()->getStudent()->getEmail())
+                        ->setBody($this->renderView('BioSwitchBundle:Default:notificationEmail.html.twig', array('student' => $r->getMatch()->getStudent())))
+                        ->setPriority('high')
+                        ->setContentType('text/html');
+
+                    $this->get('mailer')->send($message);
                 }
 
     			return $this->redirect($this->generateUrl('request_switch'));
@@ -177,13 +187,12 @@ class DefaultController extends Controller
     	}
 
     	if ($request->query->has('decline')) {
-    		$r->getMatch()->setMatch(null);
-
+            $m = $r->getMatch();
     		$r->setStatus(2)
                 ->getMatch()
-                    ->setStatus(2)
-                    ->setMatch(null);
-            $r->setMatch(null);
+                ->setMatch(null);
+            $m->setMatch(null)
+                ->setStatus(2);
             
             try {
     		    $db->close();
@@ -191,6 +200,20 @@ class DefaultController extends Controller
             } catch (BioException $e) {
                 $request->getSession()->getFlashBag()->set('failure', 'Error declining request.');
             }
+
+            $message = \Swift_Message::newInstance()
+                ->setSubject('Switch Cancelled')
+                ->setFrom('nickclaw@gmail.com')
+                ->addBcc($r->getStudent()->getEmail())
+                ->addBcc($m->getStudent()->getEmail())
+                ->setBody($this->renderView('BioSwitchBundle:Default:declineEmail.html.twig', 
+                        array('a' => $r, 'b' => $m)))
+                ->setPriority('high')
+                ->setContentType('text/html');
+
+            $this->get('mailer')->send($message);
+
+
     		return $this->redirect($this->generateUrl('request_switch'));
     	}
 
@@ -205,8 +228,8 @@ class DefaultController extends Controller
 
 	    	if ($request->getMethod() === 'POST') {
                 try {
-                    $rEmail = $r->getStudent()->getEmail();
-                    $matchEmail = $r->getMatch()->getStudent()->getEmail();
+                    $m = $r->getMatch();
+                    $m->getStudent();
 
                     // database stuff
     	    		$r->setStatus(4); // probably unnecessary
@@ -218,11 +241,12 @@ class DefaultController extends Controller
     	    		$message = \Swift_Message::newInstance()
     	    			->setSubject('Switch Sections')
     	    			->setFrom('nickclaw@gmail.com')
-    	    			->addCc($rEmail)
-    	    			->addCc($matchEmail)
-    	    			->setBody(
-    	    					'talky talky talk.'
-    	    				);
+    	    			->addTo($r->getStudent()->getEmail())
+    	    			->addTo($m->getStudent()->getEmail())
+    	    			->setBody($this->renderView('BioSwitchBundle:Default:confirmationEmail.html.twig', 
+                                array('a' => $r, 'b' => $m)))
+                        ->setPriority('high')
+                        ->setContentType('text/html');
 
     	    		$this->get('mailer')->send($message);
 
