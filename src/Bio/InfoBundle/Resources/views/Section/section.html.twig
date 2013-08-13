@@ -18,9 +18,9 @@
 			<tr>
 				<td>{{section.name}}</td>
 				<td>{{section.day}}</td>
-				<td>{{section.start|date('h:m')}}</td>
-				<td>{{section.end|date('h:m')}}</td>
-				<td>{{section.bldg}}</td>
+				<td>{{section.start|date('H:i')}}</td>
+				<td>{{section.end|date('H:i')}}</td>
+				<td><a href="http://www.washington.edu/maps/?{{section.bldg|split("	")[0]}}">{{section.bldg}}</a></td>
 				<td>{{section.room}}
 				<td><a href="{{ path('edit', {'entityName' : 'section', 'id':section.id}) }}">edit</a></td>
 				<td><a href="{{ path('delete', {'entityName' : 'section', 'id':section.id}) }}">delete</a></td>

@@ -1,0 +1,7 @@
+"Section Switcher":
+    "Section Switcher":
+        route: main_page
+    Requests:
+        route: switch_requests
+    "Switch Sections":
+        route: request_switch

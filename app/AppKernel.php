@@ -28,6 +28,7 @@ class AppKernel extends Kernel
             new Stfalcon\Bundle\TinymceBundle\StfalconTinymceBundle(),
             new Bio\TripBundle\BioTripBundle(),
             new Bio\ExamBundle\BioExamBundle(),
+            new Bio\SwitchBundle\BioSwitchBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
