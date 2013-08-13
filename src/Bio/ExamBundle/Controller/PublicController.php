@@ -44,8 +44,8 @@ class PublicController extends Controller
 				try {
 					$exam = $this->getNextExam($student);
 				} catch (BioException $e) {
+					$session->invalidate();
 					$flash->set('failure', $e->getMessage());
-					return $this->signAction($request);
 				}
 
 				// get the appropriate test taker for the student/exam combo
@@ -101,7 +101,7 @@ class PublicController extends Controller
 			}
 		}
 
-		return $this->forward('BioTripBundle:Public:sign', array('request' => $request, 'redirect' => 'exam_entrance'));
+		return $this->forward('BioPublicBundle:Default:sign', array('request' => $request, 'redirect' => 'exam_entrance'));
 	}
 
 	/**

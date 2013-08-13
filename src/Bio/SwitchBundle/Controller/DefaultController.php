@@ -81,7 +81,7 @@ class DefaultController extends Controller
     		}
     	}
 
-    	return $this->forward('BioTripBundle:Public:sign', array('request' => $request, 'redirect' => 'request_switch'));
+    	return $this->forward('BioPublicBundle:Default:sign', array('request' => $request, 'redirect' => 'request_switch'));
     }
 
     private function setRequestAction($request, $r, $db) {
