@@ -42,10 +42,10 @@ class PublicController extends Controller
         	}
         }
 
-    	return $this->signAction($request, $global);
+    	return $this->signAction($request, 'trip_entrance');
     }
 
-    private function signAction(Request $request, $global) {
+    public function signAction(Request $request, $redirect) {
     	$form = $this->createFormBuilder()
     		->add('sid', 'text', array('label' => 'Student ID:', 'mapped' => false))
     		->add('lName', 'text', array('label' => 'Last Name:', 'mapped' => false))
@@ -64,7 +64,7 @@ class PublicController extends Controller
     			$student = $db->findOne(array('sid' => $sid, 'lName' => $lName));
     			if ($student) {
     				$request->getSession()->set('studentID', $student->getId());
-    				return $this->redirect($this->generateUrl('trip_entrance'));
+    				return $this->redirect($this->generateUrl($redirect));
     			} else {
     				$request->getSession()->getFlashBag()->set('failure', 'Could not find a student with that last name and student ID.');
     			}
