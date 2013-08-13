@@ -86,7 +86,7 @@ class DefaultController extends Controller
 
     private function setRequestAction($request, $r, $db) {
     	$form = $this->createFormBuilder()
-    		->add('want', 'entity', array('class' => 'BioInfoBundle:Section', 'property' => 'descriptor', 'multiple' => true, 'expanded' => true))
+    		->add('want', 'entity', array('class' => 'BioInfoBundle:Section', 'property' => 'id', 'multiple' => true, 'expanded' => true))
     		->add('request', 'submit')
     		->getForm();
 
@@ -167,7 +167,6 @@ class DefaultController extends Controller
     	if ($r->getMatch() === null) {
     		$r->setStatus(2);
             try {
-                throw new BioException();
                 $db->close();
                 $request->getSession()->getFlashBag()->set('failure', 'Partner cancelled their request.');
             } catch (BioException $e) {
