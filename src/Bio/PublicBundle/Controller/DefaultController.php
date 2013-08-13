@@ -155,4 +155,33 @@ class DefaultController extends Controller
         $link.=$instructor->getEmail();
         return new Response($link);
     }
+
+    public function signAction(Request $request, $redirect) {
+        $form = $this->createFormBuilder()
+            ->add('sid', 'text', array('label' => 'Student ID:', 'mapped' => false))
+            ->add('lName', 'text', array('label' => 'Last Name:', 'mapped' => false))
+            ->add('sign in', 'submit')
+            ->getForm();
+
+        if ($request->getMethod() === "POST") {
+            $form->handleRequest($request);
+
+            if ($form->has('sid') && $form->has('lName')) {
+                $sid = $form->get('sid')->getData();
+                $lName = $form->get('lName')->getData();
+
+                $db = new Database($this, 'BioStudentBundle:Student');
+
+                $student = $db->findOne(array('sid' => $sid, 'lName' => $lName));
+                if ($student) {
+                    $request->getSession()->set('studentID', $student->getId());
+                    return $this->redirect($this->generateUrl($redirect));
+                } else {
+                    $request->getSession()->getFlashBag()->set('failure', 'Could not find a student with that last name and student ID.');
+                }
+            }
+        }
+
+        return $this->render('BioPublicBundle:Default:sign.html.twig', array('form' => $form->createView(), 'title' => 'Log In'));
+    }
 }
