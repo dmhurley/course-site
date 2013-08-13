@@ -96,12 +96,16 @@ class DefaultController extends Controller
     		if ($form->isValid()) {
     			$r->setWants($form->get('want')->getData())
     				->setStatus(2);
-    			$db->close();
-    			$request->getSession()->getFlashBag()->set('success', 'Requests saved.');
+                try {
+    			     $db->close();
+    			     $request->getSession()->getFlashBag()->set('success', 'Preferences saved.');
+                } catch (BioException $e) {
+                    $request->getSession()->getFlashBag()->set('failure', 'Could not save preferences.');
+                }
+
     			return $this->redirect($this->generateUrl('request_switch'));
     		}
     	}
-    	$db->close();
 
     	return $this->render('BioSwitchBundle:Default:choose.html.twig', array('form' => $form->createView(), 'request' => $r, 'title' => "Request Sections"));
     }
@@ -136,9 +140,14 @@ class DefaultController extends Controller
     				->setStatus(3);
     			$r->setMatch($match)
     				->setStatus(4);
-    			$db->close();
 
-    			$request->getSession()->getFlashBag()->set('success', 'Request sent.');
+                try {
+    			    $db->close();
+                    $request->getSession()->getFlashBag()->set('success', 'Request sent.');
+                } catch (BioException $e) {
+                    $request->getSession()->getFlashBag()->set('failure', 'Could not send request.');
+                }
+
     			return $this->redirect($this->generateUrl('request_switch'));
     		}
     	}
@@ -150,8 +159,14 @@ class DefaultController extends Controller
     	// check if the other requester cancelled request
     	if ($r->getMatch() === null) {
     		$r->setStatus(2);
-    		$db->close();
-    		$request->getSession()->getFlashBag()->set('failure', 'Partner cancelled their request.');
+            try {
+                throw new BioException();
+                $db->close();
+                $request->getSession()->getFlashBag()->set('failure', 'Partner cancelled their request.');
+            } catch (BioException $e) {
+                $request->getSession()->invalidate(); // to stop redirect loop, temporary fix....
+                $request->getSession()->getFlashBag()->set('failure', 'Error.');
+            }
     		return $this->redirect($this->generateUrl('request_switch'));
     	}
 
@@ -160,9 +175,12 @@ class DefaultController extends Controller
 
     		$r->setMatch(null)
     			->setStatus(2);
-
-    		$db->close();
-    		$request->getSession()->getFlashBag()->set('success', 'Matching declined.');
+            try {
+    		    $db->close();
+                $request->getSession()->getFlashBag()->set('success', 'Request declined.');
+            } catch (BioException $e) {
+                $request->getSession()->getFlashBag()->set('failure', 'Error declining request.');
+            }
     		return $this->redirect($this->generateUrl('request_switch'));
     	}
 
@@ -176,24 +194,31 @@ class DefaultController extends Controller
     			->getForm();
 
 	    	if ($request->getMethod() === 'POST') {
-	    		$r->setStatus(4);
-	    		$message = \Swift_Message::newInstance()
-	    			->setSubject('Switch Sections')
-	    			->setFrom('nickclaw@gmail.com')
-	    			->addCc($r->getStudent()->getEmail())
-	    			->addCc($r->getMatch()->getStudent()->getEmail())
-	    			->setBody(
-	    					'talky talky talk.'
-	    				);
+                try {
+                    // database stuff
+    	    		$r->setStatus(4); // probably unnecessary
+                    $db->delete($r->getMatch());
+                    $db->delete($r);
+                    $db->close();
 
-	    		$this->get('mailer')->send($message);
-	    		
-	    		$db->delete($r->getMatch());
-	    		$db->delete($r);
-	    		$request->getSession()->invalidate();
-	    		$request->getSession()->getFlashBag()->set('success', 'Contact information sent.');
+                    // only if db is closed do you send message 
+    	    		$message = \Swift_Message::newInstance()
+    	    			->setSubject('Switch Sections')
+    	    			->setFrom('nickclaw@gmail.com')
+    	    			->addCc($r->getStudent()->getEmail())
+    	    			->addCc($r->getMatch()->getStudent()->getEmail())
+    	    			->setBody(
+    	    					'talky talky talk.'
+    	    				);
 
-	    		$db->close();
+    	    		$this->get('mailer')->send($message);
+
+                    // sign out
+    	    		$request->getSession()->invalidate();
+    	    		$request->getSession()->getFlashBag()->set('success', 'Contact information sent.');
+                } catch (BioException $e) {
+                    $request->getSession()->getFlashBag()->set('failure', 'Error confirming match.');
+                }
 	    		return $this->redirect($this->generateUrl('request_switch'));
 	    	}
 
