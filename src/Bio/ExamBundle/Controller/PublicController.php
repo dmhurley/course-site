@@ -34,100 +34,24 @@ class PublicController extends Controller
 		}
 
 		// if signed in
-		if ($session->has('student')) {
-
-			// get all exams where the grading period hasn't ended.
-			try {
-				$exam = $this->getNextExam($session->get('student'));
-			} catch (BioException $e) {
-				$flash->set('failure', $e->getMessage());
-				return $this->signAction($request);
-			}
-
-			// get the appropriate test taker for the student/exam combo
-			$db = new Database($this, 'BioExamBundle:TestTaker');
-			$taker = $db->findOne(array('student' => $session->get('student'), 'exam' => $exam));
-
-			if ($taker) {
-
-				if ($taker->getStatus() === 1) {
-					return $this->startAction($request, $exam, $taker, $db);
-				}
-
-				if ($taker->getStatus() === 2) {
-					return $this->examAction($request, $exam, $taker, $db);
-				}
-
-				if ($taker->getStatus() === 3) {
-					return $this->reviewAction($request, $exam, $taker, $db);
-				}
-
-				if ($taker->getStatus() === 4) {
-					$date = new \DateTime();
-					$gradeStart = new \DateTime($exam->getGDate()->format("Y-m-d")." ".$exam->getGStart()->format("H:i:s"));
-
-					if ($date < $gradeStart) {
-						$flash->set('success', 'Answers submitted. Grading starts at '.$gradeStart->format('m/d').' at '. $gradeStart->format('h:i a').'.');
-						return $this->signAction($request, $exam);
-					}
-					return $this->waitAction($request, $exam, $taker, $db);
-				}
-
-				if ($taker->getStatus() === 5) {
-					return $this->gradeAction($request, $exam, $taker, $db);
-				}
-
-				if ($taker->getStatus() === 6) {
-					if (!$flash->has('success'))
-						$flash->set('success', "You've already finished this exam.");
-				}
-			} else {
-				$flash->set('failure', 'Not signed in.');
-			}
-		}
-
-		return $this->signAction($request);
-	}
-
-	/**
-	 * Requests sid and last name of user, creates TestTaker entity and session on success
-	 * 
-	 * status null
-	 */
-	private function signAction(Request $request, $exam = null) {
-		// create form
-		$form = $this->createFormBuilder()
-			->add('sid', 'text', array('label' => 'Student ID:', 'mapped' => false, 'attr' => array('pattern' => '[0-9]{7}', 'title' => 'Seven digit student ID.')))
-			->add('lName', 'text', array('label' => 'Last Name:', 'mapped' => false))
-			->add('sign in', 'submit')
-			->getForm();
-
-		// if form was submitted
-		if ($request->getMethod() === "POST") {
-			$form->handleRequest($request);
-			// get form data
-			$sid = $form->get('sid')->getData();
-			$lName = $form->get('lName')->getData();
-
-			// find student
+		if ($session->has('studentID')) {
 			$db = new Database($this, 'BioStudentBundle:Student');
-			$student = $db->findOne(array('sid' => $sid, 'lName' => $lName));
+			$student = $db->findOne(array('id' => $session->get('studentID')));
 
-			// if student exists
 			if ($student) {
-				if ($exam === null) {
-					try {
-						$exam = $this->getNextExam($student);
-					} catch (BioException $e) {
-						$request->getSession()->getFlashBag()->set('failure', $e->getMessage());
-						return $this->redirect($this->generateUrl('exam_entrance'));
-					}
+
+				// get all exams where the grading period hasn't ended.
+				try {
+					$exam = $this->getNextExam($student);
+				} catch (BioException $e) {
+					$flash->set('failure', $e->getMessage());
+					return $this->signAction($request);
 				}
-				// see if they've already started the exam
+
+				// get the appropriate test taker for the student/exam combo
 				$db = new Database($this, 'BioExamBundle:TestTaker');
 				$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
 
-				// if not, create and add
 				if (!$taker) {
 					$taker = new TestTaker();
 					$taker->setStatus(1)
@@ -138,18 +62,46 @@ class PublicController extends Controller
 					$db->close();
 				}
 
-				// make session and set flash message
-				$request->getSession()->invalidate();
-				$request->getSession()->set('student', $student);
-				$request->getSession()->getFlashBag()->set('success', 'Signed in.');
+				if ($taker) {
+					if ($taker->getStatus() === 1) {
+						return $this->startAction($request, $exam, $taker, $db);
+					}
 
-				return $this->redirect($this->generateUrl('exam_entrance'));
+					if ($taker->getStatus() === 2) {
+						return $this->examAction($request, $exam, $taker, $db);
+					}
+
+					if ($taker->getStatus() === 3) {
+						return $this->reviewAction($request, $exam, $taker, $db);
+					}
+
+					if ($taker->getStatus() === 4) {
+						$date = new \DateTime();
+						$gradeStart = new \DateTime($exam->getGDate()->format("Y-m-d")." ".$exam->getGStart()->format("H:i:s"));
+
+						if ($date < $gradeStart) {
+							$flash->set('success', 'Answers submitted. Grading starts at '.$gradeStart->format('m/d').' at '. $gradeStart->format('h:i a').'.');
+							return $this->signAction($request, $exam);
+						}
+						return $this->waitAction($request, $exam, $taker, $db);
+					}
+
+					if ($taker->getStatus() === 5) {
+						return $this->gradeAction($request, $exam, $taker, $db);
+					}
+
+					if ($taker->getStatus() === 6) {
+						if (!$flash->has('success'))
+							$flash->set('success', "You've already finished this exam.");
+					}
+				}
 			} else {
-				$request->getSession()->getFlashBag()->set('failure', 'Could not find anyone with that last name or student ID.');
+				$session->invalidate();
+				$flash->set('failure', 'Not signed in.');
 			}
 		}
 
-		return $this->render('BioExamBundle:Public:sign.html.twig', array('form' => $form->createView(), 'title' => 'Sign In'));
+		return $this->forward('BioTripBundle:Public:sign', array('request' => $request, 'redirect' => 'exam_entrance'));
 	}
 
 	/**
