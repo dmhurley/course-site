@@ -1,16 +1,8 @@
-{% extends 'BioStyleBundle:Default:main.html.twig' %}
+{% extends 'BioPublicBundle:Default:logoutmain.html.twig' %}
 
 {% block head %}
 	{{ parent() }}
 	{% stylesheets 'bundles/bioexam/css/exam.css' filter="cssrewrite" output="css/*.css" %}
 		<link rel="stylesheet" href="{{ asset_url }}" />
 	{% endstylesheets %}
-{% endblock %}
-
-{% block content %}
-	{% if app.session.has('student') %}
-		<div id="signedin">
-		Signed in as {{app.session.get('student').fName}}. <a href="?logout">not right?</a>
-		</div>
-	{% endif %}
 {% endblock %}

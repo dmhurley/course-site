@@ -1,0 +1,9 @@
+{% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block content %}
+	{% if app.session.has('studentID') %}
+		<div id="logout">
+			<a href="?logout">sign out?</a>
+		</div>
+	{% endif %}
+{% endblock %}

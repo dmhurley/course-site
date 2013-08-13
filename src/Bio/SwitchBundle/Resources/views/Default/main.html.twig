@@ -1,18 +1,1 @@
-{% extends 'BioStyleBundle:Default:main.html.twig' %}
-
-{#
-{% block head %}
-	{{ parent() }}
-	{% stylesheets 'bundles/bioexam/css/exam.css' filter="cssrewrite" output="css/*.css" %}
-		<link rel="stylesheet" href="{{ asset_url }}" />
-	{% endstylesheets %}
-{% endblock %}
-#}
-
-{% block content %}
-	{% if app.session.has('studentID') %}
-		<div style="text-align:center;">
-			<a href="?logout">Sign out?</a>
-		</div>
-	{% endif %}
-{% endblock %}
+{% extends 'BioPublicBundle:Default:logoutmain.html.twig' %}
