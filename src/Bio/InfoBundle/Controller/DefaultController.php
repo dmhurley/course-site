@@ -53,7 +53,7 @@ class DefaultController extends Controller {
                 $request->getSession()->getFlashBag()->set('success', $uc.' added.');
             } else {
                 $formclone = $form;
-                $request->getSession()->getFlashBag()->set('failure', 'Whoops.');
+                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
             }
         }
         if ($lc === "announcement"){
@@ -124,6 +124,8 @@ class DefaultController extends Controller {
                     } catch (BioException $e) {
                         $request->getSession()->getFlashBag()->set('failure', 'Could not edit that '.$lc.'.');
                     }
+                } else {
+                    $rquest->getSession()->getFlashBag()->set('failure', 'Invalid form.');
                 }
             }
 
