@@ -77,7 +77,7 @@ class DefaultController extends Controller
                 }
 	    		$form = $cloned;
     		} else {
-    			$request->getSession()->getFlashBag()->set('failure', 'There was an error. Please try again :(');
+    			$request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
     		}
     	}
         return array('form' => $form->createView(), 'title' => "Add Student");
