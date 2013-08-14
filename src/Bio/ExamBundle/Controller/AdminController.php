@@ -289,8 +289,10 @@ class AdminController extends Controller
                 }
 
                 return array('exam' => $exam, 'title' => 'Preview');
+            } else {
+                $request->getSession()->getFlashBag()->set('failure', 'Could not find that '.$type.'.');
+                return $this->redirect($this->generateUrl('manage_'.$type.'s'));
             }
-            return $this->redirect($this->generateUrl('view_'.$type.'s'));
         }
         return $this->redirect($this->generateUrl('manage_exams'));
     }

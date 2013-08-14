@@ -32,7 +32,7 @@ class DefaultController extends Controller
      * @Template("BioStudentBundle:Default:delete.html.twig")
      */
     public function findAction(Request $request){
-        $form = $this->createForm(new StudentType(), new Student(), array('label' => 'find', 'required' => true));
+        $form = $this->createForm(new StudentType(), new Student(), array('label' => 'find', 'required' => false));
 
         if ($request->getMethod() === "POST") {
             $values = $request->request->get('form');
@@ -145,8 +145,8 @@ class DefaultController extends Controller
         $sort = $request->query->get('sort');
         $filter = $request->query->get('filter');
 
-        if (!$sort) {
-            $sort = 'sid';
+        if (!$sort || ($sort !== 'sid' && $sort !== 'fName' && $sort !== 'lName' && $sort !== 'section')) {
+            $sort = 'id';
         }
         $array = array();
 
@@ -201,6 +201,9 @@ class DefaultController extends Controller
         $ents = [];
         for ($i = 1; $i < count($file); $i++) {
             list($sid, $name, $section, $credits, $gender, $class, $major, $email) = preg_split('/","|,"|",|"/', $file[$i], -1, PREG_SPLIT_NO_EMPTY);
+            if (!($sid && $name && $section && $credits && $gender && $class && $major && $email)) {
+                throw new BioException("The file was badly formatted");
+            }
             list($lName, $fName) = explode(", ", $name);
             while (strlen($sid) < 7) {
                 $sid = "0".$sid;
@@ -209,7 +212,7 @@ class DefaultController extends Controller
             $entity->setSid($sid)
                 ->setSection($section)
                 ->setEmail($email)
-                ->setFName(explode(" ", $fName)[0])
+                ->setFName($fName)
                 ->setLName($lName);
             if (!in_array($sid, $sids) && !in_array($email, $emails)) {
                 $sids[] = $sid;
@@ -219,7 +222,6 @@ class DefaultController extends Controller
                 throw new BioException("The file contained duplicate Student IDs or emails.");
             }
         }
-
         foreach ($ents as $ent) {
             if ($dbEnt = $this->getBySid($dbEnts, $ent)) {
                 $dbEnt->setLName($ent->getLName())

@@ -38,6 +38,8 @@ class DefaultController extends Controller {
     		->add('Register', 'submit')
     		->getForm();
 
+        $blankForm = clone $form;
+
     	if ($request->getMethod() === "POST") {
     		$form->handleRequest($request);
     		
@@ -61,8 +63,9 @@ class DefaultController extends Controller {
 						$db->close();
 					} catch (BioException $e) {
 						$request->getSession()->getFlashBag()->set('failure', "Someone else is already registered to that clicker.");
-						$request->getSession()->getFlashBag()->get('success');
+						$request->getSession()->getFlashBag()->get('success'); // remove the successful flash message that was set earlier
 					}
+                    $blankForm = $form;
 
 	    		} else {
 	    			$request->getSession()->getFlashBag()->set('failure', 'We could not find that student.');
@@ -72,7 +75,7 @@ class DefaultController extends Controller {
 	    	}
     	}
 
-        return array('form' => $form->createView(), 'title' => "Register Clicker");
+        return array('form' => $blankForm->createView(), 'title' => "Register Clicker");
     }
 
     /**

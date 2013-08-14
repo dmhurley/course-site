@@ -52,7 +52,7 @@ class DefaultController extends Controller {
                 $db->close();
                 $request->getSession()->getFlashBag()->set('success', $uc.' added.');
             } else {
-                $formclone = $clone;
+                $formclone = $form;
                 $request->getSession()->getFlashBag()->set('failure', 'Whoops.');
             }
         }

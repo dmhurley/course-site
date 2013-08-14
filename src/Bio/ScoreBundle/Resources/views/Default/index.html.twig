@@ -1,4 +1,4 @@
-{% extends 'BioStyleBundle:Default:main.html.twig' %}
+{% extends 'BioPublicBundle:Default:logoutmain.html.twig' %}
 
 {% block head %}
 	{{ parent() }}
@@ -13,7 +13,6 @@
 {% endblock %}
 
 {% block content %}
-	{{ form(form) }}
 	{% if scores|length > 0 %}
 		<div class="tableStyle" id="scroller">
 			<table>

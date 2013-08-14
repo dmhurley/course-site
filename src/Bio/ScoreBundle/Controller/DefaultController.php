@@ -74,29 +74,27 @@ class DefaultController extends Controller
      * @Template("BioScoreBundle:Default:index.html.twig")
      */
     public function findAction(Request $request) {
-    	$form = $this->createFormBuilder()
-    		->add('sid', 'text', array('label' => 'Student ID:', 'mapped' => false, 'attr' => array('pattern' => '[0-9]{7}', 'title' => '7 digit student ID')))
-    		->add('find', 'submit')
-    		->getForm();
-    	$scores = array();
-    	$stats = array();
-    	if ($request->getMethod() === "POST") {
-    		$form->handleRequest($request);
+        if ($request->getSession()->has('studentID')) {
+            $db = new Database($this, 'BioStudentBundle:Student');
+            $student = $db->findOne(array('id' => $request->getSession()->get('studentID')));
 
-    		if ($form->isValid()) {
-    			$db = new Database($this, 'BioScoreBundle:Scores');
-    			$scores = $db->find(array('sid' => $form->get('sid')->getData()), array(), false);
+            if ($student) {
+                $db = new Database($this, 'BioScoreBundle:Scores');
+                $scores = $db->find(array('sid' => $student->getSid()), array(), false);
 
-    			$db = new Database($this, 'BioScoreBundle:Stat');
-    			$stats = $db->find(array(), array(), false);
+                $db = new Database($this, 'BioScoreBundle:Stat');
+                $stats = $db->find(array(), array(), false);
 
-    			if (!$scores) {
-    				$request->getSession()->getFlashBag()->set('failure', 'Scores could not be found.');
-    			}
-    		}
-    	}
+                if (!$scores) {
+                    $request->getSession()->getFlashBag()->set('failure', 'Scores could not be found.');
+                }
 
-    	return array('scores'=>$scores, 'stats'=>$stats, 'form' => $form->createView(), 'title' => 'View Your Scores');
+                return array('scores'=>$scores, 'stats'=>$stats, 'title' => 'View Your Scores');
+            } else {
+
+            }
+        }
+        return $this->forward('BioPublicBundle:Default:sign', array('request' => $request, 'redirect' => 'find_score'));
     }
 
     private function uploadStudentScores($file, $db) {
