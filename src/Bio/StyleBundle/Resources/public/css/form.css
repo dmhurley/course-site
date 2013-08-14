@@ -40,13 +40,6 @@
 	border-bottom: none;
 }
 
-#form ul, #global ul {
-	float:right;
-	margin-right: 275px;
-	color:red;
-	font-weight:bolder;
-}
-
 button {
 	padding: 3px;
 }
@@ -60,4 +53,36 @@ button {
 	height: 100px;
 	padding: 10px;
 	resize: vertical;
+}
+
+form div .form_error + * {
+	background-color: rgb(256, 200, 200);
+}
+
+.form_error {
+	float:left;
+	height: 0px;
+	width: 0px;
+}
+
+.form_error div {
+	opacity: 0;
+	transition: opacity .5s;
+	-webkit-transition: opacity .5s; /* Safari */
+
+	font-size: 9pt;
+	color: red;
+	font-weight: bolder;
+	width: 200px;
+	position: relative;
+	left:100px;
+	background-color: white;
+	border: solid 1px gray;
+	border-radius: 100px;
+	padding: 0px 2px;
+	text-align:center;
+}
+
+form div:hover > label + .form_error div {
+	opacity: 1;
 }
