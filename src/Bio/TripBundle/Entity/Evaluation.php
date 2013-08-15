@@ -3,7 +3,7 @@
 namespace Bio\TripBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Evaluation
@@ -46,6 +46,7 @@ class Evaluation {
      * @var \DateTime
      *
      * @ORM\Column(name="timestamp", type="datetime")
+     * @Assert\DateTime()
      */
     private $timestamp;
 
@@ -53,6 +54,7 @@ class Evaluation {
      * @var integer
      *
      * @ORM\Column(name="score", type="integer", nullable=true)
+     * @Assert\Choice(choices={15, 20, 25})
      */
     private $score;
 

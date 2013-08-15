@@ -3,6 +3,7 @@
 namespace Bio\TripBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * EvalQuestion
@@ -25,6 +26,7 @@ class EvalQuestion
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=255)
+     * @Assert\Choice(choices={"multiple", "response"})
      */
     private $type;
 
