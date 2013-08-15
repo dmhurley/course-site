@@ -28,5 +28,5 @@
 			{{ form_end(form) }}
 		</div>
 	{{parent()}}
-	{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':taker.exam.tDuration, 'end':taker.exam.tDate|date('Y-m-d') ~ ' ' ~ taker.exam.tEnd|date('H:i:s'), 'start':taker.timecard[2]|date('Y-m-d H:i:s')} only %}
+	{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':taker.exam.tDuration, 'end':taker.exam.tDate|date('Y:m:d:') ~ taker.exam.tEnd|date('H:i:s'), 'start':taker.timecard[2]|date('Y:m:d:H:i:s')} only %}
 {% endblock %}

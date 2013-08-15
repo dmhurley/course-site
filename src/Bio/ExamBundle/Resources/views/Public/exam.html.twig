@@ -21,7 +21,7 @@
 				<!-- ANSWER -->
 				<h2>Answer</h2>
 				<div class="a">
-				
+
 					<!-- ERROR MESSAGE -->
 					{% if answer.errors is defined %}
 						<div class="form_error">
@@ -45,6 +45,6 @@
 	</form>
 	{{parent()}}
 	{% if taker is defined %}
-		{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':taker.exam.tDuration, 'end':taker.exam.tDate|date('Y-m-d') ~ ' ' ~ taker.exam.tEnd|date('H:i:s'), 'start':taker.timecard[2]|date('Y-m-d H:i:s')} only %}
+		{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':taker.exam.tDuration, 'end':taker.exam.tDate|date('Y:m:d:') ~ taker.exam.tEnd|date('H:i:s'), 'start':taker.timecard[2]|date('Y:m:d:H:i:s')} only %}
 	{% endif %}
 {% endblock %}
