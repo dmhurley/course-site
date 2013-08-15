@@ -127,11 +127,6 @@ table div input[type=text] {
 	clear:left;
 }
 
-.form_error div {
-	top: 0px;
-	left: 300px;
-}
-
 #content > form #form textarea {
 	width: 90%;
 }

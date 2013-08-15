@@ -25,16 +25,12 @@
 					</div>
 
 				{% elseif question.type == 'response' %}
-
-					<div>
-						<label>{{question.data[0]}}</label>
-						{% if question.errors is defined %}
-							<div class="form_error">
-							{% for error in question.errors%}
-								<div>{{error.message}}</div>
-							{% endfor %}
-							</div>
-						{% endif %}
+					{% if question.errors is defined %}
+						<div data-tip="{{(question.errors|first).message}}" class="row_error error">
+					{% else %}
+						<div>
+					{% endif %}
+						<label>{{question.data[0]}}</label>						
 						<textarea name={{question.id}}></textarea>
 					</div>
 
