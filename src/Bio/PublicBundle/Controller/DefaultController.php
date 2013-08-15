@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Bio\DataBundle\Objects\Database;
 use Bio\UserBundle\Entity\User;
 use Bio\InfoBundle\Entity\Announcement;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 class DefaultController extends Controller
@@ -158,15 +159,16 @@ class DefaultController extends Controller
 
     public function signAction(Request $request, $redirect) {
         $form = $this->createFormBuilder()
-            ->add('sid', 'text', array('label' => 'Student ID:', 'mapped' => false))
-            ->add('lName', 'text', array('label' => 'Last Name:', 'mapped' => false))
+            ->add('sid', 'text', array('label' => 'Student ID:', 'mapped' => false,
+                                       'constraints' => array(new Assert\NotBlank(), new Assert\Regex("/[0-9]{7}/") )))
+            ->add('lName', 'text', array('label' => 'Last Name:', 'mapped' => false, 'constraints' => new Assert\NotBlank()))
             ->add('sign in', 'submit')
             ->getForm();
 
         if ($request->getMethod() === "POST") {
             $form->handleRequest($request);
 
-            if ($form->has('sid') && $form->has('lName')) {
+            if ($form->isValid()) {
                 $sid = $form->get('sid')->getData();
                 $lName = $form->get('lName')->getData();
 
@@ -179,6 +181,8 @@ class DefaultController extends Controller
                 } else {
                     $request->getSession()->getFlashBag()->set('failure', 'Could not find a student with that last name and student ID.');
                 }
+            } else {
+                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
             }
         }
 
