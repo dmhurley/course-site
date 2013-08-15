@@ -108,3 +108,12 @@
 	margin-top: 15px;
 	text-align: center;
 }
+
+.form_error div {
+	top: -42px;
+	left: 40px;
+}
+
+.a:hover > .form_error div {
+	opacity: 1;
+}

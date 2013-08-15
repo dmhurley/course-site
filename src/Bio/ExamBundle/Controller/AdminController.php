@@ -37,7 +37,7 @@ class AdminController extends Controller
         $exam = new Exam();
     	$form = $this->get('form.factory')->createNamedBuilder('form', 'form', $exam)
     		->add('title', 'text', array('label'=>'Exam Name:'))
-            ->add('section', 'text', array('label'=>'Section:', 'attr' => array('pattern' => '[A-Z]{1,2}', 'title' => 'One or two letter capitalized section name.')))
+            ->add('section', 'text', array('label'=>'Section:', 'attr' => array('pattern' => '^[A-Z]{1,2}$', 'title' => 'One or two letter capitalized section name.')))
     		->add('tDate', 'date', array('label' => 'Test Date:'))
     		->add('tStart', 'time', array('label'=>'Test Start:'))
     		->add('tEnd', 'time', array('label'=>'Test End:'))
@@ -57,24 +57,19 @@ class AdminController extends Controller
             ->add('set', 'submit')
             ->getForm();
 
-   		$emptyForm = clone $form;
-
    		if ($request->getMethod() === "POST") {
+            $emptyForm = clone $form;
+            $needsBlankForm = true;
+
             if ($request->request->has('form')) {
        			$form->handleRequest($request);
-                try {
-                    $this->checkDates($exam);
-                } catch (BioException $e) {
-                    $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
-                    return $this->redirect($this->generateUrl('manage_exams'));
-                }
-
+                
        			if ($form->isValid()) {
        				$db->add($exam);
        			} else {
-                    $request->getSession()->getFlashBag()->set('failure', 'Form is invalid.');
+                    $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                    $needsBlankForm = false;
                 }
-                $form = $emptyForm;
             }
 
             if ($request->request->has('global')) {
@@ -85,6 +80,9 @@ class AdminController extends Controller
 
                     $dbGlobal->setGrade($global->getGrade())
                         ->setRules($global->getRules());
+                } else {
+                     $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                     $needsBlankForm = false;
                 }
             }
 
@@ -93,6 +91,11 @@ class AdminController extends Controller
                 $request->getSession()->getFlashBag()->set('success', 'Saved change.');
             } catch (BioException $e) {
                 $request->getSession()->getFlashBag()->set('failure', 'Unable to save change.');
+                $needsBlankForm = false;
+            }
+
+            if ($needsBlankForm) {
+                $form = $emptyForm;
             }
    		}
 
@@ -150,13 +153,6 @@ class AdminController extends Controller
     	if ($request->getMethod() === "POST") {
 	   		$form->handleRequest($request);
 
-             try {
-                $this->checkDates($exam);
-            } catch (BioException $e) {
-                $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
-                return $this->redirect($this->generateUrl('edit_exam', array('id' => $exam->getId())));
-            }
-
 	   		if ($form->isValid()) {
                     $db = new Database($this, 'BioExamBundle:Exam');
  
@@ -189,11 +185,12 @@ class AdminController extends Controller
     		->add('add', 'submit')
     		->getForm();
 
-    	$emptyForm = clone $form;
-
     	$db = new Database($this, 'BioExamBundle:Question');
 
+        $emptyForm = clone $form;
+
     	if ($request->getMethod() === "POST") {
+
     		$form->handleRequest($request);
 
     		if ($form->isValid()) {
@@ -203,15 +200,16 @@ class AdminController extends Controller
                     $db->close();
                 } catch (BioException $e) {
                     $request->getSession()->getFlashBag()->set('failure', 'Unable to add question.');
+                    $emptyForm = $form;
                 }
     		} else {
                 $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                $emptyForm = $form;
             }
-            $form = $emptyForm;
     	}
 
     	$questions = $db->find(array(), array(), false);
-    	return array('form' => $form->createView(), 'questions' => $questions, 'title' => 'Questions');
+    	return array('form' => $emptyForm->createView(), 'questions' => $questions, 'title' => 'Questions');
     }
 
     /**
@@ -437,38 +435,5 @@ class AdminController extends Controller
             echo $args[$i]."\t";
         }
         echo $args[count($args) - 1]."\n";
-    }
-
-    private function checkDates($exam){
-        // exam checks
-        if ($exam->getTStart() >= $exam->getTEnd()) {
-            throw new BioException("Exam end cannot be before exam start.");
-        }
-
-        if (($exam->getTEnd()->getTimestamp() - $exam->getTStart()->getTimestamp())/60 < $exam->getGDuration() ) {
-            throw new BioException("Exam window must be longer than exam duration.");
-        }
-
-        // grading checks
-        if ($exam->getGStart() >= $exam->getGEnd()) {
-            throw new BioException("Grading end cannot be before grading start.");
-        }
-
-        if (($exam->getGEnd()->getTimestamp() - $exam->getGStart()->getTimestamp())/60 < $exam->getGDuration() ) {
-            throw new BioException("Grading window must be longer than grading duration.");
-        }
-
-        $testStart = new \DateTime($exam->getTDate()->format('Y-m-d ').$exam->getTStart()->format('H:i:s'));
-        $testEnd = new \DateTime($exam->getTDate()->format('Y-m-d ').$exam->getTEnd()->format('H:i:s'));
-        $gradeStart = new \DateTime($exam->getGDate()->format('Y-m-d ').$exam->getGStart()->format('H:i:s'));
-        $gradeEnd = new \DateTime($exam->getGDate()->format('Y-m-d ').$exam->getGEnd()->format('H:i:s'));
-
-       if ($gradeEnd <= $testEnd) {
-            throw new BioException("Grading cannot end before exam ends.");
-       }
-
-       if (($gradeEnd->getTimestamp() - $testStart->getTimestamp())/60 < ($exam->getTDuration() + $exam->getGDuration())) {
-            throw new BioException("Total window must be longer than total duration.");
-       }
     }
 }
