@@ -9,6 +9,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Constraints as Assert;
 
 use Bio\DataBundle\Exception\BioException;
 use Bio\DataBundle\Objects\Database;
@@ -142,7 +143,7 @@ class DefaultController extends Controller
      */
     public function clearAction(Request $request) {
         $form = $this->createFormBuilder()
-            ->add('confirmation', 'checkbox')
+            ->add('confirmation', 'checkbox', array('constraints' => new Assert\True(array('message' => "Please confirm."))))
             ->add('clear', 'submit', array('label' => 'Delete Folders'))
             ->getForm();
 

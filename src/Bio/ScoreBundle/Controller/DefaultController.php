@@ -7,10 +7,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Constraints as Assert;
 
 use Bio\DataBundle\Exception\BioException;
 use Bio\DataBundle\Objects\Database;
-
 use Bio\ScoreBundle\Entity\Scores;
 use Bio\ScoreBundle\Entity\Stat;
 
@@ -34,7 +34,7 @@ class DefaultController extends Controller
     public function indexAction(Request $request)
     {
     	$form = $this->createFormBuilder()
-    		->add('file', 'file', array('label' => 'CSV File:', 'mapped' => false))
+    		->add('file', 'file', array('label' => 'CSV File:'))
     		->add('upload', 'submit')
     		->getForm();
 
@@ -87,6 +87,7 @@ class DefaultController extends Controller
 
                 if (!$scores) {
                     $request->getSession()->getFlashBag()->set('failure', 'Scores could not be found.');
+                    return $this->redirect($this->generateUrl('main_page'));
                 }
 
                 return array('scores'=>$scores, 'stats'=>$stats, 'title' => 'View Your Scores');

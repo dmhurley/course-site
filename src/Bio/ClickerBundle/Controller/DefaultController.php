@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Constraints as Assert;
 
 use Bio\ClickerBundle\Entity\Clicker;
 use Bio\StudentBundle\Entity\Student;
@@ -30,11 +31,10 @@ class DefaultController extends Controller {
      * @Template()
      */
     public function registerAction(Request $request) {
-    	$clicker = new Clicker();
-    	$form = $this->createFormBuilder($clicker)
-    		->add('cid', 'text', array('label' => "Clicker ID:", 'attr' => array('pattern' => '[0-9A-Fa-f]{6}', 'title' => '6 digit clicker ID')))
-    		->add('sid', 'text', array('label' => "Student ID:", 'mapped' => false, 'attr' => array('pattern' => '[0-9]{7}', 'title' => '7 digit student ID')))
-    		->add('lName', 'text', array('label' => "Last Name:", 'mapped' => false))
+    	$form = $this->createFormBuilder()
+    		->add('cid', 'text', array('label' => "Clicker ID:", 'constraints' => array(new Assert\Regex("/^[0-9A-Fa-f]{6}$/"), new Assert\NotBlank()), 'attr' => array('pattern' => '[0-9A-Fa-f]{6}', 'title' => '6 digit clicker ID')))
+    		->add('sid', 'text', array('label' => "Student ID:", 'constraints' => array(new Assert\NotBlank(), new Assert\Regex("/^[0-9]{7}$/")), 'attr' => array('pattern' => '[0-9]{7}', 'title' => '7 digit student ID')))
+    		->add('lName', 'text', array('label' => "Last Name:", 'constraints' => new Assert\NotBlank()))
     		->add('Register', 'submit')
     		->getForm();
 
@@ -42,6 +42,7 @@ class DefaultController extends Controller {
 
     	if ($request->getMethod() === "POST") {
     		$form->handleRequest($request);
+            $clicker = new Clicker();
     		
     		if ($form->isValid()){
                 $db = new Database($this, 'BioStudentBundle:Student');
@@ -65,17 +66,17 @@ class DefaultController extends Controller {
 						$request->getSession()->getFlashBag()->set('failure', "Someone else is already registered to that clicker.");
 						$request->getSession()->getFlashBag()->get('success'); // remove the successful flash message that was set earlier
 					}
-                    $blankForm = $form;
+                    $form = $blankForm;
 
 	    		} else {
 	    			$request->getSession()->getFlashBag()->set('failure', 'We could not find that student.');
 	    		}
 	    	} else {
-	    		$request->getSession()->getFlashBag()->set('failure', 'Invalid Clicker or Student ID.');
+	    		$request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
 	    	}
     	}
 
-        return array('form' => $blankForm->createView(), 'title' => "Register Clicker");
+        return array('form' => $form->createView(), 'title' => "Register Clicker");
     }
 
     /**
@@ -109,10 +110,10 @@ class DefaultController extends Controller {
      */
     public function clearAction(Request $request) {
     	$form = $this->createFormBuilder()
-    		->add('confirmation', 'checkbox')
+    		->add('confirmation', 'checkbox', array('constraints' => new Assert\True(array('message' => 'You must confirm.'))))
     		->add('clear', 'submit', array('label' => 'Clear Clickers'))
     		->getForm();
-
+        $blankForm = clone $form;
     	if ($request->getMethod() === "POST") {
     		$form->handleRequest($request);
 
@@ -121,7 +122,10 @@ class DefaultController extends Controller {
                 $db->truncate();
 
 		        $request->getSession()->getFlashBag()->set('success', 'All clicker registrations cleared.');
-    		}
+                $form = $blankForm;
+    		} else {
+                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+            }
     	}
 
     	return array('form' => $form->createView(), 'title' => 'Clear Registrations');

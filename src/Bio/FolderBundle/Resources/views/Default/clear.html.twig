@@ -4,7 +4,13 @@
 	{{ form_start(form)}}
 		<div id="form">
 			<p> Are you sure you want to delete all folders? </br> This <b>cannot</b> be undone.</p>
-			{{ form_widget(form.confirmation) }} - I understand.
+			{% if form.confirmation.vars['errors']|length > 0 %}
+				<div data-tip="{{(form.confirmation.vars['errors']|first).message}}" class="row_error error">
+			{% else %}
+				<div>
+			{% endif %}
+				{{ form_widget(form.confirmation) }} - I understand.
+			</div>
 			{{ form_row(form.clear) }}
 		</div>
 	{{ form_end(form) }}

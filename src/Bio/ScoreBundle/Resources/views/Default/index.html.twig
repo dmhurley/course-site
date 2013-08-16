@@ -13,6 +13,9 @@
 {% endblock %}
 
 {% block content %}
+	{% if form is defined %}
+		{{form(form)}}
+	{% endif %}
 	{% if scores|length > 0 %}
 		<div class="tableStyle" id="scroller">
 			<table>

@@ -26,7 +26,8 @@ class Student
      * @var string
      *
      * @ORM\Column(name="sid", type="privatestring", unique=true)
-     * @Assert\Regex("/[0-9]{7}/")
+     * @Assert\NotBlank()
+     * @Assert\Regex("/^[0-9]{7}$/")
      */
     protected $sid;
 
@@ -49,8 +50,9 @@ class Student
     /**
      * @var string
      *
-     *@ORM\Column(name="section", type="string", length=2)
-     *@Assert\Regex("/^[A-Z]{2}$/")
+     * @ORM\Column(name="section", type="string", length=2)
+     * @Assert\NotBlank()
+     * @Assert\Regex("/^[A-Z]{2}$/")
      */
     protected $section;
 
@@ -58,6 +60,7 @@ class Student
      * @var string
      *
      * @ORM\Column(name="email", type="privatestring", unique=true)
+     * @Assert\NotBlank()
      * @Assert\Email()
      */
     protected $email;
