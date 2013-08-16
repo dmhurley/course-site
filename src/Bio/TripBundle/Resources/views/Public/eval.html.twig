@@ -9,7 +9,38 @@
 
 {% block content %}
 	<div id="submit">
-		{{form(form)}}
+		<form method="POST">
+			<div id="form">
+			{% for question in global.evalQuestions %}
+
+				{% if question.type == 'multiple' %}
+
+					<div class="horizontal">
+						<label>{{question.data[0]}}</label>
+						{% for i in 0..question.data[1] %}
+							<input type="radio" name="{{question.id}}" value={{i}}{% if loop.index == 1 %} checked="checked"{% endif %}>
+							<label>{{i}}</label>
+						{% endfor %}
+						<br />
+					</div>
+
+				{% elseif question.type == 'response' %}
+					{% if question.errors is defined %}
+						<div data-tip="{{(question.errors|first).message}}" class="row_error error">
+					{% else %}
+						<div>
+					{% endif %}
+						<label>{{question.data[0]}}</label>						
+						<textarea name={{question.id}}></textarea>
+					</div>
+
+				{% endif %}
+			{% endfor %}
+				<div style="clear:both;padding-top:40px;">
+					<input type="submit">
+				</div>
+			</div>
+		</form>
 	</div>
 
 	{{parent()}}

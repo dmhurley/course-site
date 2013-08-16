@@ -4,7 +4,7 @@ namespace Bio\FolderBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-
+use Symfony\Component\Validator\Constraints as Assert;
 use Bio\DataBundle\Exception\BioException;
 use Bio\FolderBundle\Entity\FileBase;
 
@@ -22,6 +22,7 @@ class File extends FileBase
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $name;
 
@@ -39,6 +40,9 @@ class File extends FileBase
     private $parent;
 
     // are not persisted!
+    /**
+     * @Assert\File()
+     */
     private $file;
     private $temp;
 
@@ -152,7 +156,7 @@ class File extends FileBase
      * @ORM\PreUpdate()
      */
     public function preUpload() {
-        if (null !== $this->getFile()) {
+        if ($this->getFile() !== null) {
             $extension = $this->getFile()->getClientOriginalExtension();
             $extension = $extension === '' ? '' : '.'.$extension;
             $name = preg_replace('/[ \t]/', '_', $this->name).$extension;
@@ -162,6 +166,8 @@ class File extends FileBase
             if (file_exists($this->getAbsolutePath())) {
                 throw new BioException("A file with that name already exists.");
             }
+        } else {
+            throw new BioException("No file uploaded.");
         }
     }
 

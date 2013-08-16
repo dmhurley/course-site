@@ -5,6 +5,8 @@ namespace Bio\InfoBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Bio\InfoBundle\Entity\Base;
 use Symfony\Component\Form\FormBuilder;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * Hours
@@ -18,6 +20,7 @@ class Hours extends Base
      * @var string
      *
      * @ORM\Column(name="days", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $days;
 
@@ -25,6 +28,7 @@ class Hours extends Base
      * @var \DateTime
      *
      * @ORM\Column(name="start", type="time")
+     * @Assert\Time()
      */
     private $start;
 
@@ -32,6 +36,7 @@ class Hours extends Base
      * @var \DateTime
      *
      * @ORM\Column(name="end", type="time")
+     * @Assert\Time()
      */
     private $end;
 
@@ -39,12 +44,14 @@ class Hours extends Base
      * @var boolean
      *
      * @ORM\Column(name="byAppointment", type="boolean")
+     * @Assert\NotNull()
      */
     private $byAppointment;
 
     /**
      * @ORM\ManyToOne(targetEntity="Person", inversedBy="hours")
      * @ORM\JoinColumn(name="person_id", referencedColumnName="id")
+     * @Assert\NotNull()
      */
     private $person;
 

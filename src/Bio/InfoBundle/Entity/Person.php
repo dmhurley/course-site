@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Bio\InfoBundle\Entity\Base;
 use Symfony\Component\Form\FormBuilder;
 use Doctrine\Common\Collections\ArrayCollection;
-
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Person
@@ -21,6 +21,7 @@ class Person extends Base
      * @var string
      *
      * @ORM\Column(name="fName", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $fName;
 
@@ -28,6 +29,7 @@ class Person extends Base
      * @var string
      *
      * @ORM\Column(name="lName", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $lName;
 
@@ -35,6 +37,8 @@ class Person extends Base
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=255)
+     * @Assert\NotBlank()
+     * @Assert\Email()
      */
     private $email;
 
@@ -42,6 +46,7 @@ class Person extends Base
      * @var string
      *
      * @ORM\Column(name="bldg", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $bldg;
 
@@ -49,6 +54,7 @@ class Person extends Base
      * @var string
      *
      * @ORM\Column(name="room", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $room;
 
@@ -56,6 +62,7 @@ class Person extends Base
      * @var string
      *
      * @ORM\Column(name="title", type="string", length=255)
+     * @Assert\Choice(choices={"instructor", "ta", "coordinator"}, message="Choose a valid position.")
      */
     private $title;
 

@@ -3,12 +3,19 @@
 namespace Bio\ExamBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\ExecutionContextInterface;
 
 /**
  * Exam
  *
  * @ORM\Table()
  * @ORM\Entity
+ * @Assert\Callback(methods={"tStartBeforeTEnd"})
+ * @Assert\Callback(methods={"tDurationLongEnough"})
+ * @Assert\Callback(methods={"gStartBeforeGEnd"})
+ * @Assert\Callback(methods={"gDurationLongEnough"})
+ * @Assert\Callback(methods={"otherChecks"})
  */
 class Exam
 {
@@ -25,6 +32,7 @@ class Exam
      * @var string
      *
      * @ORM\Column(name="title", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $title;
 
@@ -32,6 +40,8 @@ class Exam
      * @var string
      *
      * @ORM\Column(name="section", type="string", length=2)
+     * @Assert\NotBlank()
+     * @Assert\Regex("/^[A-Z]{1,2}$/")
      */
     private $section;
 
@@ -39,6 +49,7 @@ class Exam
      * @var \DateTime
      *
      * @ORM\Column(name="tdate", type="date")
+     * @Assert\Date()
      */
     private $tDate;
 
@@ -46,6 +57,7 @@ class Exam
      * @var \DateTime
      *
      * @ORM\Column(name="tstart", type="time")
+     * @Assert\Time()
      */
     private $tStart;
 
@@ -53,6 +65,7 @@ class Exam
      * @var \DateTime
      *
      * @ORM\Column(name="tend", type="time")
+     * @Assert\Time()
      */
     private $tEnd;
 
@@ -60,13 +73,15 @@ class Exam
      * @var integer
      *
      * @ORM\Column(name="tduration", type="integer")
+     * @Assert\NotBlank()
      */
-    private $Tduration;
+    private $tDuration;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="gdate", type="date")
+     * @Assert\Date()
      */
     private $gDate;
 
@@ -74,6 +89,7 @@ class Exam
      * @var \DateTime
      *
      * @ORM\Column(name="gstart", type="time")
+     * @Assert\Time()
      */
     private $gStart;
 
@@ -81,15 +97,17 @@ class Exam
      * @var \DateTime
      *
      * @ORM\Column(name="gend", type="time")
+     * @Assert\Time()
      */
     private $gEnd;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="gduration", type="integer")
+     * @ORM\Column(name="gDuration", type="integer")
+     * @Assert\NotBlank()
      */
-    private $gduration;
+    private $gDuration;
 
     /**
      * @ORM\ManyToMany(targetEntity="Question")
@@ -256,26 +274,26 @@ class Exam
     }
 
     /**
-     * Set Tduration
+     * Set tDuration
      *
-     * @param integer $tduration
+     * @param integer $tDuration
      * @return Exam
      */
-    public function setTduration($tduration)
+    public function setTDuration($tDuration)
     {
-        $this->Tduration = $tduration;
+        $this->tDuration = $tDuration;
     
         return $this;
     }
 
     /**
-     * Get Tduration
+     * Get tDuration
      *
      * @return integer 
      */
-    public function getTduration()
+    public function getTDuration()
     {
-        return $this->Tduration;
+        return $this->tDuration;
     }
 
     /**
@@ -348,26 +366,26 @@ class Exam
     }
 
     /**
-     * Set gduration
+     * Set gDuration
      *
-     * @param integer $gduration
+     * @param integer $gDuration
      * @return Exam
      */
-    public function setGduration($gduration)
+    public function setGDuration($gDuration)
     {
-        $this->gduration = $gduration;
+        $this->gDuration = $gDuration;
     
         return $this;
     }
 
     /**
-     * Get gduration
+     * Get gDuration
      *
      * @return integer 
      */
-    public function getGduration()
+    public function getGDuration()
     {
-        return $this->gduration;
+        return $this->gDuration;
     }
 
     /**
@@ -391,5 +409,44 @@ class Exam
     public function getSection()
     {
         return $this->section;
+    }
+
+    public function tStartBeforeTEnd(ExecutionContextInterface $context) {
+        if ($this->tStart >= $this->tEnd) {
+            $context->addViolationAt('tEnd', 'Exam end cannot be before exam start.');
+        }
+    }
+
+    public function tDurationLongEnough(ExecutionContextInterface $context) {
+        if (($this->tEnd->getTimestamp() - $this->tStart->getTimestamp())/60 < $this->tDuration) {
+            $context->addViolationAt('tDuration', 'Exam duration must be shorter than exam window.');
+        }
+    }
+
+     public function gStartBeforeGEnd(ExecutionContextInterface $context) {
+        if ($this->gStart >= $this->gEnd) {
+            $context->addViolationAt('gEnd', 'Grade end cannot be before grade start.');
+        }
+    }
+
+    public function gDurationLongEnough(ExecutionContextInterface $context) {
+        if (($this->gEnd->getTimestamp() - $this->gStart->getTimestamp())/60 < $this->gDuration) {
+            $context->addViolationAt('gDuration', 'Grade duration must be shorter than grade window.');
+        }
+    }
+
+    public function otherChecks(ExecutionContextInterface $context) {
+        $testStart = new \DateTime($this->getTDate()->format('Y-m-d ').$this->getTStart()->format('H:i:s'));
+        $testEnd = new \DateTime($this->getTDate()->format('Y-m-d ').$this->getTEnd()->format('H:i:s'));
+        $gradeStart = new \DateTime($this->getGDate()->format('Y-m-d ').$this->getGStart()->format('H:i:s'));
+        $gradeEnd = new \DateTime($this->getGDate()->format('Y-m-d ').$this->getGEnd()->format('H:i:s'));
+
+       if ($gradeEnd <= $testEnd) {
+           $context->addViolationAt("gEnd", "Grading cannot end before exam ends.");
+       }
+
+       if (($gradeEnd->getTimestamp() - $testStart->getTimestamp())/60 < ($this->getTDuration() + $this->getGDuration())) {
+            $context->addViolationAt("gEnd", "Total window must be longer than total duration.");
+       }
     }
 }

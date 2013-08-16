@@ -4,6 +4,7 @@ namespace Bio\FolderBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Bio\FolderBundle\Entity\FileBase;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Folder
@@ -18,6 +19,7 @@ class Folder extends FileBase
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $name;
 

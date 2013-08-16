@@ -3,6 +3,7 @@
 namespace Bio\ExamBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Question
@@ -25,6 +26,7 @@ class Question
      * @var string
      *
      * @ORM\Column(name="question", type="text")
+     * @Assert\NotBlank()
      */
     private $question;
 
@@ -32,6 +34,7 @@ class Question
      * @var string
      *
      * @ORM\Column(name="answer", type="text")
+     * @Assert\NotBlank()
      */
     private $answer;
 
@@ -39,6 +42,7 @@ class Question
      * @var integer
      *
      * @ORM\Column(name="points", type="integer")
+     * @Assert\NotBlank()
      */
     private $points;
 
@@ -46,6 +50,7 @@ class Question
      * @var array
      *
      * @ORM\Column(name="tags", type="array")
+     * @Assert\NotNull()
      */
     private $tags;
 

@@ -5,6 +5,7 @@ namespace Bio\InfoBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Bio\InfoBundle\Entity\Base;
 use Symfony\Component\Form\FormBuilder;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Section
@@ -19,6 +20,8 @@ class Section extends Base
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * @Assert\NotBlank()
+     * @Assert\Regex("/^[A-Z]{2}$/")
      */
     private $name;
 
@@ -26,6 +29,7 @@ class Section extends Base
      * @var string
      *
      * @ORM\Column(name="day", type="string", length=255)
+     * @Assert\Choice(choices={"m", "tu", "w", "th", "f", "sa", "su"}, message="Choose a valid day.")
      */
     private $day;
 
@@ -33,6 +37,7 @@ class Section extends Base
      * @var \DateTime
      *
      * @ORM\Column(name="start", type="time")
+     * @Assert\Time()
      */
     private $start;
 
@@ -40,6 +45,7 @@ class Section extends Base
      * @var \DateTime
      *
      * @ORM\Column(name="end", type="time")
+     * @Assert\Time()
      */
     private $end;
 
@@ -47,6 +53,7 @@ class Section extends Base
      * @var string
      *
      * @ORM\Column(name="bldg", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $bldg;
 
@@ -54,6 +61,7 @@ class Section extends Base
      * @var string
      *
      * @ORM\Column(name="room", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $room;
 
@@ -197,8 +205,8 @@ class Section extends Base
 
      public function addToForm(FormBuilder $builder) {
         $array = file('bundles/bioinfo/buildings.txt', FILE_IGNORE_NEW_LINES);
-        $builder->add('name', 'text', array('label' => 'Name:'))
-            ->add('day', 'text', array('label' => 'Day:'))
+        $builder->add('name', 'text', array('label' => 'Name:', 'attr' => array('pattern' => '^[A-Z]{2}$', 'title' => 'Valid capitalized two character section name.')))
+            ->add('day', 'choice', array('label' => 'Day:', 'choices' =>array("m" => "Monday", "tu" => "Tuesday", "w" => "Wednesday", "th" => "Thursday", "f" => "Friday", "sa" => "Saturday", "su" => "Sunday")))
             ->add('start', 'time', array('label' => 'Start Time:'))
             ->add('end', 'time', array('label' => 'End Time:'))
             ->add('bldg', 'choice', array('choices' => array_combine($array, $array), 'validation_groups' => false, 'label' => "Building:"))

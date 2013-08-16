@@ -107,6 +107,7 @@ table div input[type=text] {
 
 #submit .horizontal input[type=radio] {
 	float:left !important;
+	margin-top: 20px;
 }
 
 #submit .horizontal label {
@@ -114,12 +115,17 @@ table div input[type=text] {
 	position: relative;
 	top: 13px;
 	right: 10px;
+	margin-top: 20px;
 }
 
 .horizontal {
-	margin-bottom: 40px;
+	margin-bottom: 40px !important;
+	clear:both;
 }
 
+.horizontal input:first-of-type {
+	clear:left;
+}
 
 #content > form #form textarea {
 	width: 90%;

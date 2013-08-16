@@ -3,7 +3,8 @@
 
 {% block head %}
 	{% stylesheets 'bundles/biostyle/css/page.css' 
-				   'bundles/biostyle/css/form.css' filter="cssrewrite" output="css/*.css" %}
+				   'bundles/biostyle/css/form.css'
+				   'bundles/biostyle/css/tool-tip.css' filter="cssrewrite" output="css/*.css" %}
 		<link rel="stylesheet" href="{{ asset_url }}" />
 	{% endstylesheets %}
 {% endblock %}

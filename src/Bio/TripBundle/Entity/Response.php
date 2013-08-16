@@ -3,6 +3,7 @@
 namespace Bio\TripBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Response
@@ -25,6 +26,7 @@ class Response
      * @var string
      *
      * @ORM\Column(name="answer", type="text")
+     * @Assert\NotBlank()
      */
     private $answer;
 

@@ -2,8 +2,10 @@
 		<script>
 		function Timer(duration, start, end) {
 			this.duration = duration;
-			this.end = new Date(end);
-			this.date = new Date(start);
+			var ends = end.split(':');
+			this.end = new Date(ends[0], ends[1] - 1, ends[2], ends[3], ends[4], ends[5]);
+			var starts = start.split(':');
+			this.date = new Date(starts[0], starts[1] - 1, starts[2], starts[3], starts[4], starts[5]);
 			this.updateTime = function() {
 					var now = new Date();
 					var ttLate = (this.date.valueOf() - now.valueOf())/1000/60 + duration;

@@ -27,7 +27,7 @@ class Clicker
      * @var string
      *
      * @ORM\Column(name="cid", type="string", length=255, unique=true)
-     * @Assert\Regex("/^[0-9A-F]{6}$/")
+     * @Assert\Regex("/^[0-9A-Fa-f]{6}$/")
      */
     private $cid;
 

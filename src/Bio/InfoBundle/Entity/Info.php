@@ -3,6 +3,8 @@
 namespace Bio\InfoBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * Info
@@ -25,6 +27,8 @@ class Info
      * @var string
      *
      * @ORM\Column(name="courseNumber", type="string", length=255)
+     * @Assert\NotBlank(message="Cannot be blank.")
+     * @Assert\Regex("/^[0-9]*$/")
      */
     private $courseNumber;
 
@@ -32,6 +36,7 @@ class Info
      * @var string
      *
      * @ORM\Column(name="title", type="string", length=255)
+     * @Assert\NotBlank();
      */
     private $title;
 
@@ -39,6 +44,7 @@ class Info
      * @var string
      *
      * @ORM\Column(name="qtr", type="string", length=255)
+     * @Assert\Choice(choices={"summer", "autumn", "winter", "spring"}, message="Choose a valid quarter.")
      */
     private $qtr;
 
@@ -46,6 +52,7 @@ class Info
      * @var integer
      *
      * @ORM\Column(name="year", type="integer")
+     * @Assert\Range(min=2000, max=2100)
      */
     private $year;
 
@@ -60,6 +67,7 @@ class Info
      * @var \DateTime
      *
      * @ORM\Column(name="startTime", type="time")
+     * @Assert\Time()
      */
     private $startTime;
 
@@ -67,6 +75,7 @@ class Info
      * @var \DateTime
      *
      * @ORM\Column(name="endTime", type="time")
+     * @Assert\Time()
      */
     private $endTime;
 
@@ -74,6 +83,7 @@ class Info
      * @var string
      *
      * @ORM\Column(name="bldg", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $bldg;
 
@@ -81,6 +91,7 @@ class Info
      * @var string
      *
      * @ORM\Column(name="room", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $room;
 
@@ -88,6 +99,8 @@ class Info
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=255)
+     * @Assert\NotBlank()
+     * @Assert\Email()
      */
     private $email;
 
