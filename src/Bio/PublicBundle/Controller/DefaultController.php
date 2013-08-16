@@ -87,26 +87,28 @@ class DefaultController extends Controller
         $user = new User();
 
         $form = $this->createFormBuilder($user)
-            ->add('username', 'text', array('label' => 'Username:'))
-            ->add('password', 'password', array('label' => 'Password:'))
-            ->add('password1', 'password', array('mapped' => false, 'label' => 'Password:'))
+            ->add('username', 'text', array('label' => 'Username:', 'constraints' => new Assert\NotBlank()))
+            ->add('password', 'password', array('label' => 'Password:', 'constraints' => new Assert\NotBlank()))
+            ->add('password1', 'password', array('mapped' => false, 'label' => 'Password:', 'constraints' => new Assert\NotBlank()))
             ->add('register', 'submit')
             ->getForm();
 
             if ($request->getMethod() === "POST") {
                 $form->handleRequest($request);
-                if ($form->get('password')->getData() !== $form->get('password1')->getData()) {
+                if ($form->isValid()) {
+                    if ($form->get('password')->getData() !== $form->get('password1')->getData()) {
                      $request->getSession()->getFlashBag()->set('failure', 'You typed in two different passwords.');
-                } else if ($form->isValid()) {
-                    $db = new Database($this, 'BioUserBundle:User');
-                    $factory = $this->get('security.encoder_factory');
-                    $encoder = $factory->getEncoder($user);
-                    $pwd = $encoder->encodePassword($user->getPassword(), $user->getSalt());
-                    $user->setPassword($pwd);
-                    $user->setRoles(array('ROLE_USER'));
+                    } else {
+                        $db = new Database($this, 'BioUserBundle:User');
+                        $factory = $this->get('security.encoder_factory');
+                        $encoder = $factory->getEncoder($user);
+                        $pwd = $encoder->encodePassword($user->getPassword(), $user->getSalt());
+                        $user->setPassword($pwd);
+                        $user->setRoles(array('ROLE_USER'));
 
-                    $db->add($user);
-                    $db->close();
+                        $db->add($user);
+                        $db->close();
+                    }
                 } else {
                     $request->getSession()->getFlashBag()->set('failure', 'Form was invalid.');
                 }
