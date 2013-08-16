@@ -5,6 +5,7 @@ namespace Bio\InfoBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Bio\InfoBundle\Entity\Base;
 use Symfony\Component\Form\FormBuilder;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
@@ -20,6 +21,7 @@ class Link extends Base
      * @var string
      *
      * @ORM\Column(name="title", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $title;
 
@@ -27,6 +29,8 @@ class Link extends Base
      * @var string
      *
      * @ORM\Column(name="address", type="string", length=2048)
+     * @Assert\NotBlank()
+     * @Assert\Url(protocols={"http", "https", "ftp"})
      */
     private $address;
 
@@ -34,6 +38,7 @@ class Link extends Base
      * @var string
      *
      * @ORM\Column(name="location", type="string", length=255)
+     * @Assert\Choice(choices={"sidebar", "content"}, message="Choose a valid location.")
      */
     private $location;
 

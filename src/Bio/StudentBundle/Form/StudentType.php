@@ -15,7 +15,7 @@ class StudentType extends AbstractType {
 		$builder->add('sid', 'text', array('label' => "Student ID:", 'read_only' => $options['edit'], 'attr' => array('pattern' => '[0-9]{7}', 'title' => '7 digit student ID')))
     		->add('fName', 'text', array('label' => "First Name:"))
     		->add('lName', 'text', array('label' => "Last Name:"))
-            ->add('section', 'text', array('label' => "Section:"))
+            ->add('section', 'text', array('label' => "Section:", 'attr' => array('pattern' => '^[A-Z]{2}$', 'title' => 'Valid capitalized two character section.')))
     		->add('email', 'email', array('label' => "Email:"))
     		->add($options['title'], 'submit');
 	}

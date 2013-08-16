@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Constraints as Assert;
 
 use Bio\StudentBundle\Entity\Student;
 use Bio\StudentBundle\Form\StudentType;
@@ -32,21 +33,33 @@ class DefaultController extends Controller
      * @Template("BioStudentBundle:Default:delete.html.twig")
      */
     public function findAction(Request $request){
-        $form = $this->createForm(new StudentType(), new Student(), array('label' => 'find', 'required' => false));
+        $form = $this->createFormBuilder()
+            ->add('sid', 'text', array('label' => 'Student ID:', 'required' => false, 'constraints' => new Assert\Regex("/^[0-9]{7}$/")))
+            ->add('fName', 'text', array('label' => 'First Name:', 'required' => false))
+            ->add('lName', 'text', array('label' => 'Last Name:', 'required' => false))
+            ->add('section', 'text', array('label' => 'Section:', 'required' => false, 'constraints' => new Assert\Regex("/^[A-Z]{2}$/")))
+            ->add('email', 'text', array('label' => 'Email:','required' => false, 'constraints' => new Assert\Email()))
+            ->add('find', 'submit')
+            ->getForm();
 
         if ($request->getMethod() === "POST") {
-            $values = $request->request->get('form');
-            $array = array_filter(array_slice($values, 0, 5));
-            try {
-                $db = new Database($this, 'BioStudentBundle:Student');
-                $entities = $db->find($array, array('sid' => 'ASC'));
-                $request->getSession()->getFlashBag()->set('success', 'Students found!');
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                $values = $request->request->get('form');
+                $array = array_filter(array_slice($form->getData(), 0, 5));
+                try {
+                    $db = new Database($this, 'BioStudentBundle:Student');
+                    $entities = $db->find($array, array('sid' => 'ASC'));
+                    $request->getSession()->getFlashBag()->set('success', 'Students found!');
 
-                $get = "?filter=".implode(array_slice($values, 0, 5), '-');
+                    $get = "?filter=".implode(array_slice($values, 0, 5), '-');
 
-                return $this->redirect($this->generateUrl('display_students').$get);
-            } catch (BioException $e){
-                $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
+                    return $this->redirect($this->generateUrl('display_students').$get);
+                } catch (BioException $e){
+                    $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
+                }
+            } else {
+                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
             }
         }
 
@@ -77,7 +90,7 @@ class DefaultController extends Controller
                 }
 	    		$form = $cloned;
     		} else {
-    			$request->getSession()->getFlashBag()->set('failure', 'There was an error. Please try again :(');
+    			$request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
     		}
     	}
         return array('form' => $form->createView(), 'title' => "Add Student");

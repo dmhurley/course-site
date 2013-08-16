@@ -3,6 +3,7 @@
 namespace Bio\TripBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * TripGlobal
@@ -25,6 +26,7 @@ class TripGlobal
      * @var \DateTime
      *
      * @ORM\Column(name="opening", type="datetime")
+     * @Assert\DateTime()
      */
     private $opening;
 
@@ -32,6 +34,7 @@ class TripGlobal
      * @var \DateTime
      *
      * @ORM\Column(name="closing", type="datetime")
+     * @Assert\DateTime()
      */
     private $closing;
 
@@ -39,6 +42,7 @@ class TripGlobal
      * @var \DateTime
      *
      * @ORM\Column(name="tourClosing", type="datetime")
+     * @Assert\DateTime()
      */
     private $tourClosing;
 
@@ -46,6 +50,8 @@ class TripGlobal
      * @var integer
      *
      * @ORM\Column(name="maxTrips", type="integer")
+     * @Assert\GreaterThan(value=0)
+     * @Assert\NotBlank()
      */
     private $maxTrips;
 

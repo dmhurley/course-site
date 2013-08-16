@@ -64,15 +64,15 @@ class CourseController extends Controller
 
         $array = file('bundles/bioinfo/buildings.txt', FILE_IGNORE_NEW_LINES);
     	$form = $this->createFormBuilder($info)
-    		->add('courseNumber', 'text')
-    		->add('title', 'text')
+    		->add('courseNumber', 'text', array('label' => 'Course Number:'))
+    		->add('title', 'text', array('label' => 'Course Name:'))
     		->add('qtr', 'choice', array('choices' => array(
     					'autumn' => 'Autumn',
     					'winter' => 'Winter',
     					'spring' => 'Spring',
     					'summer' => 'Summer'
-    				)))
-    		->add('year', 'integer')
+    				), 'label' => 'Quarter'))
+    		->add('year', 'integer', array('label' => 'Year:'))
     		->add('days', 'choice', array('choices' => array(
     					'm' => 'Monday',
     					'tu' => 'Tuesday',
@@ -80,12 +80,12 @@ class CourseController extends Controller
     					'th' => 'Thursday',
     					'f' => 'Friday',
     					'sa' => 'Saturday'
-    				), 'multiple' => true))
-    		->add('startTime', 'time')
-    		->add('endTime', 'time')
-    		->add('bldg', 'choice', array('choices' => array_combine($array, $array)))
-    		->add('room', 'text')
-    		->add('email', 'email')
+    				), 'multiple' => true, 'label' => 'Days:'))
+    		->add('startTime', 'time', array('label' => 'Start:'))
+    		->add('endTime', 'time', array('label' => 'End:'))
+    		->add('bldg', 'choice', array('choices' => array_combine($array, $array), 'label' => 'Building:'))
+    		->add('room', 'text', array('label' => 'Room:'))
+    		->add('email', 'email', array('label' => 'Email:'))
     		->add('edit', 'submit')
     		->getForm();
 
@@ -100,7 +100,7 @@ class CourseController extends Controller
                     $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
     			}
     		} else {
-                $request->getSession()->getFlashBag()->set('failure', 'Not updated. Please fix any errors.');
+                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
             }
     	}
 

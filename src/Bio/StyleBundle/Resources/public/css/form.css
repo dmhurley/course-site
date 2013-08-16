@@ -40,13 +40,6 @@
 	border-bottom: none;
 }
 
-#form ul, #global ul {
-	float:right;
-	margin-right: 275px;
-	color:red;
-	font-weight:bolder;
-}
-
 button {
 	padding: 3px;
 }

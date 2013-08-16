@@ -21,9 +21,9 @@
 {% block java %}
 	<script>
 		function Pinger(time) {
-			this.date = new Date(time);
+			var times = time.split(':');
+			this.date = new Date(times[0], times[1] - 1, times[2], times[3], times[4], times[5]);
 			this.updatePage = function() {
-					console.log(this.date.toString());
 					var now = new Date();
 					var diff = this.date.valueOf() - now.valueOf();
 					document.getElementById('time').innerHTML = msToText(diff);
@@ -70,6 +70,6 @@
 			return string;
 		}
 
-		new Pinger("{{exam.tStart|date('Y-m-d H:i:s')}}")
+		new Pinger("{{exam.tStart|date('Y:m:d:H:i:s')}}")
 	</script>
 {% endblock %}

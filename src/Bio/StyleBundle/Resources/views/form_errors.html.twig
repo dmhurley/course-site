@@ -1,0 +1,13 @@
+{% block form_row %}
+{% spaceless %}
+	{% if errors %}
+   		<div data-tip="{{(errors|first).message}}" class="error row_error">
+    {% else %}
+    	<div>
+    {% endif %}
+        {{ form_label(form) }}
+       {#} {{ form_errors(form) }} {#}
+        {{ form_widget(form) }}
+    </div>
+{% endspaceless %}
+{% endblock form_row %}

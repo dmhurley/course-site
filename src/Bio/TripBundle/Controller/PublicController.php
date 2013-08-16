@@ -147,6 +147,14 @@ class PublicController extends Controller
      * @Template()
      */
     public function evalAction(Request $request, Trip $trip = null) {
+        /****** IS SIGNED IN ******/
+        if (!$request->getSession()->has('studentID')) {
+            $request->getSession()->invalidate();
+            $request->getSession()->getFlashBag()->set('failure', 'Not signed in.');
+            return $this->redirect($this->generateUrl('trip_entrance'));
+        }
+
+        /****** GET STUFF FROM DATABASE ******/
         $db = new Database($this, 'BioTripBundle:TripGlobal');
         $global = $db->findOne(array()); 
     
@@ -156,76 +164,82 @@ class PublicController extends Controller
         $db = new Database($this, 'BioTripBundle:Evaluation');
         $eval = $db->findOne(array('trip' => $trip, 'student' => $student));
 
+        /****** DOES STUDENT/TRIP EXISTS ******/
         if (!$student || !$trip) {
-            $request->getSession()->getFlashBag()->set('failure', 'Could find trip or student.');
+            $request->getSession()->getFlashBag()->set('failure', 'Could not find trip or student.');
             return $this->redirect($this->generateUrl('trip_entrance'));
-        } else if (!$request->getSession()->has('studentID')) {
-            $request->getSession()->invalidate();
-    		$request->getSession()->getFlashBag()->set('failure', 'Not signed in.');
-    		return $this->redirect($this->generateUrl('trip_entrance'));
-    	} else if ($global->getOpening() > new \DateTime()) {
+        }
+
+        /****** IS TOO LATE TO EVALUATE? ******/
+        if ($global->getClosing() < new \DateTime()) {
             $request->getSession()->getFlashBag()->set('failure', 'It is too late to submit evaluations.');
             return $this->redirect($this->generateUrl('trip_entrance'));
-        } else if ($eval) {
-            $request->getSession()->getFlashBag()->set('failure', 'You have already submitted an evaluation for trip: '.$trip->getTitle().'.');
+        }
+
+        if ($eval) {
+            $request->getSession()->getFlashBag()->set('failure', 'You have already submitted an evaluation.');
             return $this->redirect($this->generateUrl('trip_entrance'));
-        } else {
+        }
 
-            $db = new Database($this, 'BioTripBundle:TripGlobal');
-            $global = $db->findOne(array());
+        if ($request->getMethod() === "POST") {
+            $areErrors = false;
+            $validator = $this->get('validator');
 
-    		$formBuilder = $this->createFormBuilder();
-    		foreach($global->getEvalQuestions() as $question) {
-                if ($question->getType() === 'multiple') {
-                    $formBuilder->add($question->getId(), 'choice', array('label' => $question->getData()[1], 'choices' => range(0,$question->getData()[2]), 'expanded' => true, 'attr' => array('class' => 'horizontal')));
-                } else if ($question->getType() === 'response') {
-                    $formBuilder->add($question->getId(), 'textarea', array('label' => $question->getData()[0]));
+            $eval = new Evaluation();
+            $eval->setTimestamp(new \DateTime())
+                ->setStudent($student)
+                ->setTrip($trip);
+            $db->add($eval);
+            if (count($request->request->keys()) !== count($global->getEvalQuestions())) {
+                $request->getSession()->getFlashBag()->set('failure', 'Error.');
+            } else {
+
+                foreach($request->request->keys() as $key) {
+                    $question = $this->findObjectByFieldValue($key, $global->getEvalQuestions(), 'id');
+                    if ($question) {
+                        $response = new Response();
+                        $response->setAnswer($request->request->get($key))
+                            ->setEvalQuestion($question);
+                        $db->add($response);
+                        $eval->addResponse($response);
+                    } else {
+                        $areErrors = true;
+                        $request->getSession()->getFlashBag()->set('failure', 'Invalid IDs.');
+                        break;
+                    }
+
+                    $errors = $validator->validate($response);
+                    if (count($errors) > 0){
+                        $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                        $areErrors = true;
+                        $question->errors = $errors;
+                    }
+
+                    if (!$areErrors) {
+                        try {
+                            $db->close();
+                            $request->getSession()->getFlashBag()->set('success', 'Evaluation saved.');
+                            return $this->redirect($this->generateUrl('trip_entrance'));
+                        } catch (BioException $e) {
+                            $request->getSession()->getFlashBag()->set('failure', 'Could not save evaluation.');
+                        }
+                    }
                 }
             }
-            $formBuilder->add('submit', 'submit');
-            $form = $formBuilder->getForm();
+        }
 
+        return array('global' => $global, 'title' => 'Trip Evaluations');
+    }
 
-    		if ($request->getMethod() === "POST") {
-    			$form->handleRequest($request);
-    			if ($form->isValid()) {
+    public function findObjectByFieldValue($needle, $haystack, $field) {
+        $getter = 'get'.ucFirst($field);
 
-                    $eval = new Evaluation();
-                    $eval->setTimestamp(new \Datetime())
-                        ->setStudent($student)
-                        ->setTrip($trip);
-
-                    $db = new Database($this, 'BioTripBundle:EvalQuestion');
-                    foreach (array_keys($form->getData()) as $key) {
-                        $question = $db->findOne(array('id' => $key));
-
-                        if (!$question) {
-                            // throw error
-                        }
-
-                        $response = new Response();
-                        $response->setAnswer($form->getData()[$key])
-                            ->setEvalQuestion($question);
-                        $eval->addResponse($response);
-                        $db->add($response);
-                    }
-                    $db->add($eval);
-                    $trip->addEval($eval);
-
-
-    				try {
-    					$db->close();
-    					$request->getSession()->getFlashBag()->set('success', 'Evaluation saved.');
-    				} catch (BioException $e) {
-    					$request->getSession()->getFlashBag()->set('failure', 'You can only write an evaluation once.');
-    				}
-
-    				return $this->redirect($this->generateUrl('trip_entrance'));
-    			}
-    		}
-
-    		return array('form' => $form->createView(), 'title' => 'Trip Evaluation');
-    	}
+        foreach ($haystack as $straw) {
+            if (call_user_func_array(array($straw, $getter), array()) === $needle) {
+                return $straw;
+            } 
+        }
+        return null;
     }
 
 }

@@ -3,6 +3,7 @@
 namespace Bio\TripBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Trip
@@ -25,6 +26,7 @@ class Trip
      * @var string
      *
      * @ORM\Column(name="title", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $title;
 
@@ -32,6 +34,7 @@ class Trip
      * @var string
      *
      * @ORM\Column(name="shortSum", type="text")
+     * @Assert\NotBlank()
      */
     private $shortSum;
 
@@ -39,6 +42,7 @@ class Trip
      * @var string
      *
      * @ORM\Column(name="longSum", type="text")
+     * @Assert\NotBlank()
      */
     private $longSum;
 
@@ -46,6 +50,7 @@ class Trip
      * @var \DateTime
      *
      * @ORM\Column(name="start", type="datetime")
+     * @Assert\DateTime()
      */
     private $start;
 
@@ -53,6 +58,7 @@ class Trip
      * @var \DateTime
      *
      * @ORM\Column(name="end", type="datetime")
+     * @Assert\DateTime()
      */
     private $end;
 
@@ -60,6 +66,8 @@ class Trip
      * @var integer
      *
      * @ORM\Column(name="max", type="integer")
+     * @Assert\NotBlank()
+     * @Assert\GreaterThan(value=0)
      */
     private $max;
 
@@ -81,6 +89,8 @@ class Trip
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=255)
+     * @Assert\NotBlank()
+     * @Assert\Email()
      */
     private $email;
 

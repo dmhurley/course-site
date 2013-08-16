@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Bio\InfoBundle\Entity\Base;
 use Symfony\Component\Form\FormBuilder;
 
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Announcement
@@ -19,6 +20,7 @@ class Announcement extends Base
      * @var \DateTime
      *
      * @ORM\Column(name="timestamp", type="datetime")
+     * @Assert\DateTime()
      */
     private $timestamp;
 
@@ -26,6 +28,7 @@ class Announcement extends Base
      * @var \DateTime
      *
      * @ORM\Column(name="expiration", type="datetime")
+     * @Assert\DateTime()
      */
     private $expiration;
 
@@ -33,6 +36,7 @@ class Announcement extends Base
      * @var string
      *
      * @ORM\Column(name="text", type="text")
+     * @Assert\NotBlank()
      */
     private $text;
 

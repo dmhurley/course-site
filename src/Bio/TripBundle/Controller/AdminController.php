@@ -112,7 +112,10 @@ class AdminController extends Controller
                     $db = new Database($this, 'BioTripBundle:Trip');
         			$db->close();
 
+                    $request->getSession()->getFlashBag()->set('success', 'Evaluations edited.');
         			return $this->redirect($this->generateUrl('manage_trips'));
+                } else {
+                    $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
                 }
         	}
 
@@ -156,6 +159,7 @@ class AdminController extends Controller
             $db = new Database($this, 'BioTripBundle:Trip');
             $trip->removeStudent($student);
             $db->close();
+            $request->getSession()->getFlashBag()->set('success', 'Removed student.');
         } else {
             $request->getSession()->getFlashBag()->set('failure', 'Could not find that trip or student.');
         }
@@ -193,11 +197,11 @@ class AdminController extends Controller
                 $data = $request->request->get($key);
                 $question->setType(is_array($data)?"multiple":"response");
                 if ($question->getType() === 'multiple'){
-                    if (!filter_var($data[2], FILTER_VALIDATE_INT)){
+                    if (!filter_var($data[1], FILTER_VALIDATE_INT)){
                         $request->getSession()->getFlashBag()->set('failure', 'Not a number.');
                         return $this->redirect($this->generateUrl('trip_evals'));
                     } else {
-                        $data[1] = filter_var($data[1], FILTER_SANITIZE_STRING);
+                        $data[0] = filter_var($data[0], FILTER_SANITIZE_STRING);
                     }
 
                     $question->setData($data);

@@ -30,7 +30,7 @@
 
 		{% if date(trip.start) < date() %}
 			{% if current != null and trip in current %}
-				<a class="eval" href="{{ path('eval_trip', {'tripID': trip.id, 'tripTitle': trip.title|replace({" " : "_"})}) }}">Evaluate Trip</a>
+				<a class="eval" href="{{ path('eval_trip', {'id': trip.id, 'tripTitle': trip.title|replace({" " : "_"})}) }}">Evaluate Trip</a>
 			{% else %}
 				<a>Join Trip</a>
 			{% endif %}
