@@ -7,3 +7,4 @@ $I->fillField('Password:', 'alsdfhja;l');
 $I->click('Login');
 $I->seeInCurrentUrl('/login');
 $I->see('Incorrect username or password.');
+$I->seeElement('.failure');

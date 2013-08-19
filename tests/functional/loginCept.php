@@ -6,3 +6,4 @@ $I->fillField('Username:', 'admin');
 $I->fillField('Password:', 'adminpass');
 $I->click('Login');
 $I->seeInCurrentUrl('/admin/');
+$I->seeElement('.success');

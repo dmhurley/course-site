@@ -6,4 +6,3 @@ $I->fillField('Username:', 'user');
 $I->fillField('Password:', 'userpass');
 $I->click('Login');
 $I->seeInCurrentUrl('/login');
-$I->see('You do not have permission to enter.');
