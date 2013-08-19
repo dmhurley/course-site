@@ -15,3 +15,11 @@ composer.phar
 
 app/config/routing.yml
 app/config/sidebar.yml
+
+# Assetic dump files
+web/css/*
+web/js/*
+web/images/*
+
+# Testing Files
+tests/_log/*

@@ -8,4 +8,7 @@
 
 class_name: TestGuy
 modules:
-    enabled: [Filesystem, TestHelper]
+    enabled: [Symfony2, Filesystem, TestHelper]
+    config:
+        PhpBrowser:
+            url: 'localhost/~nick/course-site/web/app.php'
