@@ -84,7 +84,7 @@ class DefaultController extends Controller
                     $db = new Database($this, 'BioStudentBundle:Student');
                     $db->add($entity);
                     $db->close("That Student ID or email is already registered.");
-                    $request->getSession()->getFlashBag()->set('success', 'Student added!');
+                    $request->getSession()->getFlashBag()->set('success', 'Student added.');
                 } catch (BioException $e) {
                     $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
                 }

@@ -268,7 +268,7 @@ class AdminController extends Controller
 
     /**
      * @Route("/preview", name="preview")
-     * @Template("BioExamBundle:Public:exam.html.twig")
+     * @Template()
      */
     public function previewAction(Request $request) {
         if ($request->query->get('id') && $request->query->get('type')) {
@@ -308,7 +308,7 @@ class AdminController extends Controller
 
         // get all test takers from exam, get global settings
         $db = new Database($this, 'BioExamBundle:TestTaker');
-        $takers = $db->find(array('exam' => $id), array('id' => 'ASC'), false);
+        $takers = $db->find(array('exam' => $exam->getId()), array('id' => 'ASC'), false);
         $db = new Database($this, 'BioExamBundle:ExamGlobal');
         $global = $db->findOne(array());
 

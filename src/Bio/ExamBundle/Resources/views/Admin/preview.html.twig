@@ -1,0 +1,34 @@
+{% extends 'BioExamBundle:Public:main.html.twig' %}
+
+{% block head %}
+	{{ parent() }}
+	{% stylesheets 'bundles/bioexam/css/exam.css' filter="cssrewrite" output="css/*.css" %}
+		<link rel="stylesheet" href="{{ asset_url }}" />
+	{% endstylesheets %}
+{% endblock %}
+
+{% block content %}
+	<form method="POST">
+		{% for question in exam.questions %}
+			<div class="question tableStyle">
+				<!-- QUESTION -->
+				<h2 style="float:left;">Question {{loop.index}}</h2> <h2 style="float:right;">{{question.points}} points</h2>
+				<div class="q">
+					{{ question.question|raw }}
+				</div>
+				<div class="line"></div>
+
+				<!-- ANSWER -->
+				<h2>Answer</h2>
+				<div class="a">
+					{# cant have any extra spaces between textareas #}
+					<textarea required="required"></textarea>
+				</div>
+
+			</div>
+		{% endfor %}
+		<div id="submit" >
+			<button type="submit" />Submit</button>
+		</div>
+	</form>	
+{% endblock %}

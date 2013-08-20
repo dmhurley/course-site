@@ -74,7 +74,10 @@ class DefaultController extends Controller
      * @Template("BioScoreBundle:Default:index.html.twig")
      */
     public function findAction(Request $request) {
-        if ($request->getSession()->has('studentID')) {
+        if ($request->query->has('logout')) {
+            $request->getSession()->invalidate();
+            return $this->redirect($this->generateUrl('find_score'));
+        } else if ($request->getSession()->has('studentID')) {
             $db = new Database($this, 'BioStudentBundle:Student');
             $student = $db->findOne(array('id' => $request->getSession()->get('studentID')));
 

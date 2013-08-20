@@ -89,7 +89,7 @@ class DefaultController extends Controller
         $form = $this->createFormBuilder($user)
             ->add('username', 'text', array('label' => 'Username:', 'constraints' => new Assert\NotBlank()))
             ->add('password', 'password', array('label' => 'Password:', 'constraints' => new Assert\NotBlank()))
-            ->add('password1', 'password', array('mapped' => false, 'label' => 'Password:', 'constraints' => new Assert\NotBlank()))
+            ->add('password1', 'password', array('mapped' => false, 'label' => 'Repeat:', 'constraints' => new Assert\NotBlank()))
             ->add('register', 'submit')
             ->getForm();
 
@@ -108,9 +108,11 @@ class DefaultController extends Controller
 
                         $db->add($user);
                         $db->close();
+                        $request->getSession()->getFlashBag()->set('success', 'Registered account.');
+                        return $this->redirect($this->generateUrl('login'));
                     }
                 } else {
-                    $request->getSession()->getFlashBag()->set('failure', 'Form was invalid.');
+                    $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
                 }
             } else {
                 $request->getSession()->getFlashBag()->set('failure', 'An instructor will have to approve this account. Don\'t bother signing up without permission');

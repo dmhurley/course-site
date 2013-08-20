@@ -119,13 +119,13 @@ class DefaultController extends Controller {
                     $db = new Database($this, 'BioInfoBundle:'.$uc);
                     try {
                         $db->close();
-                        $request->getSession()->getFlashBag()->set('success', 'Edited that '.$lc.'.');
+                        $request->getSession()->getFlashBag()->set('success', $uc.' edited.');
                         return $this->redirect($this->generateUrl("view", array('entityName' => $lc)));
                     } catch (BioException $e) {
                         $request->getSession()->getFlashBag()->set('failure', 'Could not edit that '.$lc.'.');
                     }
                 } else {
-                    $rquest->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                    $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
                 }
             }
 
