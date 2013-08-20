@@ -12,3 +12,6 @@ modules:
     config:
         PhpBrowser:
             url: 'localhost/~nick/course-site/web/app.php'
+        Symfony2:
+            app_path: 'app'
+            environment: 'test'

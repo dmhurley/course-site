@@ -21,6 +21,7 @@
 #content table, .tableStyle table {
 	border-spacing: 0px;
 	width: 95%;
+	clear:both;
 }
 
 #content > table th, #content > table td , .tableStyle table th, .tableStyle table td{
