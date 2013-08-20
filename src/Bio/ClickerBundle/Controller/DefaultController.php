@@ -69,7 +69,7 @@ class DefaultController extends Controller {
                     $form = $blankForm;
 
 	    		} else {
-	    			$request->getSession()->getFlashBag()->set('failure', 'We could not find that student.');
+	    			$request->getSession()->getFlashBag()->set('failure', 'Could not find anyone with that last name and ID.');
 	    		}
 	    	} else {
 	    		$request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
