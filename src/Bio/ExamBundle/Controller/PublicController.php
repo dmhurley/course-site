@@ -46,6 +46,7 @@ class PublicController extends Controller
 				} catch (BioException $e) {
 					$session->invalidate();
 					$flash->set('failure', $e->getMessage());
+					return $this->redirect($this->generateUrl('exam_entrance'));
 				}
 
 				// get the appropriate test taker for the student/exam combo
@@ -81,7 +82,7 @@ class PublicController extends Controller
 
 						if ($date < $gradeStart) {
 							$flash->set('success', 'Answers submitted. Grading starts at '.$gradeStart->format('m/d').' at '. $gradeStart->format('h:i a').'.');
-							return $this->signAction($request, $exam);
+							return $this->forward('BioPublicBundle:Default:sign', array('request' => $request, 'redirect' => 'exam_entrance'));
 						}
 						return $this->waitAction($request, $exam, $taker, $db);
 					}
@@ -403,7 +404,8 @@ class PublicController extends Controller
 			throw new BioException("No more exams scheduled.");
 		}
 
-		return $exams[0];
+		reset($exams);
+		return current($exams);
 	}
 
 	private function findObjectByFieldValue($needle, $haystack, $field) {
