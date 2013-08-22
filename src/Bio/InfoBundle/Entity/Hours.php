@@ -26,7 +26,7 @@ class Hours extends Base
     private $days;
 
     public function isDaysOrByAppointment(ExecutionContextInterface $context) {
-        if ($this->days === null && $this->byAppointment === false) {
+        if (!$this->days && $this->byAppointment === false) {
             $context->addViolationAt('days', 'You must specify days.');
         }
     }

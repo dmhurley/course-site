@@ -14,7 +14,7 @@
 			<ul>
 				<li>{{info.courseNumber}} - {{info.title}}</li>
 				<li>{{info.qtr|capitalize}} {{info.year}}</li>
-				<li>{{info.days|join(', ')|upper}} - {{info.startTime|date('h:i')}} - {{info.endTime|date('h:i')}}</li>
+				<li>{{info.days|join(', ')|title}} {{info.startTime|date('h:i')}} - {{info.endTime|date('h:i')}}</li>
 				<li><a href="http://www.washington.edu/maps/?{{info.bldg|split("	")[0]}}">{{info.bldg}}</a> - {{info.room}}</li>
 				<li><a href="mailto:{{info.email}}">{{info.email}}</a></li>
 			</ul>
@@ -59,7 +59,7 @@
 							<ul>
 								{% for hour in inst.hours %}
 									{% if not hour.byAppointment %}
-										<li>{{hour.days}} {{hour.start|date('h:i')}} - {{hour.end|date('h:i')}}</li>
+										<li>{{hour.days|title}} {{hour.start|date('h:i')}} - {{hour.end|date('h:i')}}</li>
 									{% else %}
 										<li>By Appointment</li>
 									{% endif %}
@@ -85,7 +85,7 @@
 								<ul>
 									{% for hour in inst.hours %}
 										{% if not hour.byAppointment %}
-											<li>{{hour.days}} {{hour.start|date('h:i')}} - {{hour.end|date('h:i')}}</li>
+											<li>{{hour.days|title}} {{hour.start|date('h:i')}} - {{hour.end|date('h:i')}}</li>
 										{% else %}
 											<li>By Appointment</li>
 										{% endif %}
@@ -112,7 +112,7 @@
 								<ul>
 									{% for hour in inst.hours %}
 										{% if not hour.byAppointment %}
-											<li>{{hour.days}} {{hour.start|date('h:i')}} - {{hour.end|date('h:i')}}</li>
+											<li>{{hour.days|title}} {{hour.start|date('h:i')}} - {{hour.end|date('h:i')}}</li>
 										{% else %}
 											<li>By Appointment</li>
 										{% endif %}
@@ -132,7 +132,7 @@
 					<ul>
 						<li>Section {{section.name}}</li>
 						<ul>
-							<li>{{section.day}} {{section.start|date('h:i')}} - {{section.end|date('h:i')}}</li>
+							<li>{{section.day|title}} {{section.start|date('h:i')}} - {{section.end|date('h:i')}}</li>
 							<li><a href="http://www.washington.edu/maps/?{{section.bldg|split("	")[0]}}">{{section.bldg}}</a> - {{section.room}}</li>
 						</ul>
 					</ul>
