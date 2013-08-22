@@ -3,7 +3,7 @@
 {% block content %}
 	<p>Write stuff here!</p>
 	<div>
-		{% image 'bundles/bioexam/images/exams.png' output='/images/*.png' %}
+		{% image 'bundles/bioexam/images/exams.png' output='images/*.png' %}
 		    <img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('manage_exams') }}">Manage Exams</a></h2>
@@ -15,7 +15,7 @@
 	</div>
 
 	<div>
-		{% image 'bundles/bioexam/images/editexams.png' output='/images/*.png' %}
+		{% image 'bundles/bioexam/images/editexams.png' output='images/*.png' %}
 		    <img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2>Edit Exams</h2>
@@ -23,7 +23,7 @@
 	</div>
 
 	<div>
-		{% image 'bundles/bioexam/images/questions.png' output='/images/*.png' %}
+		{% image 'bundles/bioexam/images/questions.png' output='images/*.png' %}
 		    <img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('manage_questions') }}">Manage Questions</a></h2>

@@ -4,7 +4,7 @@
 	<p> Welcome to the Course Information section. From here you can edit all the information shown on the front page and more. This tool allows you to edit <a href="{{ path('edit_info') }}">course information</a>; add <a href="{{ path('view', {'entityName' : 'announcement' }) }}">announcements</a> for students to read; add <a href="{{ path('view', {'entityName' : 'link' }) }}">links</a> to the main page or the sidebar; post contact <a href="{{ path('view', {'entityName' : 'person' }) }}">information</a> and <a href="{{ path('view', {'entityName' : 'hours' }) }}">office hours</a> for instructors, TAs, and coordinators; and post <a href="{{ path('view', {'entityName' : 'announcements' }) }}">section</a> location and times. This page will give some basic instructions on how you can edit the site to fit your needs. </p>
 
 	<div>
-		{% image 'bundles/bioinfo/images/courseinfo.png' output='/images/*.png' %}
+		{% image 'bundles/bioinfo/images/courseinfo.png' output='images/*.png' %}
 		    <img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('edit_info') }}">Edit Info</a></h2>
@@ -12,7 +12,7 @@
 	</div>
 
 	<div>
-		{% image 'bundles/bioinfo/images/announcements.png' output='/images/*.png' %}
+		{% image 'bundles/bioinfo/images/announcements.png' output='images/*.png' %}
 		    <img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('view', {'entityName' : 'announcement' }) }}">Announcements</a></h2>
@@ -26,7 +26,7 @@
 	</div>
 
 	<div>
-		{% image 'bundles/bioinfo/images/links.png' output='/images/*.png' %}
+		{% image 'bundles/bioinfo/images/links.png' output='images/*.png' %}
 		    <img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('view', {'entityName' : 'link' }) }}">Links</a></h2>
@@ -36,7 +36,7 @@
 	</div>
 
 	<div>
-		{% image 'bundles/bioinfo/images/instructor.png' output='/images/*.png' %}
+		{% image 'bundles/bioinfo/images/instructor.png' output='images/*.png' %}
 		    <img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('view', {'entityName' : 'person' }) }}">Instructors</a></h2>
@@ -44,7 +44,7 @@
 	</div>
 
 	<div>
-		{% image 'bundles/bioinfo/images/hours.png' output='/images/*.png' %}
+		{% image 'bundles/bioinfo/images/hours.png' output='images/*.png' %}
 		    <img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('view', {'entityName' : 'hours' }) }}">Hours</a></h2>
@@ -54,7 +54,7 @@
 	</div>
 
 	<div>
-		{% image 'bundles/bioinfo/images/sections.png' output='/images/*.png' %}
+		{% image 'bundles/bioinfo/images/sections.png' output='images/*.png' %}
 		    <img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('view', {'entityName' : 'section' }) }}">Sections</a></h2>

@@ -3,7 +3,7 @@
 {% block content %}
 	<p>Welcome to the Clicker section. This section has a public page for students to <a href="{{ path('register_clicker') }}">register</a> clickers, and secured pages for you to <a href="{{ path('download_list') }}">download</a> properly formatted .csv files and <a href="{{ path('clear_list') }}">clear</a> all registrations at the end of the quarter.</p>
 	<div>
-		{% image 'bundles/bioclicker/images/register.png' output='/images/*.png' %}
+		{% image 'bundles/bioclicker/images/register.png' output='images/*.png' %}
 			<img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('register_clicker') }}">Register</a></h2>
@@ -11,7 +11,7 @@
 	</div>
 
 	<div>
-		{% image 'bundles/bioclicker/images/download.png' output='/images/*.png' %}
+		{% image 'bundles/bioclicker/images/download.png' output='images/*.png' %}
 			<img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('download_list') }}">Download</a></h2>
@@ -19,7 +19,7 @@
 	</div>
 
 	<div>
-		{% image 'bundles/bioclicker/images/clear.png' output='/images/*.png' %}
+		{% image 'bundles/bioclicker/images/clear.png' output='images/*.png' %}
 			<img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('clear_list') }}">Clear</a></h2>

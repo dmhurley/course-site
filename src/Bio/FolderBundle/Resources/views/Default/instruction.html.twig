@@ -3,7 +3,7 @@
 {% block content %}
 	<p>Welcome to the Folder section. From here you can created many levels of nested folders to <a href="{{ path('view_folders') }}">organize</a> any files you want to be accessible from the main page.</p>
 	<div>
-		{% image 'bundles/biofolder/images/manage.png' output='/images/*.png' %}
+		{% image 'bundles/biofolder/images/manage.png' output='images/*.png' %}
 			<img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('view_folders') }}">Manage</a></h2>
@@ -17,7 +17,7 @@
 	</div>
 
 	<div>
-		{% image 'bundles/biofolder/images/clear.png' output='/images/*.png' %}
+		{% image 'bundles/biofolder/images/clear.png' output='images/*.png' %}
 			<img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('clear_folders') }}">Clear</a></h2>
