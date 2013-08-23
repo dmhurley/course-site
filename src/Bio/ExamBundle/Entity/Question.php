@@ -43,6 +43,7 @@ class Question
      *
      * @ORM\Column(name="points", type="integer")
      * @Assert\NotBlank()
+     * @Assert\GreaterThanOrEqual(value=0)
      */
     private $points;
 

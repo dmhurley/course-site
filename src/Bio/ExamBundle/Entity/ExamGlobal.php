@@ -3,6 +3,7 @@
 namespace Bio\ExamBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * ExamGlobal
@@ -23,7 +24,7 @@ class ExamGlobal
 
     /**
      * @var integer
-     *
+     * @Assert\GreaterThanOrEqual(value=0)
      * @ORM\Column(name="grade", type="integer")
      */
     private $grade;

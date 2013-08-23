@@ -75,7 +75,7 @@ class AdminController extends Controller
             if ($request->request->has('global')) {
                 $globalForm->handleRequest($request);
 
-                if ($form->isValid()) {
+                if ($globalForm->isValid()) {
                     $dbGlobal = $db->findOne(array());
 
                     $dbGlobal->setGrade($global->getGrade())
@@ -86,15 +86,14 @@ class AdminController extends Controller
                 }
             }
 
-            try {
-                $db->close();
-                $request->getSession()->getFlashBag()->set('success', 'Saved change.');
-            } catch (BioException $e) {
-                $request->getSession()->getFlashBag()->set('failure', 'Unable to save change.');
-                $needsBlankForm = false;
-            }
-
             if ($needsBlankForm) {
+                try {
+                    $db->close();
+                    $request->getSession()->getFlashBag()->set('success', 'Saved change.');
+                } catch (BioException $e) {
+                    $request->getSession()->getFlashBag()->set('failure', 'Unable to save change.');
+                    $needsBlankForm = false;
+                }
                 $form = $emptyForm;
             }
    		}
@@ -252,6 +251,7 @@ class AdminController extends Controller
 	   		if ($form->isValid()) {
                 $db = new Database($this, 'BioExamBundle:Question');
                 try {
+                    $q->setTags(explode(" ", $form->get('tags')->getData()));
    				    $db->close();
                     $request->getSession()->getFlashBag()->set('success', 'Question edited.');
                 } catch (BioException $e) {

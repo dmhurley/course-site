@@ -74,6 +74,7 @@ class Exam
      *
      * @ORM\Column(name="tduration", type="integer")
      * @Assert\NotBlank()
+     * @Assert\GreaterThanOrEqual(value=0)
      */
     private $tDuration;
 
@@ -106,6 +107,7 @@ class Exam
      *
      * @ORM\Column(name="gDuration", type="integer")
      * @Assert\NotBlank()
+     * @Assert\GreaterThanOrEqual(value=0)
      */
     private $gDuration;
 

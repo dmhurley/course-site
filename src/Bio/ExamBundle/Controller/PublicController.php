@@ -285,11 +285,11 @@ class PublicController extends Controller
 			} else {
 				$targetAnswers = $taker->getGrading()->getAnswers();
 				foreach($request->request->keys() as $key) { // keys are answer ids
-					$answer = $this->findObjectByFieldValue($key, $taker->getGrading()->getAnswers(), 'id');
-					if ($answer){
-						$answer->grade($taker, $request->request->get($key));
+					$answer = $this->findObjectByFieldValue($key, $targetAnswers, 'id');
+					if ($answer && $answer->getQuestion()->getPoints() >= (int)$request->request->get($key) && (int)$request->request->get($key) >= 0){
+						$answer->grade($taker, (int) $request->request->get($key));
 					} else {
-						$request->getSession()->getFlashBag()->set('failure', "Invalid IDs.");
+						$request->getSession()->getFlashBag()->set('failure', "Invalid form.");
 						return $this->render('BioExamBundle:Public:grade.html.twig', array('taker' => $taker->getGrading(), 'start' => $taker->getTimecard()[5], 'title' => 'Grade Exam'));
 					}
 				}
