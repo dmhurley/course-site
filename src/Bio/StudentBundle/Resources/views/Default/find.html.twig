@@ -1,0 +1,25 @@
+{% extends 'BioStudentBundle:Default:base.html.twig' %}
+
+{% block content %}
+	{{form(form)}}
+	<table>
+		<tr>
+			<th>ID</th>
+			<th>Name</th>
+			<th>Section</th>
+			<th>Email</th>
+			<th>Edit</th>
+			<th>Delete</th>
+		</tr>
+		{% for entity in entities %}
+			<tr>
+				<td>{{ entity.sid }}</td>
+				<td>{{ entity.fName }} {{ entity.lName }}</td>
+				<td>{{ entity.section }}</td>
+				<td><a href="mailto:{{ entity.email }}">{{ entity.email }}</a></td>
+				<td><a href="{{ path('edit_student', {'id': entity.id}) }}">edit</td>
+				<td><a href="{{ path('delete_student', {'id': entity.id}) }}">delete</td>
+			</tr>
+		{% endfor %}
+	</table>
+{% endblock %}

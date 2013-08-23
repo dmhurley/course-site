@@ -81,6 +81,10 @@
 						dropzone.appendChild(div);
 					}
 
+					window.addEventListener('drop', function(e) {
+						e.preventDefault();
+					});
+
 					document.body.addEventListener('dragover', (function(self) {
 						return function(e) {
 							self.handleDragOver(e);
