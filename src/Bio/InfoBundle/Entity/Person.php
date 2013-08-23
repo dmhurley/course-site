@@ -76,7 +76,7 @@ class Person extends Base
     }
 
     public function getFullName() {
-        return $this->fName." ".$this->lName;
+        return $this->getFName()." ".$this->getLName();
     }
 
     /**
@@ -99,7 +99,7 @@ class Person extends Base
      */
     public function getFName()
     {
-        return $this->fName;
+        return ucfirst($this->fName);
     }
 
     /**
@@ -122,7 +122,7 @@ class Person extends Base
      */
     public function getLName()
     {
-        return $this->lName;
+        return ucfirst($this->lName);
     }
 
     /**

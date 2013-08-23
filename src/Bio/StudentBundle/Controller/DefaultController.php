@@ -120,7 +120,7 @@ class DefaultController extends Controller
         }
     	
         if (!$request->headers->get('referer')){
-            return $this->redirect($this->generateUrl('display_students'));
+            return $this->redirect($this->generateUrl('find_student'));
         } else {
             return $this->redirect($request->headers->get('referer'));
         }
@@ -133,7 +133,7 @@ class DefaultController extends Controller
     public function editAction(Request $request, Student $student = null) {
         if ($student === null) {
             $request->getSession()->getFlashBag()->set('failure', 'Could not find that student.');
-            return $this->redirect($this->generateUrl('display_students'));
+            return $this->redirect($this->generateUrl('find_student'));
         }
 
     	$form = $this->createForm(new StudentType(), $student, array('title' => 'edit', 'edit' => true));
@@ -145,7 +145,7 @@ class DefaultController extends Controller
                 try {
                     $db->close();
                     $request->getSession()->getFlashBag()->set('success', 'Student edited.');
-                    return $this->redirect($this->generateUrl('display_students'));
+                    return $this->redirect($this->generateUrl('find_student'));
                 } catch (BioException $e) {
                     $request->getSession()->getFlashBag()->set('failure', 'A student already has that email.');
                 }

@@ -130,7 +130,7 @@
 				<h2>Sections</h2>
 				{% for section in sections %}
 					<ul>
-						<li>Section {{section.name}}</li>
+						<li>Section {{section.name|upper}}</li>
 						<ul>
 							<li>{{section.day|title}} {{section.start|date('h:i')}} - {{section.end|date('h:i')}}</li>
 							<li><a href="http://www.washington.edu/maps/?{{section.bldg|split("	")[0]}}">{{section.bldg}}</a> - {{section.room}}</li>
