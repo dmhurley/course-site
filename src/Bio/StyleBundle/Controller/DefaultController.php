@@ -15,7 +15,7 @@ class DefaultController extends Controller
 	 */
 	public function sidebarAction($error) {
 		// if admin show full sidebar loaded from yaml file
-		if ($this->get('security.context')->isGranted('ROLE_ADMIN')){
+		if (!$error && $this->get('security.context')->isGranted('ROLE_ADMIN')){
 			$options = $this->container->getParameter('sidebar');
 			return array('options' => $options);
 
@@ -25,8 +25,7 @@ class DefaultController extends Controller
 
 			$db = new Database($this, 'BioInfoBundle:Link');
 			$links = $db->find(array('location' => 'sidebar'), array(), false);
-
-			return array('root' => $root, 'links' => $links);
+			return $this->render('BioStyleBundle:Default:sidebar.html.twig', array('root' => $root, 'links' => $links));
 		}
 	}
 

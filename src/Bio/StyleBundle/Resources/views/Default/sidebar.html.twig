@@ -1,4 +1,4 @@
-{% if is_granted('ROLE_ADMIN') %}
+{% if app.user and is_granted('ROLE_ADMIN') %}
 	<div class="content">
 		<ul class="trunk">
 			{% for key,value in options %}

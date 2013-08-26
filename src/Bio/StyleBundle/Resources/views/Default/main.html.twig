@@ -1,48 +1,40 @@
 {% extends 'BioStyleBundle:Default:base.html.twig' %}
 
-{% set tt %}
-	{{render(controller('BioStyleBundle:Default:title'))}}
-{% endset %}
+{% block header %}
+	{{parent()}}
 
-{% block title %}{{tt}}{% endblock %}
-
-{% block body %}
-	{% block header %}
-		{{parent()}}
-
-		<div id="sign">
-			{% if is_granted('ROLE_USER') %}
-				<a href="{{ path('logout') }}">Logout</a>
-				{% if is_granted('ROLE_SUPER_ADMIN') %}
-					- super admin
-				{% elseif is_granted('ROLE_ADMIN') %}
-					- admin
-				{% else %}
-					- user
-				{% endif %}
+	<div id="sign">
+		{% if is_granted('ROLE_USER') %}
+			<a href="{{ path('logout') }}">Logout</a>
+			{% if is_granted('ROLE_SUPER_ADMIN') %}
+				- super admin
+			{% elseif is_granted('ROLE_ADMIN') %}
+				- admin
 			{% else %}
-				<a href="{{ path('login') }}">Admin</a>
+				- user
 			{% endif %}
-		</div>
-
-	{% endblock %}
-
-	{% block left %}
-		{{ render(controller('BioStyleBundle:Default:sidebar', {'error':false})) }}
-	{% endblock %}
-
-	{% block basecontent %}
-		{% if app.session.flashbag.has('failure') %}
-			<div class="failure">
-				{{ app.session.flashbag.get('failure')[0] }}
-			</div>
-		{% elseif app.session.flashbag.has('success') %}
-			<div class="success">
-				{{ app.session.flashbag.get('success')[0] }}
-			</div>
+		{% else %}
+			<a href="{{ path('login') }}">Admin</a>
 		{% endif %}
-		{% block content %}
+	</div>
 
-		{% endblock %}
+{% endblock %}
+
+{% block left %}
+	{{ render(controller('BioStyleBundle:Default:sidebar', {'error':false})) }}
+{% endblock %}
+
+{% block basecontent %}
+	{% if app.session.flashbag.has('failure') %}
+		<div class="failure">
+			{{ app.session.flashbag.get('failure')[0] }}
+		</div>
+	{% elseif app.session.flashbag.has('success') %}
+		<div class="success">
+			{{ app.session.flashbag.get('success')[0] }}
+		</div>
+	{% endif %}
+	{% block content %}
+
 	{% endblock %}
 {% endblock %}
