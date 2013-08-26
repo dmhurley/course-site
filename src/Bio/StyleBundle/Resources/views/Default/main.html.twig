@@ -6,79 +6,43 @@
 
 {% block title %}{{tt}}{% endblock %}
 
-{% block head %}
-	{% stylesheets 'bundles/biostyle/css/page.css' 
-				   'bundles/biostyle/css/form.css'
-				   'bundles/biostyle/css/tool-tip.css' filter="cssrewrite" output="css/*.css" %}
-		<link rel="stylesheet" href="{{ asset_url }}" />
-	{% endstylesheets %}
-{% endblock %}
-
 {% block body %}
-	<div id="container">
-		<div id="page">
-			<div id="header">
-				<a id="logo" href="http://www.biology.washington.edu"></a>
-				<div id="dub">
-					<div id="wLogo">
-						<div id="w">
-							<a href="http://www.washington.edu"></a>
-						</div>
-						<!-- <div id="x">
-							<a href="http://www.washington.edu/"></a>
-						</div> -->
-					</div>
-				</div>
+	{% block header %}
+		{{parent()}}
 
-				<div id="course">
-					<a href="{{ path('main_page') }}">
-						{{tt}}
-					</a>
-				</div>
-
-				<div id="sign">
-					{% if is_granted('ROLE_USER') %}
-						<a href="{{ path('logout') }}">Logout</a>
-						{% if is_granted('ROLE_SUPER_ADMIN') %}
-							- super admin
-						{% elseif is_granted('ROLE_ADMIN') %}
-							- admin
-						{% else %}
-							- user
-						{% endif %}
-					{% else %}
-						<a href="{{ path('login') }}">Admin</a>
-					{% endif %}
-				</div>
-			</div>
-
-			<div id="left">
-				{{ render(controller('BioStyleBundle:Default:sidebar', {'route':app.request.attributes.get('_route')})) }}
-			</div>
-
-			<div id="center">
-				{% if title is defined %}
-					<h1>{{title}}</h1>
+		<div id="sign">
+			{% if is_granted('ROLE_USER') %}
+				<a href="{{ path('logout') }}">Logout</a>
+				{% if is_granted('ROLE_SUPER_ADMIN') %}
+					- super admin
+				{% elseif is_granted('ROLE_ADMIN') %}
+					- admin
+				{% else %}
+					- user
 				{% endif %}
-				<div id="content">
-					{% if app.session.flashbag.has('failure') %}
-						<div class="failure">
-							{{ app.session.flashbag.get('failure')[0] }}
-						</div>
-					{% elseif app.session.flashbag.has('success') %}
-						<div class="success">
-							{{ app.session.flashbag.get('success')[0] }}
-						</div>
-					{% endif %}
-					{% block content %}
+			{% else %}
+				<a href="{{ path('login') }}">Admin</a>
+			{% endif %}
+		</div>
 
-					{% endblock %}
-				</div>
+	{% endblock %}
+
+	{% block left %}
+		{{ render(controller('BioStyleBundle:Default:sidebar', {'error':false})) }}
+	{% endblock %}
+
+	{% block basecontent %}
+		{% if app.session.flashbag.has('failure') %}
+			<div class="failure">
+				{{ app.session.flashbag.get('failure')[0] }}
 			</div>
-		</div>
+		{% elseif app.session.flashbag.has('success') %}
+			<div class="success">
+				{{ app.session.flashbag.get('success')[0] }}
+			</div>
+		{% endif %}
+		{% block content %}
 
-		<div id="footer">
-
-		</div>
-	</div>
+		{% endblock %}
+	{% endblock %}
 {% endblock %}

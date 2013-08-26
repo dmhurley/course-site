@@ -13,7 +13,7 @@ class DefaultController extends Controller
 	/**
 	 * @Template()
 	 */
-	public function sidebarAction($route) {
+	public function sidebarAction($error) {
 		// if admin show full sidebar loaded from yaml file
 		if ($this->get('security.context')->isGranted('ROLE_ADMIN')){
 			$options = $this->container->getParameter('sidebar');

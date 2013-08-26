@@ -6,15 +6,69 @@
 			<link rel="shortcut icon" href="{{ asset_url }}" />
 		{% endimage %}
 		
+		<!-- BASIC STYLE SHEETS -->
+		{% stylesheets 'bundles/biostyle/css/page.css' 
+					   'bundles/biostyle/css/form.css'
+					   'bundles/biostyle/css/tool-tip.css' filter="cssrewrite" output="css/*.css" %}
+			<link rel="stylesheet" href="{{ asset_url }}" />
+		{% endstylesheets %}
+
+		<!-- OTHER RESOURCES -->
 		{% block head %}
 
 		{% endblock %}
 	</head>
 
 	<body>
-		{% block body %}
+		<div id="container">
+			<div id="page">
 
-		{% endblock %}
+				<div id="header">
+					{% block header %}
+						<a id="logo" href="http://www.biology.washington.edu"></a>
+						<div id="dub">
+							<div id="wLogo">
+								<div id="w">
+									<a href="http://www.washington.edu"></a>
+								</div>
+								<!-- <div id="x">
+									<a href="http://www.washington.edu/"></a>
+								</div> -->
+							</div>
+						</div>
+
+						<div id="course">
+							<a href="{{ path('main_page') }}">
+								{{tt}}
+							</a>
+						</div>
+
+					{% endblock %}
+				</div>
+
+				<div id="left">
+					{% block left %}
+						{{ render(controller('BioStyleBundle:Default:sidebar', {'error':true})) }}
+					{% endblock %}	
+				</div>
+
+				<div id="center">
+					{% if title is defined %}
+						<h1>{{title}}</h1>
+					{% endif %}
+
+					<div id="content">
+						{% block basecontent %}
+
+						{% endblock %}
+					</div>
+				</div>
+
+			</div>
+			<div id="footer">
+
+			</div>
+		</div>
 	</body>
 	{% block java %}
 
