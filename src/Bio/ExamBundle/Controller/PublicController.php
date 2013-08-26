@@ -40,34 +40,36 @@ class PublicController extends Controller
 
 			if ($student) {
 
+				$exam = null;
+				$taker = null;
+				$message = null;
+
 				// get all exams where the grading period hasn't ended.
 				try {
 					$exam = $this->getNextExam($student);
 				} catch (BioException $e) {
-					$session->invalidate();
-					$flash->set('failure', $e->getMessage());
-					return $this->redirect($this->generateUrl('exam_entrance'));
+					$message = $e->getMessage();
 				}
 
-				// get the appropriate test taker for the student/exam combo
-				$db = new Database($this, 'BioExamBundle:TestTaker');
-				$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
+				if ($exam) {
+					// get the appropriate test taker for the student/exam combo
+					$db = new Database($this, 'BioExamBundle:TestTaker');
+					$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
 
-				if (!$taker) {
-					$taker = new TestTaker();
-					$taker->setStatus(1)
-						->setStudent($student)
-						->setExam($exam);
+					if (!$taker) {
+						$taker = new TestTaker();
+						$taker->setStatus(1)
+							->setStudent($student)
+							->setExam($exam);
 
-					$db->add($taker);	
-					$db->close();
-				}
-
-				if ($taker) {
-					if ($taker->getStatus() === 1) {
-						return $this->startAction($request, $exam, $taker, $db);
+						$db->add($taker);	
+						$db->close();
 					}
+				}
 
+				if (!$taker || $taker->getStatus() === 1 || $taker->getStatus() === 6) {
+					return $this->startAction($request, $exam, $taker, $student, $message, $db);
+				} else {
 					if ($taker->getStatus() === 2) {
 						return $this->examAction($request, $exam, $taker, $db);
 					}
@@ -90,11 +92,6 @@ class PublicController extends Controller
 					if ($taker->getStatus() === 5) {
 						return $this->gradeAction($request, $exam, $taker, $db);
 					}
-
-					if ($taker->getStatus() === 6) {
-						if (!$flash->has('success'))
-							$flash->set('success', "You've already finished this exam.");
-					}
 				}
 			} else {
 				$session->invalidate();
@@ -110,7 +107,7 @@ class PublicController extends Controller
 	 * 
 	 * status 1
 	 */
-	private function startAction(Request $request, $exam, $taker, $db) {
+	private function startAction(Request $request, $exam, $taker, $student, $message, $db) {
 		// create form
 		$form = $this->createFormBuilder()
 			->add('start', 'submit')
@@ -118,6 +115,10 @@ class PublicController extends Controller
 
 		// if they pressed submit
 		if ($request->getMethod() === "POST") {
+			if (!$taker || $taker->getStatus() !== 1) {
+				$request->getSession()->getFlashBag()->set('failure', 'You have already completed this test.');
+				return $this->redirect($this->generateUrl('exam_entrance'));
+			}
 
 			// if the exam has started
 			if ($exam->getTStart() <= new \DateTime()) {
@@ -143,7 +144,9 @@ class PublicController extends Controller
 		}
 		$db = new Database($this, 'BioExamBundle:ExamGlobal');
 		$global = $db->findOne(array());
-		return $this->render('BioExamBundle:Public:start.html.twig', array('form' => $form->createView(), 'global'=>$global, 'exam' => $exam, 'title' => 'Begin Test'));
+		$db = new Database($this, 'BioExamBundle:TestTaker');
+		$takers = $db->find(array('student' => $student), array(), false);
+		return $this->render('BioExamBundle:Public:start.html.twig', array('form' => $form->createView(), 'global'=>$global, 'exam' => $exam, 'message' => $message, 'takers' => $takers, 'title' => 'Begin Test'));
 	}
 
 	/**
@@ -365,9 +368,11 @@ class PublicController extends Controller
 			->select('p')
 			->from('BioExamBundle:Exam', 'p')
 			->where('p.gDate >= :date')
+			->andWhere('p.gEnd >= :time')
 			->addOrderBy('p.tDate', 'ASC')
 			->addOrderBy('p.tStart', 'ASC')
 			->setParameter('date', new \DateTime(), \Doctrine\DBAL\Types\Type::DATE)
+			->setParameter('time', new \DateTime(), \Doctrine\DBAL\Types\Type::TIME)
 			->getQuery();
 		$result = $query->getResult();
 
