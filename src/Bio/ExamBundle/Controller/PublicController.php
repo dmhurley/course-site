@@ -240,6 +240,18 @@ class PublicController extends Controller
 	 * status 4
 	 */
 	private function waitAction(Request $request, $exam, $taker, $db) {
+		$db = new Database($this, 'BioExamBundle:ExamGlobal');
+		$global = $db->findOne(array());
+		if ($taker->getNumGraded() >= $global->getGrade()) {
+			$request->getSession()->invalidate();
+			$code = $exam->getId().':'.$taker->getId().':'.$taker->getStudent()->getSid();
+			$code = base64_encode($code);
+			$request->getSession()->getFlashBag()->set('success', "Finished. Confirmation code:\n".$code);
+			$taker->setStatus(6);
+			$db->close();
+			return $this->redirect($this->generateUrl('exam_entrance'));
+		}
+
 		// if the pressed submit
 		if ($request->getMethod() === "POST") {
 			$target = null;
@@ -298,17 +310,10 @@ class PublicController extends Controller
 
 				$db = new Database($this, 'BioExamBundle:ExamGlobal');
 				$global = $db->findOne(array());
-
-				if ($taker->getNumGraded() < $global->getGrade()) {
-					$request->getSession()->getFlashBag()->set('success', 'Test graded. '.($global->getGrade()-count($taker->getGraded()).' left.'));
-					$taker->setStatus(4);
-				} else {
-					$request->getSession()->invalidate();
-					$code = $exam->getId().':'.$taker->getId().':'.$taker->getStudent()->getSid();
-					$code = trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, '', $code, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));
-					$request->getSession()->getFlashBag()->set('success', "Finished. Confirmation code:\n".$code);
-					$taker->setStatus(6);
-				}
+				
+				$request->getSession()->getFlashBag()->set('success', 'Test graded. '.($global->getGrade()-count($taker->getGraded()).' left.'));
+				$taker->setStatus(4);
+					
 				$db->close();
 				return $this->redirect($this->generateUrl('exam_entrance'));
 			}
