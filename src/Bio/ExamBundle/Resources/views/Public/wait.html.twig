@@ -1,12 +1,5 @@
 {% extends 'BioExamBundle:Public:main.html.twig' %}
 
-{% block head %}
-	{{ parent() }}
-	{% stylesheets 'bundles/bioexam/css/exam.css' filter="cssrewrite" output="css/*.css" %}
-		<link rel="stylesheet" href="{{ asset_url }}" />
-	{% endstylesheets %}
-{% endblock %}
-
 {% block content %}
 		<p>Your answers have been saved. Stay on this page to be randomly assigned someone elses practice test. Lets talk a lot longer about how this thing works. How long you have, how many points to give or to not give a person. Etc... Talky talky talky talky talky Talk about the rubric, and how awesome they guy who made this is. When the button appears, press it to begin grading.</p>
 
@@ -16,7 +9,9 @@
 			</form>
 			<div id="loadMessage">
 				Finding test to grade<br />This could take several minutes
-				<div id="loader"></div>
+				{% image 'bundles/bioexam/images/ajax-loader.gif' output='images/*.png' %}
+					<div id="loader" style="background-image:url('{{asset_url}}')"></div>
+				{% endimage %}
 			</div>
 		</div>
 		{{parent()}}
