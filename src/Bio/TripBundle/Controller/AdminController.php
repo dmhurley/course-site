@@ -41,6 +41,7 @@ class AdminController extends Controller
     		->add('email', 'email', array('label' => 'Leader Email:'))
     		->add('add', 'submit')
     		->getForm();
+        $clone = clone $form;
 
         $db = new Database($this, 'BioTripBundle:TripGlobal');
         $global = $db->findOne(array());
@@ -78,6 +79,7 @@ class AdminController extends Controller
             try {
                 $db->close();
                 $request->getSession()->getFlashBag()->set('success', 'Saved change.');
+                $form = $clone;
             } catch (BioException $e) {
                 $request->getSession()->getFlashBag()->set('failure', 'Unable to save change.');
             }

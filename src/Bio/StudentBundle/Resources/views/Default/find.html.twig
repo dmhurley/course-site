@@ -1,16 +1,12 @@
 {% extends 'BioStudentBundle:Default:base.html.twig' %}
 
 {% block content %}
-	{% if app.request.query.get('filter') != "" %}
-		{% set filter = '&filter=' ~ app.request.query.get('filter') %}
-	{% else %}
-		{% set filter = '' %}
-	{% endif %}
+	{{form(form)}}
 	<table>
 		<tr>
 			<th>ID</th>
-			<th><a href="?sort=fName{{filter}}">First</a> - <a href="?sort=lName{{filter}}">Last</a></th>
-			<th><a href="?sort=section{{filter}}">Section</a></th>
+			<th>Name</th>
+			<th>Section</th>
 			<th>Email</th>
 			<th>Edit</th>
 			<th>Delete</th>
@@ -26,5 +22,4 @@
 			</tr>
 		{% endfor %}
 	</table>
-
 {% endblock %}

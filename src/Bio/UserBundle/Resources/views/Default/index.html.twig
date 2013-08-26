@@ -17,7 +17,7 @@
 		<th>Demote</th>
 		<th>Delete</th>
 	</tr>
-	{% for user in users if user.roles[0] != "ROLE_SETUP" %}
+	{% for user in users if user.roles[0] != "ROLE_SETUP" and app.user != user%}
 		<tr>
 			<td>{{user.username}}</td>
 			<td>{{user.roles|join(", ")|replace({'ROLE' : '', '_' : ' '}) }}</td>

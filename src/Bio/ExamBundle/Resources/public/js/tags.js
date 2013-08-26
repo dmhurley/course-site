@@ -3,13 +3,14 @@ window.onload = function() {
 	input = document.getElementById("tag");
 
 	input.addEventListener('keyup', function() {
-		var search = input.value.split(" ");
+		var search = input.value.toLowerCase().split(" ");
 		for (var i = 0; i < questions.length; i++) {
 			question = questions[i];
-			var tags = question.attributes.tags.value;
+			var tags = question.attributes.tags.value.toLowerCase();
+			var innerHTML = question.getElementsByTagName('label')[0].innerHTML.toLowerCase(); //
 			hasTags = true;
 			for (var j = 0; j < search.length; j++) {
-				if (tags.indexOf(search[j]) === -1) {
+				if (tags.indexOf(search[j]) === -1 && innerHTML.indexOf(search[j]) === -1) { //
 					hasTags = false;
 					break;
 				}
@@ -17,10 +18,8 @@ window.onload = function() {
 
 			if (hasTags) {
 				question.style.display = 'table-row';
-				console.log('shooww');
 			} else {
 				question.style.display = 'none';
-				console.log('hidde');
 			}
 		}
 	});

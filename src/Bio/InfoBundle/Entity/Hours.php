@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Bio\InfoBundle\Entity\Base;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\ExecutionContextInterface;
 
 
 /**
@@ -13,6 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Table()
  * @ORM\Entity
+ * @Assert\Callback(methods={"isDaysOrByAppointment"});
  */
 class Hours extends Base
 {
@@ -20,9 +22,14 @@ class Hours extends Base
      * @var string
      *
      * @ORM\Column(name="days", type="string", length=255)
-     * @Assert\NotBlank()
      */
     private $days;
+
+    public function isDaysOrByAppointment(ExecutionContextInterface $context) {
+        if (!$this->days && $this->byAppointment === false) {
+            $context->addViolationAt('days', 'You must specify days.');
+        }
+    }
 
     /**
      * @var \DateTime
@@ -172,7 +179,7 @@ class Hours extends Base
 
     public function addToForm(FormBuilder $builder) {
         $builder->add('person', 'entity', array('class' => 'BioInfoBundle:Person', 'property' => 'fullName', 'label' => 'Instructor:'))
-            ->add('days', 'text', array('label' => 'Days:'))
+            ->add('days', 'text', array('label' => 'Days:', 'required' => false))
             ->add('start', 'time', array('label' => 'Start Time:'))
             ->add('end', 'time', array('label' => 'End Time:'))
             ->add('byAppointment', 'checkbox', array('required' => false, 'label' => 'By Appointment?'));

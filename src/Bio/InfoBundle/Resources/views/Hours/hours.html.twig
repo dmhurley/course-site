@@ -19,9 +19,9 @@
 				{% if (person.hours|first).byAppointment %}
 					<td colspan=3>By Appointment</td>
 				{% else %}
-					<td>{{(person.hours|first).days}}</td>
-					<td>{{(person.hours|first).start|date('h:m')}}</td>
-					<td>{{(person.hours|first).end|date('h:m')}}</td>
+					<td>{{(person.hours|first).days|title}}</td>
+					<td>{{(person.hours|first).start|date('h:i')}}</td>
+					<td>{{(person.hours|first).end|date('h:i')}}</td>
 				{% endif %}
 				<td><a href="{{ path('edit', {'entityName' : 'hours', 'id' : (person.hours|first).id }) }}">edit</a></td>
 				<td><a href="{{ path('delete', {'entityName' : 'hours', 'id' : (person.hours|first).id}) }}">delete</a></td>
@@ -32,9 +32,9 @@
 						{% if hour.byAppointment %}
 							<td colspan=3>By Appointment</td>
 						{% else %}
-							<td>{{ hour.days }}</td>
-							<td >{{ hour.start|date('h:m') }}</td>
-							<td>{{ hour.end|date('h:m') }}</td>
+							<td>{{ hour.days|title }}</td>
+							<td >{{ hour.start|date('h:i') }}</td>
+							<td>{{ hour.end|date('h:i') }}</td>
 						{% endif %}
 						<td><a href="{{ path('edit', {'entityName' : 'hours', 'id' : hour.id }) }}">edit</td>
 						<td><a href="{{ path('delete', {'entityName' : 'hours', 'id' : hour.id}) }}?id={{ hour.id }}">delete</a></td>

@@ -1,14 +1,7 @@
 {% extends 'BioStyleBundle:Default:instruction.html.twig' %}
 
 {% block content %}
-	<p>Welcome to the Student section. This section allows you to <a href="{{ path('display_students') }}">view</a>, sort, edit, and <a href="{{ path('find_student') }}">filter</a> students in your course. By <a href="{{ path('upload_student') }}">uploading</a> a file from the registrars office or <a href="{{ path('add_student') }}">adding</a> students individually you can easily access their basic information easily and efficiently.</p>
-	<div>
-		{% image 'bundles/biostudent/images/display.png' output='images/*.png' %}
-		    <img src="{{ asset_url }}"/>
-		{% endimage %}
-		<h2><a href="{{ path('display_students') }}">Display</a></h2>
-		<p> The display page shows you a list of all students and their basic information such as student ID, name, section, and email. And allows you to edit their information or delete them from the list. Keep in mind that any actions done here will <b>not</b> be reflected anywhere else and <b>will be overwritten</b> if you upload a student list from the registrar. You can sort by any field alphabetically ascending by clicking on the links at the top of the table.</p>
-	</div>
+	<p>Welcome to the Student section. This section allows you to view, sort, edit, and <a href="{{ path('find_student') }}">filter</a> students in your course. By <a href="{{ path('upload_student') }}">uploading</a> a file from the registrars office or <a href="{{ path('add_student') }}">adding</a> students individually you can easily access their basic information easily and efficiently.</p>
 
 	<div>
 		{% image 'bundles/biostudent/images/find.png' output='images/*.png' %}

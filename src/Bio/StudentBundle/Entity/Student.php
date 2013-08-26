@@ -119,7 +119,7 @@ class Student
      */
     public function getFName()
     {
-        return $this->fName;
+        return ucfirst($this->fName);
     }
 
     /**
@@ -142,7 +142,7 @@ class Student
      */
     public function getLName()
     {
-        return $this->lName;
+        return ucfirst($this->lName);
     }
 
     /**
@@ -188,6 +188,6 @@ class Student
      */
     public function getSection()
     {
-        return $this->section;
+        return strtoupper($this->section);
     }
 }

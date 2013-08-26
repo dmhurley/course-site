@@ -63,6 +63,9 @@ class DefaultController extends Controller
     		->add('upload', 'submit')
     		->getForm();
 
+        $clone = clone $form;
+        $clone1 = clone $form1;
+
         if ($request->getMethod() === "POST") {
             if ($request->request->has('form')) {
                 $form->handleRequest($request);
@@ -76,6 +79,7 @@ class DefaultController extends Controller
                         $db->add($folder);
                         try {
                           $db->close();
+                          $form = $clone;
                           $request->getSession()->getFlashBag()->set('success', "Folder \"".$folder->getName()."\" added.");
                         } catch (BioException $e) {
                             $request->getSession()->getFlashBag()->set('failure', "Folder could not be added.");
@@ -99,6 +103,7 @@ class DefaultController extends Controller
                         try {
                             $db->add($file);
                             $db->close("File could not be uploaded.");
+                            $form1 = $clone1;
                             $request->getSession()->getFlashBag()->set('success', "File \"".$file->getPath()."\" uploaded.");
                         } catch (BioException $e) {
                              $request->getSession()->getFlashBag()->set('failure', $e->getMessage());

@@ -31,8 +31,8 @@ class DefaultController extends Controller
     /**
      * @Route("/{type}mote/{id}", name="mote_user", requirements={"type" = "de|pro"})
      */
-    public function mote(Request $request, $type, User $entity) {
-    	if ($entity) {
+    public function mote(Request $request, $type, User $entity = null) {
+    	if ($entity && $entity->getRoles()[0] !== 'ROLE_SETUP' && $entity !== $this->getUser()) {
             $role = $entity->getRoles()[0];
 
             if ($type==="de") {
@@ -69,8 +69,8 @@ class DefaultController extends Controller
     /**
      * @Route("/delete/{id}", name="delete_user")
      */
-    public function delete(Request $request, User $entity) {
-        if ($entity) {
+    public function delete(Request $request, User $entity = null) {
+        if ($entity && $entity->getRoles()[0] !== 'ROLE_SETUP' && $entity !== $this->getUser()) {
             $db = new Database($this, 'BioUserBundle:User');
             $db->delete($entity);
             $db->close();

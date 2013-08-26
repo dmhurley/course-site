@@ -75,7 +75,7 @@ class AdminController extends Controller
             if ($request->request->has('global')) {
                 $globalForm->handleRequest($request);
 
-                if ($form->isValid()) {
+                if ($globalForm->isValid()) {
                     $dbGlobal = $db->findOne(array());
 
                     $dbGlobal->setGrade($global->getGrade())
@@ -86,15 +86,14 @@ class AdminController extends Controller
                 }
             }
 
-            try {
-                $db->close();
-                $request->getSession()->getFlashBag()->set('success', 'Saved change.');
-            } catch (BioException $e) {
-                $request->getSession()->getFlashBag()->set('failure', 'Unable to save change.');
-                $needsBlankForm = false;
-            }
-
             if ($needsBlankForm) {
+                try {
+                    $db->close();
+                    $request->getSession()->getFlashBag()->set('success', 'Saved change.');
+                } catch (BioException $e) {
+                    $request->getSession()->getFlashBag()->set('failure', 'Unable to save change.');
+                    $needsBlankForm = false;
+                }
                 $form = $emptyForm;
             }
    		}
@@ -217,10 +216,25 @@ class AdminController extends Controller
      */
     public function deleteQuestionAction(Request $request, Question $q) {
 		if ($q) {
-            $db = new Database($this, 'BioExamBundle:Question');
-			$db->delete($q);
-			$db->close();
-			$request->getSession()->getFlashBag()->set('success', 'Question deleted.');
+            $em = $this->getDoctrine()->getManager();
+            $qb = $em->createQueryBuilder();
+            $expr = $qb->expr();
+
+            $query = $qb->select('e')
+                ->from('BioExamBundle:Exam', 'e')
+                ->where(':q MEMBER OF e.questions')
+                ->setParameter('q', $q)
+                ->getQuery();
+            $result = $query->getResult();
+
+            if (count($result) > 0) {
+                $request->getSession()->getFlashBag()->set('failure', 'That question is used in an Exam.');
+            } else {
+                $db = new Database($this, 'BioExamBundle:Question');
+    			$db->delete($q);
+    			$db->close();
+    			$request->getSession()->getFlashBag()->set('success', 'Question deleted.');
+            }
 		} else {
 			$request->getSession()->getFlashBag()->set('failure', 'Could not find that question.');
 		}
@@ -252,6 +266,7 @@ class AdminController extends Controller
 	   		if ($form->isValid()) {
                 $db = new Database($this, 'BioExamBundle:Question');
                 try {
+                    $q->setTags(explode(" ", $form->get('tags')->getData()));
    				    $db->close();
                     $request->getSession()->getFlashBag()->set('success', 'Question edited.');
                 } catch (BioException $e) {

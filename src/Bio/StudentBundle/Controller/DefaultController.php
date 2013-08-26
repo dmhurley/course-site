@@ -14,7 +14,7 @@ use Bio\StudentBundle\Form\StudentType;
 use Bio\DataBundle\Exception\BioException;
 
 use Bio\DataBundle\Objects\Database;
-
+use Doctrine\DBAL\Types\Type;
 /**
  * @Route("/admin/student")
  */
@@ -30,40 +30,47 @@ class DefaultController extends Controller
 
     /**
      * @Route("/find", name="find_student")
-     * @Template("BioStudentBundle:Default:delete.html.twig")
+     * @Template()
      */
     public function findAction(Request $request){
         $form = $this->createFormBuilder()
-            ->add('sid', 'text', array('label' => 'Student ID:', 'required' => false, 'constraints' => new Assert\Regex("/^[0-9]{7}$/")))
+            ->add('sid', 'text', array('label' => 'Student ID:', 'required' => false, 'attr' => array('disabled' => 'disabled')))
             ->add('fName', 'text', array('label' => 'First Name:', 'required' => false))
             ->add('lName', 'text', array('label' => 'Last Name:', 'required' => false))
-            ->add('section', 'text', array('label' => 'Section:', 'required' => false, 'constraints' => new Assert\Regex("/^[A-Z]{2}$/")))
-            ->add('email', 'text', array('label' => 'Email:','required' => false, 'constraints' => new Assert\Email()))
+            ->add('section', 'text', array('label' => 'Section:', 'required' => false))
+            ->add('email', 'text', array('label' => 'Email:','required' => false, 'attr' => array('disabled' => 'disabled')))
             ->add('find', 'submit')
             ->getForm();
 
+        $result = array();
         if ($request->getMethod() === "POST") {
             $form->handleRequest($request);
             if ($form->isValid()) {
                 $values = $request->request->get('form');
                 $array = array_filter(array_slice($form->getData(), 0, 5));
-                try {
-                    $db = new Database($this, 'BioStudentBundle:Student');
-                    $entities = $db->find($array, array('sid' => 'ASC'));
-                    $request->getSession()->getFlashBag()->set('success', 'Students found!');
+                $em = $this->getDoctrine()->getManager();
+                $qb = $em->createQueryBuilder()
+                    ->select('s')
+                    ->from('BioStudentBundle:Student', 's');
 
-                    $get = "?filter=".implode(array_slice($values, 0, 5), '-');
-
-                    return $this->redirect($this->generateUrl('display_students').$get);
-                } catch (BioException $e){
-                    $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
+                foreach(array_keys($array) as $i => $key) {
+                    $qb->andWhere('s.'.$key.' LIKE :value'.$i)
+                        ->setParameter('value'.$i, $array[$key].'%');
                 }
+                if (count($array) > 0) {
+                    reset($array);
+                    $qb->orderBy('s.'.key($array), 'ASC');
+                } else {
+                    $qb->orderBy('s.fName', 'ASC');
+                }
+                $query = $qb->getQuery();
+                $result = $query->getResult();
             } else {
                 $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
             }
         }
 
-        return array('form' => $form->createView(), 'title' => 'Find Student');
+        return array('form' => $form->createView(), 'title' => 'Find Student', 'entities' => $result);
     }
 
     /**
@@ -113,7 +120,7 @@ class DefaultController extends Controller
         }
     	
         if (!$request->headers->get('referer')){
-            return $this->redirect($this->generateUrl('display_students'));
+            return $this->redirect($this->generateUrl('find_student'));
         } else {
             return $this->redirect($request->headers->get('referer'));
         }
@@ -126,7 +133,7 @@ class DefaultController extends Controller
     public function editAction(Request $request, Student $student = null) {
         if ($student === null) {
             $request->getSession()->getFlashBag()->set('failure', 'Could not find that student.');
-            return $this->redirect($this->generateUrl('display_students'));
+            return $this->redirect($this->generateUrl('find_student'));
         }
 
     	$form = $this->createForm(new StudentType(), $student, array('title' => 'edit', 'edit' => true));
@@ -138,7 +145,7 @@ class DefaultController extends Controller
                 try {
                     $db->close();
                     $request->getSession()->getFlashBag()->set('success', 'Student edited.');
-                    return $this->redirect($this->generateUrl('display_students'));
+                    return $this->redirect($this->generateUrl('find_student'));
                 } catch (BioException $e) {
                     $request->getSession()->getFlashBag()->set('failure', 'A student already has that email.');
                 }
@@ -148,35 +155,6 @@ class DefaultController extends Controller
     	}
 
     	return array('form' => $form->createView(), 'title' => "Edit Student");
-    }
-
-    /**
-     * @Route("/display", name="display_students")
-     * @Template()
-     */
-    public function displayAction(Request $request) {
-        $sort = $request->query->get('sort');
-        $filter = $request->query->get('filter');
-
-        if (!$sort || ($sort !== 'sid' && $sort !== 'fName' && $sort !== 'lName' && $sort !== 'section')) {
-            $sort = 'id';
-        }
-        $array = array();
-
-        if ($filter) {
-            $array = explode("-", $filter);
-            $array = array_combine(array('sid', 'fName', 'lName', 'section', 'email'), $array);
-            $array = array_filter($array);
-        }
-
-        try {
-            $db = new Database($this, 'BioStudentBundle:Student');
-            $entities = $db->find($array, array($sort => 'ASC'));
-        } catch (BioException $e) {
-            $entities = array();
-        }
-
-        return array('entities' => $entities, 'title' => "Display Students", 'sort' => $sort);
     }
 
 	/**
@@ -195,8 +173,8 @@ class DefaultController extends Controller
     		if ($data !== null) {
     			$file = file($data, FILE_IGNORE_NEW_LINES);
     			try {
-                    $this->uploadStudentList($file);
-                    $request->getSession()->getFlashBag()->set('success', "Student list updated.");
+                    $count = $this->uploadStudentList($file);
+                    $request->getSession()->getFlashBag()->set('success', "Uploaded $count students.");
                 } catch (BioException $e) {
                     $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
                 }
@@ -253,6 +231,7 @@ class DefaultController extends Controller
         }
 
         $db->close();
+        return count($ents);
     }
 
     // does array contain student, searching by Sid
