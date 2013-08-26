@@ -1,14 +1,14 @@
 <div id="timer">
+	<div id="timer-time">
+	</div>
 		<script>
 		function Timer(duration, start, end) {
 			this.duration = duration;
-			var ends = end.split(':');
-			this.end = new Date(ends[0], ends[1] - 1, ends[2], ends[3], ends[4], ends[5]);
-			var starts = start.split(':');
-			this.date = new Date(starts[0], starts[1] - 1, starts[2], starts[3], starts[4], starts[5]);
+			this.end = new Date(end*1000);
+			this.start = new Date(start*1000);
 			this.updateTime = function() {
 					var now = new Date();
-					var ttLate = (this.date.valueOf() - now.valueOf())/1000/60 + duration;
+					var ttLate = (this.start.valueOf() - now.valueOf())/1000/60 + duration;
 					var ttEnd = (this.end.valueOf() - now.valueOf())/1000/60;
 
 					var timeleft = Math.min(ttLate, ttEnd);
@@ -19,7 +19,7 @@
 						minutes ="-" + Math.abs(Math.floor(timeleft) + 1);
 					}
 					seconds = Math.abs(Math.floor((timeleft%1)*60));
-					document.getElementById('timer').innerHTML = minutes + ":" + (seconds%10===seconds?"0"+seconds:seconds);
+					document.getElementById('timer-time').innerHTML = minutes + ":" + (seconds%10===seconds?"0"+seconds:seconds);
 				}
 			this.interval = setInterval(
 					(function(self) {

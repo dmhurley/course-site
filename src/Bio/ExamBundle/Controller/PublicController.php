@@ -156,14 +156,18 @@ class PublicController extends Controller
 		// if they submitted the exam
 		if ($request->getMethod() === "POST") {
 
+			var_dump($request->request);
 			$areErrors = false;
 			$validator = $this->get('validator');
 
-			if (count($request->request->keys()) !== count($exam->getQuestions())){
+			if (count($request->request->keys()) !== count($exam->getQuestions()) + 1){
 				$request->getSession()->getFlashBag()->set('failure', 'Error.');
 			} else {
 
 				foreach($request->request->keys() as $key) {
+					if ($key === 'save' || $key === 'submit') {
+						continue;
+					}
 					$answer = $this->findObjectByFieldValue($key, $taker->getAnswers(), 'id');
 					if ($answer) {
 						$answer->setAnswer($request->request->get($key));
@@ -174,7 +178,7 @@ class PublicController extends Controller
 					}
 
 					$errors = $validator->validate($answer);
-					if (count($errors) > 0) {
+					if (count($errors) > 0 && $request->request->has('submit')) {
 						$request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
 						$areErrors = true;
 						$answer->errors = $errors;
@@ -182,12 +186,15 @@ class PublicController extends Controller
 				}
 
 				try {
-					if (!$areErrors) {
-						$taker->setStatus(3);
+					if (!$areErrors && $request->request->has('submit')) {
+						$taker->setStatus(4);
 						$db->close();
-						$request->getSession()->getFlashBag()->set('success', 'Answers saved.');
+						$request->getSession()->getFlashBag()->set('success', 'Answers submitted.');
 						return $this->redirect($this->generateUrl('exam_entrance'));
 					} else {
+						if ($request->request->has('save')) {
+							$request->getSession()->getFlashBag()->set('success', 'Answers saved.');
+						}
 						$db->close();
 					}
 				} catch (BioException $e) {
@@ -196,42 +203,6 @@ class PublicController extends Controller
 			}
 		}
 		return $this->render('BioExamBundle:Public:exam.html.twig', array('taker' => $taker, 'title' => $exam->getTitle()));
-	}
-
-	/**
-	 * Allows user to review exam and either go back to change or submit answers
-	 *
-	 * status 3
-	 */
-	private function reviewAction(Request $request, $exam, $taker, $db) {
-		// make form
-		$form = $this->createFormBuilder()
-			->add('edit', 'submit')
-			->add('submit', 'submit')
-			->getForm();
-
-		// if they pressed a button (doesn't matter which)
-		if ($request->getMethod() === "POST") {
-			$form->handleRequest($request);
-
-			// if they want to edit their answers
-			if ($form->get('edit')->isClicked()) {
-				$taker->setStatus(2); // decrement status
-				$taker->setVar('edited', true); // save that they edited it
-				$db->close();
-				return $this->redirect($this->generateUrl('exam_entrance'));
-
-			// if they want to submit their answers
-			} else if ($form->get('submit')->isClicked()) {
-				$taker->setStatus(4); // increment
-				$db->close();
-
-				$request->getSession()->getFlashBag()->set('success', 'Exam submitted.');
-				return $this->redirect($this->generateUrl('exam_entrance'));
-			}
-		}
-
-		return $this->render('BioExamBundle:Public:review.html.twig', array('form' => $form->createView(), 'taker' => $taker, 'title' => 'Review Answers'));
 	}
 
 	/**
@@ -310,10 +281,10 @@ class PublicController extends Controller
 
 				$db = new Database($this, 'BioExamBundle:ExamGlobal');
 				$global = $db->findOne(array());
-				
+
 				$request->getSession()->getFlashBag()->set('success', 'Test graded. '.($global->getGrade()-count($taker->getGraded()).' left.'));
 				$taker->setStatus(4);
-					
+
 				$db->close();
 				return $this->redirect($this->generateUrl('exam_entrance'));
 			}
