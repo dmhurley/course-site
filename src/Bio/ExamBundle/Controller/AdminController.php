@@ -216,10 +216,25 @@ class AdminController extends Controller
      */
     public function deleteQuestionAction(Request $request, Question $q) {
 		if ($q) {
-            $db = new Database($this, 'BioExamBundle:Question');
-			$db->delete($q);
-			$db->close();
-			$request->getSession()->getFlashBag()->set('success', 'Question deleted.');
+            $em = $this->getDoctrine()->getManager();
+            $qb = $em->createQueryBuilder();
+            $expr = $qb->expr();
+
+            $query = $qb->select('e')
+                ->from('BioExamBundle:Exam', 'e')
+                ->where(':q MEMBER OF e.questions')
+                ->setParameter('q', $q)
+                ->getQuery();
+            $result = $query->getResult();
+
+            if (count($result) > 0) {
+                $request->getSession()->getFlashBag()->set('failure', 'That question is used in an Exam.');
+            } else {
+                $db = new Database($this, 'BioExamBundle:Question');
+    			$db->delete($q);
+    			$db->close();
+    			$request->getSession()->getFlashBag()->set('success', 'Question deleted.');
+            }
 		} else {
 			$request->getSession()->getFlashBag()->set('failure', 'Could not find that question.');
 		}

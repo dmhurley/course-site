@@ -1,5 +1,10 @@
 {% extends 'BioStyleBundle:Default:base.html.twig' %}
-{% block title %}{{name}}{% endblock %}
+
+{% set tt %}
+	{{render(controller('BioStyleBundle:Default:title'))}}
+{% endset %}
+
+{% block title %}{{tt}}{% endblock %}
 
 {% block head %}
 	{% stylesheets 'bundles/biostyle/css/page.css' 
@@ -25,7 +30,11 @@
 					</div>
 				</div>
 
-				{{ render(controller('BioStyleBundle:Default:title')) }}
+				<div id="course">
+					<a href="{{ path('main_page') }}">
+						{{tt}}
+					</a>
+				</div>
 
 				<div id="sign">
 					{% if is_granted('ROLE_USER') %}
