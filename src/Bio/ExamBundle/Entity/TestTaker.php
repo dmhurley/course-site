@@ -235,7 +235,7 @@ class TestTaker
      * @param \Bio\StudentBundle\Entity\Student $student
      * @return TestTaker
      */
-    public function setStudent(\Bio\StudentBundle\Entity\Student $student = null)
+    public function setStudent($student = null)
     {
         $this->student = $student;
     

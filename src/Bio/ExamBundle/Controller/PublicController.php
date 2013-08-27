@@ -22,15 +22,10 @@ use Bio\ExamBundle\Entity\Grade;
 class PublicController extends Controller
 {	
 	/**
-	 * @Route("/view/{id}", name="review_exam")
+	 * @Route("/review/{id}", name="review_exam")
 	 * @Template()
 	 */
 	public function reviewAction(Request $request,Exam $exam) {
-		if($request->getSession()->has('logout')) {
-			$request->getSession()->invalidate();
-			return $this->redirect($this->generateUrl('exam_entrance'));
-		}
-
 		if ($request->getSession()->has('studentID')) {
 			$db = new Database($this, 'BioStudentBundle:Student');
 			$student = $db->find(array('id' => $request->getSession()->get('studentID')), array(), false);
@@ -57,78 +52,54 @@ class PublicController extends Controller
 		$session = $request->getSession();
 		$flash = $session->getFlashBag();
 
-		// if url ends with ?logout, sign user out
-		if ($request->query->has('logout')) {
-			$session->invalidate();
+		$a = $this->get('security.context');
+       	$student = $a->getToken()->getUser();
+
+		$exam = null;
+		$taker = null;
+		$message = null;
+
+		// get all exams where the grading period hasn't ended.
+		try {
+			$exam = $this->getNextExam($student);
+		} catch (BioException $e) {
+			$message = $e->getMessage();
 		}
 
-		// if signed in
-		if ($session->has('studentID')) {
-			$db = new Database($this, 'BioStudentBundle:Student');
-			$student = $db->findOne(array('id' => $session->get('studentID')));
+		if ($exam) {
+			// get the appropriate test taker for the student/exam combo
+			$db = new Database($this, 'BioExamBundle:TestTaker');
+			$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
 
-			if ($student) {
+			if (!$taker) {
+				$taker = new TestTaker();
+				$taker->setStatus(1)
+					->setStudent($student)
+					->setExam($exam);
 
-				$exam = null;
-				$taker = null;
-				$message = null;
-
-				// get all exams where the grading period hasn't ended.
-				try {
-					$exam = $this->getNextExam($student);
-				} catch (BioException $e) {
-					$message = $e->getMessage();
-				}
-
-				if ($exam) {
-					// get the appropriate test taker for the student/exam combo
-					$db = new Database($this, 'BioExamBundle:TestTaker');
-					$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
-
-					if (!$taker) {
-						$taker = new TestTaker();
-						$taker->setStatus(1)
-							->setStudent($student)
-							->setExam($exam);
-
-						$db->add($taker);	
-						$db->close();
-					}
-				}
-
-				if (!$taker || $taker->getStatus() === 1 || $taker->getStatus() === 6) {
-					return $this->startAction($request, $exam, $taker, $student, $message, $db);
-				} else {
-					if ($taker->getStatus() === 2) {
-						return $this->examAction($request, $exam, $taker, $db);
-					}
-
-					if ($taker->getStatus() === 3) {
-						return $this->reviewAction($request, $exam, $taker, $db);
-					}
-
-					if ($taker->getStatus() === 4) {
-						$date = new \DateTime();
-						$gradeStart = new \DateTime($exam->getGDate()->format("Y-m-d")." ".$exam->getGStart()->format("H:i:s"));
-
-						if ($date < $gradeStart) {
-							$flash->set('success', 'Answers submitted. Grading starts at '.$gradeStart->format('m/d').' at '. $gradeStart->format('h:i a').'.');
-							return $this->forward('BioPublicBundle:Default:sign', array('request' => $request, 'redirect' => 'exam_entrance'));
-						}
-						return $this->waitAction($request, $exam, $taker, $db);
-					}
-
-					if ($taker->getStatus() === 5) {
-						return $this->gradeAction($request, $exam, $taker, $db);
-					}
-				}
-			} else {
-				$session->invalidate();
-				$flash->set('failure', 'Not signed in.');
+				$db->add($taker);	
+				$db->close();
 			}
 		}
 
-		return $this->forward('BioPublicBundle:Default:sign', array('request' => $request, 'redirect' => 'exam_entrance'));
+		if (!$taker || $taker->getStatus() === 1 || $taker->getStatus() === 6) {
+			return $this->startAction($request, $exam, $taker, $student, $message, $db);
+		} else {
+			if ($taker->getStatus() === 2) {
+				return $this->examAction($request, $exam, $taker, $db);
+			}
+
+			// skips status code 3
+
+			if ($taker->getStatus() === 4) {
+				
+				return $this->waitAction($request, $exam, $taker, $db);
+			}
+
+			if ($taker->getStatus() === 5) {
+				return $this->gradeAction($request, $exam, $taker, $db);
+			}
+		}
 	}
 
 	/**
@@ -246,7 +217,6 @@ class PublicController extends Controller
 		$db = new Database($this, 'BioExamBundle:ExamGlobal');
 		$global = $db->findOne(array());
 		if ($taker->getNumGraded() >= $global->getGrade()) {
-			$request->getSession()->invalidate();
 			$code = $exam->getId().':'.$taker->getId().':'.$taker->getStudent()->getSid();
 			$code = base64_encode($code);
 			$request->getSession()->getFlashBag()->set('success', "Finished. Confirmation code:\n".$code);
@@ -261,14 +231,21 @@ class PublicController extends Controller
 				->setTo($taker->getStudent()->getEmail())
 				->setBody($this->render('BioExamBundle:Public:email.html.twig', array('code' => $code, 'taker' => $taker)))
 				->setContentType('text/html');
-			$this->getContainer()->get('mailer')->send($message);
+			$this->get('mailer')->send($message);
 
 
 			return $this->redirect($this->generateUrl('exam_entrance'));
 		}
 
+		$now = new \DateTime();
+		$gradeStart = new \DateTime($exam->getGDate()->format("Y-m-d")." ".$exam->getGStart()->format("H:i:s"));
+		if ($now < $gradeStart) {
+			$request->getSession()->getFlashBag()->set('failure', 'Grading starts at '.$gradeStart->format('m/d').' at '. $gradeStart->format('h:i a').'.');
+		} else
+
 		// if the pressed submit
 		if ($request->getMethod() === "POST") {
+
 			$target = null;
 			try {
 				$target = $this->match($taker);
@@ -297,7 +274,7 @@ class PublicController extends Controller
 			}
 		}
 
-		return $this->render('BioExamBundle:Public:wait.html.twig', array('taker' => $taker, 'exam' => $exam, 'title' => 'Exam Submitted'));
+		return $this->render('BioExamBundle:Public:wait.html.twig', array('taker' => $taker, 'exam' => $exam, 'title' => 'Finding Test'));
 	}
 
 	/**
