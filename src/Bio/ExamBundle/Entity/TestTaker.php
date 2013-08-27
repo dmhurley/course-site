@@ -76,7 +76,7 @@ class TestTaker
     private $gradedBy;
 
     /**
-     * @ORM\ManyToOne(targetEntity="\Bio\StudentBundle\Entity\Student")
+     * @ORM\ManyToOne(targetEntity="\Bio\UserBundle\Entity\AbstractUserStudent")
      * @ORM\JoinColumn(name="studentID", referencedColumnName="id", onDelete="CASCADE")
      **/
     private $student;
