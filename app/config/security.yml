@@ -5,7 +5,8 @@ security:
             anonymous: ~
             form_login:
                 login_path:  login
-                check_path:  login_check 
+                check_path:  login_check
+                use_referer: true 
             logout:
                 path: logout
                 target: main_page
