@@ -4,6 +4,7 @@ namespace Bio\StudentBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * Student
@@ -11,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table()
  * @ORM\Entity
  */
-class Student
+class Student implements UserInterface
 {
     /**
      * @var integer
@@ -65,6 +66,23 @@ class Student
      */
     protected $email;
 
+    /***** Implementing UserInterface ****/
+    public function getUsername() {
+        return $this->sid;
+    }
+    public function getPassword() {
+        return $this->lName;
+    }
+    public function getSalt() {
+        return '';
+    }
+    public function getRoles() {
+        return array('ROLE_STUDENT');
+    }
+    public function eraseCredentials() {
+        // do nothing
+    }
+    /***************************************/
 
     /**
      * Get id

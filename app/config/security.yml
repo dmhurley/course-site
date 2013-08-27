@@ -14,16 +14,23 @@ security:
 
     access_control:
         - { path: ^/admin/user/, roles: ROLE_SUPER_ADMIN}
-        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/((exam)|(trip)|(switch)|(clicker/register)|(scores/find)), roles: ROLE_ADMIN }
 
     providers:
-        main:
+        chain_provider:
+            chain:
+                providers: [students, admins]
+        admins:
             entity: { class: Bio\UserBundle\Entity\User, property: username}
+        students:
+            entity: { class: Bio\StudentBundle\Entity\Student, property: sid}
 
     encoders:
         Bio\UserBundle\Entity\User: sha512
+        Bio\StudentBundle\Entity\Student: plaintext
 
     role_hierarchy:
         ROLE_SETUP: [ROLE_SUPER_ADMIN, ROLE_ALLOWED_TO_SWITCH]
         ROLE_SUPER_ADMIN: [ROLE_ADMIN]
-        ROLE_ADMIN: [ROLE_USER]
+        ROLE_ADMIN: [ROLE_STUDENT]
+        ROLE_STUDENT: [ROLE_USER]
