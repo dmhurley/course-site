@@ -252,6 +252,18 @@ class PublicController extends Controller
 			$request->getSession()->getFlashBag()->set('success', "Finished. Confirmation code:\n".$code);
 			$taker->setStatus(6);
 			$db->close();
+
+			// email confirmation code
+			$message = \Swift_Message::newInstance()
+				->setSubject($taker->getExam()->getTitle().' confirmation')
+				->setFrom('bio@uw.edu')
+				->setSender('bio@uw.edu')
+				->setTo($taker->getStudent()->getEmail())
+				->setBody($this->render('BioExamBundle:Public:email.html.twig', array('code' => $code, 'taker' => $taker)))
+				->setContentType('text/html');
+			$this->getContainer()->get('mailer')->send($message);
+
+
 			return $this->redirect($this->generateUrl('exam_entrance'));
 		}
 

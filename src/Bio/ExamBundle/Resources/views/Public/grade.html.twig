@@ -30,9 +30,11 @@
 				</div>
 			</div>
 		{% endfor %}
-		<div id="submit" >
-			<button type="submit" />Submit</button>
-		</div>
+		{% block submit %}
+			<div id="submit" >
+				<button type="submit" />Submit</button>
+			</div>
+		{% endblock %}
 	</form>
 	{{parent()}}
 	{% block timer %}
