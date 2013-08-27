@@ -65,7 +65,9 @@ class PublicController extends Controller
     public function joinAction(Request $request, Trip $trip = null) {
     	if (!$trip) {
     		$request->getSession()->getFlashBag()->set('failure', 'Trip could not be found.');
-    	} else {
+    	} else if ($trip->getStart() < new \DateTime()) {
+            $request->getSession()->getFlashBag()->set('failure', 'Too late to join.');
+        } else {
     		$student = $this->get('security.context')->getToken()->getUser();
             // TODO make sure trip hasn't passed!!!!!!
 			if (count($trip->getStudents()) >= $trip->getMax()) {
@@ -90,7 +92,9 @@ class PublicController extends Controller
     public function leaveAction(Request $request, Trip $trip = null) {
     	if (!$trip) {
     		$request->getSession()->getFlashBag()->set('failure', 'Trip not found.');
-    	} else {
+    	} else if ($trip->getStart() < new \DateTime()) {
+            $request->getSession()->getFlashBag()->set('failure', 'Too late to leave.');
+        } else {
     		$student = $this->get('security.context')->getToken()->getUser();
             // TODO make sure trip hasn't passed!!!!!!
     		$trip->removeStudent($student);

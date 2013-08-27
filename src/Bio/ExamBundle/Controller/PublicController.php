@@ -26,23 +26,16 @@ class PublicController extends Controller
 	 * @Template()
 	 */
 	public function reviewAction(Request $request,Exam $exam) {
-		if ($request->getSession()->has('studentID')) {
-			$db = new Database($this, 'BioStudentBundle:Student');
-			$student = $db->find(array('id' => $request->getSession()->get('studentID')), array(), false);
+		$student = $this->get('security.context')->getToken()->getUser();
 
-			$db = new Database($this, 'BioExamBundle:TestTaker');
-			$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
+		$db = new Database($this, 'BioExamBundle:TestTaker');
+		$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
 
-			if ($taker && $student) {
-				return array('taker' => $taker);
-			} else {
-				$request->getSession()->getFlashBag()->set('failure', 'Could not find entry.');
-			}
+		if ($taker && $student) {
+			return array('taker' => $taker);
 		} else {
-			$request->getSession()->getFlashBag()->set('failure', 'Not signed in.');
+			$request->getSession()->getFlashBag()->set('failure', 'Could not find entry.');
 		}
-		return $this->redirect($this->generateUrl('exam_entrance'));
-
 	}
 
 	/**
@@ -58,6 +51,8 @@ class PublicController extends Controller
 		$exam = null;
 		$taker = null;
 		$message = null;
+		$db = new Database($this, 'BioExamBundle:TestTaker');
+
 
 		// get all exams where the grading period hasn't ended.
 		try {
@@ -68,7 +63,6 @@ class PublicController extends Controller
 
 		if ($exam) {
 			// get the appropriate test taker for the student/exam combo
-			$db = new Database($this, 'BioExamBundle:TestTaker');
 			$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
 
 			if (!$taker) {
