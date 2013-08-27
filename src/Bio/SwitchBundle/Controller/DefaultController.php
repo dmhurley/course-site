@@ -32,54 +32,41 @@ class DefaultController extends Controller
     	$session = $request->getSession();
     	$flash = $session->getFlashBag();
 
-    	if ($request->query->has('logout')) {
-    		$session->invalidate();
-    	}
+		$student = $this->get('security.context')->getToken()->getUser();
 
-    	if ($session->has('studentID')) {
-    		$db = new Database($this, 'BioStudentBundle:Student');
-    		$student = $db->findOne(array('id' => $session->get('studentID')));
+		$db = new Database($this, 'BioSwitchBundle:Request');
+		$r = $db->findOne(array('student' => $student));
 
-    		if ($student) {
-    			$db = new Database($this, 'BioSwitchBundle:Request');
-    			$r = $db->findOne(array('student' => $student));
+		if (!$r) {
+			$db = new Database($this, 'BioInfoBundle:Section');
+			$section = $db->findOne(array('name' => $student->getSection()));
 
-    			if (!$r) {
-    				$db = new Database($this, 'BioInfoBundle:Section');
-    				$section = $db->findOne(array('name' => $student->getSection()));
+			$r = new Request();
+			$db->add($r);
+			$r->setStatus(1)
+				->setStudent($student)
+				->setCurrent($section);
+			$db->close();
+		}
 
-    				$r = new Request();
-    				$db->add($r);
-    				$r->setStatus(1)
-    					->setStudent($student)
-    					->setCurrent($section);
-    				$db->close();
-    			}
+		if ($request->query->has('cancel')) {
+			$db->delete($r);
+			$db->close();
+			$flash->set('success', 'Request cancelled.');
+			return $this->redirect($this->generateUrl('main_page'));
+		}
 
-    			if ($request->query->has('cancel')) {
-    				$db->delete($r);
-    				$db->close();
-    				$session->invalidate();
-    				$flash->set('success', 'Request cancelled.');
-    				return $this->redirect($this->generateUrl('request_switch'));
-    			}
+		if ($r->getStatus() === 1) {
+			return $this->setRequestAction($request, $r, $db);
+		}
 
-    			if ($r->getStatus() === 1) {
-    				return $this->setRequestAction($request, $r, $db);
-    			}
+		if ($r->getStatus() === 2) { 
+			return $this->viewRequestAction($request, $r, $db);
+		}
 
-    			if ($r->getStatus() === 2) { 
-    				return $this->viewRequestAction($request, $r, $db);
-    			}
-
-    			if ($r->getStatus() === 3 || ($r->getMatch()->getStatus() === 3 && $r->getStatus() === 4)) {
-    				return $this->confirmationAction($request, $r, $db);
-    			}
-    		} else {
-    			$session->invalidate();
-    			$flash->set('failure', 'Not signed in.');
-    		}
-    	}
+		if ($r->getStatus() === 3 || ($r->getMatch()->getStatus() === 3 && $r->getStatus() === 4)) {
+			return $this->confirmationAction($request, $r, $db);
+		}
 
     	return $this->forward('BioPublicBundle:Default:sign', array('request' => $request, 'redirect' => 'request_switch'));
     }
@@ -179,11 +166,11 @@ class DefaultController extends Controller
             try {
                 $db->close();
                 $request->getSession()->getFlashBag()->set('failure', 'Partner cancelled their request.');
+                return $this->redirect($this->generateUrl('request_switch'));
             } catch (BioException $e) {
-                $request->getSession()->invalidate(); // to stop redirect loop, temporary fix....
                 $request->getSession()->getFlashBag()->set('failure', 'Error.');
+                return $this->redirect($this->generateUrl('main_page'));
             }
-    		return $this->redirect($this->generateUrl('request_switch'));
     	}
 
     	if ($request->query->has('decline')) {
@@ -251,12 +238,11 @@ class DefaultController extends Controller
     	    		$this->get('mailer')->send($message);
 
                     // sign out
-    	    		$request->getSession()->invalidate();
     	    		$request->getSession()->getFlashBag()->set('success', 'Contact information sent.');
-                } catch (BioException $e) {
+                } catch (Exception $e) {
                     $request->getSession()->getFlashBag()->set('failure', 'Error confirming match.');
                 }
-	    		return $this->redirect($this->generateUrl('request_switch'));
+	    		return $this->redirect($this->generateUrl('main_page'));
 	    	}
 
     		return $this->render('BioSwitchBundle:Default:confirm.html.twig', array('form'=> $form->createView(), 'request' => $r, 'title' => 'Confirm Pairing'));

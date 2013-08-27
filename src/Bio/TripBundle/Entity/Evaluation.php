@@ -22,7 +22,7 @@ class Evaluation {
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="\Bio\StudentBundle\Entity\Student")
+     * @ORM\ManyToOne(targetEntity="\Bio\UserBundle\Entity\AbstractUserStudent")
      * @ORM\JoinColumn(name="studentID", referencedColumnName="id", onDelete="CASCADE")
      */
     private $student;
@@ -239,7 +239,7 @@ class Evaluation {
      * @param \Bio\StudentBundle\Entity\Student $student
      * @return Evaluation
      */
-    public function setStudent(\Bio\StudentBundle\Entity\Student $student = null)
+    public function setStudent($student = null)
     {
         $this->student = $student;
     

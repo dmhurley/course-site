@@ -72,7 +72,7 @@ class Trip
     private $max;
 
     /**
-     * @ORM\ManyToMany(targetEntity="\Bio\StudentBundle\Entity\Student")
+     * @ORM\ManyToMany(targetEntity="\Bio\UserBundle\Entity\AbstractUserStudent")
      * @ORM\JoinTable(name="trips_students",
      *      joinColumns={@ORM\JoinColumn(name="trip_id", referencedColumnName="id", onDelete="CASCADE")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="student_id", referencedColumnName="id", onDelete="CASCADE")})
@@ -308,7 +308,7 @@ class Trip
      * @param \Bio\StudentBundle\Entity\Student $students
      * @return Trip
      */
-    public function addStudent(\Bio\StudentBundle\Entity\Student $students)
+    public function addStudent($students)
     {
         $this->students[] = $students;
     
@@ -320,7 +320,7 @@ class Trip
      *
      * @param \Bio\StudentBundle\Entity\Student $students
      */
-    public function removeStudent(\Bio\StudentBundle\Entity\Student $students)
+    public function removeStudent($students)
     {
         $this->students->removeElement($students);
     }

@@ -34,7 +34,7 @@ class DefaultController extends Controller
     public function indexAction(Request $request)
     {
     	$form = $this->createFormBuilder()
-    		->add('file', 'file', array('label' => 'CSV File:'))
+    		->add('file', 'file', array('label' => '.txt File:'))
     		->add('upload', 'submit')
     		->getForm();
 
@@ -70,35 +70,19 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/../../scores/find", name="find_score")
-     * @Template("BioScoreBundle:Default:index.html.twig")
+     * @Route("/../../scores", name="find_score")
+     * @Template()
      */
     public function findAction(Request $request) {
-        if ($request->query->has('logout')) {
-            $request->getSession()->invalidate();
-            return $this->redirect($this->generateUrl('find_score'));
-        } else if ($request->getSession()->has('studentID')) {
-            $db = new Database($this, 'BioStudentBundle:Student');
-            $student = $db->findOne(array('id' => $request->getSession()->get('studentID')));
+        $student = $this->get('security.context')->getToken()->getUser();
 
-            if ($student) {
-                $db = new Database($this, 'BioScoreBundle:Scores');
-                $scores = $db->find(array('sid' => $student->getSid()), array(), false);
+        $db = new Database($this, 'BioScoreBundle:Scores');
+        $score = $db->findOne(array('sid' => $student->getSid()), array(), false);
 
-                $db = new Database($this, 'BioScoreBundle:Stat');
-                $stats = $db->find(array(), array(), false);
+        $db = new Database($this, 'BioScoreBundle:Stat');
+        $stats = $db->find(array(), array(), false);
 
-                if (!$scores) {
-                    $request->getSession()->getFlashBag()->set('failure', 'Scores could not be found.');
-                    return $this->redirect($this->generateUrl('main_page'));
-                }
-
-                return array('scores'=>$scores, 'stats'=>$stats, 'title' => 'View Your Scores');
-            } else {
-
-            }
-        }
-        return $this->forward('BioPublicBundle:Default:sign', array('request' => $request, 'redirect' => 'find_score'));
+        return array('score' => $score, 'stats' => $stats, 'title' => 'View Your Scores');
     }
 
     private function uploadStudentScores($file, $db) {

@@ -33,13 +33,8 @@ class PublicController extends Controller
         if ($global->getOpening() > new \DateTime()) {
             $flash->set('failure', 'Field trip signups start '.$global->getOpening()->format('F j, Y \a\t g:i a').'.');
         } else {
-        	if ($request->query->has('logout')) {
-        		$session->invalidate();
-        	}
 
-        	if ($session->has('studentID')) {
-        		return $this->tripAction($request, $session->get('studentID'), $global);
-        	}
+            return $this->tripAction($request, $session->get('studentID'), $global);
         }
 
     	return $this->forward('BioPublicBundle:Default:sign', array('request' => $request, 'redirect' => 'trip_entrance'));
@@ -48,14 +43,8 @@ class PublicController extends Controller
     private function tripAction(Request $request, $id, $global) {
     	$db = new Database($this, 'BioTripBundle:Trip');
     	$trips = $db->find(array(), array('start' => 'ASC', 'end' => 'ASC'), false);
-        $db = new Database($this, 'BioStudentBundle:Student');
-        $student = $db->findOne(array('id' => $id));
 
-        if (!$student) {
-            $request->getSession()->invalidate();
-            $request->getSession()->getFlashBag()->set('failure', 'Not signed in.');
-            return $this->redirect($this->generateUrl('trip_entrance'));
-        }
+        $student = $this->get('security.context')->getToken()->getUser();
 
         $em = $this->getDoctrine()->getManager();
         $query = $em->createQuery('
@@ -74,31 +63,22 @@ class PublicController extends Controller
      * @Route("/join/{id}", name="join_trip")
      */
     public function joinAction(Request $request, Trip $trip = null) {
-    	if (!$request->getSession()->has('studentID')) {
-    		$request->getSession()->getFlashBag()->set('failure', 'Not signed in.');
-    	} else if (!$trip) {
+    	if (!$trip) {
     		$request->getSession()->getFlashBag()->set('failure', 'Trip could not be found.');
     	} else {
-    		$studentID = $request->getSession()->get('studentID');
-
-    		$db = new Database($this, 'BioStudentBundle:Student');
-    		$student = $db->findOne(array('id' => $studentID));
-
-    		if (!$student) {
-    			$request->getSession()->getFlashBag()->set('failure', 'Not signed in.');
-                $request->getSession()->invalidate();
-    		} else {
-    			if (count($trip->getStudents()) >= $trip->getMax()) {
-    				$request->getSession()->getFlashBag()->set('failure', 'Trip is full.');
-    			} else {
-	    			$trip->addStudent($student);
-	    			try {
-	    				$db->close();
-	    				$request->getSession()->getFlashBag()->set('success', 'Joined trip.');
-	    			} catch (BioException $e) {
-	    				$request->getSession()->getFlashBag()->set('failure', 'You cannot sign up for any more trips.');
-	    			}
-	    		}
+    		$student = $this->get('security.context')->getToken()->getUser();
+            // TODO make sure trip hasn't passed!!!!!!
+			if (count($trip->getStudents()) >= $trip->getMax()) {
+				$request->getSession()->getFlashBag()->set('failure', 'Trip is full.');
+			} else {
+    			$trip->addStudent($student);
+    			try {
+                    $db = new Database($this, 'BioTripBundle:Trip');
+    				$db->close();
+    				$request->getSession()->getFlashBag()->set('success', 'Joined trip.');
+    			} catch (BioException $e) {
+    				$request->getSession()->getFlashBag()->set('failure', 'You cannot sign up for any more trips.');
+    			}
     		}
     	}
     	return $this->redirect($this->generateUrl('trip_entrance'));
@@ -108,22 +88,19 @@ class PublicController extends Controller
      * @Route("/leave/{id}", name="leave_trip")
      */
     public function leaveAction(Request $request, Trip $trip = null) {
-    	if (!$request->getSession()->has('studentID')) {
-    		$request->getSession()->getFlashBag()->set('failure', 'Not signed in.');
-    	} else if (!$trip) {
+    	if (!$trip) {
     		$request->getSession()->getFlashBag()->set('failure', 'Trip not found.');
     	} else {
-    		$db = new Database($this, 'BioStudentBundle:Student');
-    		$student = $db->findOne(array('id' => $request->getSession()->get('studentID')));
-
-    		if (!$student) {
-    			$request->getSession()->getFlashBag()->set('failure', 'Not signed in.');
-                $request->getSession()->invalidate();
-    		} else {
-	    		$trip->removeStudent($student);
-	    		$db->close();
-	    		$request->getSession()->getFlashBag()->set('success', 'Left trip.');
-	    	}
+    		$student = $this->get('security.context')->getToken()->getUser();
+            // TODO make sure trip hasn't passed!!!!!!
+    		$trip->removeStudent($student);
+            try {
+              $db = new Database($this, 'BioTripBundle:Trip');  
+    		  $db->close();
+    		  $request->getSession()->getFlashBag()->set('success', 'Left trip.');
+            } catch (BioException $e) {
+                $request->getSession()->getFlashBag()->set('failure', 'Error.');
+            }
     	}
 
 
@@ -147,26 +124,18 @@ class PublicController extends Controller
      * @Template()
      */
     public function evalAction(Request $request, Trip $trip = null) {
-        /****** IS SIGNED IN ******/
-        if (!$request->getSession()->has('studentID')) {
-            $request->getSession()->invalidate();
-            $request->getSession()->getFlashBag()->set('failure', 'Not signed in.');
-            return $this->redirect($this->generateUrl('trip_entrance'));
-        }
-
         /****** GET STUFF FROM DATABASE ******/
         $db = new Database($this, 'BioTripBundle:TripGlobal');
         $global = $db->findOne(array()); 
     
-        $db = new Database($this, 'BioStudentBundle:Student');
-        $student = $db->findOne(array('id' => $request->getSession()->get('studentID')));
+        $student = $this->get('security.context')->getToken()->getUser();
 
         $db = new Database($this, 'BioTripBundle:Evaluation');
         $eval = $db->findOne(array('trip' => $trip, 'student' => $student));
 
         /****** DOES STUDENT/TRIP EXISTS ******/
-        if (!$student || !$trip) {
-            $request->getSession()->getFlashBag()->set('failure', 'Could not find trip or student.');
+        if (!$trip) {
+            $request->getSession()->getFlashBag()->set('failure', 'Could not find trip.');
             return $this->redirect($this->generateUrl('trip_entrance'));
         }
 

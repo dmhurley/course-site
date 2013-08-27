@@ -30,7 +30,6 @@
 			<button type="submit" name="save">Save</button><button type="submit" name="submit" />Submit</button>
 		</div>
 	</form>
-	{{parent()}}
 	{% if taker is defined %}
 		{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':taker.exam.tDuration, 'end':date(taker.exam.tDate|date('Y-m-d') ~' '~ taker.exam.tEnd|date('H:i:s'))|date('U'), 'start':taker.timecard[2]|date('U')} only %}
 	{% endif %}

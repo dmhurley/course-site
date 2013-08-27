@@ -36,7 +36,6 @@
 			</div>
 		{% endblock %}
 	</form>
-	{{parent()}}
 	{% block timer %}
 		{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':taker.exam.gDuration, 'end':date(taker.exam.gDate|date('Y-m-d') ~' '~ taker.exam.gEnd|date('H:i:s'))|date('U'), 'start':start|date('U')} only %}
 	{% endblock %}
