@@ -20,7 +20,36 @@ use Bio\ExamBundle\Entity\Grade;
  * @Route("/exam")
  */
 class PublicController extends Controller
-{
+{	
+	/**
+	 * @Route("/view/{id}", name="review_exam")
+	 * @Template()
+	 */
+	public function reviewAction(Request $request,Exam $exam) {
+		if($request->getSession()->has('logout')) {
+			$request->getSession()->invalidate();
+			return $this->redirect($this->generateUrl('exam_entrance'));
+		}
+
+		if ($request->getSession()->has('studentID')) {
+			$db = new Database($this, 'BioStudentBundle:Student');
+			$student = $db->find(array('id' => $request->getSession()->get('studentID')), array(), false);
+
+			$db = new Database($this, 'BioExamBundle:TestTaker');
+			$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
+
+			if ($taker && $student) {
+				return array('taker' => $taker);
+			} else {
+				$request->getSession()->getFlashBag()->set('failure', 'Could not find entry.');
+			}
+		} else {
+			$request->getSession()->getFlashBag()->set('failure', 'Not signed in.');
+		}
+		return $this->redirect($this->generateUrl('exam_entrance'));
+
+	}
+
 	/**
 	 * @route("", name="exam_entrance")
 	 */

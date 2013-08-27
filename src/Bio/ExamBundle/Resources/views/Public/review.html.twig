@@ -1,0 +1,24 @@
+{% extends 'BioExamBundle:Public:grade.html.twig' %}
+
+{% block score %}
+	{% if answer.points|length > 0 %}
+		<table style="margin:2px;float:right;">
+			<tr>
+				<th>Points</th>
+			</tr>
+			<tr>
+				<td>
+					<select multiple="multiple" disabled="disabled" style="width:50px;">
+						{% for point in answer.points %}
+							<option>{{point.points}}</option>
+						{% endfor %}
+					</select>
+				</td>
+			</tr>
+		</table>
+	{% endif %}
+{% endblock %}
+
+{# don't render timer or submit button #}
+{% block timer %}{% endblock %}
+{% block submit %}{% endblock %}
