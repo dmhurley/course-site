@@ -29,7 +29,7 @@ class Request
     private $status;
 
     /**
-     * @ORM\OneToOne(targetEntity="\Bio\StudentBundle\Entity\Student")
+     * @ORM\OneToOne(targetEntity="\Bio\UserBundle\Entity\AbstractUserStudent")
      * @ORM\JoinColumn(name="student_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $student;
@@ -100,7 +100,7 @@ class Request
      * @param \Bio\StudentBundle\Entity\Student $student
      * @return Request
      */
-    public function setStudent(\Bio\StudentBundle\Entity\Student $student = null)
+    public function setStudent($student = null)
     {
         $this->student = $student;
     

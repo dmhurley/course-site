@@ -22,8 +22,8 @@
 						{% else %}
 							<td><input type="checkbox" name="form[want][]" value={{choice.value}} ></td>
 						{% endif %}
-						<td>{{choice.data.name}}</td>
-						<td>{{choice.data.day}}</td>
+						<td>{{choice.data.name|upper}}</td>
+						<td>{{choice.data.day|capitalize}}</td>
 						<td>{{choice.data.start|date('h:i a')}}</td>
 						<td>{{choice.data.end|date('h:i a')}}</td>
 					</tr>
