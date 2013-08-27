@@ -1,0 +1,34 @@
+{% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block content %}
+	<table>
+		<thead>
+			<tr>
+				<th>Title</th>
+				<th>Score</th>
+				{% for stat in stats %}
+					<th>{{stat.name|capitalize}}</th>
+				{% endfor %}
+			</tr>
+		</thead>
+		<tbody>
+			{% for key,value in score.scores %}
+				<tr>
+					<td>{{key}}</td>
+					{% if value == '' %}
+						<td>-</td>
+					{% else %}
+						<td>{{value}}</td>
+					{% endif %}
+					{% for stat in stats %}
+						{% if stat.stats[key] == '' %}
+							<td>-</td>
+						{% else %}
+							<td>{{stat.stats[key]}}</td>
+						{% endif %}
+					{% endfor %}
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

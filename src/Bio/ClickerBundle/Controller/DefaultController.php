@@ -27,14 +27,12 @@ class DefaultController extends Controller {
     }
 
     /**
-     * @Route("/../../clicker/register")
+     * @Route("/../../clicker")
      * @Template()
      */
     public function registerAction(Request $request) {
     	$form = $this->createFormBuilder()
     		->add('cid', 'text', array('label' => "Clicker ID:", 'constraints' => array(new Assert\Regex("/^[0-9A-Fa-f]{6}$/"), new Assert\NotBlank()), 'attr' => array('pattern' => '[0-9A-Fa-f]{6}', 'title' => '6 digit clicker ID')))
-    		->add('sid', 'text', array('label' => "Student ID:", 'constraints' => array(new Assert\NotBlank(), new Assert\Regex("/^[0-9]{7}$/")), 'attr' => array('pattern' => '[0-9]{7}', 'title' => '7 digit student ID')))
-    		->add('lName', 'text', array('label' => "Last Name:", 'constraints' => new Assert\NotBlank()))
     		->add('Register', 'submit')
     		->getForm();
 
@@ -45,32 +43,27 @@ class DefaultController extends Controller {
             $clicker = new Clicker();
     		
     		if ($form->isValid()){
-                $db = new Database($this, 'BioStudentBundle:Student');
-                $student = $db->findOne(array('sid' => $form->get('sid')->getData(), 'lName' => $form->get('lName')->getData()));
+                $student = $this->get('security.context')->getToken()->getUser();
 	    		
-	    		if ($student) {		// if student exists
-					$db = new Database($this, 'BioClickerBundle:Clicker');
-                    if ($dbClicker = $db->findOne(array('student' => $student))){
-                        $request->getSession()->getFlashBag()->set('success', "Clicker ID changed to #".$form->get('cid')->getData());
-                        $clicker = $dbClicker;
-                    } else {
-                        $request->getSession()->getFlashBag()->set('success', "Clicker ID #".$form->get('cid')->getData()." registered.");
-                        $db->add($clicker);
-                        $clicker->setStudent($student);
-                    }
-					$clicker->setCid($form->get('cid')->getData());
+				$db = new Database($this, 'BioClickerBundle:Clicker');
+                if ($dbClicker = $db->findOne(array('student' => $student))){
+                    $request->getSession()->getFlashBag()->set('success', "Clicker ID changed to #".$form->get('cid')->getData());
+                    $clicker = $dbClicker;
+                } else {
+                    $request->getSession()->getFlashBag()->set('success', "Clicker ID #".$form->get('cid')->getData()." registered.");
+                    $db->add($clicker);
+                    $clicker->setStudent($student);
+                }
+				$clicker->setCid($form->get('cid')->getData());
 
-					try {
-						$db->close();
-					} catch (BioException $e) {
-						$request->getSession()->getFlashBag()->set('failure', "Someone else is already registered to that clicker.");
-						$request->getSession()->getFlashBag()->get('success'); // remove the successful flash message that was set earlier
-					}
-                    $form = $blankForm;
+				try {
+					$db->close();
+				} catch (BioException $e) {
+					$request->getSession()->getFlashBag()->set('failure', "Someone else is already registered to that clicker.");
+					$request->getSession()->getFlashBag()->get('success'); // remove the successful flash message that was set earlier
+				}
+                $form = $blankForm;
 
-	    		} else {
-	    			$request->getSession()->getFlashBag()->set('failure', 'Could not find anyone with that last name and ID.');
-	    		}
 	    	} else {
 	    		$request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
 	    	}

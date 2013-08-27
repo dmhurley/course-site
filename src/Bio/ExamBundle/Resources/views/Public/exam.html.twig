@@ -21,17 +21,16 @@
 					
 
 					{# cant have any extra spaces between textareas #}
-					<textarea name="{{answer.id}}" required="required">{{ answer.answer }}</textarea>
+					<textarea name="{{answer.id}}">{{ answer.answer }}</textarea>
 				</div>
 
 			</div>
 		{% endfor %}
 		<div id="submit" >
-			<button type="submit" />Submit</button>
+			<button type="submit" name="save">Save</button><button type="submit" name="submit" />Submit</button>
 		</div>
 	</form>
-	{{parent()}}
 	{% if taker is defined %}
-		{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':taker.exam.tDuration, 'end':taker.exam.tDate|date('Y:m:d:') ~ taker.exam.tEnd|date('H:i:s'), 'start':taker.timecard[2]|date('Y:m:d:H:i:s')} only %}
+		{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':taker.exam.tDuration, 'end':date(taker.exam.tDate|date('Y-m-d') ~' '~ taker.exam.tEnd|date('H:i:s'))|date('U'), 'start':taker.timecard[2]|date('U')} only %}
 	{% endif %}
 {% endblock %}

@@ -16,7 +16,7 @@
 				<tr>
 					<td rowspan={{request.want|length}}>{{request.student.sid}}</td>
 					<td rowspan={{request.want|length}}>{{request.student.fName}} {{request.student.lName}}</td>
-					<td rowspan={{request.want|length}}>{{request.current.name}}</td>
+					<td rowspan={{request.want|length}}>{{request.current.name|upper}}</td>
 					{% if request.want|length == 0 %}
 						<td>-</td>
 					{% else %}

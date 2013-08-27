@@ -6,7 +6,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Bio\InfoBundle\Entity\Base;
+use Bio\UserBundle\Entity\AbstractUserStudent;
+
 
 /**
  * User
@@ -15,7 +16,7 @@ use Bio\InfoBundle\Entity\Base;
  * @ORM\Entity
  * @UniqueEntity("username")
  */
-class User implements UserInterface
+class User extends AbstractUserStudent
 {
     /**
      * @var integer
@@ -24,7 +25,7 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
@@ -56,6 +57,33 @@ class User implements UserInterface
 
     public function __construct() {
         $this->salt = md5(uniqid(rand(), true));
+    }
+
+    /****** STUDENT FUNCTIONS ********/
+    // in order for a user to impersonate a student,
+    // they have to have all the same getter functions
+    public function getSid() {
+        $sid = ''.$this->getId();
+        if (strlen($sid) > 7) {
+            $sid = substr($sid, 0, 7);
+        } else {
+            while (strLen($sid) < 7) {
+                $sid = '0'.$sid;
+            }
+        }
+        return $sid;
+    }
+    public function getFName() {
+        return $this->getUsername();
+    }
+    public function getLName() {
+        return 'Admin';
+    }
+    public function getSection() {
+        return 'A';
+    }
+    public function getEmail() {
+        return 'fake@email.com';
     }
 
 

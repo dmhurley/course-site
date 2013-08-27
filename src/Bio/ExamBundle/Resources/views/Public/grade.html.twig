@@ -12,12 +12,14 @@
 				<h2>Answer</h2>
 				<div class="a review">
 					<div class="score">
-						<select required="required" name="{{answer.id}}">
-							<option selected="selected" disabled="disabled">-</option>
-							 {% for i in 0..answer.question.points %}
-							 	<option val={{i}}>{{i}}</option>
-							 {% endfor %}
-						</select>
+						{% block score %}
+							<select required="required" name="{{answer.id}}">
+								<option selected="selected" disabled="disabled">-</option>
+								 {% for i in 0..answer.question.points %}
+								 	<option val={{i}}>{{i}}</option>
+								 {% endfor %}
+							</select>
+						{% endblock %}
 					</div>
 					<textarea disabled="disabled" style="width:84%;">{{ answer.answer }}</textarea>
 				</div>
@@ -28,12 +30,15 @@
 				</div>
 			</div>
 		{% endfor %}
-		<div id="submit" >
-			<button type="submit" />Submit</button>
-		</div>
+		{% block submit %}
+			<div id="submit" >
+				<button type="submit" />Submit</button>
+			</div>
+		{% endblock %}
 	</form>
-	{{parent()}}
-	{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':taker.exam.gDuration, 'end':taker.exam.gDate|date('Y:m:d:') ~ taker.exam.gEnd|date('H:i:s'), 'start':start|date('Y:m:d:H:i:s')} only %}
+	{% block timer %}
+		{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':taker.exam.gDuration, 'end':date(taker.exam.gDate|date('Y-m-d') ~' '~ taker.exam.gEnd|date('H:i:s'))|date('U'), 'start':start|date('U')} only %}
+	{% endblock %}
 {% endblock %}
 
 {% block java %}

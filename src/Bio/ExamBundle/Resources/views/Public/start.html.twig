@@ -3,73 +3,108 @@
 {% block content %}
 	<p>{{global.rules}}</p>
 
-	<p>Once you begin this test you will have {{exam.tDuration}} minutes or until {{exam.tEnd|date('h:i a')}} to complete it. Grading will begin 
-	{% if date(exam.tDate|date('Y-m-d')~' '~exam.tStart|date('H:i:s')) >= date(exam.gDate|date('Y-m-d')~' '~exam.gStart|date('H:i:s')) %}
-		after you finish the test
-	{% else %}
-		{{exam.gDate|date('m/d')}} at {{exam.gStart|date('h:i a')}}
-	{% endif %} 
-	and lasts for {{exam.gDuration}} minutes or until {{exam.gEnd|date('h:i a')}}.</p>
+	{% if message != null %}
+		<p>{{message}}</p>
+	{% elseif exam != null %}
+		<p>Once you begin this test you will have {{exam.tDuration}} minutes or until {{exam.tEnd|date('h:i a')}} to complete it. Grading will begin 
+		{% if date(exam.tDate|date('Y-m-d')~' '~exam.tStart|date('H:i:s')) >= date(exam.gDate|date('Y-m-d')~' '~exam.gStart|date('H:i:s')) %}
+			after you finish the test
+		{% else %}
+			{{exam.gDate|date('m/d')}} at {{exam.gStart|date('h:i a')}}
+		{% endif %} 
+		and lasts for {{exam.gDuration}} minutes or until {{exam.gEnd|date('h:i a')}}.</p>
 
 	<p>You can begin <b><span id="time"></span></b>.</p>
 	<div id="hidden" style="display:none;">
 		{{ form(form) }}
 	</div>
-	{{parent()}}
+	{% endif %}
+	<br />
+	<hr />
+
+	<h1>Review Old Tests</h1>
+	<p>Look at your responses, scores, and the actual answers for all past tests. If you have just taken an exam, results will be unavailable until the grading period has ended.</p>
+
+	<ul>
+		{% for taker in takers if taker.exam != exam%}
+			{% if taker.gradedBy|length == 0 %}
+				<li><a href="{{path('review_exam', {'id':taker.exam.id}) }}">{{taker.exam.title}}</a> - (ungraded)
+			{% else %}
+				{% set outOf = 0%}
+				{% for question in taker.exam.questions %}
+					{% set outOf = outOf+question.points %}
+				{% endfor %}
+
+				{% set totalMean = 0 %}
+				{% for answer in taker.answers %}
+					{% set questionTotal = 0 %}
+
+					{% for grade in answer.points %}
+						{% set questionTotal = questionTotal+grade.points %}
+					{% endfor %}
+
+					{% set totalMean = totalMean + questionTotal/answer.points|length %}
+				{% endfor %}
+
+				<li><a href="{{path('review_exam', {'id':taker.exam.id}) }}">{{taker.exam.title}}</a> - ({{totalMean}}/{{outOf}})</li>
+			{% endif %}
+		{% endfor %}
+	</ul>
 {% endblock %}
 
 {% block java %}
-	<script>
-		function Pinger(time) {
-			var times = time.split(':');
-			this.date = new Date(times[0], times[1] - 1, times[2], times[3], times[4], times[5]);
-			this.updatePage = function() {
-					var now = new Date();
-					var diff = this.date.valueOf() - now.valueOf();
-					document.getElementById('time').innerHTML = msToText(diff);
-					if (diff < 0) {
-						clearInterval(this.interval);
-						document.getElementById('hidden').style.display="block";
+	{% if exam != null %}
+		<script>
+			function Pinger(time) {
+				this.date = new Date(time*1000);
+				this.updatePage = function() {
+						var now = new Date();
+						var diff = this.date.valueOf() - now.valueOf();
+						document.getElementById('time').innerHTML = msToText(diff);
+						if (diff < 0) {
+							clearInterval(this.interval);
+							document.getElementById('hidden').style.display="block";
+						}
 					}
+
+				// start interval then call once immediately.
+				this.interval = setInterval(
+					(function(self) {
+						return function() {
+							self.updatePage();
+						}
+					})(this), 10000);
+				this.updatePage();
+			}
+
+			function msToText(ms) {
+				if (ms <= 0) {
+					return "now";
+				} else if (ms < 1000 * 60) {
+					return 'in less than 1 minute';
 				}
 
-			// start interval then call once immediately.
-			this.interval = setInterval(
-				(function(self) {
-					return function() {
-						self.updatePage();
-					}
-				})(this), 10000);
-			this.updatePage();
-		}
+				var hours = ms/1000/60/60;
+				ms = ms%(1000*60*60);
+				var minutes = ms/1000/60;
 
-		function msToText(ms) {
-			if (ms <= 0) {
-				return "now";
-			} else if (ms < 1000 * 60) {
-				return 'in less than 1 minute';
+				var string = "in approximately ";
+				if (Math.floor(hours) > 1) {
+					string+=Math.floor(hours) + " hours, and ";
+				} else if (Math.floor(hours) === 1) {
+					string+="1 hour, and ";
+				}
+
+				if (Math.floor(minutes) !== 1) {
+					string+=Math.floor(minutes) + " minutes";
+				} else {
+					string+="1 minute";
+				}
+
+				return string;
 			}
 
-			var hours = ms/1000/60/60;
-			ms = ms%(1000*60*60);
-			var minutes = ms/1000/60;
-
-			var string = "in approximately ";
-			if (Math.floor(hours) > 1) {
-				string+=Math.floor(hours) + " hours, and ";
-			} else if (Math.floor(hours) === 1) {
-				string+="1 hour, and ";
-			}
-
-			if (Math.floor(minutes) !== 1) {
-				string+=Math.floor(minutes) + " minutes";
-			} else {
-				string+="1 minute";
-			}
-
-			return string;
-		}
-
-		new Pinger("{{exam.tStart|date('Y:m:d:H:i:s')}}")
-	</script>
+			new Pinger("{{ date(exam.tDate|date('Y-m-d ')~exam.tStart|date('H:i:s'))|date('U') }}");
+		</script>
+	{% endif %}
 {% endblock %}
