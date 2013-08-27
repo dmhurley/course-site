@@ -16,7 +16,7 @@ security:
     access_control:
         - { path: ^/admin/user/, roles: ROLE_SUPER_ADMIN }
         - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/((exam)|(trip)|(switch)|(clicker/register)|(scores/find)), roles: ROLE_STUDENT }
+        - { path: ^/((exam)|(trip)|(switch)|(clicker)|(scores)), roles: ROLE_STUDENT }
 
     providers:
         chain_provider:

@@ -27,7 +27,7 @@ class DefaultController extends Controller {
     }
 
     /**
-     * @Route("/../../clicker/register")
+     * @Route("/../../clicker")
      * @Template()
      */
     public function registerAction(Request $request) {
