@@ -204,6 +204,71 @@ class PublicController extends Controller
         return array('global' => $global, 'title' => 'Trip Evaluations');
     }
 
+    /**
+     * @Route("/guide", name="tour_guide_entrance")
+     * @Template()
+     */
+    public function guideAction(Request $request) {
+        if ($request->getSession()->has('leaderEmail')) {
+            $email = $request->getSession()->get('leaderEmail');
+
+            $db = new Database($this, 'BioTripBundle:Trip');
+            $trips = $db->find(array('email' => $email), array(), false);
+
+            return array('trips' => $trips, 'title' => 'Your Trips');
+        } else {
+            return $this->signIn($request);
+        }
+    }
+    private function signIn(Request $request) {
+        $form = $this->createFormBuilder()
+            ->add('email', 'text', array('label' => 'Email:'))
+            ->add('password', 'password', array('label' => 'Password:'))
+            ->add('login', 'submit')
+            ->getForm();
+
+        if ($request->getMethod() === "POST") {
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                $db = new Database($this, 'BioTripBundle:TripGlobal');
+                $global = $db->findOne(array());
+
+                $db = new Database($this, 'BioTripBundle:Trip');
+                $trips = $db->find(array('email' => $form->get('email')->getData()), array(), false);
+
+                if (count($trips) > 0) {
+                    if ($form->get('password')->getData() === $global->getGuidePass()) {
+                        $request->getSession()->set('leaderEmail', $form->get('email')->getData());
+                        return $this->redirect($this->generateUrl('tour_guide_entrance'));
+                    } else {
+                        $request->getSession()->getFlashBag()->set('failure', 'Wrong password.');
+                    }
+                } else {
+                    $request->getSession()->getFlashBag()->set('failure', 'You are not leading any trips under that email.');
+                }
+            } else {
+                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+            }
+        }
+
+        return $this->render('BioTripBundle:Public:sign.html.twig', array('form' => $form->createView(), 'title' => 'Sign In'));
+    }
+    /**
+     * @Route("/guide/trip/{id}", name="tour_guide_view_trip")
+     * @Template()
+     */
+    public function guideViewTripAction(Request $request, Trip $trip = null) {
+        if (!$request->getSession()->has('leaderEmail')) {
+
+        } else if (!$trip) {
+        
+        } else if ($request->getSession()->get('leaderEmail') !== $trip->getEmail()) {
+
+        } else {
+            return array('trip' => $trip, 'title' => $trip->getTitle());
+        }
+    }
+
     public function findObjectByFieldValue($needle, $haystack, $field) {
         $getter = 'get'.ucFirst($field);
 

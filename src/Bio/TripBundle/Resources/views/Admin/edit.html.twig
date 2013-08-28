@@ -27,17 +27,15 @@
 		{% endfor %}
 		{% if trip.students|length > 1 %}
 			<tr>
-				<td colspan=4 style="text-align:center;">
+				<td colspan=1>
 					{% spaceless %}
 						<a href="mailto:?bcc={% for student in trip.students %}{{student.email}},{% endfor %}">
 					{% endspaceless %}
 					email all
 					</a>
 				</td>
-			</tr>
-			<tr>
-				<td colspan=4 style="text-align:center;">
-					<input style="width:90%;" onClick="this.select();" value="{% for student in trip.students %}{{student.email}},{% endfor %}">
+				<td colspan=3>
+					<input style="width:100%;" onClick="this.select();" value="{% for student in trip.students %}{{student.email}},{% endfor %}">
 				</td>
 			</tr>
 		{% endif %}

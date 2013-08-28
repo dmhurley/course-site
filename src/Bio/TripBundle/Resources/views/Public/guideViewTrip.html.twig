@@ -1,0 +1,55 @@
+{% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block content %}
+	<table>
+		<thead>
+			<tr>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td width="100px">Trip Name</td>
+				<td>{{trip.title}}</td>
+			</tr>
+			<tr>
+				<td>Start</td>
+				<td>{{trip.start|date('m/d H:i')}}</td>
+			</tr>
+			<tr>
+				<td>End</td>
+				<td>{{trip.end|date('m/d H:i')}}</td>
+			</tr>
+			<tr>
+				<td>Spots Left</td>
+				<td>
+					{% if date(trip.start) < date() %}
+						<i>trip over</i>
+					{% else %} 
+						{{trip.max - trip.students|length}}
+					{% endif %}
+				</td>
+			</tr>
+			<tr>
+				<td>Description</td>
+				<td>
+					{{trip.shortSum|raw}}
+					{{trip.longSum|raw}}
+				</td>
+			</tr>
+			<tr>
+				<td>
+					{% spaceless %}
+						<a href="mailto:?bcc={% for student in trip.students %}{{student.email}},{% endfor %}">
+					{% endspaceless %}
+					email all
+					</a>
+				</td>
+				<td>
+					<textarea style="width:100%; padding:10px;" onClick="this.select();">{% for student in trip.students %}{{student.email}},{% endfor %}</textarea>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+{% endblock %}
