@@ -58,7 +58,7 @@
 	opacity: 1;
 }
 
-#add, .delete, #multiple {
+#add, .delete, #multiple, .link {
 	cursor:pointer;
 	text-decoration:underline;
 	color: rgb(0, 0, 238);
@@ -129,4 +129,14 @@ table div input[type=text] {
 
 #content > form #form textarea {
 	width: 90%;
+}
+
+.mce-tinymce {
+	float: left !important;
+	width: 512px !important;
+	margin-bottom: 15px !important;
+}
+
+#form > div:last-of-type {
+	clear:both;
 }

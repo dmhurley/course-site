@@ -39,14 +39,6 @@ class TripGlobal
     private $closing;
 
     /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="tourClosing", type="datetime")
-     * @Assert\DateTime()
-     */
-    private $tourClosing;
-
-    /**
      * @var integer
      *
      * @ORM\Column(name="maxTrips", type="integer")
@@ -56,11 +48,44 @@ class TripGlobal
     private $maxTrips;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="evalDue", type="integer")
+     * @Assert\GreaterThan(value=1)
+     * @Assert\NotBlank()
+     */
+    private $evalDue;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="guidePass", type="privatestring")
+     * @Assert\NotBlank()
+     */
+    private $guidePass;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="instructions", type="text")
+     * @Assert\NotNull()
+     */
+    private $instructions;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="promo", type="text")
+     * @Assert\NotNull()
+     */
+    private $promo;
+
+    /**
      * @ORM\ManyToMany(targetEntity="EvalQuestion")
      * @ORM\JoinTable(name="default_questions",
      *      joinColumns={@ORM\JoinColumn(name="global", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="query_id", referencedColumnName="id", unique=true, onDelete="CASCADE")}
-     *      )
+     *     )
      */
     private $evalQuestions;
 
@@ -167,29 +192,6 @@ class TripGlobal
     }
 
     /**
-     * Set tourClosing
-     *
-     * @param \DateTime $tourClosing
-     * @return TripGlobal
-     */
-    public function setTourClosing($tourClosing)
-    {
-        $this->tourClosing = $tourClosing;
-    
-        return $this;
-    }
-
-    /**
-     * Get tourClosing
-     *
-     * @return \DateTime 
-     */
-    public function getTourClosing()
-    {
-        return $this->tourClosing;
-    }
-
-    /**
      * Set maxTrips
      *
      * @param integer $maxTrips
@@ -259,5 +261,97 @@ class TripGlobal
     public function getEvalQuestions()
     {
         return $this->evalQuestions;
+    }
+
+    /**
+     * Set evalDue
+     *
+     * @param integer $evalDue
+     * @return TripGlobal
+     */
+    public function setEvalDue($evalDue)
+    {
+        $this->evalDue = $evalDue;
+    
+        return $this;
+    }
+
+    /**
+     * Get evalDue
+     *
+     * @return integer 
+     */
+    public function getEvalDue()
+    {
+        return $this->evalDue;
+    }
+
+    /**
+     * Set guidePass
+     *
+     * @param privatestring $guidePass
+     * @return TripGlobal
+     */
+    public function setGuidePass($guidePass)
+    {
+        $this->guidePass = $guidePass;
+    
+        return $this;
+    }
+
+    /**
+     * Get guidePass
+     *
+     * @return privatestring 
+     */
+    public function getGuidePass()
+    {
+        return $this->guidePass;
+    }
+
+    /**
+     * Set promo
+     *
+     * @param string $promo
+     * @return TripGlobal
+     */
+    public function setPromo($promo)
+    {
+        $this->promo = $promo;
+    
+        return $this;
+    }
+
+    /**
+     * Get promo
+     *
+     * @return string 
+     */
+    public function getPromo()
+    {
+        return $this->promo;
+    }
+
+    /**
+     * Set instructions
+     *
+     * @param string $instructions
+     * @return TripGlobal
+     */
+    public function setInstructions($instructions)
+    {
+        $this->instructions = $instructions;
+    
+        return $this;
+    }
+
+    /**
+     * Get instructions
+     *
+     * @return string 
+     */
+    public function getInstructions()
+    {
+        return $this->instructions;
     }
 }

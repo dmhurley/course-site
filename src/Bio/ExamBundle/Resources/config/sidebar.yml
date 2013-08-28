@@ -5,5 +5,5 @@ Exams:
         route: manage_exams
     'Manage Questions':
         route: manage_questions
-    'Start Exam':
+    'Practice Exams':
         route: exam_entrance

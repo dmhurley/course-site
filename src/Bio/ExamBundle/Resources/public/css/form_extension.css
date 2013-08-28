@@ -32,14 +32,3 @@
 	float: left !important;
 	margin-bottom: 10px !important;
 }
-
-.dropzone {
-	position:absolute !important;
-	width: 100% !important;
-	height: 100% !important;
-	top: 0px !important;
-	left: 0px !important;
-	background-color: rgba(0,0,0,0) !important;
-	border: dashed 3px rgba(100, 100, 240, .5) !important;
-	display:none;
-}

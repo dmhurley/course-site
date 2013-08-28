@@ -33,12 +33,12 @@ class AdminController extends Controller
     	$trip = new Trip();
     	$form = $this->get('form.factory')->createNamedBuilder('form', 'form', $trip)
     		->add('title', 'text', array('label' => 'Title:'))
-    		->add('shortSum', 'textarea', array('label' => 'Short Summary:'))
-    		->add('longSum', 'textarea', array('label' => 'Long Summary:'))
     		->add('start', 'datetime', array('label' => 'Start:', 'attr' => array('class' => 'datetime')))
     		->add('end', 'datetime', array('label' => 'End:', 'attr' => array('class' => 'datetime')))
     		->add('max', 'integer', array('label' => 'Limit:'))
     		->add('email', 'email', array('label' => 'Leader Email:'))
+            ->add('shortSum', 'textarea', array('label' => 'Short Summary:', 'attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
+            ->add('longSum', 'textarea', array('label' => 'Long Summary:', 'attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
     		->add('add', 'submit')
     		->getForm();
         $clone = clone $form;
@@ -48,8 +48,10 @@ class AdminController extends Controller
         $globalForm = $this->get('form.factory')->createNamedBuilder('global', 'form', $global)
             ->add('opening', 'datetime', array('label' => 'Signup Start:', 'attr' => array('class' => 'datetime')))
             ->add('closing', 'datetime', array('label' => 'Evaluations Due:', 'attr' => array('class' => 'datetime')))
-            ->add('tourClosing', 'datetime', array('label' => 'Tour Deadline:', 'attr' => array('class' => 'datetime')))
             ->add('maxTrips', 'integer', array('label' => "Max Trips:"))
+            ->add('evalDue', 'integer', array('label' => "Days Until Late:"))
+            ->add('instructions', 'textarea', array('label' => 'Trip Instructions', 'attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
+            ->add('guidePass', 'text', array('label' => 'Tour Guide Password:'))
             ->add('set', 'submit')
             ->getForm();
 
@@ -65,14 +67,11 @@ class AdminController extends Controller
             }
 
             if ($request->request->has('global')) {
+                $entity = clone $global;
                 $globalForm->handleRequest($request);
 
-                if ($form->isValid()) {
-                    $dbGlobal = $db->findOne(array());
-                    $dbGlobal->setOpening($global->getOpening())
-                        ->setClosing($global->getClosing())
-                        ->setTourClosing($global->getTourClosing())
-                        ->setMaxTrips($global->getMaxTrips());
+                if (!$form->isValid()) {
+                    $global = $entity;
                 }
             }
 
@@ -97,12 +96,12 @@ class AdminController extends Controller
         if ($entity) {
         	$form = $this->createFormBuilder($entity)
         		->add('title', 'text', array('label' => 'Title:'))
-        		->add('shortSum', 'textarea', array('label' => 'Short Summary:'))
-        		->add('longSum', 'textarea', array('label' => 'Long Summary:'))
         		->add('start', 'datetime', array('label' => 'Start:', 'attr' => array('class' => 'datetime')))
         		->add('end', 'datetime', array('label' => 'End:', 'attr' => array('class' => 'datetime')))
         		->add('max', 'integer', array('label' => 'Limit:'))
         		->add('email', 'email', array('label' => 'Leader Email:'))
+                ->add('shortSum', 'textarea', array('label' => 'Short Summary:', 'attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
+                 ->add('longSum', 'textarea', array('label' => 'Long Summary:', 'attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
         		->add('id', 'hidden')
         		->add('edit', 'submit')
         		->getForm();

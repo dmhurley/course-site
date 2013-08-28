@@ -1,5 +1,16 @@
 {% extends 'BioStyleBundle:Default:main.html.twig' %}
 
+{% block head %}
+	{{ parent() }}
+	{% stylesheets 'bundles/biotrip/css/trip.css' filter="cssrewrite" output="css/*.css" %}
+		<link rel="stylesheet" href="{{ asset_url }}" />
+	{% endstylesheets %}
+
+	{% javascripts 'bundles/biostyle/js/DragDrop.js' output="js/*.js" %}
+		<script src="{{asset_url}}"></script>
+	{% endjavascripts %}
+{% endblock %}
+
 {% block content %}
 	{{ form(form) }}
 
@@ -20,13 +31,21 @@
 		{% endfor %}
 		{% if trip.students|length > 1 %}
 			<tr>
-				<td colspan=4 style="text-align:center;">
+				<td colspan=1>
 					{% spaceless %}
-						<a href="mailto:?bcc={% for student in students %}{{student.email}},{% endfor %}">
+						<a href="mailto:?bcc={% for student in trip.students %}{{student.email}},{% endfor %}">
 					{% endspaceless %}
 					email all
-					</a></td>
+					</a>
+				</td>
+				<td colspan=3>
+					<input style="width:100%;" onClick="this.select();" value="{% for student in trip.students %}{{student.email}},{% endfor %}">
+				</td>
 			</tr>
 		{% endif %}
 	</table>
+{% endblock %}
+
+{% block java %}
+	{{ tinymce_init() }}
 {% endblock %}

@@ -7,3 +7,5 @@
         route: trip_evals
     "Field Trips":
         route: trip_entrance
+    "Tour Guides":
+        route: tour_guide_entrance

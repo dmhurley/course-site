@@ -88,7 +88,7 @@ stfalcon_tinymce:
                 visual: false
                 menubar: false
                 statusbar: true
-                width: 512
+                # width: 512
                 relative_urls: false
                 image_advtab: false
                 content_css: "http://localhost/~nick/course-site/web/bundles/BioExam/css/editor.css"
