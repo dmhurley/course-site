@@ -153,7 +153,6 @@ class PublicController extends Controller
 		// if they submitted the exam
 		if ($request->getMethod() === "POST") {
 
-			var_dump($request->request);
 			$areErrors = false;
 			$validator = $this->get('validator');
 
@@ -376,29 +375,30 @@ class PublicController extends Controller
 
 	private function getNextExam($student) {
 		$em = $this->getDoctrine()->getManager();
-		$query = $em->createQueryBuilder()
-			->select('p')
+		$qb = $em->createQueryBuilder();
+
+		$query = $qb->select('p')
 			->from('BioExamBundle:Exam', 'p')
-			->where('p.gDate >= :date')
-			->andWhere('p.gEnd >= :time')
+			->where($qb->expr()->orx(
+					'p.gDate > :date',
+					'p.gDate = :date AND p.gEnd >= :time'
+				))
+			->andWhere(":section LIKE CONCAT(p.section, '%')")
+			->andWhere(':student NOT IN (SELECT s FROM BioExamBundle:TestTaker t JOIN t.student s WHERE t.status = 6 AND t.exam = p)')
 			->addOrderBy('p.tDate', 'ASC')
 			->addOrderBy('p.tStart', 'ASC')
 			->setParameter('date', new \DateTime(), \Doctrine\DBAL\Types\Type::DATE)
 			->setParameter('time', new \DateTime(), \Doctrine\DBAL\Types\Type::TIME)
+			->setParameter('section', $student->getSection())
+			->setParameter('student', $student)
 			->getQuery();
 		$result = $query->getResult();
 
-		$section = $student->getSection();
-		$exams = array_filter($result, function($exam) use($section) {
-				return strpos($section, $exam->getSection()) === 0;
-			});
-
-		if (count($exams) === 0) {
-			throw new BioException("No more exams scheduled.");
+		if (count($result) === 0) {
+			throw new BioException('No more exams scheduled.');
 		}
 
-		reset($exams);
-		return current($exams);
+		return array_shift($result);
 	}
 
 	private function findObjectByFieldValue($needle, $haystack, $field) {
