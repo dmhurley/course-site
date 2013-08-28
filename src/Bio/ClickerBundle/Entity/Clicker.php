@@ -32,7 +32,7 @@ class Clicker
     private $cid;
 
     /**
-     * @ORM\OneToOne(targetEntity="\Bio\StudentBundle\Entity\Student")
+     * @ORM\OneToOne(targetEntity="\Bio\UserBundle\Entity\AbstractUserStudent")
      * @ORM\JoinColumn(name="studentID", referencedColumnName="id", onDelete="CASCADE")
      */
     private $student;
@@ -78,10 +78,10 @@ class Clicker
     /**
      * Set student
      *
-     * @param \Bio\StudentBundle\Entity\Student $student
+     * @param \Bio\UserBundle\Entity\AbstractUserStudent $student
      * @return Clicker
      */
-    public function setStudent(\Bio\StudentBundle\Entity\Student $student = null)
+    public function setStudent(\Bio\UserBundle\Entity\AbstractUserStudent $student = null)
     {
         $this->student = $student;
     
@@ -91,7 +91,7 @@ class Clicker
     /**
      * Get student
      *
-     * @return \Bio\StudentBundle\Entity\Student 
+     * @return \Bio\UserBundle\Entity\AbstractUserStudent 
      */
     public function getStudent()
     {
