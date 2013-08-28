@@ -272,6 +272,33 @@ class PublicController extends Controller
         }
     }
 
+    /**
+     * @Route("/promo", name="promo")
+     * @Template()
+     */
+    public function promoAction(Request $request) {
+        $db = new Database($this, 'BioTripBundle:TripGlobal');
+        $global = $db->findOne(array());
+
+        if ($this->get('security.context')->isGranted('ROLE_ADMIN')) {
+            $form = $this->createFormBuilder($global)
+                ->add('promo', 'textarea', array('attr' => array('class'=> 'tinymce', 'data-theme' => 'bio')))
+                ->add('save', 'submit')
+                ->getForm();
+
+            if ($request->getMethod() === "POST") {
+                $form->handleRequest($request);
+                if($form->isValid()) {
+                    $db->close();
+                }
+            }
+
+            return array('form' => $form->createView(), 'title' => 'Field Trips');
+        } else {
+            return array('promo' => $global->getPromo(), 'title' => 'Field Trips');
+        }
+    }
+
     public function findObjectByFieldValue($needle, $haystack, $field) {
         $getter = 'get'.ucFirst($field);
 

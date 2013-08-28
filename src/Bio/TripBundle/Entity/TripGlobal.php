@@ -72,11 +72,20 @@ class TripGlobal
      */
     private $instructions;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="promo", type="text")
+     * @Assert\NotNull()
+     */
+    private $promo;
+
+    /**
      * @ORM\ManyToMany(targetEntity="EvalQuestion")
      * @ORM\JoinTable(name="default_questions",
      *      joinColumns={@ORM\JoinColumn(name="global", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="query_id", referencedColumnName="id", unique=true, onDelete="CASCADE")}
-     *      )
+     *     )
      */
     private $evalQuestions;
 
@@ -299,6 +308,30 @@ class TripGlobal
     {
         return $this->guidePass;
     }
+
+    /**
+     * Set promo
+     *
+     * @param string $promo
+     * @return TripGlobal
+     */
+    public function setPromo($promo)
+    {
+        $this->promo = $promo;
+    
+        return $this;
+    }
+
+    /**
+     * Get promo
+     *
+     * @return string 
+     */
+    public function getPromo()
+    {
+        return $this->promo;
+    }
+
     /**
      * Set instructions
      *

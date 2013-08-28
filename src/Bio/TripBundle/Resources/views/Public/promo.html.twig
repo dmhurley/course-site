@@ -1,0 +1,13 @@
+{% extends 'BioStyleBundle:Default:main.html.twig' %}
+
+{% block content %}
+	{% if form is defined %}
+		{{form(form)}}
+	{% elseif promo is defined %}
+		{{promo|raw}}
+	{% endif %}
+{% endblock %}
+
+{% block java %}
+	{{tinymce_init()}}
+{% endblock %}
