@@ -259,11 +259,14 @@ class PublicController extends Controller
      */
     public function guideViewTripAction(Request $request, Trip $trip = null) {
         if (!$request->getSession()->has('leaderEmail')) {
-
+            $request->getSession()->getFlashBag()->set('failure', 'Not signed in.');
+            return $this->redirect($this->generateUrl('tour_guide_entrance'));
         } else if (!$trip) {
-        
+            $request->getSession()->getFlashBag()->set('failure', 'Trip not found');
+            return $this->redirect($this->generateUrl('tour_guide_entrance'));
         } else if ($request->getSession()->get('leaderEmail') !== $trip->getEmail()) {
-
+            $request->getSession()->getFlashBag()->set('failure', 'Trip not found');
+            return $this->redirect($this->generateUrl('tour_guide_entrance'));
         } else {
             return array('trip' => $trip, 'title' => $trip->getTitle());
         }
