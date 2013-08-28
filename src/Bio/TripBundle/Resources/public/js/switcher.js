@@ -2,8 +2,9 @@
 	window.addEventListener('load', function() {
 		var formContainer = document.getElementById('formContainer');
 		var globalContainer = document.getElementById('globalContainer');
+
 		var formButton = document.getElementById('formButton');
-		varglobalButton = document.getElementById('globalButton');
+		var globalButton = document.getElementById('globalButton');
 
 		formButton.addEventListener('click', function() {
 			formContainer.style.display="block";

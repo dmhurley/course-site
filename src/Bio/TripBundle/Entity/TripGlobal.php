@@ -65,6 +65,13 @@ class TripGlobal
     private $guidePass;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="instructions", type="text")
+     * @Assert\NotNull()
+     */
+    private $instructions;
+
      * @ORM\ManyToMany(targetEntity="EvalQuestion")
      * @ORM\JoinTable(name="default_questions",
      *      joinColumns={@ORM\JoinColumn(name="global", referencedColumnName="id")},
@@ -291,5 +298,27 @@ class TripGlobal
     public function getGuidePass()
     {
         return $this->guidePass;
+    }
+    /**
+     * Set instructions
+     *
+     * @param string $instructions
+     * @return TripGlobal
+     */
+    public function setInstructions($instructions)
+    {
+        $this->instructions = $instructions;
+    
+        return $this;
+    }
+
+    /**
+     * Get instructions
+     *
+     * @return string 
+     */
+    public function getInstructions()
+    {
+        return $this->instructions;
     }
 }

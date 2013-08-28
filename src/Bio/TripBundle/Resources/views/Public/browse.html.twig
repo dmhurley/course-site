@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-
+	<div>{{global.instructions|raw}}</div>
 {% for trip in trips %}
 	{% if current != null and trip in current %}
 		{% set cur = 'current' %}
