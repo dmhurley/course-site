@@ -124,7 +124,7 @@ class DefaultController extends Controller
      * @Route("/delete/{id}", name="delete_folder")
      * @ParamConverter("entity", class="BioFolderBundle:FileBase")
      */
-    public function deleteAction(Request $request, $entity) {
+    public function deleteAction(Request $request, $entity = null) {
 		if($entity && (($type = method_exists($entity, 'getFiles')?"Folder":"File") === "File" || $entity->getId() !== 1)) {
             $db = new Database($this, 'BioFolderBundle:Folder'); 
 			$db->delete($entity);
@@ -136,7 +136,7 @@ class DefaultController extends Controller
             }
 
 		} else {
-			$request->getSession()->getFlashBag()->set('failure', "Could not find that ".$type);
+			$request->getSession()->getFlashBag()->set('failure', "Could not find that file.");
 		}
 
         return $this->redirect($this->generateUrl('view_folders'));
