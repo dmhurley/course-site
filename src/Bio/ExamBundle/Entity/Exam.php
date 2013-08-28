@@ -41,7 +41,7 @@ class Exam
      *
      * @ORM\Column(name="section", type="string", length=2)
      * @Assert\NotBlank()
-     * @Assert\Regex("/^[A-Z]{1,2}$/")
+     * @Assert\Regex("/^[A-Z][A-Z0-9]*$/")
      */
     private $section;
 
