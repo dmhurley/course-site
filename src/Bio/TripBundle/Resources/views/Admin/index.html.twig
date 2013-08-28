@@ -8,13 +8,13 @@
 {% endblock %}
 
 {% block content %}
-	<div style="float:left; width:42%;">
+	<div>
+		<div style="float:right; width: 50%;">
+			<h4>Global Settings</h4>
+			{{ form(globalForm) }}
+		</div>
 		<h4>Add Trip</h4>
 		{{ form(form) }}
-	</div>
-	<div style="float:left; width: 58%;">
-		<h4>Global Settings</h4>
-		{{ form(globalForm) }}
 	</div>
 
 	<table>
@@ -30,7 +30,7 @@
 		{% for trip in trips %}
 			<tr>
 				<td>{{ trip.title }}</td>
-				<td>{{ trip.shortSum }}</td>
+				<td>{{ trip.shortSum|striptags|replace({'&nbsp;': ''}) }}</td>
 				<td>{{ trip.start|date('d-m-y H:i:s') }}</td>
 				<td>{{ trip.end|date('d-m-y H:i:s') }}</td>
 				<td>{{ trip.students|length }}/{{trip.max}}</td>
@@ -39,4 +39,75 @@
 			</tr>
 		{% endfor %}
 	</table>
+{% endblock %}
+
+{% block java %}
+	{{ tinymce_init() }}
+	<script>
+		(function() {
+			function DragDrop(mce) {
+				this.tinyMCE = mce;
+				this.timeout = null;
+				this.dropzones = [];
+				this.handleFileSelect = function(evt) {
+					evt.stopPropagation();
+					evt.preventDefault();
+					var reader = new FileReader();
+					reader.onload = function() {
+						evt.target.editor.insertContent('<img src="'+this.result+'" />');
+					}
+					reader.readAsDataURL(evt.dataTransfer.files[0]);
+					hideDropZones();
+					clearTimeout(this.timeout);
+				}
+
+				this.handleDragOver = function(e) {
+					e.stopPropagation();
+					e.preventDefault();
+					
+					for(var i = 0; i < this.dropzones.length; i++) {
+						this.dropzones[i].style.display = 'block';
+
+					}
+
+					clearTimeout(this.timeout);
+					this.timeout = setTimeout((function(self) {
+						return function() {
+							for (var i = 0; i < self.dropzones.length; i++) {
+								self.dropzones[i].style.display = 'none';
+							}
+						}
+					})(this), 100);
+				}
+
+				this.init = function() {
+					for (var i = 0; i < 2; i++) {
+						var editor = this.tinyMCE.get(i);
+						var dropzone = editor.getContainer();
+						var div = document.createElement('div');
+							div.classList.add('dropzone');
+							div.editor = editor;
+							div.addEventListener('drop', this.handleFileSelect);
+							this.dropzones[this.dropzones.length] = div;
+						dropzone.appendChild(div);
+					}
+
+					window.addEventListener('drop', function(e) {
+						e.preventDefault();
+					});
+
+					document.body.addEventListener('dragover', (function(self) {
+						return function(e) {
+							self.handleDragOver(e);
+						}
+					})(this));
+				}
+				this.init();
+			}
+			window.onload = function() {
+				new DragDrop(tinyMCE);
+			}
+		})();
+
+	</script>
 {% endblock %}

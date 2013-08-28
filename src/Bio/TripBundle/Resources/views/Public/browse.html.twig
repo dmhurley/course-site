@@ -26,7 +26,7 @@
 		<h2>{{trip.title}}</h2>
 		<h2>{{trip.start|date('m/d H:i')}} - {{trip.end|date('m/d H:i')}}</h2>
 
-		<p style="clear:both;">{{trip.shortSum}}</p>
+		<p style="clear:both;">{{trip.shortSum|raw}}</p>
 
 		{% if date(trip.start) < date() %}
 			{% if current != null and trip in current %}

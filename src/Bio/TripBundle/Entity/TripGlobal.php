@@ -39,14 +39,6 @@ class TripGlobal
     private $closing;
 
     /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="tourClosing", type="datetime")
-     * @Assert\DateTime()
-     */
-    private $tourClosing;
-
-    /**
      * @var integer
      *
      * @ORM\Column(name="maxTrips", type="integer")
@@ -54,6 +46,15 @@ class TripGlobal
      * @Assert\NotBlank()
      */
     private $maxTrips;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="evalDue", type="integer")
+     * @Assert\GreaterThan(value=1)
+     * @Assert\NotBlank()
+     */
+    private $evalDue;
 
     /**
      * @ORM\ManyToMany(targetEntity="EvalQuestion")
@@ -167,29 +168,6 @@ class TripGlobal
     }
 
     /**
-     * Set tourClosing
-     *
-     * @param \DateTime $tourClosing
-     * @return TripGlobal
-     */
-    public function setTourClosing($tourClosing)
-    {
-        $this->tourClosing = $tourClosing;
-    
-        return $this;
-    }
-
-    /**
-     * Get tourClosing
-     *
-     * @return \DateTime 
-     */
-    public function getTourClosing()
-    {
-        return $this->tourClosing;
-    }
-
-    /**
      * Set maxTrips
      *
      * @param integer $maxTrips
@@ -259,5 +237,28 @@ class TripGlobal
     public function getEvalQuestions()
     {
         return $this->evalQuestions;
+    }
+
+    /**
+     * Set evalDue
+     *
+     * @param integer $evalDue
+     * @return TripGlobal
+     */
+    public function setEvalDue($evalDue)
+    {
+        $this->evalDue = $evalDue;
+    
+        return $this;
+    }
+
+    /**
+     * Get evalDue
+     *
+     * @return integer 
+     */
+    public function getEvalDue()
+    {
+        return $this->evalDue;
     }
 }
