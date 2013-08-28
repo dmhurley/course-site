@@ -58,7 +58,7 @@
 	opacity: 1;
 }
 
-#add, .delete, #multiple {
+#add, .delete, #multiple, .link {
 	cursor:pointer;
 	text-decoration:underline;
 	color: rgb(0, 0, 238);
