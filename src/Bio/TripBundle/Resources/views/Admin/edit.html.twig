@@ -29,10 +29,16 @@
 			<tr>
 				<td colspan=4 style="text-align:center;">
 					{% spaceless %}
-						<a href="mailto:?bcc={% for student in students %}{{student.email}},{% endfor %}">
+						<a href="mailto:?bcc={% for student in trip.students %}{{student.email}},{% endfor %}">
 					{% endspaceless %}
 					email all
-					</a></td>
+					</a>
+				</td>
+			</tr>
+			<tr>
+				<td colspan=4 style="text-align:center;">
+					<input style="width:90%;" onClick="this.select();" value="{% for student in trip.students %}{{student.email}},{% endfor %}">
+				</td>
 			</tr>
 		{% endif %}
 	</table>

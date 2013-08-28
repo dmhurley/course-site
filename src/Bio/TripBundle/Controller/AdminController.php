@@ -49,7 +49,8 @@ class AdminController extends Controller
             ->add('opening', 'datetime', array('label' => 'Signup Start:', 'attr' => array('class' => 'datetime')))
             ->add('closing', 'datetime', array('label' => 'Evaluations Due:', 'attr' => array('class' => 'datetime')))
             ->add('maxTrips', 'integer', array('label' => "Max Trips:"))
-            ->add('evalDue', 'integer', array('label' => "Evals due in:"))
+            ->add('evalDue', 'integer', array('label' => "Days Until Late:"))
+            ->add('guidePass', 'password', array('label' => 'Tour Guide Password:'))
             ->add('set', 'submit')
             ->getForm();
 

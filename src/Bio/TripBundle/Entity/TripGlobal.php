@@ -57,6 +57,14 @@ class TripGlobal
     private $evalDue;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="guidePass", type="privatestring")
+     * @Assert\NotBlank()
+     */
+    private $guidePass;
+
+    /**
      * @ORM\ManyToMany(targetEntity="EvalQuestion")
      * @ORM\JoinTable(name="default_questions",
      *      joinColumns={@ORM\JoinColumn(name="global", referencedColumnName="id")},
@@ -260,5 +268,28 @@ class TripGlobal
     public function getEvalDue()
     {
         return $this->evalDue;
+    }
+
+    /**
+     * Set guidePass
+     *
+     * @param privatestring $guidePass
+     * @return TripGlobal
+     */
+    public function setGuidePass($guidePass)
+    {
+        $this->guidePass = $guidePass;
+    
+        return $this;
+    }
+
+    /**
+     * Get guidePass
+     *
+     * @return privatestring 
+     */
+    public function getGuidePass()
+    {
+        return $this->guidePass;
     }
 }
