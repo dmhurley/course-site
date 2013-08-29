@@ -2,9 +2,13 @@
 
 {% block head %}
 	{{ parent() }}
-		{% stylesheets 'bundles/bioexam/css/form_extension.css' filter="cssrewrite" output="css/*.css" %}
-			<link rel="stylesheet" href="{{ asset_url }}" />
-		{% endstylesheets %}
+	{% stylesheets 'bundles/bioexam/css/form_extension.css' filter="cssrewrite" output="css/*.css" %}
+		<link rel="stylesheet" href="{{ asset_url }}" />
+	{% endstylesheets %}
+
+	{% javascripts 'bundles/biostyle/js/DragDrop.js' output="js/*.js" %}
+		<script src="{{asset_url}}"></script>
+	{% endjavascripts %}
 {% endblock %}
 
 {% block content %}

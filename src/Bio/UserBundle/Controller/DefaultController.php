@@ -51,7 +51,7 @@ class DefaultController extends Controller
             $db = new Database($this, 'BioUserBundle:User');
             try {
                 $db->close();
-                $request->getSession()->getFlashBag()->set('sucess', ucfirst($type).'moted user.');
+                $request->getSession()->getFlashBag()->set('success', ucfirst($type)."moted '".$entity->getUserName()."'.");
             } catch (BioException $e) {
                 $request->getSession()->getFlashBag()->set('failure', 'Could not '.$type.'mote that user.');
             }
@@ -74,7 +74,7 @@ class DefaultController extends Controller
             $db = new Database($this, 'BioUserBundle:User');
             $db->delete($entity);
             $db->close();
-            $request->getSession()->getFlashBag()->set('success', $entity->getUsername().' deleted.');
+            $request->getSession()->getFlashBag()->set('success', "Deleted '".$entity->getUsername()."'.");
         } else {
             $request->getSession()->getFlashBag()->set('failure', 'Could not find that user.');
         }

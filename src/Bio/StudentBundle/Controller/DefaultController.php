@@ -33,7 +33,7 @@ class DefaultController extends Controller
      * @Template()
      */
     public function findAction(Request $request){
-        $form = $this->createFormBuilder()
+        $form = $this->createFormBuilder($request->getSession()->getFlashBag()->peek('find'))
             ->add('sid', 'text', array('label' => 'Student ID:', 'required' => false, 'attr' => array('disabled' => 'disabled')))
             ->add('fName', 'text', array('label' => 'First Name:', 'required' => false))
             ->add('lName', 'text', array('label' => 'Last Name:', 'required' => false))
@@ -43,34 +43,42 @@ class DefaultController extends Controller
             ->getForm();
 
         $result = array();
-        if ($request->getMethod() === "POST") {
+        if ($request->getMethod() === "POST" || $request->getSession()->getFlashBag()->has('find')) {
             $form->handleRequest($request);
-            if ($form->isValid()) {
-                $values = $request->request->get('form');
+            if ($request->getMethod() !== "POST") {
+                $array = $request->getSession()->getFlashBag()->peek('find');
+                $result = $this->findStudents($array);
+            } else if ($form->isValid()) {
                 $array = array_filter(array_slice($form->getData(), 0, 5));
-                $em = $this->getDoctrine()->getManager();
-                $qb = $em->createQueryBuilder()
-                    ->select('s')
-                    ->from('BioStudentBundle:Student', 's');
-
-                foreach(array_keys($array) as $i => $key) {
-                    $qb->andWhere('s.'.$key.' LIKE :value'.$i)
-                        ->setParameter('value'.$i, $array[$key].'%');
-                }
-                if (count($array) > 0) {
-                    reset($array);
-                    $qb->orderBy('s.'.key($array), 'ASC');
-                } else {
-                    $qb->orderBy('s.fName', 'ASC');
-                }
-                $query = $qb->getQuery();
-                $result = $query->getResult();
+                $request->getSession()->getFlashBag()->set('find', $array);
+                $result = $this->findStudents($array);
             } else {
                 $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
             }
         }
 
-        return array('form' => $form->createView(), 'title' => 'Find Student', 'entities' => $result);
+        return array('form' => $form->createView(), 'entities' => $result, 'title' => 'Find Student');
+    }
+
+    private function findStudents($array) {
+        $em = $this->getDoctrine()->getManager();
+        $qb = $em->createQueryBuilder()
+            ->select('s')
+            ->from('BioStudentBundle:Student', 's');
+
+        foreach(array_keys($array) as $i => $key) {
+            $qb->andWhere('s.'.$key.' LIKE :value'.$i)
+                ->setParameter('value'.$i, $array[$key].'%');
+        }
+        if (count($array) > 0) {
+            reset($array);
+            $qb->orderBy('s.'.key($array), 'ASC');
+        } else {
+            $qb->orderBy('s.fName', 'ASC');
+        }
+        $query = $qb->getQuery();
+        $result = $query->getResult();
+        return $result;
     }
 
     /**
@@ -113,7 +121,7 @@ class DefaultController extends Controller
 
             try {
                 $db->close();
-                $request->getSession()->getFlashBag()->set('success', "Student #".$student->getSid()." removed.");
+                $request->getSession()->getFlashBag()->set('success', "Student removed.");
             } catch (BioException $e){
                 $request->getSession()->getFlashBag()->set('failure', "Could not delete student");
             }
@@ -203,7 +211,7 @@ class DefaultController extends Controller
             $entity->setSid($sid)
                 ->setSection($section)
                 ->setEmail($email)
-                ->setFName($fName)
+                ->setFName(explode(' ', $fName)[0])
                 ->setLName($lName);
             if (!in_array($sid, $sids) && !in_array($email, $emails)) {
                 $sids[] = $sid;

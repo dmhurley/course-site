@@ -30,7 +30,7 @@ class Link extends Base
      *
      * @ORM\Column(name="address", type="string", length=2048)
      * @Assert\NotBlank()
-     * @Assert\Url(protocols={"http", "https", "ftp"})
+     * @Assert\Url(protocols={"http", "https", "ftp"}, message="Invalid URL. Remember URLs must start with http://");
      */
     private $address;
 
