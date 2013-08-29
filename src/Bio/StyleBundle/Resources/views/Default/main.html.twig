@@ -4,18 +4,19 @@
 	{{parent()}}
 
 	<div id="sign">
-		{% if is_granted('ROLE_USER') %}
-			<div class="login">
-				<a class="login" href="{{ path('logout') }}">Logout</a>
+		<div class="login">
+			{% if is_granted('ROLE_USER') %}
+				<a>{{app.user.username}}</a>
 			 	<div class="menu">
 			 		<ul>
 			 			<a href=""><li>change password</li></a>
+			 			<a href="{{ path('logout') }}"><li>logout</li></a>
 			 		</ul>
 			 	</div>
-			</div>
-		{% else %}
-			<a href="{{ path('login') }}">Login</a>
-		{% endif %}
+			{% else %}
+				<a href="{{ path('login') }}">Login</a>
+			{% endif %}
+		</div>
 	</div>
 
 {% endblock %}

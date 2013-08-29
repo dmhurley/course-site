@@ -241,35 +241,33 @@ body {
 
 	#sign .login {
 		position: absolute;
-		top: -1px;
+		top: 5px;
 		left: 0px;
+
+		text-decoration: none;
+		text-transform: uppercase;
+		font: 11px "Trebuchet MS" !important;
+		color: white;
+		letter-spacing: 1px;
 	}
 
 		#sign .login > a {
-			color: white;
-			text-decoration: none;
 			background-color: #331b6f;
 			border: 1px solid #4c3782;
-			text-transform: uppercase;
-			font: 11px/12px "Trebuchet MS" !important;
 			padding: 6px 12px;
-			letter-spacing: 1px;
+		}
+
+		#sign a {
+			color: inherit;
+			text-decoration:inherit;
 		}
 
 		#sign .login .menu {
 			background: red;
 			position: absolute;
-			top: 25px;
-			color: white;
-			text-decoration: none;
+			top: 18px;
 			background-color: #331b6f;
-			border: 1px solid #4c3782;
-			border-top: none;
-			text-transform: uppercase;
-			font: 11px/12px "Trebuchet MS" !important;
-			padding: 6px 12px;
-			letter-spacing: 1px;
-			width: 120px;
+			width: 150px;
 
 			display:none;
 		}
@@ -279,11 +277,10 @@ body {
 		}
 			.login .menu ul {
 				list-style: none;
-			}
-
-				.menu a {
-					color: inherit;
-					text-decoration:inherit;
+			}	
+				.menu li {
+					padding: 8px 12px;
+					border: 1px solid #4c3782;
 				}
 
 #footer {
