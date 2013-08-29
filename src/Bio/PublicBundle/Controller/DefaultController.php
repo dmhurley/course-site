@@ -226,7 +226,7 @@ class DefaultController extends Controller
                 $newPwd = $encoder->encodePassword($form->get('new')->getData(), $user->getSalt());
                 $user->setPassword($newPwd);
                 $this->getDoctrine()->getManager()->flush();
-                $$this->get('security.context')->setToken(null);
+                $this->get('security.context')->setToken(null);
                 $request->getSession()->invalidate();
                 $request->getSession()->getFlashBag()->set('success', 'Password changed. Please log in again.');
                 return $this->redirect($this->generateUrl('login'));

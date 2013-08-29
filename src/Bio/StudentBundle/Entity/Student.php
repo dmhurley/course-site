@@ -71,7 +71,7 @@ class Student extends AbstractUserStudent
     /**
      * @var string
      *
-     * @ORM\Column(name="password", type="string", nullable=true)
+     * @ORM\Column(name="password", type="string")
      */
     protected $password;
 
@@ -235,9 +235,6 @@ class Student extends AbstractUserStudent
      */
     public function getPassword()
     {   
-        if ($this->password === null){
-            return $this->lName;
-        }
         return $this->password;
     }
 }
