@@ -5,8 +5,14 @@
 
 	<div id="sign">
 		{% if is_granted('ROLE_USER') %}
-			<a href="{{ path('logout') }}">Logout</a>
-			 - {{app.user.username}}
+			<div class="login">
+				<a class="login" href="{{ path('logout') }}">Logout</a>
+			 	<div class="menu">
+			 		<ul>
+			 			<a href=""><li>change password</li></a>
+			 		</ul>
+			 	</div>
+			</div>
 		{% else %}
 			<a href="{{ path('login') }}">Login</a>
 		{% endif %}

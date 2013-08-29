@@ -239,16 +239,52 @@ body {
 
 	}
 
-	#sign a {
-		color: white;
-		text-decoration: none;
-		background-color: #331b6f;
-		border: 1px solid #4c3782;
-		text-transform: uppercase;
-		font: 11px/12px "Trebuchet MS" !important;
-		padding: 6px 12px;
-		letter-spacing: 1px;
+	#sign .login {
+		position: absolute;
+		top: -1px;
+		left: 0px;
 	}
+
+		#sign .login > a {
+			color: white;
+			text-decoration: none;
+			background-color: #331b6f;
+			border: 1px solid #4c3782;
+			text-transform: uppercase;
+			font: 11px/12px "Trebuchet MS" !important;
+			padding: 6px 12px;
+			letter-spacing: 1px;
+		}
+
+		#sign .login .menu {
+			background: red;
+			position: absolute;
+			top: 25px;
+			color: white;
+			text-decoration: none;
+			background-color: #331b6f;
+			border: 1px solid #4c3782;
+			border-top: none;
+			text-transform: uppercase;
+			font: 11px/12px "Trebuchet MS" !important;
+			padding: 6px 12px;
+			letter-spacing: 1px;
+			width: 120px;
+
+			display:none;
+		}
+
+		#sign .login:hover .menu {
+			display:block;
+		}
+			.login .menu ul {
+				list-style: none;
+			}
+
+				.menu a {
+					color: inherit;
+					text-decoration:inherit;
+				}
 
 #footer {
 	background-color: #3d2480;
