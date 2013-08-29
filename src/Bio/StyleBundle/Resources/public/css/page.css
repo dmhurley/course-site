@@ -239,16 +239,49 @@ body {
 
 	}
 
-	#sign a {
-		color: white;
+	#sign .login {
+		position: absolute;
+		top: 5px;
+		left: 0px;
+
 		text-decoration: none;
-		background-color: #331b6f;
-		border: 1px solid #4c3782;
 		text-transform: uppercase;
-		font: 11px/12px "Trebuchet MS" !important;
-		padding: 6px 12px;
+		font: 11px "Trebuchet MS" !important;
+		color: white;
 		letter-spacing: 1px;
 	}
+
+		#sign .login > a {
+			background-color: #331b6f;
+			border: 1px solid #4c3782;
+			padding: 6px 12px;
+		}
+
+		#sign a {
+			color: inherit;
+			text-decoration:inherit;
+		}
+
+		#sign .login .menu {
+			background: red;
+			position: absolute;
+			top: 18px;
+			background-color: #331b6f;
+			width: 150px;
+
+			display:none;
+		}
+
+		#sign .login:hover .menu {
+			display:block;
+		}
+			.login .menu ul {
+				list-style: none;
+			}	
+				.menu li {
+					padding: 8px 12px;
+					border: 1px solid #4c3782;
+				}
 
 #footer {
 	background-color: #3d2480;

@@ -9,6 +9,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Bio\DataBundle\Objects\Database;
 use Bio\UserBundle\Entity\User;
+use Bio\UserBundle\Entity\AbstractUserStudent;
 
 /**
  * @Route("/admin/user")
@@ -85,5 +86,33 @@ class DefaultController extends Controller
             return $this->redirect($this->generateUrl('view_users'));
         }
 
+    }
+
+    /**
+     * @Route("/reset/{id}", name="reset_password")
+     */
+    public function resetAction(Request $request, AbstractUserStudent $user = null) {
+        if ($user) {
+            $encoder = $this->get('security.encoder_factory')->getEncoder($user);
+            $pwd = substr(md5(rand()), 0, 7);
+            $user->setPassword($encoder->encodePassword($pwd, $user->getSalt()));
+            $this->getDoctrine()->getManager()->flush();
+
+            $message = \Swift_Message::newInstance()
+                ->setSubject('Password Reset')
+                ->setFrom('fakeemail@email.com')
+                ->setTo($user->getEmail())
+                ->setBody('Your temporary password is '. $pwd .'. Please sign in to change it.');
+
+            $this->get('mailer')->send($message);
+        } else {
+            $request->getSession()->getFlashBag()->set('failure', 'Could not find user.');
+        }
+
+        if ($request->headers->get('referer')){
+            return $this->redirect($request->headers->get('referer'));
+        } else {
+            return $this->redirect($this->generateUrl('main_page'));
+        }
     }
 }

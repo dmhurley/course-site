@@ -9,6 +9,7 @@
 			<th>Section</th>
 			<th>Email</th>
 			<th>Edit</th>
+			<th>Reset</th>
 			<th>Delete</th>
 		</tr>
 		{% for entity in entities %}
@@ -18,6 +19,7 @@
 				<td>{{ entity.section }}</td>
 				<td><a href="mailto:{{ entity.email }}">{{ entity.email }}</a></td>
 				<td><a href="{{ path('edit_student', {'id': entity.id}) }}">edit</td>
+				<td><a href="{{ path('reset_password', {'id':entity.id}) }}">reset</a></td>
 				<td><a href="{{ path('delete_student', {'id': entity.id}) }}">delete</td>
 			</tr>
 		{% endfor %}

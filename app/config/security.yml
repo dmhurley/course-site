@@ -17,7 +17,8 @@ security:
         - { path: ^/admin/user/, roles: ROLE_SUPER_ADMIN }
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/trip/promo$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/((exam)|(trip)|(switch)|(clicker)|(scores)), roles: ROLE_STUDENT }
+        - { path: ^/(exam|trip|switch|clicker|scores), roles: ROLE_STUDENT }
+        - { path: ^/user/reset, roles: ROLE_USER }
 
     providers:
         chain_provider:
