@@ -217,10 +217,11 @@ class PublicController extends Controller
 			$db->close();
 
 			// email confirmation code
+			$db = new Database($this, 'BioInfoBundle:Info');
+            $info = $db->findOne(array());
 			$message = \Swift_Message::newInstance()
 				->setSubject($taker->getExam()->getTitle().' confirmation')
-				->setFrom('bio@uw.edu')
-				->setSender('bio@uw.edu')
+				->setFrom($info->getEmail())
 				->setTo($taker->getStudent()->getEmail())
 				->setBody($this->renderView('BioExamBundle:Public:email.html.twig', array('code' => $code, 'taker' => $taker)))
 				->setContentType('text/html');

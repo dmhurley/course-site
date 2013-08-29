@@ -66,10 +66,12 @@ class EmailCommand extends ContainerAwareCommand {
 				foreach ($students as $student){
 					$output->writeln("    ".$student->getEmail());
 				}
+
+				$db = new Database($this->getContainer(), 'BioInfoBundle:Info');
+				$info = $db->findOne(array());
 				$message = \Swift_Message::newInstance()
 					->setSubject('Evaluation Reminder')
-					->setFrom('bio@uw.edu')
-					->setSender('bio@uw.edu');
+					->setFrom($info->getEmail())
 				foreach($students as $student) {
 					$message->addBcc($student->getEmail(), $student->getFName().' '.$student->getLName());
 				}

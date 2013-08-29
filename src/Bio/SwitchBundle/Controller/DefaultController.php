@@ -41,6 +41,11 @@ class DefaultController extends Controller
 			$db = new Database($this, 'BioInfoBundle:Section');
 			$section = $db->findOne(array('name' => $student->getSection()));
 
+            if (!$section) {
+                $request->getSession()->getFlashBag()->set('failure', 'Could not find section '.$student->getSection().'.');
+                return $this->redirect($this->generateUrl('main_page'));
+            }
+
 			$r = new Request();
 			$db->add($r);
 			$r->setStatus(1)
@@ -141,9 +146,11 @@ class DefaultController extends Controller
                         $request->getSession()->getFlashBag()->set('failure', 'Could not send request.');
                     }
 
+                    $db = new Database($this, 'BioInfoBundle:Info');
+                    $info = $db->findOne(array());
                     $message = \Swift_Message::newInstance()
                         ->setSubject("Someone wants to switch sections")
-                        ->setFrom("nickclaw@gmail.com")
+                        ->setFrom($info->getEmail())
                         ->setTo($r->getMatch()->getStudent()->getEmail())
                         ->setBody($this->renderView('BioSwitchBundle:Default:notificationEmail.html.twig', array('student' => $r->getMatch()->getStudent())))
                         ->setPriority('high')
@@ -188,9 +195,11 @@ class DefaultController extends Controller
                 $request->getSession()->getFlashBag()->set('failure', 'Error declining request.');
             }
 
+            $db = new Database($this, 'BioInfoBundle:Info');
+            $info = $db->findOne(array());
             $message = \Swift_Message::newInstance()
                 ->setSubject('Switch Cancelled')
-                ->setFrom('nickclaw@gmail.com')
+                ->setFrom($info->getEmail())
                 ->addBcc($r->getStudent()->getEmail())
                 ->addBcc($m->getStudent()->getEmail())
                 ->setBody($this->renderView('BioSwitchBundle:Default:declineEmail.html.twig', 
@@ -224,10 +233,12 @@ class DefaultController extends Controller
                     $db->delete($r);
                     $db->close();
 
-                    // only if db is closed do you send message 
+                    // only if db is closed do you send message
+                    $db = new Database($this, 'BioInfoBundle:Info');
+                    $info = $db->findOne(array()); 
     	    		$message = \Swift_Message::newInstance()
     	    			->setSubject('Switch Sections')
-    	    			->setFrom('nickclaw@gmail.com')
+    	    			->setFrom($info->getEmail())
     	    			->addTo($r->getStudent()->getEmail())
     	    			->addTo($m->getStudent()->getEmail())
     	    			->setBody($this->renderView('BioSwitchBundle:Default:confirmationEmail.html.twig', 
