@@ -31,7 +31,7 @@ security:
 
     encoders:
         Bio\UserBundle\Entity\User: sha512
-        Bio\StudentBundle\Entity\Student: plaintext
+        Bio\StudentBundle\Entity\Student: sha512
 
     role_hierarchy:
         ROLE_SETUP: [ROLE_SUPER_ADMIN, ROLE_ALLOWED_TO_SWITCH]

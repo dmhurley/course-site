@@ -71,16 +71,13 @@ class Student extends AbstractUserStudent
     /**
      * @var string
      *
-     * @ORM\Column(name="password", type="string", nullable=true)
+     * @ORM\Column(name="password", type="string")
      */
     protected $password;
 
     /***** Implementing UserInterface ****/
     public function getUsername() {
         return $this->sid;
-    }
-    public function getSalt() {
-        return '';
     }
     public function getRoles() {
         return array('ROLE_STUDENT');
@@ -235,9 +232,6 @@ class Student extends AbstractUserStudent
      */
     public function getPassword()
     {   
-        if ($this->password === null){
-            return $this->lName;
-        }
         return $this->password;
     }
 }

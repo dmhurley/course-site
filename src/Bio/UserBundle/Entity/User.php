@@ -49,22 +49,11 @@ class User extends AbstractUserStudent
     private $password;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="salt", type="string", length=255)
-     */
-    private $salt;
-
-    /**
      * @var array
      *
      * @ORM\Column(name="roles", type="array")
      */
     private $roles;
-
-    public function __construct() {
-        $this->salt = md5(uniqid(rand(), true));
-    }
 
     /****** STUDENT FUNCTIONS ********/
     // in order for a user to impersonate a student,
@@ -145,19 +134,6 @@ class User extends AbstractUserStudent
     public function getPassword()
     {
         return $this->password;
-    }
-
-    /**
-     * Set salt
-     *
-     * @param string $salt
-     * @return User
-     */
-    public function setSalt($salt)
-    {
-        $this->salt = $salt;
-    
-        return $this;
     }
 
     /**

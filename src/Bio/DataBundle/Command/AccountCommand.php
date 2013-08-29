@@ -39,7 +39,7 @@ class AccountCommand extends ContainerAwareCommand
                 'Email?'
             )
             ->addOption(
-                'role',
+                'email',
                 null,
                 InputArgument::OPTIONAL,
                 'Role?'
@@ -64,8 +64,8 @@ class AccountCommand extends ContainerAwareCommand
                     false
                 );
         }
-        if (!($password = $input->getOption('email'))) {
-            $password = $dialog->ask(
+        if (!($email = $input->getOption('email'))) {
+            $email = $dialog->ask(
                     $output,
                     'Email: ',
                     false
@@ -88,6 +88,7 @@ class AccountCommand extends ContainerAwareCommand
         $user = new User();
 
         $encoder = $factory->getEncoder($user);
+        echo $user->getSalt();
         $pwd = $encoder->encodePassword($password, $user->getSalt());
         $user->setPassword($pwd);
         $user->setUsername($username);

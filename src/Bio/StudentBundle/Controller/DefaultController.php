@@ -194,6 +194,7 @@ class DefaultController extends Controller
     private function uploadStudentList($file) {
         $db = new Database($this, 'BioStudentBundle:Student');
         $dbEnts = $db->find(array(), array(), false);
+        $encoder = $this->get('security.encoder_factory')->getEncoder(new Student());
        
         $sids = [];
         $emails = [];
@@ -212,7 +213,8 @@ class DefaultController extends Controller
                 ->setSection($section)
                 ->setEmail($email)
                 ->setFName(explode(' ', $fName)[0])
-                ->setLName($lName);
+                ->setLName($lName)
+                ->setPassword($encoder->encodePassword($lName, $entity->getSalt()));
             if (!in_array($sid, $sids) && !in_array($email, $emails)) {
                 $sids[] = $sid;
                 $emails[] = $email;
