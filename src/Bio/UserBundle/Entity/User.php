@@ -80,7 +80,7 @@ class User extends AbstractUserStudent
         return 'Admin';
     }
     public function getSection() {
-        return 'A';
+        return 'AA';
     }
     public function getEmail() {
         return 'fake@email.com';

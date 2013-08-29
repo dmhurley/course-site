@@ -230,29 +230,6 @@ class TestTaker
     }
 
     /**
-     * Set student
-     *
-     * @param \Bio\StudentBundle\Entity\Student $student
-     * @return TestTaker
-     */
-    public function setStudent($student = null)
-    {
-        $this->student = $student;
-    
-        return $this;
-    }
-
-    /**
-     * Get student
-     *
-     * @return \Bio\StudentBundle\Entity\Student 
-     */
-    public function getStudent()
-    {
-        return $this->student;
-    }
-
-    /**
      * Set exam
      *
      * @param \Bio\ExamBundle\Entity\Exam $exam
@@ -389,5 +366,28 @@ class TestTaker
         $this->numGraded = $numGraded;
     
         return $this;
+    }
+
+    /**
+     * Set student
+     *
+     * @param \Bio\UserBundle\Entity\AbstractUserStudent $student
+     * @return TestTaker
+     */
+    public function setStudent(\Bio\UserBundle\Entity\AbstractUserStudent $student = null)
+    {
+        $this->student = $student;
+    
+        return $this;
+    }
+
+    /**
+     * Get student
+     *
+     * @return \Bio\UserBundle\Entity\AbstractUserStudent 
+     */
+    public function getStudent()
+    {
+        return $this->student;
     }
 }

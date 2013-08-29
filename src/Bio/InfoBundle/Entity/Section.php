@@ -21,7 +21,7 @@ class Section extends Base
      *
      * @ORM\Column(name="name", type="string", length=255)
      * @Assert\NotBlank()
-     * @Assert\Regex("/^[A-Z]{2}$/")
+     * @Assert\Regex("/^[A-Z][A-Z0-9]*$/")
      */
     private $name;
 
@@ -205,7 +205,7 @@ class Section extends Base
 
      public function addToForm(FormBuilder $builder) {
         $array = file('bundles/bioinfo/buildings.txt', FILE_IGNORE_NEW_LINES);
-        $builder->add('name', 'text', array('label' => 'Name:', 'attr' => array('pattern' => '^[A-Z]{2}$', 'title' => 'Valid capitalized two character section name.')))
+        $builder->add('name', 'text', array('label' => 'Name:', 'attr' => array('pattern' => '^[A-Z][A-Z0-9]*$', 'title' => 'Valid capitalized section name.')))
             ->add('day', 'choice', array('label' => 'Day:', 'choices' =>array("m" => "Monday", "tu" => "Tuesday", "w" => "Wednesday", "th" => "Thursday", "f" => "Friday", "sa" => "Saturday", "su" => "Sunday")))
             ->add('start', 'time', array('label' => 'Start Time:'))
             ->add('end', 'time', array('label' => 'End Time:'))

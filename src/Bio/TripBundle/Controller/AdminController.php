@@ -113,7 +113,7 @@ class AdminController extends Controller
                     $db = new Database($this, 'BioTripBundle:Trip');
         			$db->close();
 
-                    $request->getSession()->getFlashBag()->set('success', 'Evaluations edited.');
+                    $request->getSession()->getFlashBag()->set('success', 'Trip edited.');
         			return $this->redirect($this->generateUrl('manage_trips'));
                 } else {
                     $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
@@ -259,16 +259,17 @@ class AdminController extends Controller
             ->setParameter('id', $id)
             ->getQuery();
 
-        try {
-            $eval = $query->getResult()[0];
-        } catch (\Exception $e) {
+        $evals = $query->getResult();
+        if (count($evals) === 0) {
             $request->getSession()->getFlashBag()->set('success', 'All Evaluations reviewed for trip: '. $title .'.');
             return $this->redirect($this->generateUrl('trip_evals'));
+        } else {
+            $eval = $evals[0];
         }
 
 
         $form = $this->createFormBuilder()
-            ->add('score', 'choice', array('choices' => array(0, 15, 25)))
+            ->add('score', 'choice', array('choices' => array(0, 15, 20, 25)))
             ->add('i', 'hidden', array('mapped' => false, 'data' => $eval->getId()))
             ->add('d', 'hidden', array('mapped' => false, 'data' => $eval->getTimestamp()->format('Y-m-d H:i:s')))
             ->add('grade', 'submit')

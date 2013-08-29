@@ -93,29 +93,6 @@ class Request
     {
         $this->want = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
-    /**
-     * Set student
-     *
-     * @param \Bio\StudentBundle\Entity\Student $student
-     * @return Request
-     */
-    public function setStudent($student = null)
-    {
-        $this->student = $student;
-    
-        return $this;
-    }
-
-    /**
-     * Get student
-     *
-     * @return \Bio\StudentBundle\Entity\Student 
-     */
-    public function getStudent()
-    {
-        return $this->student;
-    }
 
     /**
      * Set current
@@ -203,5 +180,28 @@ class Request
     public function getMatch()
     {
         return $this->match;
+    }
+
+    /**
+     * Set student
+     *
+     * @param \Bio\UserBundle\Entity\AbstractUserStudent $student
+     * @return Request
+     */
+    public function setStudent(\Bio\UserBundle\Entity\AbstractUserStudent $student = null)
+    {
+        $this->student = $student;
+    
+        return $this;
+    }
+
+    /**
+     * Get student
+     *
+     * @return \Bio\UserBundle\Entity\AbstractUserStudent 
+     */
+    public function getStudent()
+    {
+        return $this->student;
     }
 }

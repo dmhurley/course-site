@@ -236,10 +236,10 @@ class Evaluation {
     /**
      * Set student
      *
-     * @param \Bio\StudentBundle\Entity\Student $student
+     * @param \Bio\UserBundle\Entity\AbstractUserStudent $student
      * @return Evaluation
      */
-    public function setStudent($student = null)
+    public function setStudent(\Bio\UserBundle\Entity\AbstractUserStudent $student = null)
     {
         $this->student = $student;
     
@@ -249,7 +249,7 @@ class Evaluation {
     /**
      * Get student
      *
-     * @return \Bio\StudentBundle\Entity\Student 
+     * @return \Bio\UserBundle\Entity\AbstractUserStudent 
      */
     public function getStudent()
     {

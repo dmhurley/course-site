@@ -303,39 +303,6 @@ class Trip
     }
 
     /**
-     * Add students
-     *
-     * @param \Bio\StudentBundle\Entity\Student $students
-     * @return Trip
-     */
-    public function addStudent($students)
-    {
-        $this->students[] = $students;
-    
-        return $this;
-    }
-
-    /**
-     * Remove students
-     *
-     * @param \Bio\StudentBundle\Entity\Student $students
-     */
-    public function removeStudent($students)
-    {
-        $this->students->removeElement($students);
-    }
-
-    /**
-     * Get students
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getStudents()
-    {
-        return $this->students;
-    }
-
-    /**
      * Add evals
      *
      * @param \Bio\TripBundle\Entity\Evaluation $evals
@@ -366,5 +333,38 @@ class Trip
     public function getEvals()
     {
         return $this->evals;
+    }
+
+    /**
+     * Add students
+     *
+     * @param \Bio\UserBundle\Entity\AbstractUserStudent $students
+     * @return Trip
+     */
+    public function addStudent(\Bio\UserBundle\Entity\AbstractUserStudent $students)
+    {
+        $this->students[] = $students;
+    
+        return $this;
+    }
+
+    /**
+     * Remove students
+     *
+     * @param \Bio\UserBundle\Entity\AbstractUserStudent $students
+     */
+    public function removeStudent(\Bio\UserBundle\Entity\AbstractUserStudent $students)
+    {
+        $this->students->removeElement($students);
+    }
+
+    /**
+     * Get students
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getStudents()
+    {
+        return $this->students;
     }
 }
