@@ -47,7 +47,7 @@
 		<tbody>
 			{% for answer in eval.answers if answer.evalQuestion.type == 'multiple' %}
 				<tr>
-					<td>{{answer.evalQuestion.data[1]}}</td>
+					<td>{{answer.evalQuestion.data[0]}}</td>
 					<td width="100px">{{answer.answer}}</td>
 				</tr>
 			{% endfor %}

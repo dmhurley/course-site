@@ -166,7 +166,6 @@ class PublicController extends Controller
             if (count($request->request->keys()) !== count($global->getEvalQuestions())) {
                 $request->getSession()->getFlashBag()->set('failure', 'Error.');
             } else {
-
                 foreach($request->request->keys() as $key) {
                     $question = $this->findObjectByFieldValue($key, $global->getEvalQuestions(), 'id');
                     if ($question) {
@@ -178,7 +177,6 @@ class PublicController extends Controller
                     } else {
                         $areErrors = true;
                         $request->getSession()->getFlashBag()->set('failure', 'Invalid IDs.');
-                        break;
                     }
 
                     $errors = $validator->validate($response);
@@ -187,15 +185,14 @@ class PublicController extends Controller
                         $areErrors = true;
                         $question->errors = $errors;
                     }
-
-                    if (!$areErrors) {
-                        try {
-                            $db->close();
-                            $request->getSession()->getFlashBag()->set('success', 'Evaluation saved.');
-                            return $this->redirect($this->generateUrl('trip_entrance'));
-                        } catch (BioException $e) {
-                            $request->getSession()->getFlashBag()->set('failure', 'Could not save evaluation.');
-                        }
+                }
+                if (!$areErrors) {
+                    try {
+                        $db->close();
+                        $request->getSession()->getFlashBag()->set('success', 'Evaluation saved.');
+                        return $this->redirect($this->generateUrl('trip_entrance'));
+                    } catch (BioException $e) {
+                        $request->getSession()->getFlashBag()->set('failure', 'Could not save evaluation.');
                     }
                 }
             }
