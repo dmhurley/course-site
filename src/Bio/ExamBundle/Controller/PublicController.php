@@ -222,7 +222,7 @@ class PublicController extends Controller
 				->setFrom('bio@uw.edu')
 				->setSender('bio@uw.edu')
 				->setTo($taker->getStudent()->getEmail())
-				->setBody($this->render('BioExamBundle:Public:email.html.twig', array('code' => $code, 'taker' => $taker)))
+				->setBody($this->renderView('BioExamBundle:Public:email.html.twig', array('code' => $code, 'taker' => $taker)))
 				->setContentType('text/html');
 			$this->get('mailer')->send($message);
 

@@ -259,11 +259,12 @@ class AdminController extends Controller
             ->setParameter('id', $id)
             ->getQuery();
 
-        try {
-            $eval = $query->getResult()[0];
-        } catch (\Exception $e) {
+        $evals = $query->getResult();
+        if (count($evals) === 0) {
             $request->getSession()->getFlashBag()->set('success', 'All Evaluations reviewed for trip: '. $title .'.');
             return $this->redirect($this->generateUrl('trip_evals'));
+        } else {
+            $eval = $evals[0];
         }
 
 
