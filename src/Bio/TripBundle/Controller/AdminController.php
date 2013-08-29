@@ -113,7 +113,7 @@ class AdminController extends Controller
                     $db = new Database($this, 'BioTripBundle:Trip');
         			$db->close();
 
-                    $request->getSession()->getFlashBag()->set('success', 'Evaluations edited.');
+                    $request->getSession()->getFlashBag()->set('success', 'Trip edited.');
         			return $this->redirect($this->generateUrl('manage_trips'));
                 } else {
                     $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
