@@ -79,6 +79,11 @@ class DefaultController extends Controller
         $db = new Database($this, 'BioScoreBundle:Scores');
         $score = $db->findOne(array('sid' => $student->getSid()), array(), false);
 
+        if (!$score) {
+            $request->getSession()->getFlashBag()->set('failure', 'Could not find any scores.');
+            return $this->redirect($this->generateUrl('main_page'));
+        }
+
         $db = new Database($this, 'BioScoreBundle:Stat');
         $stats = $db->find(array(), array(), false);
 

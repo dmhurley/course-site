@@ -113,7 +113,7 @@ class DefaultController extends Controller
 
             try {
                 $db->close();
-                $request->getSession()->getFlashBag()->set('success', "Student #".$student->getSid()." removed.");
+                $request->getSession()->getFlashBag()->set('success', "Student removed.");
             } catch (BioException $e){
                 $request->getSession()->getFlashBag()->set('failure', "Could not delete student");
             }
@@ -203,7 +203,7 @@ class DefaultController extends Controller
             $entity->setSid($sid)
                 ->setSection($section)
                 ->setEmail($email)
-                ->setFName($fName)
+                ->setFName(explode(' ', $fName)[0])
                 ->setLName($lName);
             if (!in_array($sid, $sids) && !in_array($email, $emails)) {
                 $sids[] = $sid;
