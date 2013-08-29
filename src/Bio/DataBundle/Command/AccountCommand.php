@@ -36,6 +36,12 @@ class AccountCommand extends ContainerAwareCommand
                 'role',
                 null,
                 InputArgument::OPTIONAL,
+                'Email?'
+            )
+            ->addOption(
+                'role',
+                null,
+                InputArgument::OPTIONAL,
                 'Role?'
             )
         ;
@@ -55,6 +61,13 @@ class AccountCommand extends ContainerAwareCommand
             $password = $dialog->askHiddenResponse(
                     $output,
                     'Password: ',
+                    false
+                );
+        }
+        if (!($password = $input->getOption('email'))) {
+            $password = $dialog->ask(
+                    $output,
+                    'Email: ',
                     false
                 );
         }

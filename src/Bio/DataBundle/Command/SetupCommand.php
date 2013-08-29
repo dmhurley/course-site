@@ -48,6 +48,11 @@ class SetupCommand extends ContainerAwareCommand
                 'Password: ',
                 false
             );
+        $email = $dialog->ask(
+            $output,
+            'Email: ',
+            null
+        );
         $bundles = $input->getArgument('bundles');
 
 $output->writeln('<info>Installing Bundles</info>');
@@ -97,7 +102,7 @@ $output->writeln('<question>--------------------------------------------</questi
 
         $output->writeln('<info>Creating Account</info>');
 $output->writeln('<question>--------------------------------------------</question>');
-        $process = new Process('php app/console bio:create:account --username='.$username.' --password='.$password.' --role=ROLE_SUPER_ADMIN', null, null, null, 300);
+        $process = new Process('php app/console bio:create:account --username='.$username.' --password='.$password.' --email='.$email.' --role=ROLE_SUPER_ADMIN', null, null, null, 300);
         
         $process->run(function($type, $buffer){echo $buffer;});
         if (!$process->isSuccessful()) {

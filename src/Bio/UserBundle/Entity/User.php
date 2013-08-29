@@ -37,6 +37,13 @@ class User extends AbstractUserStudent
     /**
      * @var string
      *
+     * @ORM\Column(name="email", type="privatestring")
+     */
+    private $email;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="password", type="string", length=255)
      */
     private $password;
@@ -81,9 +88,6 @@ class User extends AbstractUserStudent
     }
     public function getSection() {
         return 'AA';
-    }
-    public function getEmail() {
-        return 'fake@email.com';
     }
 
 
@@ -191,5 +195,28 @@ class User extends AbstractUserStudent
 
     public function eraseCredentials() {
         
+    }
+
+    /**
+     * Set email
+     *
+     * @param privatestring $email
+     * @return User
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    
+        return $this;
+    }
+
+    /**
+     * Get email
+     *
+     * @return privatestring 
+     */
+    public function getEmail()
+    {
+        return $this->email;
     }
 }
