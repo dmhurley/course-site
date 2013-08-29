@@ -20,8 +20,21 @@ abstract class AbstractUserStudent implements UserInterface
 	 */
 	protected $id;
 
+	/**
+	 * @var string
+	 *
+	 * @ORM\Column(name="salt", type="string")
+	 */
+	protected $salt;
+
+	public function __construct() {
+        $this->salt = md5(uniqid(rand(), true));
+    }
+
 	public abstract function getUsername();
-	public abstract function getSalt();
+	public function getSalt() {
+		return $this->salt;
+	}
 	public abstract function getPassword();
 	public abstract function getRoles();
 	public abstract function eraseCredentials();

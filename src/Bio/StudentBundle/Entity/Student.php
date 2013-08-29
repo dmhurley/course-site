@@ -79,9 +79,6 @@ class Student extends AbstractUserStudent
     public function getUsername() {
         return $this->sid;
     }
-    public function getSalt() {
-        return '';
-    }
     public function getRoles() {
         return array('ROLE_STUDENT');
     }
