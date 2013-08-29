@@ -196,7 +196,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/user/reset", name="reset_password")
+     * @Route("/user/change", name="change_password")
      * @Template()
      */
     public function passwordAction(Request $request) {

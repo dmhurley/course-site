@@ -73,20 +73,11 @@ class Student extends AbstractUserStudent
      *
      * @ORM\Column(name="password", type="string", nullable=true)
      */
-    private $password;
+    protected $password;
 
     /***** Implementing UserInterface ****/
     public function getUsername() {
         return $this->sid;
-    }
-    public function getPassword() {
-        if ($this->password === null) {
-            return $this->lName;
-        }
-        return $this->password;
-    }
-    public function setPassword($password) {
-        $this->password = $password;
     }
     public function getSalt() {
         return '';
@@ -222,5 +213,31 @@ class Student extends AbstractUserStudent
     public function getSection()
     {
         return strtoupper($this->section);
+    }
+
+    /**
+     * Set password
+     *
+     * @param string $password
+     * @return Student
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+    
+        return $this;
+    }
+
+    /**
+     * Get password
+     *
+     * @return string 
+     */
+    public function getPassword()
+    {   
+        if ($this->password === null){
+            return $this->lName;
+        }
+        return $this->password;
     }
 }

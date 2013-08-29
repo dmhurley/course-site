@@ -148,7 +148,9 @@ $output->writeln('<question>--------------------------------------------</questi
             $tripGlobal->setOpening(new \DateTime())
                 ->setClosing(new \Datetime())
                 ->setMaxTrips(1)
-                ->setEvalDue(5);
+                ->setEvalDue(5)
+                ->setPromo('Trip promo goes here.')
+                ->setInstructions('Trip instructions go here.');
 
 
         $db->add($info);

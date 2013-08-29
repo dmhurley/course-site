@@ -15,6 +15,7 @@
 		<th>Role</th>
 		<th>Promote</th>
 		<th>Demote</th>
+		<th>Reset</th>
 		<th>Delete</th>
 	</tr>
 	{% for user in users if user.roles[0] != "ROLE_SETUP" and app.user != user%}
@@ -32,6 +33,7 @@
 			{% else %}
 				<td><a href="{{ path('mote_user', {'type' : 'de', 'id':user.id}) }}">demote</a></td>
 			{% endif %}
+			<td><a href="{{ path('reset_password', {'id':user.id}) }}">reset</a></td>
 			<td><a href="{{ path('delete_user', {'id':user.id}) }}">delete</a></td>
 		</tr>
 	{% endfor %}
