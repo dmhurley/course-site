@@ -80,11 +80,11 @@ stfalcon_tinymce:
         theme:
             bio:
                 plugins:
-                    - "advlist autolink lists link image charmap preview pagebreak"
+                    - "advlist autolink link image charmap preview pagebreak"
                     - "visualblocks visualchars code autoresize"
                     - "insertdatetime nonbreaking save table contextmenu"
                     - "template paste textcolor"
-                toolbar: "bold italic alignleft aligncenter alignright bullist numlist outdent indent table link image code"
+                toolbar1: "undo redo styleselect bullist numlist outdent indent table | charmap link image code"
                 visual: false
                 menubar: false
                 statusbar: true
