@@ -68,12 +68,25 @@ class Student extends AbstractUserStudent
      */
     protected $email;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="password", type="string", nullable=true)
+     */
+    private $password;
+
     /***** Implementing UserInterface ****/
     public function getUsername() {
         return $this->sid;
     }
     public function getPassword() {
-        return $this->lName;
+        if ($this->password === null) {
+            return $this->lName;
+        }
+        return $this->password;
+    }
+    public function setPassword($password) {
+        $this->password = $password;
     }
     public function getSalt() {
         return '';
@@ -82,7 +95,7 @@ class Student extends AbstractUserStudent
         return array('ROLE_STUDENT');
     }
     public function eraseCredentials() {
-        // do nothing
+        $this->password = $this->getLName();
     }
     /***************************************/
 

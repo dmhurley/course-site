@@ -9,6 +9,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\SecurityContext;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Util\StringUtils;
+use Symfony\Component\Validator\ExecutionContextInterface;
 
 use Bio\DataBundle\Objects\Database;
 use Bio\UserBundle\Entity\User;
@@ -57,7 +59,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/login", name="login")
+     * @Route("/user/login", name="login")
      * @Template()
      */
     public function loginAction(Request $request) {
@@ -80,7 +82,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/register", name="register")
+     * @Route("/user/register", name="register")
      * @Template()
      */
     public function registerAction(Request $request) {
@@ -191,5 +193,46 @@ class DefaultController extends Controller
         }
 
         return $this->render('BioPublicBundle:Default:sign.html.twig', array('form' => $form->createView(), 'title' => 'Log In'));
+    }
+
+    /**
+     * @Route("/user/reset", name="reset_password")
+     * @Template()
+     */
+    public function passwordAction(Request $request) {
+        $user = $this->get('security.context')->getToken()->getUser();
+        $encoder = $this->get('security.encoder_factory')->getEncoder($user);
+
+        $form = $this->createFormBuilder()
+            ->add('password', 'password', array('label' => 'Current:', 'constraints' => new Assert\Callback(array('methods' => array(function($password, $interface) use ($user, $encoder) {
+                $pwdGiven = $encoder->encodePassword($password, $user->getSalt());
+                if (!StringUtils::equals($pwdGiven, $user->getPassword())) {
+                    $interface->addViolationAt('password', 'Wrong password');
+                }
+            })))))
+            ->add('new', 'repeated', array(
+                    'type' => 'password',
+                    'invalid_message' => 'The password fields must match.',
+                    'first_options' => array('label' => 'New:'),
+                    'second_options' => array('label' => 'Again:')
+                ))
+            ->add('change', 'submit')
+            ->getForm();
+
+        if ($request->getMethod() === "POST") {
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                $newPwd = $encoder->encodePassword($form->get('new')->getData(), $user->getSalt());
+                $user->setPassword($newPwd);
+                $this->getDoctrine()->getManager()->flush();
+                $request->getSession()->invalidate();
+                $request->getSession()->getFlashBag()->set('success', 'Password changed. Please log in again.');
+                return $this->redirect($this->generateUrl('login'));
+            } else {
+                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+            }
+        }
+
+        return array('form' => $form->createView(), 'title' => 'Change Password');
     }
 }
