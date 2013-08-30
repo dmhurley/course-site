@@ -41,6 +41,8 @@
 						<td>{{section.name}}</td>
 					</tr>
 				{% endfor %}
+			{% else %}
+				<tr><td colspan=5 style="text-align:center;">no requests</td></tr>
 			{% endfor %}
 		</tbody>
 	</table>

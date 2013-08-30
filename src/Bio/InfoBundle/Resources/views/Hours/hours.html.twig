@@ -13,9 +13,9 @@
 			<th>Delete</th>
 		</tr>
 		{% for person in hourss %}
-			{% if person.hours|length != 0 %}
 			<tr>
 				<td rowspan={{person.hours|length}}>{{person.fullName}}</td>
+			{% if person.hours|length != 0 %}
 				{% if (person.hours|first).byAppointment %}
 					<td colspan=3>By Appointment</td>
 				{% else %}
@@ -42,6 +42,8 @@
 				{% endif %}
 			{% endfor %}
 			</tr>
+			{% else %}
+				<td colspan=6 style="text-align:center;">no hours</td></tr>
 			{% endif %}
 		{% endfor %}
 	</table>

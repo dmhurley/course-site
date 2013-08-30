@@ -50,6 +50,8 @@
 				<td><a href="{{ path('edit_trip', {'id':trip.id}) }}">edit</a></td>
 				<td><a href="{{ path('delete_trip', {'id':trip.id}) }}">delete</a></td>
 			</tr>
+		{% else %}
+			<tr><td colspan=7 style="text-align:center;">no trips</td></tr>
 		{% endfor %}
 	</table>
 {% endblock %}

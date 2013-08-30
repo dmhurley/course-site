@@ -50,6 +50,8 @@
 					<td>{{answer.evalQuestion.data[0]}}</td>
 					<td width="100px">{{answer.answer}}</td>
 				</tr>
+			{% else %}
+				<tr><td colspan=2 style="text-align:center;">no multiple choice answers</td></tr>
 			{% endfor %}
 		</tbody>
 	</table>
@@ -71,6 +73,8 @@
 				<tr>
 					<td><i>{{answer.answer}}</i></td>
 				</tr>
+			{% else %}
+				<tr><td colspan=2 style="text-align:center;">no free response answers</td></tr>
 			{% endfor %}
 				<tr>
 				<td></td>

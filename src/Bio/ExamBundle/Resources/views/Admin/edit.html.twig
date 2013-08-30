@@ -28,6 +28,8 @@
 							<td style="text-align:center;">{{ form_widget(child) }}</td>
 							<td>{{ form_label(child) }}</td>
 						</tr>
+					{% else %}
+						<tr><td colspan=2 rowspan=2 style="text-align:center;">no questions<br /><a href="{{ path('manage_questions') }}">make some?</a></td></tr>
 					{% endfor %}
 				</table>
 			</div>

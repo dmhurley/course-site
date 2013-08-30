@@ -48,6 +48,11 @@
 		{% endif %}
 		<a href="{{ path('view_trip', {'id': trip.id}) }}">View Trip</a>
 	</div>
+{% else %}
+	<div class="trip">
+		<h2>No trips</h2>
+		<p>Check back soon for more trips.</p>
+	</div>
 {% endfor %}
 
 {{parent()}}

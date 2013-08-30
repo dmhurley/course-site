@@ -78,6 +78,8 @@
 				<td><a href="{{ path('eval_review', {'id': trip.id, 'title':trip.title}) }}">review</a></td>
 				<td><a href="{{ path('trip_download', {'id': trip.id}) }}">download</a></td>
 			</tr>
+		{% else %}
+			<tr><td colspan=5 style="text-align:center;">no trips</td></tr>
 		{% endfor %}
 	</table>
 {% endblock %}
@@ -103,8 +105,8 @@
 
 			addButton.onclick = function() {
 				var row = body.insertRow(-1);
-				var deleteCell = row.insertCell();
-				var textCell = row.insertCell();
+				var deleteCell = row.insertCell(0);
+				var textCell = row.insertCell(0);
 
 				textCell.classList.add('text');
 				textCell.innerHTML = "<textarea required='required' name="+ index-- +"></textarea>";
@@ -116,8 +118,9 @@
 
 			multiButton.onclick = function() {
 				var row = body.insertRow(-1);
-				var deleteCell = row.insertCell();
-				var multiCell = row.insertCell();
+
+				var deleteCell = row.insertCell(0);
+				var multiCell = row.insertCell(0);
 
 				deleteCell.classList.add('delete');
 				deleteCell.innerHTML = 'delete';

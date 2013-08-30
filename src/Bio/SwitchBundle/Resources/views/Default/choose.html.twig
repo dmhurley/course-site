@@ -15,18 +15,16 @@
 					</tr>
 				</thead>
 				<tbody>
-					{% for choice in form.children['want'].vars.choices %}
+					{% for choice in form.children['want'].vars.choices if request.current != choice.data %}
 					<tr>
-						{% if request.current == choice.data %}
-							<td><input disabled="disabled" type="checkbox"></td>
-						{% else %}
-							<td><input type="checkbox" name="form[want][]" value={{choice.value}} ></td>
-						{% endif %}
+						<td><input type="checkbox" name="form[want][]" value={{choice.value}} ></td>
 						<td>{{choice.data.name|upper}}</td>
 						<td>{{choice.data.day|capitalize}}</td>
 						<td>{{choice.data.start|date('h:i a')}}</td>
 						<td>{{choice.data.end|date('h:i a')}}</td>
 					</tr>
+					{% else %}
+						<tr><td colspan=5 style="text-align:center;">no other sections</td></tr>
 					{% endfor %}
 				</tbody>
 			</table>

@@ -35,6 +35,8 @@
 				<td><a href="{{ path('edit_exam', {'id':exam.id}) }}">edit</a></td>
 				<td><a href="{{ path('delete_exam', {'id':exam.id}) }}">delete</a></td>
 			</tr>
+		{% else %}
+			<tr><td colspan=8 style="text-align:center;">no exams</td></tr>
 		{% endfor %}
 	</table>
 {% endblock %}

@@ -25,6 +25,8 @@
 				<td><a href="{{ path('edit', {'entityName' : 'section', 'id':section.id}) }}">edit</a></td>
 				<td><a href="{{ path('delete', {'entityName' : 'section', 'id':section.id}) }}">delete</a></td>
 			</tr>
+		{% else %}
+			<tr><td colspan=8 style="text-align:center">no sections</td></tr>
 		{% endfor %}
 	</table>
 {% endblock %}

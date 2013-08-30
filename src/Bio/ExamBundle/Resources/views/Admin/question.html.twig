@@ -30,6 +30,8 @@
 				<td><a href="{{ path('edit_question', {'id':question.id}) }}">edit</a></td>
 				<td><a href="{{ path('delete_question', {'id':question.id}) }}">delete</a></td>
 			</tr>
+		{% else %}
+			<tr><td colspan=5 style="text-align:center;">no questions</td></tr>
 		{% endfor %}
 	</table>
 {% endblock %}

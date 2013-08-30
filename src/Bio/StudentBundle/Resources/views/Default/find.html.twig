@@ -22,6 +22,8 @@
 				<td><a href="{{ path('reset_password', {'id':entity.id}) }}">reset</a></td>
 				<td><a href="{{ path('delete_student', {'id': entity.id}) }}">delete</td>
 			</tr>
+		{% else %}
+			<tr><td colspan=7 style="text-align:center">no students</td></tr>
 		{% endfor %}
 	</table>
 {% endblock %}

@@ -23,15 +23,12 @@
 						<td>{{choice.data.current.start|date('h:i a')}}</td>
 						<td>{{choice.data.current.end|date('h:i a')}}</td>
 					</tr>
-					{% endfor %}
-				</tbody>
-				{% if form.children['match'].vars.choices|length == 0 %}
-					<tfoot>
+					{% else %}
 						<tr>
 							<td colspan=5 style="text-align:center;">No matches found</td>
 						</tr>
-					</tfoot>
-				{% endif %}
+					{% endfor %}
+				</tbody>
 			</table>
 			{% do form_row(form.match) %}
 			{{form_row(form.submit)}}

@@ -36,6 +36,8 @@
 			<td><a href="{{ path('reset_password', {'id':user.id}) }}">reset</a></td>
 			<td><a href="{{ path('delete_user', {'id':user.id}) }}">delete</a></td>
 		</tr>
+	{% else %}
+		<tr><td colspan=6 style="text-align:center;">no other users</td></tr>
 	{% endfor %}
 	<tr>
 		<td colspan=6 style="text-align:center;"><a href="{{ path('register') }}">create account</a></td>
