@@ -17,7 +17,6 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new Bio\StudentBundle\BioStudentBundle(),
-            new Bio\StyleBundle\BioStyleBundle(),
             new Bio\ClickerBundle\BioClickerBundle(),
             new Bio\InfoBundle\BioInfoBundle(),
             new Bio\DataBundle\BioDataBundle(),

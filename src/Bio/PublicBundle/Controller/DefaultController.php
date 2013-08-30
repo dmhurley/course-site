@@ -156,46 +156,6 @@ class DefaultController extends Controller
         return array('sidelinks' => $sidebar, 'mainlinks' => $mainpage, 'title' => 'Links');
     }
 
-    public function emailAction() {
-        $db = new Database($this, 'BioInfoBundle:Info');
-        $instructor = $db->findOne(array());
-        $link = 'mailto:';
-        $link.=$instructor->getEmail();
-        return new Response($link);
-    }
-
-    public function signAction(Request $request, $redirect) {
-        $form = $this->createFormBuilder()
-            ->add('sid', 'text', array('label' => 'Student ID:', 'mapped' => false,
-                                       'constraints' => array(new Assert\NotBlank(), new Assert\Regex("/[0-9]{7}/") )))
-            ->add('lName', 'text', array('label' => 'Last Name:', 'mapped' => false, 'constraints' => new Assert\NotBlank()))
-            ->add('sign in', 'submit')
-            ->getForm();
-
-        if ($request->getMethod() === "POST") {
-            $form->handleRequest($request);
-
-            if ($form->isValid()) {
-                $sid = $form->get('sid')->getData();
-                $lName = $form->get('lName')->getData();
-
-                $db = new Database($this, 'BioStudentBundle:Student');
-
-                $student = $db->findOne(array('sid' => $sid, 'lName' => $lName));
-                if ($student) {
-                    $request->getSession()->set('studentID', $student->getId());
-                    return $this->redirect($this->generateUrl($redirect));
-                } else {
-                    $request->getSession()->getFlashBag()->set('failure', 'Could not find a student with that last name and student ID.');
-                }
-            } else {
-                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
-            }
-        }
-
-        return $this->render('BioPublicBundle:Default:sign.html.twig', array('form' => $form->createView(), 'title' => 'Log In'));
-    }
-
     /**
      * @Route("/user/change", name="change_password")
      * @Template()
