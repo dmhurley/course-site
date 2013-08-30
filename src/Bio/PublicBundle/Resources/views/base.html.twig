@@ -74,6 +74,17 @@
 			</div>
 		</div>
 	</body>
+	<script>
+	(function() {
+		window.addEventListener('load', function() {
+			var a = document.getElementsByTagName('input');
+			if (a.length > 0) {
+				a[0].select(); // select instead of focus so page isn't autoscrolled
+			}
+		})
+	})();
+
+	</script>
 	{% block java %}
 
 	{% endblock %}
