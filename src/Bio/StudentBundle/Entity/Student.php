@@ -83,7 +83,7 @@ class Student extends AbstractUserStudent
         return array('ROLE_STUDENT');
     }
     public function eraseCredentials() {
-        $this->password = $this->getLName();
+        // do nothing
     }
     /***************************************/
 
