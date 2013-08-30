@@ -14,7 +14,7 @@ use Bio\UserBundle\Entity\AbstractUserStudent;
 /**
  * @Route("/admin/user")
  */
-class DefaultController extends Controller
+class AdminController extends Controller
 {
     /**
      * @Route("/", name="view_users")
@@ -102,7 +102,8 @@ class DefaultController extends Controller
                 ->setSubject('Password Reset')
                 ->setFrom('fakeemail@email.com')
                 ->setTo($user->getEmail())
-                ->setBody('Your temporary password is '. $pwd .'. Please sign in to change it.');
+                ->setContentType('text/html')
+                ->setBody('Your temporary password is <code>'. $pwd .'</code>. Please sign in to change it.');
 
             $this->get('mailer')->send($message);
         } else {
