@@ -129,7 +129,7 @@ $output->writeln('<question>--------------------------------------------</questi
                 ->setDays(array('m', 'w', 'f'))
                 ->setStartTime(new \DateTime())
                 ->setEndTime(new \DateTime())
-                ->setBldg('KNE  Kane Hall')
+                ->setBldg("HCK\tHitchcock Hall")
                 ->setRoom('120')
                 ->setEmail('fakeemail@gmail.com');
 
@@ -141,7 +141,7 @@ $output->writeln('<question>--------------------------------------------</questi
             $instructor->setfName('John')
                 ->setlName('Doe')
                 ->setEmail('johndoe@gmail.com')
-                ->setBldg('KNE  Kane Hall')
+                ->setBldg("HCK\tHitchcock Hall")
                 ->setRoom('101')
                 ->setTitle('instructor');
 

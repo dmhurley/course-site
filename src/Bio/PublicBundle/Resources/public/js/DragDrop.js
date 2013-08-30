@@ -35,7 +35,7 @@
 				}
 
 				this.init = function() {
-					for (var i = 0; i < 2; i++) {
+					for (var i = 0; i < this.tinyMCE.editors.length/2; i++) {
 						var editor = this.tinyMCE.get(i);
 						var dropzone = editor.getContainer();
 						var div = document.createElement('div');

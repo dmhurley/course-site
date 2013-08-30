@@ -88,11 +88,11 @@ class AccountCommand extends ContainerAwareCommand
         $user = new User();
 
         $encoder = $factory->getEncoder($user);
-        echo $user->getSalt();
         $pwd = $encoder->encodePassword($password, $user->getSalt());
-        $user->setPassword($pwd);
-        $user->setUsername($username);
-        $user->setRoles(array($role));
+        $user->setPassword($pwd)
+            ->setUsername($username)
+            ->setEmail($email)
+            ->setRoles(array($role));
 
         $db->add($user);
         $db->close();
