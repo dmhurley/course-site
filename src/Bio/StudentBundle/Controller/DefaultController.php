@@ -97,6 +97,8 @@ class DefaultController extends Controller
     		if ($form->isValid()) {
     			try {
                     $db = new Database($this, 'BioStudentBundle:Student');
+                    $encoder = $this->get('security.encoder_factory')->getEncoder($entity);
+                    $entity->setPassword($encoder->encodePassword($entity->getLName(), $entity->getSalt()));
                     $db->add($entity);
                     $db->close("That Student ID or email is already registered.");
                     $request->getSession()->getFlashBag()->set('success', 'Student added.');
