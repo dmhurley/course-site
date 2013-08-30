@@ -1,4 +1,4 @@
-{% extends 'BioStyleBundle:Default:base.html.twig' %}
+{% extends 'BioPublicBundle::base.html.twig' %}
 
 {% block header %}
 	{{parent()}}
@@ -22,7 +22,7 @@
 {% endblock %}
 
 {% block left %}
-	{{ render(controller('BioStyleBundle:Default:sidebar', {'error':false})) }}
+	{{ render(controller('BioPublicBundle:Content:sidebar', {'error':false})) }}
 {% endblock %}
 
 {% block basecontent %}

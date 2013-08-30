@@ -1,14 +1,16 @@
 <?php
 
-namespace Bio\StyleBundle\Controller;
+namespace Bio\PublicBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 use Bio\DataBundle\Objects\Database;
+use Symfony\Component\HttpFoundation\Response;
 
-class DefaultController extends Controller
+
+class ContentController extends Controller
 {
 	/**
 	 * @Template()
@@ -25,7 +27,7 @@ class DefaultController extends Controller
 
 			$db = new Database($this, 'BioInfoBundle:Link');
 			$links = $db->find(array('location' => 'sidebar'), array(), false);
-			return $this->render('BioStyleBundle:Default:sidebar.html.twig', array('root' => $root, 'links' => $links));
+			return $this->render('BioPublicBundle:Content:sidebar.html.twig', array('root' => $root, 'links' => $links));
 		}
 	}
 
@@ -38,4 +40,12 @@ class DefaultController extends Controller
 
 		return array('entity' => $info);
 	}
+
+	public function emailAction() {
+        $db = new Database($this, 'BioInfoBundle:Info');
+        $instructor = $db->findOne(array());
+        $link = 'mailto:';
+        $link.=$instructor->getEmail();
+        return new Response($link);
+    }
 }

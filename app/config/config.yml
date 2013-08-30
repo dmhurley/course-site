@@ -29,13 +29,13 @@ twig:
         name: %site_name%
     form:
         resources:
-            - 'BioStyleBundle::form_errors.html.twig'
+            - 'BioPublicBundle::form_errors.html.twig'
 
 # Assetic Configuration
 assetic:
     debug:          %kernel.debug%
     use_controller: false
-    bundles:        ['BioSwitchBundle', 'BioExamBundle', 'BioStudentBundle', 'BioStyleBundle', 'BioClickerBundle', 'BioInfoBundle', 'BioFolderBundle', 'BioPublicBundle', 'BioUserBundle', 'BioScoreBundle', 'BioTripBundle']
+    bundles:        ['BioSwitchBundle', 'BioExamBundle', 'BioStudentBundle', 'BioClickerBundle', 'BioInfoBundle', 'BioFolderBundle', 'BioPublicBundle', 'BioUserBundle', 'BioScoreBundle', 'BioTripBundle']
     #java: /usr/bin/java
     filters:
         cssrewrite: ~

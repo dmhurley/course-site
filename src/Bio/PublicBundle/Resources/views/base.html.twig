@@ -1,19 +1,19 @@
 {% set tt %}
-	{{render(controller('BioStyleBundle:Default:title'))}}
+	{{render(controller('BioPublicBundle:Content:title'))}}
 {% endset %}
 
 <!DOCTYPE html>
 <html>
 	<head>
 		<title>{% block title %}{{tt}}{% endblock %}</title>
-		{% image 'bundles/biostyle/images/favicon.ico' output="images/*.ico" %}
+		{% image 'bundles/biopublic/images/favicon.ico' output="images/*.ico" %}
 			<link rel="shortcut icon" href="{{ asset_url }}" />
 		{% endimage %}
 		
 		<!-- BASIC STYLE SHEETS -->
-		{% stylesheets 'bundles/biostyle/css/page.css' 
-					   'bundles/biostyle/css/form.css'
-					   'bundles/biostyle/css/tool-tip.css' filter="cssrewrite" output="css/*.css" %}
+		{% stylesheets 'bundles/biopublic/css/page.css' 
+					   'bundles/biopublic/css/form.css'
+					   'bundles/biopublic/css/tool-tip.css' filter="cssrewrite" output="css/*.css" %}
 			<link rel="stylesheet" href="{{ asset_url }}" />
 		{% endstylesheets %}
 
@@ -52,7 +52,7 @@
 
 				<div id="left">
 					{% block left %}
-						{{ render(controller('BioStyleBundle:Default:sidebar', {'error':true})) }}
+						{{ render(controller('BioPublicBundle:Content:sidebar', {'error':true})) }}
 					{% endblock %}	
 				</div>
 

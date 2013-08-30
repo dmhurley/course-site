@@ -1,4 +1,4 @@
-{% extends 'BioStyleBundle:Default:main.html.twig' %}
+{% extends 'BioPublicBundle::main.html.twig' %}
 
 {% block head %}
 	{{ parent() }}
@@ -6,7 +6,7 @@
 		<link rel="stylesheet" href="{{ asset_url }}" />
 	{% endstylesheets %}
 
-	{% javascripts 'bundles/biostyle/js/DragDrop.js' output="js/*.js" %}
+	{% javascripts 'bundles/biopublic/js/DragDrop.js' output="js/*.js" %}
 		<script src="{{asset_url}}"></script>
 	{% endjavascripts %}
 {% endblock %}

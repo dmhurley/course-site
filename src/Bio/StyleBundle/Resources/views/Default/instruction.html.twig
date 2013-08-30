@@ -1,8 +1,0 @@
-{% extends 'BioStyleBundle:Default:main.html.twig' %}
-
-{% block head %}
-	{{ parent() }}
-	{% stylesheets 'bundles/biostyle/css/instruction.css' filter="cssrewrite" output="css/*.css" %}
-		<link rel="stylesheet" href="{{ asset_url }}" />
-	{% endstylesheets %}
-{% endblock %}

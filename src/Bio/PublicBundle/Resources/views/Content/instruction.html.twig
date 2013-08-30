@@ -2,7 +2,7 @@
 
 {% block head %}
 	{{ parent() }}
-	{% stylesheets 'bundles/bioexam/css/exam.css' filter="cssrewrite" output="css/*.css" %}
+	{% stylesheets 'bundles/biopublic/css/instruction.css' filter="cssrewrite" output="css/*.css" %}
 		<link rel="stylesheet" href="{{ asset_url }}" />
 	{% endstylesheets %}
 {% endblock %}
