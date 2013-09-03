@@ -63,10 +63,8 @@ class DefaultController extends Controller
     		->add('upload', 'submit')
     		->getForm();
 
-        $clone = clone $form;
-        $clone1 = clone $form1;
-
         if ($request->getMethod() === "POST") {
+
             if ($request->request->has('form')) {
                 $form->handleRequest($request);
                 if ($form->isValid()) {
@@ -79,8 +77,8 @@ class DefaultController extends Controller
                         $db->add($folder);
                         try {
                           $db->close();
-                          $form = $clone;
                           $request->getSession()->getFlashBag()->set('success', "Folder \"".$folder->getName()."\" added.");
+                          return $this->redirect($this->generateUrl('view_folders').'?id='.$selected.($private?'&private=1':''));
                         } catch (BioException $e) {
                             $request->getSession()->getFlashBag()->set('failure', "Folder could not be added.");
                             $db->delete($folder);
@@ -89,9 +87,7 @@ class DefaultController extends Controller
                 } else {
                     $request->getSession()->getFlashBag()->set('failure', "Invalid form.");
                 }
-            }
-
-            if ($request->request->has('global')) {
+            } else if ($request->request->has('global')) {
                 $form1->handleRequest($request);
                 if ($form1->isValid()) {
                     $parent = $db->findOne(array('id' => $form1->get('id')->getData()));
@@ -103,8 +99,8 @@ class DefaultController extends Controller
                         try {
                             $db->add($file);
                             $db->close("File could not be uploaded.");
-                            $form1 = $clone1;
                             $request->getSession()->getFlashBag()->set('success', "File \"".$file->getPath()."\" uploaded.");
+                            return $this->redirect($this->generateUrl('view_folders').'?id='.$selected.($private?'&private':''));
                         } catch (BioException $e) {
                              $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
                              $db->delete($file);

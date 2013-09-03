@@ -41,7 +41,6 @@ class AdminController extends Controller
             ->add('longSum', 'textarea', array('label' => 'Long Summary:', 'attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
     		->add('add', 'submit')
     		->getForm();
-        $clone = clone $form;
 
         $db = new Database($this, 'BioTripBundle:TripGlobal');
         $global = $db->findOne(array());
@@ -58,29 +57,33 @@ class AdminController extends Controller
     	$db = new Database($this, 'BioTripBundle:Trip');
 
     	if ($request->getMethod() === "POST") {
+            $isValid = true;
+
             if ($request->request->has('form')){
         		$form->handleRequest($request);
         		if ($form->isValid()) {
-
         			$db->add($trip);
-        		}
-            }
-
-            if ($request->request->has('global')) {
-                $entity = clone $global;
-                $globalForm->handleRequest($request);
-
-                if (!$form->isValid()) {
-                    $global = $entity;
+        		} else {
+                    $isValid = false;
                 }
             }
 
-            try {
-                $db->close();
-                $request->getSession()->getFlashBag()->set('success', 'Saved change.');
-                $form = $clone;
-            } catch (BioException $e) {
-                $request->getSession()->getFlashBag()->set('failure', 'Unable to save change.');
+            if ($request->request->has('global')) {
+                $globalForm->handleRequest($request);
+                if (!$form->isValid()) {
+                    $isValid = false;
+                }
+            }
+            if ($isValid) {
+                try {
+                    $db->close();
+                    $request->getSession()->getFlashBag()->set('success', 'Saved change.');
+                    return $this->redirect($this->generateUrl('manage_trips'));
+                } catch (BioException $e) {
+                    $request->getSession()->getFlashBag()->set('failure', 'Unable to save change.');
+                }
+            } else {
+                $request->getSession()->getFlashBag()->set('failure', 'Invalid Form.');
             }
     	}
     	$trips = $db->find(array(), array('start' => 'ASC', 'end' => 'ASC'), false);

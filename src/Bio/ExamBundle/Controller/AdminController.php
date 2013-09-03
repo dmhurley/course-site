@@ -58,8 +58,7 @@ class AdminController extends Controller
             ->getForm();
 
    		if ($request->getMethod() === "POST") {
-            $emptyForm = clone $form;
-            $needsBlankForm = true;
+            $isValid = true;
 
             if ($request->request->has('form')) {
        			$form->handleRequest($request);
@@ -67,34 +66,28 @@ class AdminController extends Controller
        			if ($form->isValid()) {
        				$db->add($exam);
        			} else {
-                    $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
-                    $needsBlankForm = false;
+                    $isValid = false;
                 }
             }
 
             if ($request->request->has('global')) {
                 $globalForm->handleRequest($request);
 
-                if ($globalForm->isValid()) {
-                    $dbGlobal = $db->findOne(array());
-
-                    $dbGlobal->setGrade($global->getGrade())
-                        ->setRules($global->getRules());
-                } else {
-                     $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
-                     $needsBlankForm = false;
+                if (!$globalForm->isValid()) {
+                     $isValid = false;
                 }
             }
 
-            if ($needsBlankForm) {
+            if ($isValid) {
                 try {
                     $db->close();
                     $request->getSession()->getFlashBag()->set('success', 'Saved change.');
+                    return $this->redirect($this->generateUrl('manage_exams'));
                 } catch (BioException $e) {
                     $request->getSession()->getFlashBag()->set('failure', 'Unable to save change.');
-                    $needsBlankForm = false;
                 }
-                $form = $emptyForm;
+            } else {
+                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
             }
    		}
 
@@ -186,8 +179,6 @@ class AdminController extends Controller
 
     	$db = new Database($this, 'BioExamBundle:Question');
 
-        $emptyForm = clone $form;
-
     	if ($request->getMethod() === "POST") {
 
     		$form->handleRequest($request);
@@ -197,18 +188,18 @@ class AdminController extends Controller
     			$db->add($q);
                 try {
                     $db->close();
+                    $request->getSession()->getFlashBag()->set('success', 'Added question.');
+                    return $this->redirect($this->generateUrl('manage_questions'));
                 } catch (BioException $e) {
                     $request->getSession()->getFlashBag()->set('failure', 'Unable to add question.');
-                    $emptyForm = $form;
                 }
     		} else {
                 $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
-                $emptyForm = $form;
             }
     	}
 
     	$questions = $db->find(array(), array(), false);
-    	return array('form' => $emptyForm->createView(), 'questions' => $questions, 'title' => 'Questions');
+    	return array('form' => $form->createView(), 'questions' => $questions, 'title' => 'Questions');
     }
 
     /**

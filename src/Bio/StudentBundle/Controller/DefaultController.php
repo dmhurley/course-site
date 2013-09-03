@@ -90,8 +90,6 @@ class DefaultController extends Controller
     	$entity = new Student();
     	$form = $this->createForm(new StudentType(), $entity, array('label' => 'add'));
 
-    	$cloned = clone $form;
-
     	if ($request->getMethod() === "POST") {
     		$form->handleRequest($request);
     		if ($form->isValid()) {
@@ -102,10 +100,10 @@ class DefaultController extends Controller
                     $db->add($entity);
                     $db->close("That Student ID or email is already registered.");
                     $request->getSession()->getFlashBag()->set('success', 'Student added.');
+                    return $this->redirect($this->generateUrl('add_student'));
                 } catch (BioException $e) {
                     $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
                 }
-	    		$form = $cloned;
     		} else {
     			$request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
     		}

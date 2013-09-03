@@ -41,8 +41,6 @@ class DefaultController extends Controller {
             ->add('add', 'submit')
             ->getForm();
 
-        $formclone = clone $form;
-
         $db = new Database($this, 'BioInfoBundle:'.$uc);
         if ($request->getMethod() === "POST") {
             $form->handleRequest($request);
@@ -51,8 +49,8 @@ class DefaultController extends Controller {
                 $db->add($entity);
                 $db->close();
                 $request->getSession()->getFlashBag()->set('success', $uc.' added.');
+                return $this->redirect($this->generateUrl('view', array('entityName' => $entityName)));
             } else {
-                $formclone = $form;
                 $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
             }
         }
@@ -67,7 +65,7 @@ class DefaultController extends Controller {
 
         $plural = $uc[strlen($uc)-1]==='s'?$uc:$uc.'s';
         return $this->render('BioInfoBundle:'.$uc.':'.$lc.'.html.twig', 
-                array('form' => $formclone->createView(), $lc.'s' => $entities, 'title' => 'Manage '.$plural));
+                array('form' => $form->createView(), $lc.'s' => $entities, 'title' => 'Manage '.$plural));
     }
 
     /**

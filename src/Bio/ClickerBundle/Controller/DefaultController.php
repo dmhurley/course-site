@@ -27,7 +27,7 @@ class DefaultController extends Controller {
     }
 
     /**
-     * @Route("/../../clicker")
+     * @Route("/../../clicker", name="register_clicker")
      * @Template()
      */
     public function registerAction(Request $request) {
@@ -35,8 +35,6 @@ class DefaultController extends Controller {
     		->add('cid', 'text', array('label' => "Clicker ID:", 'constraints' => array(new Assert\Regex("/^[0-9A-Fa-f]{6}$/"), new Assert\NotBlank()), 'attr' => array('pattern' => '[0-9A-Fa-f]{6}', 'title' => '6 digit clicker ID')))
     		->add('Register', 'submit')
     		->getForm();
-
-        $blankForm = clone $form;
 
     	if ($request->getMethod() === "POST") {
     		$form->handleRequest($request);
@@ -58,11 +56,11 @@ class DefaultController extends Controller {
 
 				try {
 					$db->close();
+                    return $this->redirect($this->generateUrl('register_clicker'));
 				} catch (BioException $e) {
 					$request->getSession()->getFlashBag()->set('failure', "Someone else is already registered to that clicker.");
 					$request->getSession()->getFlashBag()->get('success'); // remove the successful flash message that was set earlier
 				}
-                $form = $blankForm;
 
 	    	} else {
 	    		$request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
@@ -106,16 +104,14 @@ class DefaultController extends Controller {
     		->add('confirmation', 'checkbox', array('constraints' => new Assert\True(array('message' => 'You must confirm.'))))
     		->add('clear', 'submit', array('label' => 'Clear Clickers'))
     		->getForm();
-        $blankForm = clone $form;
     	if ($request->getMethod() === "POST") {
     		$form->handleRequest($request);
 
     		if ($form->isValid()) {
     			$db = new Database($this, 'BioClickerBundle:Clicker');
                 $db->truncate();
-
 		        $request->getSession()->getFlashBag()->set('success', 'All clicker registrations cleared.');
-                $form = $blankForm;
+                return $this->redirect($this->generateUrl('clear_list'));
     		} else {
                 $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
             }
