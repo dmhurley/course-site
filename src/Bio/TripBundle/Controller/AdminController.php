@@ -70,7 +70,7 @@ class AdminController extends Controller
 
             if ($request->request->has('global')) {
                 $globalForm->handleRequest($request);
-                if (!$form->isValid()) {
+                if (!$globalForm->isValid()) {
                     $isValid = false;
                 }
             }
@@ -236,6 +236,7 @@ class AdminController extends Controller
 
             try {
                 $db->close();
+                $request->getSession()->getFlashBag()->set('success', 'Evaluation questions saved.');
             } catch (BioException $e) {
                 $request->getSession()->getFlashBag()->set('failure', 'Could not save questions.');
             }

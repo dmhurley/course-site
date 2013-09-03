@@ -59,7 +59,6 @@
 				this.init();
 			}
 			window.addEventListener('load', function() {
-				console.log('sup');
 				new DragDrop(tinyMCE);
 			});
 		})();

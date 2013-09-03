@@ -52,4 +52,39 @@
 			</tr>
 		</tbody>
 	</table>
+
+	<table>
+		<thead>
+			<th colspan=5><h2 style="margin-bottom:0px;">Evaluations</h2>in no particular order</th>
+		</thead>
+		<tbody>
+			{% for eval in trip.evals %}
+				<tr>
+					<td rowspan={{eval.answers|length * 2}}>Student {{loop.index}}</td>
+					<td rowspan=2>Question 1</td>
+					<td>question</td>
+					<td>{{(eval.answers|first).evalQuestion.data[0]}}</td>
+				</tr>
+				<tr>
+					<td>answer</td>
+					<td>{{(eval.answers|first).answer}}</td>
+				</tr>
+				{% for answer in eval.answers %}
+					{% if loop.index != 1 %}
+						<tr>
+							<td rowspan=2 >Question {{loop.index + 1}}</td>
+							<td>question</td>
+							<td>{{answer.evalQuestion.data[0]}}</td>
+						</tr>
+						<tr>
+							<td>answer</td>
+							<td>{{answer.answer}}</td>
+						</tr>
+					{% endif %}
+				{% endfor %}
+			{% else %}
+				<tr><td colspan=5 style="text-align:center;">no evaluations</td></tr>
+			{% endfor %}
+		</tbody>
+	</table>
 {% endblock %}

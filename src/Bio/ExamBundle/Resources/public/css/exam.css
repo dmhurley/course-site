@@ -6,25 +6,29 @@
 	padding: 5px 20px;
 }
 
-.q ul, .q ol{
+.question ul, .question ol{
 	padding-left: 15px;
 }
 
-.q table {
+.question table {
 	margin: 5px;
 }
 
-.q table, .q td, .q th {
+.question table, .question td, .question th {
 	border: 1px solid black;
 }
 
-.q img {
+.question img {
 	margin: 10px !important;
 }
 
 .a, .q {
 	width: 90%;
 	clear:both;
+}
+
+.score table, .score td, .score th {
+	border: none;
 }
 
 .q {

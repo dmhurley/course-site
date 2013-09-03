@@ -37,6 +37,7 @@
 			<th>Start</th>
 			<th>End</th>
 			<th>Spots Taken</th>
+			<th>View</th>
 			<th>Edit</th>
 			<th>Delete</th>
 		</tr>
@@ -47,6 +48,7 @@
 				<td>{{ trip.start|date('d-m-y H:i:s') }}</td>
 				<td>{{ trip.end|date('d-m-y H:i:s') }}</td>
 				<td>{{ trip.students|length }}/{{trip.max}}</td>
+				<td><a href="{{ path('view_trip', {'id':trip.id}) }}">view</a></td>
 				<td><a href="{{ path('edit_trip', {'id':trip.id}) }}">edit</a></td>
 				<td><a href="{{ path('delete_trip', {'id':trip.id}) }}">delete</a></td>
 			</tr>
