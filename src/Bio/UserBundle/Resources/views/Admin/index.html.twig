@@ -49,8 +49,39 @@
 		<img src="{{ asset_url }}"/>
 	{% endimage %}
 	<h2>Instructions</h2>
-	<p>A user can have one of three different roles. If a user has the role <i>USER</i> they cannot access anything that is not already publicly available. A user with the role <i>ADMIN</i> has the power to edit everything on the course website <b>except</b> for this page. Finally anyone with the role <i>SUPER ADMIN</i> can edit everything on the site and promote, demote, or delete any user <b>including themselves</b> (be careful). To see what role you have, look for the dark grey text at the top right of the page next to the logout button.</p>
+	<p>A user can have one of three different roles. If a user has the role <i>USER</i> they cannot access anything that is not already publicly available. A user with the role <i>ADMIN</i> has the power to edit everything on the course website <b>except</b> for this page. Finally anyone with the role <i>SUPER ADMIN</i> can edit everything on the site and promote, demote, or delete any user. To see what role you have, hover over your username in the top right corner and look for the <i>Role</i> row.</p>
+</div>
 
+<div>
+	{% image 'bundles/biouser/images/menu.png' output='images/*.png' %}
+		<img src="{{ asset_url }}"/>
+	{% endimage %}
+	<h2>User Options</h2>
+	<p>In the top right corner of the screen is a purple box with your username. You can hover over that box to change your password, see your current role, or logout. This box will appear to all users and students when they are signed in. If a user forgets their password you can reset it and the new password will be emailed to them, where they should sign in and change it to something memorable.</p>
+</div>
+
+<div class="tableStyle">
 	<p>If you want to give other instructors or TAs access to the admin portion of the site. They must first register an account and be promoted from this page. It's not recommended to promote anyone but yourself to the role of <i>SUPER ADMIN</i>.</p>
+
+	<p>Users of role <i>Admin</i> and above can masquerade as students to take exams, sign up for field trips, register clickers, and more. Information specific to students like first and last name, section, and student ID are spoofed. The spoofed values are generated as follows:</p>
+	<table>
+		<tr>
+			<td>First Name</td>
+			<td>The username you sign in as</td>
+		</tr>
+		<tr>
+			<td>Last Name</td>
+			<td>Always 'Admin'</td>
+		</tr>
+		<tr>
+			<td>Section</td>
+			<td>Always 'AA'</td>
+		</tr>
+		<tr>
+			<td>Student ID</td>
+			<td>Many 0's followed by a few number<br />
+			eg: '0000013'</td>
+		</tr>
+	</table>
 </div>
 {% endblock %}

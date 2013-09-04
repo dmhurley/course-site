@@ -10,6 +10,7 @@
 			 	<div class="menu">
 			 		<ul>
 			 			<a href="{{ path('change_password') }}"><li>change password</li></a>
+			 			<li>Role: {{app.user.roles[0][5:]|replace({'_':' '})}}</li>
 			 			<a href="{{ path('logout') }}"><li>logout</li></a>
 			 		</ul>
 			 	</div>
