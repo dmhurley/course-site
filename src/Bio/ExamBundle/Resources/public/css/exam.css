@@ -87,20 +87,6 @@
 	margin: 0px;
 }
 
-#timer {
-	position: fixed;
-	right: 0px;
-	top: 100px;
-	background-color: white;
-	padding: 20px;
-	border: 7px solid rgb(200,200,200);
-	border-right:none;
-	border-top-left-radius: 25px;
-	border-bottom-left-radius: 25px;
-	font-size: 20pt;
-	width: 100px;
-}
-
 #loader {
 	width: 220px;
 	height: 19px;
