@@ -1,5 +1,11 @@
 {% extends 'BioPublicBundle::main.html.twig' %}
 
+{% block head %}
+	{% javascripts 'bundles/biopublic/js/DragDrop.js' output="js/*.js" %}
+		<script src="{{asset_url}}"></script>
+	{% endjavascripts %}
+{% endblock %}
+
 {% block content %}
 	{% if form is defined %}
 		{{form(form)}}

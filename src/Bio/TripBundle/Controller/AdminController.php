@@ -25,6 +25,14 @@ use Bio\StudentBundle\Entity\Student;
 class AdminController extends Controller
 {
     /**
+     * @Route("/", name="trip_instruct")
+     * @Template()
+     */
+    public function instructionAction(Request $request) {
+        return array('title' => 'Field Trips');
+    }
+
+    /**
      * @Route("/manage", name="manage_trips")
      * @Template()
      */

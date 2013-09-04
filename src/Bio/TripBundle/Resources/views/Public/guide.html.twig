@@ -14,12 +14,14 @@
 		</thead>
 		<tbody>
 			{% for trip in trips %}
-				<td>{{ trip.title }}</td>
-				<td>{{ trip.shortSum|striptags|replace({'&nbsp;': ''}) }}</td>
-				<td>{{ trip.start|date('d-m-y H:i:s') }}</td>
-				<td>{{ trip.end|date('d-m-y H:i:s') }}</td>
-				<td>{{ trip.students|length }}/{{trip.max}}</td>
-				<td><a href="{{ path('tour_guide_view_trip', {'id': trip.id }) }}">view</a></td>
+				<tr>
+					<td>{{ trip.title }}</td>
+					<td>{{ trip.shortSum|striptags|replace({'&nbsp;': ''}) }}</td>
+					<td>{{ trip.start|date('d-m-y H:i:s') }}</td>
+					<td>{{ trip.end|date('d-m-y H:i:s') }}</td>
+					<td>{{ trip.students|length }}/{{trip.max}}</td>
+					<td><a href="{{ path('tour_guide_view_trip', {'id': trip.id }) }}">view</a></td>
+				</tr>
 			{% endfor %}
 		</tbody>
 	</table>
