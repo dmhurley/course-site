@@ -1,5 +1,12 @@
 {% extends 'BioPublicBundle::main.html.twig' %}
 
+{% block head %}
+	{{ parent() }}
+	{% stylesheets 'bundles/bioclicker/css/clicker.css' filter="cssrewrite" output="css/*.css" %}
+		<link rel="stylesheet" href="{{ asset_url }}" />
+	{% endstylesheets %}
+{% endblock %}
+
 {% block content %}
 
 {% endblock %}

@@ -12,19 +12,10 @@
 			<p>Only registered users who have been promoted to <i>ADMIN</i> and above can view these pages and make changes. If you are a <i>SUPER ADMIN</i> you can manage various users <i>roles</i> through the <a href="{{ path('view_users') }}">Users</a> page.</p>
 		{% endif %}
 
-		<p style="margin-bottom:0px;">After making an edit to the site you'll usually come across a colored bar on the top of your page (examples shown at bottom of the page). If the operation was a success the bar will be green. If the operation failed for some reason it will be red with a descriptive message of what went wrong. If the error was due to an improperly filled out form, the offending entry will appear</p>
+		<p style="margin-bottom:0px;">After making an edit to the site you'll usually come across a colored bar on the top of your page. If the operation was a success the bar will be green. If the operation failed for some reason it will be red with a descriptive message of what went wrong. If the error was due to an improperly filled out form, the offending entry will appear</p>
 		<div id="form" style="margin-top:0px;">
 			<div class="error row-error" data-tip="error message goes here" style="margin-top:12px;"><label>like this:</label><input></div>
 			<div></div>
-		</div>
-	</div>
-
-	<div>
-		<div class="success">
-			This means that the operation was a success!
-		</div>
-		<div class="failure">
-			The operation failed. You should fix the problem and try again.
 		</div>
 	</div>
 {% endblock %}

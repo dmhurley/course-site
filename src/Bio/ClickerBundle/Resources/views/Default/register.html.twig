@@ -1,5 +1,8 @@
 {% extends 'BioClickerBundle:Default:base.html.twig' %}
 
 {% block content %}
+	{% image 'bundles/bioclicker/images/clicker.jpg' output='images/*.jpg' %}
+		<img src="{{ asset_url }}" class="clicker" />
+	{% endimage %}
 	{{ form(form)}}
 {% endblock %}
