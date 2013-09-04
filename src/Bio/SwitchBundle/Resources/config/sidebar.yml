@@ -1,6 +1,6 @@
 "Section Switcher":
     "Section Switcher":
-        route: main_page
+        route: switcher_instruct
     Requests:
         route: switch_requests
     "Switch Sections":

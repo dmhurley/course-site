@@ -13,6 +13,14 @@ use Bio\SwitchBundle\Entity\Request;
 class DefaultController extends Controller
 {
     /**
+     * @Route("/admin/switch/", name="switcher_instruct")
+     * @Template()
+     */
+    public function instructionAction() {
+        return array('title' => 'Section Switcher');
+    }
+
+    /**
      * @Route("/admin/switch/requests", name="switch_requests")
      * @Template()
      */
