@@ -212,9 +212,10 @@ class PublicController extends Controller
 		if ($taker->getNumGraded() >= $global->getGrade()) {
 			$code = $exam->getId().':'.$taker->getId().':'.$taker->getStudent()->getSid();
 			$code = base64_encode($code);
-			$request->getSession()->getFlashBag()->set('success', "Finished. Confirmation code:\n".$code);
 			$taker->setStatus(6);
 			$db->close();
+			$request->getSession()->getFlashBag()->set('success', "Finished exam.");
+
 
 			// email confirmation code
 			$db = new Database($this, 'BioInfoBundle:Info');

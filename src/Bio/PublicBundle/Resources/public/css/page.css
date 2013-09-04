@@ -5,24 +5,38 @@
 
 .success, .failure {
 	display: block;
-	width: 90%;
-	margin: 0 auto;
-	border: 2px solid;
+	width: 100%;
 	padding: 15px;
-	margin: 20px;
-	border-radius: 5px;
 	font-size: 15pt;
 	text-align: center;
+	position: fixed;
+	top: -150px;
+	left: 0px;
+	z-index:10;
+	color:rgb(200,200,200);
+	animation: hide 8s;
+	-webkit-animation: hide 8s;
+	cursor:n-resize;
+	opacity: .95;
+	-webkit-user-select:none;
+	-user-select:none;
 }
-
 .success {
-	background-color: rgba(0, 256, 0, .1);
-	border-color: green;
+	background-color: rgb(0, 120, 0);
+}
+.failure {
+	background-color: rgb(120, 0, 0);
 }
 
-.failure {
-	background-color: rgba(256, 0, 0, .1);
-	border-color: red;
+@keyframes hide {
+	0% {top: 0px;}
+	80% {top: 0px;}
+	100% { top: -150px;}
+}
+@-webkit-keyframes hide {
+	0% {top: 0px;}
+	80% {top: 0px;}
+	100% { top: -150px;}
 }
 
 body {
