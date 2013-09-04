@@ -1,17 +1,21 @@
 {% extends 'BioPublicBundle:Content:instruction.html.twig' %}
 
 {% block content %}
-	<p>Write stuff here!</p>
+	<p>Welcome to the Practice Exam section. These tools allow you to create timed online exams and cooresponding questions, that can be taken by students and instantly graded by their peers. You are recommended to try making and taking an exam yourself to familiarize yourself with the process.</p>
 	<div>
 		{% image 'bundles/bioexam/images/exams.png' output='images/*.png' %}
 		    <img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('manage_exams') }}">Manage Exams</a></h2>
-		<p> From this page you can create practice exams for students to take. You must specify the exam name, date, starting time, ending time, and duration (the maximum time a student can spend on it, <b>including</b> the time it takes to grade another test). Once an exam has been created, you can edit it, preview what it will look like to students, and delete it.</p>
+		<p> From this page you can create practice exams for students to take and edit the global settings that apply to every exam. Once an exam has been created, you can edit it (and add questions to it), preview what it will look like to students, or delete it. After an exam has occured, you can click on its name to download a <i>tab delimited .txt</i> file that can be opened in Excel.</p>
 
-		<p>After an exam has happened, click on its name to download a <i>tab delimited .txt</i> file that can be opened in Excel. Most of the column names are self explanatory, but a few may require explaining. The <i>status</i> number can range anywhere from 1-6, with 1 being the least complete, 6 being completed. A status code of 1 means the student logged in with their student ID and last name, but never started the test; 2 means that they started the text but never reviewed or submitted it; 3 means it was completed but it was never reviewed and resubmitted; 4 means the test was submitted but they never started grading another exam; 5 means they started grading an exam but never finished; finally 6 means that they fully completed every part of the exam in the given time.</p>
+		<p>You can give different exams to different sections by filling out the section field. For example if you want an exam to only be given to students in section AB, the exam should be assigned as such. If you want to assign the exam to students in sections AA to A9, simply put <i>A</i>. Leave the field blank to include all sections.</p>
 
-		<p> When setting an exams time and duration, keep in mind that the duration is a <i>soft</i> limit (meaning they will still be able to complete the test <i>and</i> grade another students work if they submit late) but end time is a hard limit. After the end time has passed, students will not be able to continue any further. Also keep in mind that students will be expected to finish their exam <b>and</b> grade another exam within the given duration, and that finding a test to grade can sometimes take up to <b>5 minutes</b>.</p>
+		<p>It is possible to have the testing and grading occur on different days. However the recommended approach is to have both the testing and grading occur on the same day, with the <i>Grading Start</i> set <b>before</b> the <i>Test Start</i> and the <i>Grading End</i> set <b>after</b> the <i>Test End</i>. This will guarantee students can go directly from taking their exam to grading a peers exam.</p>
+
+		<p> When setting the times and durations for the exam and grading, know that the <i>End Time</i> is a hard limit, that is to say any student not finished by the end time will not be able to finish the exam or finish grading other students tests, and that the <i>Duration</i> is a soft limit, meaning students can continue with the exam even if they take longer than the given duration (although they will be marked as late in the output file.</p>
+
+		<p>Global settings are very straight forward, <i>Tests To Grade</i> specifies the number tests a student must grade before they finish. The recommended number is two, because this guarantees that everyone who finishes will be graded, and the minimum is 0. <i>Test Rules</i> are shown before the student starts their exam and can be used to give instructions, advice, or hints.</p>
 	</div>
 
 	<div>
@@ -19,7 +23,7 @@
 		    <img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2>Edit Exams</h2>
-		<p>From this page you can edit all the information about the test, and most importantly find and select the questions that will be on it. The left side of the page contains the basic information needed to create the exam initially, and on the left there is a scrollable table that includes every question in the database. It's possible to narrow down the questions shown by typing in any number of tags.</p>
+		<p>From this page you can edit all the information about the test, and more importantly find and select the questions that will be on it. The left side of the page contains the basic information needed to create the exam initially, and on the right there is a scrollable table that includes every question in the database. Type into the search box to help find questions.</p>
 	</div>
 
 	<div>
@@ -30,5 +34,16 @@
 		<p> This page allows you to create questions that can later be put onto exams. It also displays all previously created questions and allows you to preview, edit, and delete them. You must specify the question, answer, and number of points the question is worth to make a test. Tags are optional, but can be very helpful if there are a lot of questions to choose from.</p> 
 
 		<p>The text boxes for the question and cooresponding answer/rubric allow you to write in rich text format. Giving you the ability to create lists and tables, insert images, and more. Make sure to preview the question once it's been created because the exact formatting and style will slightly change.</p>
+
+		<p>You can drag and drop images from your file system to the text box, simply select an image from a folder or your desktop and drag it over the desired text box, the image will be automatically inserted and you can resize it or position it as you like. Embeded media like YouTube videos can be inserted by inserting the embed code as a link.</p>
+	</div>
+	<div>
+		{% image 'bundles/bioexam/images/confirmation.png' output='images/*.png' %}
+		    <img src="{{ asset_url }}"/>
+		{% endimage %}
+		<h2><a>Confirmation Code</a></h2>
+		<p>After a student finishes a test, they will be redirected back to the start page and given a confirmation code. The same confirmation code will also be emailed to them. If there is a problem, that code can be used to look up their records.</p>
+
+		<p>From that same page, students can also look at their old exams, and see the grades they were given and compare their answers to the actual answers.</p>
 	</div>
 {% endblock %}

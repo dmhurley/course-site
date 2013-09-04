@@ -7,7 +7,7 @@
 			<img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('register_clicker') }}">Register</a></h2>
-		<p> The link to this page is public. Meaning that anyone can access and register a clicker without having to sign in. However by default this link cannot be found anywhere on the site. You can add a link to it by clicking <a href="{{ path('fake_link') }}?title=Clicker Registration&route=register_clicker">here</a>. Or distribute it yourself with the url <input onClick="this.select();" value="{{ url('register_clicker') }}" />.</p>
+		<p> The link to this page can be accessed by any student registered in your course. But by default this link cannot be found anywhere on the site. You can add a link to it by clicking <a href="{{ path('fake_link') }}?title=Clicker Registration&route=register_clicker">here</a>. Or distribute it yourself with the url <input onClick="this.select();" value="{{ url('register_clicker') }}" />.<br /> Only one student can be registered to a clicker at any time, but students can change the clicker they are registered to at any time.</p>
 	</div>
 
 	<div>
@@ -15,7 +15,7 @@
 			<img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('download_list') }}">Download</a></h2>
-		<p>This link will download a properly formatted .xls file containing all students registered and their clicker IDs for use with BLANKBLANKBLANK software.</p>
+		<p>This link will download a properly formatted .xls file containing all students registered and their clicker IDs for use with Turning Point software.</p>
 	</div>
 
 	<div>

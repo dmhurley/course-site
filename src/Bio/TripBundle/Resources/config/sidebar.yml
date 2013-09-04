@@ -1,11 +1,13 @@
 "Trips":
     "Trips":
-        route: main_page
+        route: trip_instruct
     "Manage Trips":
         route: manage_trips
     "Manage Evaluations":
         route: trip_evals
     "Field Trips":
         route: trip_entrance
-    "Tour Guides":
+    "My Trips":
         route: tour_guide_entrance
+    "Promo Page":
+        route: promo

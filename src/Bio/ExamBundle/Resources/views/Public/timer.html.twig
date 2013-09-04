@@ -1,34 +1,124 @@
 <div id="timer">
-	<div id="timer-time">
-	</div>
-		<script>
-		function Timer(duration, start, end) {
-			this.duration = duration;
-			this.end = new Date(end*1000);
-			this.start = new Date(start*1000);
-			this.updateTime = function() {
-					var now = new Date();
-					var ttLate = (this.start.valueOf() - now.valueOf())/1000/60 + duration;
-					var ttEnd = (this.end.valueOf() - now.valueOf())/1000/60;
-
-					var timeleft = Math.min(ttLate, ttEnd);
-
-					if (timeleft >= 0) {
-						minutes = Math.floor(timeleft);
-					} else {
-						minutes ="-" + Math.abs(Math.floor(timeleft) + 1);
-					}
-					seconds = Math.abs(Math.floor((timeleft%1)*60));
-					document.getElementById('timer-time').innerHTML = minutes + ":" + (seconds%10===seconds?"0"+seconds:seconds);
+	<table>
+		<tr>
+			<td rowspan=2 id="handle"></td>
+			<td id="ttLate" class="timer"></td>
+		</tr>
+		<tr>
+			<td id="ttEnd" class="timer"></td>
+		</tr>
+	</table>
+		<style>
+			#timer {
+				position: fixed;
+				right: -100px;
+				top: 100px;
+				background-color: white;
+				border: 7px solid rgb(200,200,200);
+				border-right:none;
+				border-top-left-radius: 25px;
+				border-bottom-left-radius: 25px;
+				font-size: 20pt;
+				width:300px;
+				transition: right .3s, border-color 1s;
+				-webkit-transition: right .3s, border-color 1s;
+				user-select:none;
+				-webkit-user-select:none;
+				-moz-user-select:none;
+				cursor: default;
+			}
+			#timer.hidden {
+				right: -280px;
+			}
+			#timer.warning {
+				border-color: yellow;
+			}
+			#timer.alert {
+				border-color:red !important;
+			}
+				#timer table {
+					margin:5px;
 				}
-			this.interval = setInterval(
-					(function(self) {
-						return function() {
-							self.updateTime();
+				#timer #handle {
+					width:15px;
+					background-color:rgba(0,0,0,.1);
+					border-radius: 10px 0px 0px 10px;
+					cursor:e-resize;
+				}
+				#timer.hidden #handle {
+					cursor:w-resize;
+				}
+
+				#timer .timer {
+					margin:20px;
+					padding:10px 15px;
+				}
+
+				#timer .timer:after {
+					font-size:9pt;
+					color: gray;
+					position:relative;
+					padding-left:10px;
+				}
+				#timer #ttLate:after {
+					content:"until late";
+				}
+				#timer #ttEnd:after {
+					content:"until end";
+				}
+		</style>
+		<script>
+		(function() {
+			function Timer(duration, start, end) {
+				this.duration = duration;
+				this.end = new Date(end*1000);
+				this.start = new Date(start*1000);
+				this.lateWarning = false;
+				this.endWarning = false;
+				this.updateTime = function() {
+						var now = new Date();
+						var ttLate = (this.start.valueOf() - now.valueOf())/1000/60 + duration;
+						var ttEnd = (this.end.valueOf() - now.valueOf())/1000/60;
+
+						if (ttLate < 1 && !this.endWarning) {
+							var div = document.getElementById('timer');
+							div.classList.add('alert');
+							div.classList.remove('hidden');
+							this.endWarning = true;
+						} else if (ttLate < 5 && !this.lateWarning && !this.endWarning) {
+							var div = document.getElementById('timer');
+							div.classList.add('warning');
+							div.classList.remove('hidden');
+							this.lateWarning = true;
 						}
-					})(this), 300);
-			this.updateTime();
-		}
-		timer = new Timer({{duration}} ,"{{start}}", "{{end}}");
+
+						var htLate = Math.floor(Math.abs(ttLate/60));
+						var mtLate = Math.floor(Math.abs(ttLate%60));
+						var stLate = Math.floor(Math.abs(ttLate%1*60));
+						var lneg = ttLate > 0?'':'-'
+						document.getElementById('ttLate').innerHTML = lneg + htLate + ":" + mtLate + ":" + (stLate<10?"0"+stLate:stLate);
+
+						var htEnd = Math.floor(Math.abs(ttEnd/60));
+						var mtEnd = Math.floor(Math.abs(ttEnd%60));
+						var stEnd = Math.floor(Math.abs(ttEnd%1*60));
+						var eneg = ttEnd > 0?'':'-'
+						document.getElementById('ttEnd').innerHTML = eneg+htEnd + ":" + mtEnd + ":" + (stEnd<10?"0"+stEnd:stEnd);
+					}
+				this.interval = setInterval(
+						(function(self) {
+							return function() {
+								self.updateTime();
+							}
+						})(this), 300);
+				this.updateTime();
+			}
+			window.addEventListener('load', function() {
+				timer = new Timer({{duration}} ,"{{start}}", "{{end}}");
+
+				document.getElementById('handle').addEventListener('click', function(event) {
+					document.getElementById('timer').classList.toggle('hidden');
+				});
+			});
+		})();
 	</script>
 </div>

@@ -24,6 +24,15 @@
 	</head>
 
 	<body>
+		{% if app.session.flashbag.has('failure') %}
+			<div class="failure" onClick="this.style.display='none';">
+				{{ app.session.flashbag.get('failure')[0] }}
+			</div>
+		{% elseif app.session.flashbag.has('success') %}
+			<div class="success" onClick="this.style.display='none';">
+				{{ app.session.flashbag.get('success')[0] }}
+			</div>
+		{% endif %}
 		<div id="container">
 			<div id="page">
 

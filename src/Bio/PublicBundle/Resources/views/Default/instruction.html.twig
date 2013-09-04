@@ -5,14 +5,18 @@
 		{% image 'bundles/biopublic/images/mainpage.png' output='images/*.png' %}
 			<img src="{{ asset_url }}"/>
 		{% endimage %}
-		<h2> Welcome </h2>
-		<p>This is the admin portion of the site. Where you can do everything from edit basic course info, to folder management. The small links on the sidebar contain all your available tools. If you'd like to read about how to use them, click the on the larger links (such as <i>COURSE INFO</i>, <i>STUDENTS</i>,or <i>SCORES</i>), they will give detailed instructions on how to use these tools to quickly setup and manage your course site.</p>
+		<h2> Welcome <i>{{app.user.username}}</i></h2>
+		<p>From here you can control most aspects the site. Every function of the site is broken into logical groups on the sidebar. Go straight to the tools by clicking the appropriate <span class="leaf"><a style="display:inline;font-size:13px !important;">Link</a></span> on the sidebar. Or learn more about how to use each tool by selecting the <span class="branch"><a style="padding:0px;">title</a></span> above it.</p>
 
 		{% if is_granted('ROLE_SUPER_ADMIN') %}
-			<p>Only registered users who have been promoted to admin can view these pages and make changes. you can manage various users <i>roles</i> through the <a href="{{ path('view_users') }}">Users</a> page.</p>
+			<p>Only registered users who have been promoted to <i>ADMIN</i> and above can view these pages and make changes. If you are a <i>SUPER ADMIN</i> you can manage various users <i>roles</i> through the <a href="{{ path('view_users') }}">Users</a> page.</p>
 		{% endif %}
 
-		<p>After making an edit to the site you'll usually come across a colored bar on the top of your page. If the operation was a success the bar will be green with a checkmark. If the operation failed for some reason it will be red with a large <i>X</i>. Any error will usually be accompanied with a descriptive message of what went wrong.</p>
+		<p style="margin-bottom:0px;">After making an edit to the site you'll usually come across a colored bar on the top of your page (examples shown at bottom of the page). If the operation was a success the bar will be green. If the operation failed for some reason it will be red with a descriptive message of what went wrong. If the error was due to an improperly filled out form, the offending entry will appear</p>
+		<div id="form" style="margin-top:0px;">
+			<div class="error row-error" data-tip="error message goes here" style="margin-top:12px;"><label>like this:</label><input></div>
+			<div></div>
+		</div>
 	</div>
 
 	<div>

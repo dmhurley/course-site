@@ -1,0 +1,45 @@
+{% extends 'BioPublicBundle:Content:instruction.html.twig' %}
+
+{% block content %}
+	<p>Welcome to the Practice Exam section. From here you can manage field trips; create, review, and download student evaluations; and give tour guides access to the students on their trip and their trips evaluations. It's recommended you create and evaluate a trip yourself to familiarize yourself with the process.</p>
+	<div>
+		{% image 'bundles/biotrip/images/trip.png' output='images/*.png' %}
+		    <img src="{{ asset_url }}"/>
+		{% endimage %}
+		<h2><a href="{{ path('manage_trips') }}">Manage Trips</a></h2>
+		<p>From this page you can create, edit, or delete field trips. When creating the trip, make sure the leader email is accurate because that is the way trip leaders are able to sign in to view their trips. It is also recommended to the keep the short summary as brief as possible with as little formatting as possible.</p>
+	</div>
+
+	<div>
+		{% image 'bundles/biotrip/images/global.png' output='images/*.png' %}
+		    <img src="{{ asset_url }}"/>
+		{% endimage %}
+		<h2><a href="{{ path('manage_trips') }}">Global Settings</a></h2>
+		<p>From the same page as before you can also change the global trip settings that apply over every trip. Students will not be able to view the field trips until <i>Signup Start</i> has passed. Whatever is written for <i>Trip Instructions</i> will be shown above the list of field trips. <i>Tour Guide Password</i> will be used by all trip leaders in addition to their emails to view their the trips they are leading.</p>
+	</div>
+
+	<div>
+		{% image 'bundles/biotrip/images/evaluations.png' output='images/*.png' %}
+		    <img src="{{ asset_url }}"/>
+		{% endimage %}
+		<h2><a href="{{ path('trip_evals') }}">Manage Evaluations</a></h2>
+		<p>Students are required to fill out trip evaluations after the trip has ended, from this page you can create questions; review and grade answers; and download a spreadsheet with the results. The questions that appear on this page represent the questions that will be shown to all students taking their evaluations from there on. Evaluations can be downloaded at any time, but it is recommended to review and score them first.</p>
+	</div>
+
+	<div>
+		{% image 'bundles/biotrip/images/guide.png' output='images/*.png' %}
+		    <img src="{{ asset_url }}"/>
+		{% endimage %}
+		<h2><a href="{{ path('tour_guide_entrance') }}">My Trips</a></h2>
+		<p>This page is for trip leaders to view the trips they have agreed to lead, get the emails of all the students in their trip, and view the students evaluations after the trip is over. They sign in using their email (which should match the <i>Leader Email</i> field for the trip, and the <i>Tour Guide Password</i> set in the global settings. Trip Leaders can only see the trips they are leading.</p>
+	</div>
+
+	<div>
+		{% image 'bundles/biotrip/images/guide.png' output='images/*.png' %}
+		    <img src="{{ asset_url }}"/>
+		{% endimage %}
+		<h2><a href="{{ path('promo') }}">Promo Page</a></h2>
+		<p>This page is publicly available to everyone, but by default the link is not shown on the front page. You can distribute it yourself using this URL <input onClick="this.select();" value="{{ url('promo') }}" />.<br /> When you are signed in as an <i>ADMIN</i>, this page appears as a large editable text area. To someone signed out, the page appears normally and is <b>not</b> editable. Images can be dragged and drop from your computer into the textarea, and embeded objects can be inserting by adding the embed code as a link. Make sure to sign out and preview the page after editing it, because the format can change slightly.</p>
+	</div>
+
+{% endblock %}
