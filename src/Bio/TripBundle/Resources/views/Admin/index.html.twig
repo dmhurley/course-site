@@ -33,7 +33,6 @@
 	<table>
 		<tr>
 			<th>Trip</th>
-			<th>Summary</th>
 			<th>Start</th>
 			<th>End</th>
 			<th>Spots Taken</th>
@@ -44,7 +43,6 @@
 		{% for trip in trips %}
 			<tr>
 				<td>{{ trip.title }}</td>
-				<td>{{ trip.shortSum|striptags|replace({'&nbsp;': ''}) }}</td>
 				<td>{{ trip.start|date('d-m-y H:i:s') }}</td>
 				<td>{{ trip.end|date('d-m-y H:i:s') }}</td>
 				<td>{{ trip.students|length }}/{{trip.max}}</td>

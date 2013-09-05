@@ -91,41 +91,47 @@ table div input[type=text] {
 	width: 320px;
 }
 
-#submit textarea {
-	width: 75%;
+
+
+#form .question p {
+	padding-bottom: 0px;
+	margin-bottom: 0px;
 }
 
-#submit select {
-
+#form > div label {
+	position:relative;
+	display:inline;
+	float:none;
+	top: 11px;
+	left: -7px;
 }
 
-#submit label {
-	float:none !important;
-	width: auto !important;
-	text-align:left !important;
+#form > div input[type=radio]:first-of-type {
+	margin-left: 22px;
 }
 
-#submit .horizontal input[type=radio] {
-	float:left !important;
-	margin-top: 20px;
+#form > div input[type=radio] {
+	position:relative;
+	top: -11px;
+	left: 7px;
 }
 
-#submit .horizontal label {
-	float: left !important;
-	position: relative;
-	top: 13px;
-	right: 10px;
-	margin-top: 20px;
+#form .question {
+	margin: 10px auto;
+	padding: 20px;
+	padding-top: 5px;
+	box-shadow: 1px 1px 15px rgb(200,200,200);
+	border-radius: 25px;
 }
 
-.horizontal {
-	margin-bottom: 40px !important;
-	clear:both;
+#form .question textarea {
+	padding: 10px;
+	width: 90%;
+	min-height: 100px;
+	border-radius: 5px;
+	margin-left: 22px;
 }
 
-.horizontal input:first-of-type {
-	clear:left;
-}
 
 #content > form #form textarea {
 	width: 90%;
