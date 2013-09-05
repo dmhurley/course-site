@@ -40,37 +40,31 @@ class DefaultController extends Controller
     	$session = $request->getSession();
     	$flash = $session->getFlashBag();
 
+        // get student/user from session
 		$student = $this->get('security.context')->getToken()->getUser();
 
+        // get section
+        $db = new Database($this, 'BioInfoBundle:Section');
+        $section = $db->findOne(array('name' => $student->getSection()));
+        // make sure it exists
+        if (!$section) {
+            $request->getSession()->getFlashBag()->set('failure', 'Could not find section '.$student->getSection().'.');
+            return $this->redirect($this->generateUrl('main_page'));
+        }
+
+        // see if they have a request
 		$db = new Database($this, 'BioSwitchBundle:Request');
 		$r = $db->findOne(array('student' => $student));
 
-		if (!$r) {
-			$db = new Database($this, 'BioInfoBundle:Section');
-			$section = $db->findOne(array('name' => $student->getSection()));
-
-            if (!$section) {
-                $request->getSession()->getFlashBag()->set('failure', 'Could not find section '.$student->getSection().'.');
-                return $this->redirect($this->generateUrl('main_page'));
-            }
-
-			$r = new Request();
-			$db->add($r);
-			$r->setStatus(1)
-				->setStudent($student)
-				->setCurrent($section);
-			$db->close();
-		}
-
-		if ($request->query->has('cancel')) {
+		if ($request->query->has('cancel') && $r) {
 			$db->delete($r);
 			$db->close();
 			$flash->set('success', 'Request cancelled.');
 			return $this->redirect($this->generateUrl('main_page'));
 		}
 
-		if ($r->getStatus() === 1) {
-			return $this->setRequestAction($request, $r, $db);
+		if (!$r) {
+			return $this->setRequestAction($request, $student, $section, $db);
 		}
 
 		if ($r->getStatus() === 2) { 
@@ -84,7 +78,7 @@ class DefaultController extends Controller
     	return $this->forward('BioPublicBundle:Default:sign', array('request' => $request, 'redirect' => 'request_switch'));
     }
 
-    private function setRequestAction($request, $r, $db) {
+    private function setRequestAction($request, $student, $section, $db) {
     	$form = $this->createFormBuilder()
     		->add('want', 'entity', array('class' => 'BioInfoBundle:Section', 'property' => 'id', 'multiple' => true, 'expanded' => true))
     		->add('request', 'submit')
@@ -97,13 +91,19 @@ class DefaultController extends Controller
 
                 $wants = $form->get('want')->getData();
                 if (count($wants) > 0){
-        			$r->setWants($wants)
-        				->setStatus(2);
+                     $r = new Request();
+                     $db->add($r);
+                     $r->setStatus(2)
+                        ->setLastUpdated(new \DateTime())
+                         ->setStudent($student)
+                         ->setCurrent($section)
+                         ->setWants($wants);
+
                     try {
         			     $db->close();
-        			     $request->getSession()->getFlashBag()->set('success', 'Preferences saved.');
+        			     $request->getSession()->getFlashBag()->set('success', 'Request sent.');
                     } catch (BioException $e) {
-                        $request->getSession()->getFlashBag()->set('failure', 'Could not save preferences.');
+                        $request->getSession()->getFlashBag()->set('failure', 'Could not send request.');
                     }
                 }
 
@@ -111,7 +111,7 @@ class DefaultController extends Controller
     		}
     	}
 
-    	return $this->render('BioSwitchBundle:Default:choose.html.twig', array('form' => $form->createView(), 'request' => $r, 'title' => "Request Sections"));
+    	return $this->render('BioSwitchBundle:Default:choose.html.twig', array('form' => $form->createView(), 'student' => $student, 'title' => "Request Sections"));
     }
 
     private function viewRequestAction($request, $r, $db) {
@@ -121,14 +121,17 @@ class DefaultController extends Controller
 		foreach($r->getWant() as $section) {
 			$ids[] = $section->getId();
 		}
-    	$queryBuilder = $em->createQueryBuilder()
-    		->select('r')
+    	$queryBuilder = $em->createQueryBuilder();
+        $queryBuilder->select('r')
     		->from('BioSwitchBundle:Request', 'r')
-    		->where('r.current IN (:want)')
-    		->andWhere(':current MEMBER OF r.want')
-    		->andWhere('r.status = 2')
-    		->setParameter('want', $ids)
-    		->setParameter('current', $r->getCurrent());
+            ->leftJoin('BioSwitchBundle:Request', 'o', 'WITH', 'r.current = o.current AND r.lastUpdated > o.lastUpdated') // change .id to last updated, this will keep the last update person as first pick
+            ->where('o.id IS NULL')
+    		->andWhere('r.current IN (:want)')
+            ->andWhere(':current MEMBER OF r.want')
+            ->andWhere('r.status = 2')
+            ->orderBy('r.id', 'ASC')
+            ->setParameter('want', $ids)
+            ->setParameter('current', $r->getCurrent());
 
     	$form = $this->createFormBuilder()
     		->add('match', 'entity', array('class' => 'BioSwitchBundle:Request', 'property' => 'status', 'query_builder' => $queryBuilder, 'expanded' => true))
@@ -143,8 +146,10 @@ class DefaultController extends Controller
 
                 if ($match){
         			$match->setMatch($r)
+                        ->setLastUpdated(new \DateTime())
         				->setStatus(3);
         			$r->setMatch($match)
+                        ->setLastUpdated(new \DateTime())
         				->setStatus(4);
 
                     try {
