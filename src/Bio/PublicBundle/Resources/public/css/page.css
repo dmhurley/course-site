@@ -7,6 +7,7 @@
 	display: block;
 	width: 100%;
 	padding: 15px;
+	padding-top: 18px;
 	font-size: 15pt;
 	text-align: center;
 	position: fixed;
@@ -29,13 +30,15 @@
 }
 
 @keyframes hide {
-	0% {top: 0px;}
-	80% {top: 0px;}
+	0% {top: -5px;}
+	82% {top: -5px;}
+	84% {top: 0px;}
 	100% { top: -150px;}
 }
 @-webkit-keyframes hide {
-	0% {top: 0px;}
-	80% {top: 0px;}
+	0% {top: -5px;}
+	82% {top: -5px;}
+	84% {top: 0px;}
 	100% { top: -150px;}
 }
 

@@ -10,6 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Form\FormError;
 
 use Bio\DataBundle\Exception\BioException;
 use Bio\DataBundle\Objects\Database;
@@ -98,13 +99,23 @@ class DefaultController extends Controller
                         $file->setParent($parent);
                         try {
                             $db->add($file);
-                            $db->close("File could not be uploaded.");
+                            $db->close("1");
                             $request->getSession()->getFlashBag()->set('success', "File \"".$file->getPath()."\" uploaded.");
                             return $this->redirect($this->generateUrl('view_folders').'?id='.$selected.($private?'&private':''));
                         } catch (BioException $e) {
-                             $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
-                             $db->delete($file);
-                             $parent->removeFile($file);
+                            if ($e->getMessage() === '1') {
+                                $request->getSession()->getFlashBag()->set('failure', 'File could not be uploaded.');
+                            } else {
+                                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                                if ($e->getMessage() === '2') {
+                                    $form1->get('name')->addError(new FormError('A file with that name already exists.'));
+                                } else if ($e->getMessage() === '3') {
+                                    $form1->get('file')->addError(new FormError('No file uploaded.'));
+                                }
+                            }
+
+                            $db->delete($file);
+                            $parent->removeFile($file);
                         }
                     }
                 } else {
@@ -160,7 +171,7 @@ class DefaultController extends Controller
                     $db->close();
                     $request->getSession()->getFlashBag()->set('success', 'All folders deleted.');
                 } catch (BioException $e) {
-                    $request->getSession()->getFlashBag()->set('failure', 'Oops. Folders were not cleared.');
+                    $request->getSession()->getFlashBag()->set('failure', 'Oops. Folders were not deleted.');
                 }
 
                 return $this->redirect($this->generateUrl('view_folders'));

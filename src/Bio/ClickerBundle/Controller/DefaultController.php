@@ -8,6 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Form\FormError;
 
 use Bio\ClickerBundle\Entity\Clicker;
 use Bio\StudentBundle\Entity\Student;
@@ -58,7 +59,8 @@ class DefaultController extends Controller {
 					$db->close();
                     return $this->redirect($this->generateUrl('register_clicker'));
 				} catch (BioException $e) {
-					$request->getSession()->getFlashBag()->set('failure', "Someone else is already registered to that clicker.");
+					$request->getSession()->getFlashBag()->set('failure', "Invalid form.");
+                    $form->get('cid')->addError(new FormError('Someone else is already registered to that clicker.'));
 					$request->getSession()->getFlashBag()->get('success'); // remove the successful flash message that was set earlier
 				}
 

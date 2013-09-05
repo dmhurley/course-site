@@ -8,13 +8,14 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Form\FormError;
 
 use Bio\StudentBundle\Entity\Student;
 use Bio\StudentBundle\Form\StudentType;
 use Bio\DataBundle\Exception\BioException;
-
 use Bio\DataBundle\Objects\Database;
 use Doctrine\DBAL\Types\Type;
+
 /**
  * @Route("/admin/student")
  */
@@ -102,7 +103,10 @@ class DefaultController extends Controller
                     $request->getSession()->getFlashBag()->set('success', 'Student added.');
                     return $this->redirect($this->generateUrl('add_student'));
                 } catch (BioException $e) {
-                    $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
+                    $error = new FormError("That student ID or email is already registered");
+                    $form->get('sid')->addError($error);
+                    $form->get('email')->addError($error);
+                    $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
                 }
     		} else {
     			$request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
@@ -155,7 +159,8 @@ class DefaultController extends Controller
                     $request->getSession()->getFlashBag()->set('success', 'Student edited.');
                     return $this->redirect($this->generateUrl('find_student'));
                 } catch (BioException $e) {
-                    $request->getSession()->getFlashBag()->set('failure', 'A student already has that email.');
+                    $form->get('email')->addError(new FormError("A student already has that email."));
+                    $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
                 }
     		} else {
                 $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
@@ -184,7 +189,8 @@ class DefaultController extends Controller
                     $count = $this->uploadStudentList($file);
                     $request->getSession()->getFlashBag()->set('success', "Uploaded $count students.");
                 } catch (BioException $e) {
-                    $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
+                    $form->get('file')->addError(new FormError($e->getMessage()));
+                    $request->getSession()->getFlashBag()->set('failure', 'Upload error.');
                 }
 	    	}
     	}

@@ -164,10 +164,10 @@ class File extends FileBase
             $this->path = $name;
 
             if (file_exists($this->getAbsolutePath())) {
-                throw new BioException("A file with that name already exists.");
+                throw new BioException("2");
             }
         } else {
-            throw new BioException("No file uploaded.");
+            throw new BioException("3");
         }
     }
 
