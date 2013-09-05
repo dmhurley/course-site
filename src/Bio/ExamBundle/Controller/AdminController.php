@@ -37,7 +37,7 @@ class AdminController extends Controller
         $exam = new Exam();
     	$form = $this->get('form.factory')->createNamedBuilder('form', 'form', $exam)
     		->add('title', 'text', array('label'=>'Exam Name:'))
-            ->add('section', 'text', array('label'=>'Section:', 'attr' => array('pattern' => '^[A-Z][A-Z]*$', 'title' => 'One or two letter capitalized section name.')))
+            ->add('section', 'text', array('label'=>'Section:', 'attr' => array('pattern' => '^[A-Z][A-Z]?$', 'title' => 'One or two letter capitalized section name.')))
     		->add('tDate', 'date', array('label' => 'Test Date:'))
     		->add('tStart', 'time', array('label'=>'Test Start:'))
     		->add('tEnd', 'time', array('label'=>'Test End:'))
