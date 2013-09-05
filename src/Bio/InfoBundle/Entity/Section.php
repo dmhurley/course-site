@@ -6,20 +6,23 @@ use Doctrine\ORM\Mapping as ORM;
 use Bio\InfoBundle\Entity\Base;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
 
 /**
  * Section
  *
  * @ORM\Table()
  * @ORM\Entity
+ * @UniqueEntity("name")
  */
 class Section extends Base
 {
 
     /**
-     * @var string
+     * @var string $name
      *
-     * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\Column(name="name", type="string", length=255, unique=true)
      * @Assert\NotBlank()
      * @Assert\Regex("/^[A-Z][A-Z0-9]?$/")
      */
