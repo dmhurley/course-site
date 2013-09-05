@@ -15,28 +15,33 @@
 
 				{% if question.type == 'multiple' %}
 
-					<div class="horizontal">
-						<label>{{question.data[0]}}</label>
+					<div class="horizontal question">
+						<h2>Question {{loop.index}}</h2>
+						<p>{{question.data[0]}}</p>
+						<br />
+						<div>
 						{% for i in 0..question.data[1] %}
 							<input type="radio" name="{{question.id}}" value={{i}}{% if loop.index == 1 %} checked="checked"{% endif %}>
 							<label>{{i}}</label>
 						{% endfor %}
-						<br />
+						</div>
 					</div>
 
 				{% elseif question.type == 'response' %}
 					{% if question.errors is defined %}
-						<div data-tip="{{(question.errors|first).message}}" class="row_error error">
+						<div data-tip="{{(question.errors|first).message}}" class="row_error error question">
 					{% else %}
-						<div>
+						<div class="question">
 					{% endif %}
-						<label>{{question.data[0]}}</label>						
+						<h2>Question {{loop.index}}</h2>
+						<p>{{question.data[0]}}</p>		
+						<br />				
 						<textarea name={{question.id}}></textarea>
 					</div>
 
 				{% endif %}
 			{% endfor %}
-				<div style="clear:both;padding-top:40px;">
+				<div style="padding:0px;margin:0px;text-align:center;">
 					<input type="submit" value="Submit">
 				</div>
 			</div>

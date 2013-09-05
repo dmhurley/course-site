@@ -3,6 +3,20 @@
 {% block content %}
 	{{ form(form) }}
 
+	{% set expired = [] %}
+	{% set shown = [] %}
+	{% set hidden = [] %}
+
+	{% for ann in announcements %}
+		{% if date() > date(ann.expiration) %}
+			{% set expired = expired|merge([ann]) %}
+		{% elseif date() < date(ann.timestamp) %}
+			{% set hidden = hidden|merge([ann]) %}
+		{% else %}
+			{% set shown = shown|merge([ann]) %}
+		{% endif %}
+	{% endfor %}
+
 	<table>
 		<tr>
 			<th>Status</th>
@@ -12,25 +26,40 @@
 			<th>Edit</th>
 			<th>Delete</th>
 		</tr>
-		{% for ann in announcements %}
-			{% if date() > date(ann.expiration) %}
-				<tr class="expired">
-					<td>Expired</td>
-			{% elseif date() < date(ann.timestamp) %}
-				<tr class="hidden">
-					<td>Hidden</td>
-			{% else %}
-				<tr class="showing">
-					<td>Showing</td>
-			{% endif %}
+
+		{% for ann in hidden %}
+			<tr class="hidden">
+				<td>Hidden</td>
 				<td>{{ann.text}}</td>
 				<td>{{ann.timestamp|date('m/d/Y h:i:s')}}</td>
 				<td>{{ann.expiration|date('m/d/Y h:i:s')}}</td>
 				<td><a href="{{ path('edit', {'entityName' : 'announcement', 'id' : ann.id}) }}">edit</a></td>
 				<td><a href="{{ path('delete', {'entityName' : 'announcement', 'id' : ann.id}) }}">delete</a></td>
 			</tr>
-		{% else %}
-			<tr><td colspan=6 style="text-align:center">no announcements</td></tr>
 		{% endfor %}
+		{% for ann in shown %}
+		<tr class="showing">
+				<td>Showing</td>
+				<td>{{ann.text}}</td>
+				<td>{{ann.timestamp|date('m/d/Y h:i:s')}}</td>
+				<td>{{ann.expiration|date('m/d/Y h:i:s')}}</td>
+				<td><a href="{{ path('edit', {'entityName' : 'announcement', 'id' : ann.id}) }}">edit</a></td>
+				<td><a href="{{ path('delete', {'entityName' : 'announcement', 'id' : ann.id}) }}">delete</a></td>
+			</tr>
+		{% endfor %}
+		{% for ann in expired %}
+		<tr class="expired">
+				<td>Expired</td>
+				<td>{{ann.text}}</td>
+				<td>{{ann.timestamp|date('m/d/Y h:i:s')}}</td>
+				<td>{{ann.expiration|date('m/d/Y h:i:s')}}</td>
+				<td><a href="{{ path('edit', {'entityName' : 'announcement', 'id' : ann.id}) }}">edit</a></td>
+				<td><a href="{{ path('delete', {'entityName' : 'announcement', 'id' : ann.id}) }}">delete</a></td>
+			</tr>
+		{% endfor %}
+
+		{% if announcements|length == 0 %}
+			<tr><td colspan=6 style="text-align:center">no announcements</td></tr>
+		{% endif %}
 	</table>
 {% endblock %}

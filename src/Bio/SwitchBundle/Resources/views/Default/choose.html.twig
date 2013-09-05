@@ -1,7 +1,7 @@
 {% extends 'BioSwitchBundle:Default:main.html.twig' %}
 
 {% block content %}
-	<p>Select all sections you would like to switch into. To cancel your request click <a href="?cancel">here</a></p>
+	<p>Select all sections you would like to switch into.</p>
 	{{ form_start(form) }}
 		<div id="form" class="tableStyle">
 			<table>
@@ -15,7 +15,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{% for choice in form.children['want'].vars.choices if request.current != choice.data %}
+					{% for choice in form.children['want'].vars.choices if student.section != choice.data.name %}
 					<tr>
 						<td><input type="checkbox" name="form[want][]" value={{choice.value}} ></td>
 						<td>{{choice.data.name|upper}}</td>

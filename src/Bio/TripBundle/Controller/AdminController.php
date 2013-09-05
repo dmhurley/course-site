@@ -58,7 +58,7 @@ class AdminController extends Controller
             ->add('maxTrips', 'integer', array('label' => "Max Trips:"))
             ->add('evalDue', 'integer', array('label' => "Days Until Late:"))
             ->add('instructions', 'textarea', array('label' => 'Trip Instructions', 'attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
-            ->add('guidePass', 'text', array('label' => 'Tour Guide Password:'))
+            ->add('guidePass', 'password', array('label' => 'Tour Guide Password:', 'always_empty' => false, 'attr' => array('value' => $global->getGuidePass())))
             ->add('set', 'submit')
             ->getForm();
 

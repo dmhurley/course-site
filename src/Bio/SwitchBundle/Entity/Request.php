@@ -4,6 +4,8 @@ namespace Bio\SwitchBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
+use Symfony\Component\Validator\Constraints as Assert;
+
 /**
  * Request
  *
@@ -27,6 +29,14 @@ class Request
      * @ORM\Column(name="status", type="integer")
      */
     private $status;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="lastUpdated", type="datetime")
+     * @Assert\DateTime()
+     */
+    private $lastUpdated;
 
     /**
      * @ORM\OneToOne(targetEntity="\Bio\UserBundle\Entity\AbstractUserStudent")
@@ -203,5 +213,28 @@ class Request
     public function getStudent()
     {
         return $this->student;
+    }
+
+    /**
+     * Set lastUpdated
+     *
+     * @param \DateTime $lastUpdated
+     * @return Request
+     */
+    public function setLastUpdated($lastUpdated)
+    {
+        $this->lastUpdated = $lastUpdated;
+    
+        return $this;
+    }
+
+    /**
+     * Get lastUpdated
+     *
+     * @return \DateTime 
+     */
+    public function getLastUpdated()
+    {
+        return $this->lastUpdated;
     }
 }

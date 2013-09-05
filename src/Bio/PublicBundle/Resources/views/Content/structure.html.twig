@@ -24,11 +24,11 @@
 	{% if root.folders is defined and (root.files|length > 0 or root.folders|length > 0) %}
 		<ul>
 			{% for folder in root.folders %}
-				{% include 'BioPublicBundle:Default:structure.html.twig' with {'root' : folder} %}
+				{% include 'BioPublicBundle:Content:structure.html.twig' with {'root' : folder} %}
 			{% endfor %}
 
 			{% for file in root.files %}
-				{% include 'BioPublicBundle:Default:structure.html.twig' with {'root' : file} %}
+				{% include 'BioPublicBundle:Content:structure.html.twig' with {'root' : file} %}
 			{% endfor %}
 		</ul>
 	{% endif %}
