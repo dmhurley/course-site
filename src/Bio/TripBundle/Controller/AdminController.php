@@ -114,7 +114,7 @@ class AdminController extends Controller
                 ->add('shortSum', 'textarea', array('label' => 'Short Summary:', 'attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
                  ->add('longSum', 'textarea', array('label' => 'Long Summary:', 'attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
         		->add('id', 'hidden')
-        		->add('edit', 'submit')
+        		->add('save', 'submit')
         		->getForm();
 
         	if ($request->getMethod() === "POST") {
@@ -122,10 +122,13 @@ class AdminController extends Controller
 
         		if ($form->isValid()) {
                     $db = new Database($this, 'BioTripBundle:Trip');
-        			$db->close();
-
-                    $request->getSession()->getFlashBag()->set('success', 'Trip edited.');
-        			return $this->redirect($this->generateUrl('manage_trips'));
+                    try {
+        			    $db->close();
+                        $request->getSession()->getFlashBag()->set('success', 'Trip edited.');
+                        return $this->redirect($this->generateUrl('manage_trips'));
+                    } catch (BioException $e) {
+                        $request->getSession()->getFlashBag()->set('failure', 'Unable to save changes.');
+                    }
                 } else {
                     $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
                 }
@@ -246,7 +249,7 @@ class AdminController extends Controller
                 $db->close();
                 $request->getSession()->getFlashBag()->set('success', 'Evaluation questions saved.');
             } catch (BioException $e) {
-                $request->getSession()->getFlashBag()->set('failure', 'Could not save questions.');
+                $request->getSession()->getFlashBag()->set('failure', 'Unable to save changes.');
             }
         }
 

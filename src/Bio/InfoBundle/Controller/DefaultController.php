@@ -107,7 +107,7 @@ class DefaultController extends Controller {
         if ($entity && is_a($entity, "Bio\InfoBundle\Entity\\".$uc)) {
             $form = $entity->addToForm($this->createFormBuilder($entity))
                 ->add('id', 'hidden')
-                ->add('edit', 'submit')
+                ->add('save', 'submit')
                 ->getForm();
 
             if ($request->getMethod() === "POST") {
@@ -120,7 +120,7 @@ class DefaultController extends Controller {
                         $request->getSession()->getFlashBag()->set('success', $uc.' edited.');
                         return $this->redirect($this->generateUrl("view", array('entityName' => $lc)));
                     } catch (BioException $e) {
-                        $request->getSession()->getFlashBag()->set('failure', 'Could not edit that '.$lc.'.');
+                        $request->getSession()->getFlashBag()->set('failure', 'Unable to save changes.');
                     }
                 } else {
                     $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');

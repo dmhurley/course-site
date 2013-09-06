@@ -139,7 +139,7 @@ class AdminController extends Controller
             ->add('gDuration', 'integer', array('label'=>'Grade Length (m):'))
     		->add('questions', 'entity', array('class' => 'BioExamBundle:Question', 'property'=>'formattedQuestion', 'multiple' => true, 'expanded'=> true))
     		->add('id', 'hidden')
-   			->add('edit', 'submit')
+   			->add('save', 'submit')
    			->getForm();
 
     	if ($request->getMethod() === "POST") {
@@ -249,7 +249,7 @@ class AdminController extends Controller
     		->add('points', 'integer')
             ->add('tags', 'text', array('label' => 'Tags:', 'data' => implode(' ', $q->getTags()), 'mapped' => false, 'required' => false, 'attr' => array('pattern' => '[a-z\s]+', 'title' => 'Lower case tags seperated by spaces. a-z only.')))
     		->add('id', 'hidden')
-   			->add('edit', 'submit')
+   			->add('save', 'submit')
    			->getForm();
 
     	if ($request->getMethod() === "POST") {

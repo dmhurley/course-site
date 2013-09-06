@@ -86,7 +86,7 @@ class CourseController extends Controller
     		->add('bldg', 'choice', array('choices' => array_combine($array, $array), 'label' => 'Building:'))
     		->add('room', 'text', array('label' => 'Room:'))
     		->add('email', 'email', array('label' => 'Email:'))
-    		->add('edit', 'submit')
+    		->add('save', 'submit')
     		->getForm();
 
     	if ($request->getMethod() === "POST") {
@@ -94,10 +94,10 @@ class CourseController extends Controller
 
     		if ($form->isValid()) {
     			try {
-    				$db->close("Something broke...");
+    				$db->close();
                     $request->getSession()->getFlashBag()->set('success', 'Course information updated.');
     			} catch (BioException $e) {
-                    $request->getSession()->getFlashBag()->set('failure', $e->getMessage());
+                    $request->getSession()->getFlashBag()->set('failure', 'Unable to save changes.');
     			}
     		} else {
                 $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');

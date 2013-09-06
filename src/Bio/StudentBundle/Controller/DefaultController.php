@@ -168,7 +168,7 @@ class DefaultController extends Controller
             return $this->redirect($this->generateUrl('find_student'));
         }
 
-    	$form = $this->createForm(new StudentType(), $student, array('title' => 'edit', 'edit' => true));
+    	$form = $this->createForm(new StudentType(), $student, array('title' => 'save', 'edit' => true));
 
     	if ($request->getMethod() === "POST") {		// if request was sent
     		$form->handleRequest($request);
