@@ -26,7 +26,7 @@ class Section extends Base
      * @Assert\NotBlank()
      * @Assert\Regex("/^[A-Z][A-Z0-9]?$/")
      */
-    private $name;
+    protected $name;
 
     /**
      * @var string
@@ -34,7 +34,7 @@ class Section extends Base
      * @ORM\Column(name="day", type="string", length=255)
      * @Assert\Choice(choices={"m", "tu", "w", "th", "f", "sa", "su"}, message="Choose a valid day.")
      */
-    private $day;
+    protected $day;
 
     /**
      * @var \DateTime
@@ -42,7 +42,7 @@ class Section extends Base
      * @ORM\Column(name="start", type="time")
      * @Assert\Time()
      */
-    private $start;
+    protected $start;
 
     /**
      * @var \DateTime
@@ -50,7 +50,7 @@ class Section extends Base
      * @ORM\Column(name="end", type="time")
      * @Assert\Time()
      */
-    private $end;
+    protected $end;
 
     /**
      * @var string
@@ -58,7 +58,7 @@ class Section extends Base
      * @ORM\Column(name="bldg", type="string", length=255)
      * @Assert\NotBlank()
      */
-    private $bldg;
+    protected $bldg;
 
     /**
      * @var string
@@ -66,7 +66,7 @@ class Section extends Base
      * @ORM\Column(name="room", type="string", length=255)
      * @Assert\NotBlank()
      */
-    private $room;
+    protected $room;
 
     /**
      * Set name
