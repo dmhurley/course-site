@@ -1,7 +1,7 @@
 {% extends 'BioPublicBundle:Content:instruction.html.twig' %}
 
 {% block content %}
-	<p>Welcome to the Practice Exam section. These tools allow you to create timed online exams and cooresponding questions, that can be taken by students and instantly graded by their peers. You are recommended to try making and taking an exam yourself to familiarize yourself with the process.</p>
+	<p>Welcome to the Practice Exam section. From here you can create timed online exams and cooresponding questions that can be taken by students and instantly graded by their peers. You are recommended to try making and taking an exam yourself to familiarize yourself with the process.</p>
 	<div>
 		{% image 'bundles/bioexam/images/exams.png' output='images/*.png' %}
 		    <img src="{{ asset_url }}"/>
@@ -11,11 +11,11 @@
 
 		<p>You can give different exams to different sections by filling out the section field. For example if you want an exam to only be given to students in section AB, the exam should be assigned as such. If you want to assign the exam to students in sections AA to A9, simply put <i>A</i>. Leave the field blank to include all sections.</p>
 
-		<p>It is possible to have the testing and grading occur on different days. However the recommended approach is to have both the testing and grading occur on the same day, with the <i>Grading Start</i> set <b>before</b> the <i>Test Start</i> and the <i>Grading End</i> set <b>after</b> the <i>Test End</i>. This will guarantee students can go directly from taking their exam to grading a peers exam.</p>
+		<p>It is possible to have the testing and grading occur on different days. However the recommended approach is to have both the testing and grading occur on the same day, with the <i>Grading Start</i> set <b>before</b> the <i>Test Start</i> and <i>Grading End</i> set <b>after</b> the <i>Test End</i>. This will guarantee students can go directly from taking their exam to grading a peers exam.</p>
 
 		<p> When setting the times and durations for the exam and grading, know that the <i>End Time</i> is a hard limit, that is to say any student not finished by the end time will not be able to finish the exam or finish grading other students tests, and that the <i>Duration</i> is a soft limit, meaning students can continue with the exam even if they take longer than the given duration (although they will be marked as late in the output file.</p>
 
-		<p>Global settings are very straight forward, <i>Tests To Grade</i> specifies the number tests a student must grade before they finish. The recommended number is two, because this guarantees that everyone who finishes will be graded, and the minimum is 0. <i>Test Rules</i> are shown before the student starts their exam and can be used to give instructions, advice, or hints.</p>
+		<p>Global settings are very straight forward, <i>Tests To Grade</i> specifies the number tests a student must grade before they finish. The recommended number is two, because this all but guarantees that everyone who finishes will be graded (often multiple times), and the minimum is 0. <i>Test Rules</i> are shown before the student starts their exam and can be used to give instructions, advice, or hints.</p>
 	</div>
 
 	<div>
@@ -38,12 +38,12 @@
 		<p>You can drag and drop images from your file system to the text box, simply select an image from a folder or your desktop and drag it over the desired text box, the image will be automatically inserted and you can resize it or position it as you like. Embeded media like YouTube videos can be inserted by inserting the embed code as a link.</p>
 	</div>
 	<div>
-		{% image 'bundles/bioexam/images/confirmation.png' output='images/*.png' %}
+		{% image 'bundles/bioexam/images/start.png' output='images/*.png' %}
 		    <img src="{{ asset_url }}"/>
 		{% endimage %}
-		<h2><a>Confirmation Code</a></h2>
-		<p>After a student finishes a test, they will be redirected back to the start page and given a confirmation code. The same confirmation code will also be emailed to them. If there is a problem, that code can be used to look up their records.</p>
+		<h2><a>Start Page</a></h2>
+		<p>After a student finishes a test, they will be redirected back to the start page emailed a confirmation code. If there is a problem, that code can be used to look up their records.</p>
 
-		<p>From that same page, students can also look at their old exams, and see the grades they were given and compare their answers to the actual answers.</p>
+		<p>From that same page, students can also see the next three scheduled exams, review their old exams, see the grades they were given for each exam, and compare their answers to the actual answers. By default this link cannot be found anywhere on the site, but you can add a link to it by clicking <a href="{{path('exam_entrance')}}">here</a> or distributing it yourself with the URL <br /><input onClick="this.select();" value="{{ url('exam_entrance') }}" />.</p>
 	</div>
 {% endblock %}

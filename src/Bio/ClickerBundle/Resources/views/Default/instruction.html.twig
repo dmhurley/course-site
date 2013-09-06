@@ -1,13 +1,13 @@
 {% extends 'BioPublicBundle:Content:instruction.html.twig' %}
 
 {% block content %}
-	<p>Welcome to the Clicker section. This section has a public page for students to <a href="{{ path('register_clicker') }}">register</a> clickers, and secured pages for you to <a href="{{ path('download_list') }}">download</a> properly formatted .csv files and <a href="{{ path('clear_list') }}">clear</a> all registrations at the end of the quarter.</p>
+	<p>Welcome to the Clicker section. This section has a public page for students to register clickers, and secured pages for you to download properly formatted .csv files and clear all registrations at the end of the quarter.</p>
 	<div>
 		{% image 'bundles/bioclicker/images/register.png' output='images/*.png' %}
 			<img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('register_clicker') }}">Register</a></h2>
-		<p> The link to this page can be accessed by any student registered in your course. But by default this link cannot be found anywhere on the site. You can add a link to it by clicking <a href="{{ path('fake_link') }}?title=Clicker Registration&route=register_clicker">here</a>. Or distribute it yourself with the url <input onClick="this.select();" value="{{ url('register_clicker') }}" />.<br /> Only one student can be registered to a clicker at any time, but students can change the clicker they are registered to at any time.</p>
+		<p> The link to this page can be accessed by any student registered in your course. But by default this link cannot be found anywhere on the site. You can add a link to it by clicking <a href="{{ path('fake_link') }}?title=Clicker Registration&route=register_clicker">here</a>. Or distribute it yourself with the url <input onClick="this.select();" value="{{ url('register_clicker') }}" />.<br /> Only one student can be registered to a clicker at a time, but students can change the clicker they are registered to at any time.</p>
 	</div>
 
 	<div>

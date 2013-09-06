@@ -23,7 +23,7 @@
 	{% endif %}
 
 	<div class="trip {{cur}} {{passed}}">
-		<h2>{{trip.title}}</h2>
+		<h2 style="max-width:70%">{{trip.title}}</h2>
 		<h2>{{trip.start|date('m/d H:i')}} - {{trip.end|date('m/d H:i')}}</h2>
 
 		<p style="clear:both;">{{trip.shortSum|raw}}</p>

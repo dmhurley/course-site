@@ -1,7 +1,7 @@
 {% extends 'BioPublicBundle:Content:instruction.html.twig' %}
 
 {% block content %}
-	<p>Welcome to the Practice Exam section. From here you can manage field trips; create, review, and download student evaluations; and give tour guides access to the students on their trip and their trips evaluations. It's recommended you create and evaluate a trip yourself to familiarize yourself with the process.</p>
+	<p>Welcome to the Field Trip section. From here you can manage field trips; create, review, and download student evaluations; and give tour guides access to the students on their trip and their trips evaluations. It's recommended you create and evaluate a trip yourself to familiarize yourself with the process.</p>
 	<div>
 		{% image 'bundles/biotrip/images/trip.png' output='images/*.png' %}
 		    <img src="{{ asset_url }}"/>
@@ -27,6 +27,14 @@
 	</div>
 
 	<div>
+		{% image 'bundles/biotrip/images/browse.png' output='images/*.png' %}
+		    <img src="{{ asset_url }}"/>
+		{% endimage %}
+		<h2><a href="{{ path('tour_guide_entrance') }}">Field Trips</a></h2>
+		<p>This page is for students to view, sign up for, and evaluate field trips. By default it is not on the front page but you can add it by clicking <a href="{{path('trip_entrance')}}">here</a> or distributing it yourself with the URL <br /><input onClick="this.select();" value="{{ url('trip_entrance') }}" />.</p>
+	</div>
+
+	<div>
 		{% image 'bundles/biotrip/images/guide.png' output='images/*.png' %}
 		    <img src="{{ asset_url }}"/>
 		{% endimage %}
@@ -35,7 +43,7 @@
 	</div>
 
 	<div>
-		{% image 'bundles/biotrip/images/guide.png' output='images/*.png' %}
+		{% image 'bundles/biotrip/images/promo.png' output='images/*.png' %}
 		    <img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('promo') }}">Promo Page</a></h2>

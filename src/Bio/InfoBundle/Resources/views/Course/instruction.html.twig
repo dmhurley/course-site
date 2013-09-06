@@ -1,14 +1,14 @@
 {% extends 'BioPublicBundle:Content:instruction.html.twig' %}
 
 {% block content %}
-	<p> Welcome to the Course Information section. From here you can edit all the information shown on the front page and more. This tool allows you to edit <a href="{{ path('edit_info') }}">course information</a>; add <a href="{{ path('view', {'entityName' : 'announcement' }) }}">announcements</a> for students to read; add <a href="{{ path('view', {'entityName' : 'link' }) }}">links</a> to the main page or the sidebar; post contact <a href="{{ path('view', {'entityName' : 'person' }) }}">information</a> and <a href="{{ path('view', {'entityName' : 'hours' }) }}">office hours</a> for instructors, TAs, and coordinators; and post <a href="{{ path('view', {'entityName' : 'announcements' }) }}">section</a> locations and times.</p>
+	<p> Welcome to the Course Information section. From here you can edit all the information shown on the front page and more. This tool allows you to edit course information; add announcements for students to read; add links to the main page or the sidebar; post contact information and office hours for instructors, TAs, and coordinators; or post section locations and times.</p>
 
 	<div>
 		{% image 'bundles/bioinfo/images/courseinfo.png' output='images/*.png' %}
 		    <img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('edit_info') }}">Edit Info</a></h2>
-		<p> From the Edit Info page, it's possible to edit all the basic information about the course. Anything you edit here will be automatically shown on the main page of the course website. To select multiple days, make sure to hold down the ctrl (windows) or command (mac).</p>
+		<p> From the Edit Info page, it's possible to edit basic information about the course. Anything you edit here will be automatically shown on the main page of the course website, and every field must be filled. To select multiple days, make sure to hold down the ctrl (windows) or command (mac).</p>
 	</div>
 
 	<div>
@@ -20,9 +20,9 @@
 
 		<p>If an announcement is expired it will not be shown publicly and will be colored red on the admin page where you can edit it or delete it at will.</p>
 
-		<p>An announcement with a starting time in the future will be hidden until its start time has passed, and will appear yellow from the admin page. This allows you to make announcements that will automatically appear at a certain date and time in the future.</p>
+		<p>An announcement with a starting time in the future will be hidden until its start time has passed and will appear yellow from the admin page. This allows you to make announcements that will automatically appear at a certain date and time in the future.</p>
 
-		<p> The text of the announcement can be anything you want, and can include valid HTML. For example, <br /><i>&lt;a href=&quot;http://www.google.com&quot;&gt;This is a link&lt;/a&gt;</i> will appear as <a href="http://www.google.com">This is a link</a>.</p>
+		<p> The text of the announcement can be anything you want, and can include valid HTML. For example, <br /><i>&lt;a href=&quot;{{url('main_page')}}&quot;&gt;This is a link&lt;/a&gt;</i> will appear as <a href="{{url('main_page')}}">This is a link</a>.</p>
 	</div>
 
 	<div>
@@ -30,7 +30,7 @@
 		    <img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('view', {'entityName' : 'link' }) }}">Links</a></h2>
-		<p> All links you add will be shown on the main page. You can choose to put a link on the sidebar, where it will be shown from any public page of the site. Or directly on the main page. Where it will be shown directly under the announcements.</p>
+		<p> All links you add will be shown on the main page. You can choose to put a link on the sidebar or directly on the main page where it will be shown under the announcements.</p>
 
 		<p> Make sure all external links start with <i>http://</i> or <i>https://</i>, or else the link will not work.</p>
 	</div>
@@ -48,7 +48,7 @@
 		    <img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('view', {'entityName' : 'hours' }) }}">Hours</a></h2>
-		<p> After an instructor, coordinator, or TA has been added. You can assign them office hours here. It is possible to assign multiple combinations of days and times that will be displayed on the front page.</p>
+		<p> After an instructor, coordinator, or TA has been added. You can assign them office hours here. It is possible to assign multiple combinations of days and times that will be displayed on the front page. You do not need to assign hours for an instructor, TA, or coordinator to appear on the main page.</p>
 	</div>
 
 	<div>
@@ -56,6 +56,6 @@
 		    <img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('view', {'entityName' : 'section' }) }}">Sections</a></h2>
-		<p> Here you can add information about Sections that will display underneath the instructors, coordinator, and TAs. Each section must have a name, day, start and end time, building, and room.</p>
+		<p> Here you can add information about Sections that will display on the main page. Each section must have a name, day, start and end time, building, and room. Sections will be automatically generated or deleted as necessary when you upload a student list from the registrar. But you will have to manually fill out each sections details.</p>
 	</div>
 {% endblock %}

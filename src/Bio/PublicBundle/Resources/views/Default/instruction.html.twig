@@ -1,21 +1,30 @@
 {% extends 'BioPublicBundle:Content:instruction.html.twig' %}
 
 {% block content %}
-	<div>
+	<div style="margin-top:25px;" >
 		{% image 'bundles/biopublic/images/mainpage.png' output='images/*.png' %}
 			<img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2> Welcome <i>{{app.user.username}}</i></h2>
-		<p>From here you can control most aspects the site. Every function of the site is broken into logical groups on the sidebar. Go straight to the tools by clicking the appropriate <span class="leaf"><a style="display:inline;font-size:13px !important;">Link</a></span> on the sidebar. Or learn more about how to use each tool by selecting the <span class="branch"><a style="padding:0px;">title</a></span> above it.</p>
+		<p>From here you can control most aspects the site. Every function of the site is broken into logical groups on the sidebar. Go straight to the tools by clicking the appropriate <span class="leaf"><a style="display:inline;font-size:14px !important; padding:2px;">Link</a></span> on the sidebar. Or learn more about how to use each tool by selecting the <span class="branch"><a style="padding:0px;">title</a></span> above it.</p>
 
-		{% if is_granted('ROLE_SUPER_ADMIN') %}
-			<p>Only registered users who have been promoted to <i>ADMIN</i> and above can view these pages and make changes. If you are a <i>SUPER ADMIN</i> you can manage various users <i>roles</i> through the <a href="{{ path('view_users') }}">Users</a> page.</p>
-		{% endif %}
+		<p>Start customizing your course site from the <span class="branch"><a href="{{path('info_instruct')}}" style="padding:0px;">course info</a></span> page. Then make sure to read the instructions from each section and familiarize yourself with the new site.</p>
+	</div>
 
-		<p style="margin-bottom:0px;">After making an edit to the site you'll usually come across a colored bar on the top of your page. If the operation was a success the bar will be green. If the operation failed for some reason it will be red with a descriptive message of what went wrong. If the error was due to an improperly filled out form, the offending entry will appear</p>
-		<div id="form" style="margin-top:0px;">
-			<div class="error row-error" data-tip="error message goes here" style="margin-top:12px;"><label>like this:</label><input></div>
-			<div></div>
-		</div>
+	<div>
+		{% image 'bundles/biouser/images/menu.png' output='images/*.png' %}
+			<img src="{{ asset_url }}"/>
+		{% endimage %}
+		<h2>User Options</h2>
+		<p>Only registered users who have been promoted to <i>ADMIN</i> and above can view these pages and make changes. If you are a <i>SUPER ADMIN</i> you can manage various users <i>roles</i> through the <a href="{{ path('view_users') }}">Users</a> page.</p>
+
+		<p>In the top right corner of the screen is a purple box with your username. You can hover over that box to change your password, see your current role, or logout. This box will appear to all users and students when they are signed in. If a user forgets their password you can reset it and the new password will be emailed to them, where they should sign in and change it to something memorable.</p>
+	</div>
+
+	<div>
+		{% image 'bundles/biopublic/images/error.png' output='images/*.png' %}
+			<img src="{{ asset_url }}"/>
+		{% endimage %}
+		<p>Most changes you make on the site will be accompanied with a success or error message at the very top of the screen. If there is an error with a form it will be highlighted in red, hover over it to see a descriptive error message.</p>
 	</div>
 {% endblock %}

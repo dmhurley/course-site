@@ -23,7 +23,7 @@ class PublicController extends Controller
      * @Route("", name="trip_entrance")
      * @Template()
      */
-    public function indexAction(Request $request) {
+    public function testAction(Request $request) {
     	$session = $request->getSession();
     	$flash = $session->getFlashBag();
 
@@ -32,12 +32,11 @@ class PublicController extends Controller
 
         if ($global->getOpening() > new \DateTime()) {
             $flash->set('failure', 'Field trip signups start '.$global->getOpening()->format('F j, Y \a\t g:i a').'.');
-        } else {
-
-            return $this->tripAction($request, $session->get('studentID'), $global);
+        } else if ($global->getClosing() < new \DateTime()) {
+            $flash->set('failure', 'Field trip signups are closed.');
         }
 
-    	return $this->forward('BioPublicBundle:Default:sign', array('request' => $request, 'redirect' => 'trip_entrance'));
+        return $this->tripAction($request, $session->get('studentID'), $global);
     }
 
     private function tripAction(Request $request, $id, $global) {
@@ -63,10 +62,14 @@ class PublicController extends Controller
      * @Route("/join/{id}", name="join_trip")
      */
     public function joinAction(Request $request, Trip $trip = null) {
+        $db = new Database($this, 'BioTripBundle:TripGlobal');
+        $global = $db->findOne(array());
     	if (!$trip) {
     		$request->getSession()->getFlashBag()->set('failure', 'Trip could not be found.');
     	} else if ($trip->getStart() < new \DateTime()) {
             $request->getSession()->getFlashBag()->set('failure', 'Too late to join.');
+        } else if ($global->getOpening() > new \DateTime() || $global->getClosing() < new \DateTime()) {
+
         } else {
     		$student = $this->get('security.context')->getToken()->getUser();
             // TODO make sure trip hasn't passed!!!!!!
@@ -75,7 +78,6 @@ class PublicController extends Controller
 			} else {
     			$trip->addStudent($student);
     			try {
-                    $db = new Database($this, 'BioTripBundle:Trip');
     				$db->close();
     				$request->getSession()->getFlashBag()->set('success', 'Joined trip.');
     			} catch (BioException $e) {
@@ -90,11 +92,15 @@ class PublicController extends Controller
      * @Route("/leave/{id}", name="leave_trip")
      */
     public function leaveAction(Request $request, Trip $trip = null) {
+        $db = new Database($this, 'BioTripBundle:TripGlobal');
+        $global = $db->findOne(array());
     	if (!$trip) {
     		$request->getSession()->getFlashBag()->set('failure', 'Trip not found.');
     	} else if ($trip->getStart() < new \DateTime()) {
             $request->getSession()->getFlashBag()->set('failure', 'Too late to leave.');
-        } else {
+        } else if ($global->getOpening() > new \DateTime() || $global->getClosing() < new \DateTime()) {
+
+        }  else {
     		$student = $this->get('security.context')->getToken()->getUser();
             // TODO make sure trip hasn't passed!!!!!!
     		$trip->removeStudent($student);
@@ -143,14 +149,26 @@ class PublicController extends Controller
             return $this->redirect($this->generateUrl('trip_entrance'));
         }
 
-        /****** IS TOO LATE TO EVALUATE? ******/
-        if ($global->getClosing() < new \DateTime()) {
-            $request->getSession()->getFlashBag()->set('failure', 'It is too late to submit evaluations.');
+        /****** HAVE THEY NOT EVALUATED IT ******/
+        if ($eval) {
+            $request->getSession()->getFlashBag()->set('failure', 'You have already submitted an evaluation.');
             return $this->redirect($this->generateUrl('trip_entrance'));
         }
 
-        if ($eval) {
-            $request->getSession()->getFlashBag()->set('failure', 'You have already submitted an evaluation.');
+        /****** DID THEY GO ON TRIP ******/
+        if (!in_array($student, $trip->getStudents())) {
+            $request->getSession()->getFlashBag()->set('failure', 'You did not attend this trip.');
+            return $this->redirect($this->generateUrl('trip_entrance'));
+        }
+
+        if ($trip->getEnd() > new \DateTime()) {
+            $request->getSession()->getFlashBag()->set('failure', 'This trip has not occured');
+            return $this->redirect($this->generateUrl('trip_entrance'));
+        }
+
+        /****** IS TOO LATE TO EVALUATE? ******/
+        if ($global->getClosing() < new \DateTime()) {
+            $request->getSession()->getFlashBag()->set('failure', 'It is too late to submit evaluations.');
             return $this->redirect($this->generateUrl('trip_entrance'));
         }
 
