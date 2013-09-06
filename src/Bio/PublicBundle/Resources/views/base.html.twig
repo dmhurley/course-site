@@ -13,6 +13,7 @@
 		<!-- BASIC STYLE SHEETS -->
 		{% stylesheets 'bundles/biopublic/css/page.css' 
 					   'bundles/biopublic/css/form.css'
+					   'bundles/biopublic/css/bounce.css'
 					   'bundles/biopublic/css/tool-tip.css' filter="cssrewrite" output="css/*.css" %}
 			<link rel="stylesheet" href="{{ asset_url }}" />
 		{% endstylesheets %}
@@ -25,11 +26,11 @@
 
 	<body>
 		{% if app.session.flashbag.has('failure') %}
-			<div class="failure" onClick="this.style.display='none';">
+			<div class="failure bounceOutUp animated" onClick="this.style.display='none';">
 				{{ app.session.flashbag.get('failure')[0] }}
 			</div>
 		{% elseif app.session.flashbag.has('success') %}
-			<div class="success" onClick="this.style.display='none';">
+			<div class="success bounceOutUp animated" onClick="this.style.display='none';">
 				{{ app.session.flashbag.get('success')[0] }}
 			</div>
 		{% endif %}

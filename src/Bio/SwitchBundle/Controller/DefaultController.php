@@ -45,12 +45,7 @@ class DefaultController extends Controller
 
         // get section
         $db = new Database($this, 'BioInfoBundle:Section');
-        $section = $db->findOne(array('name' => $student->getSection()));
-        // make sure it exists
-        if (!$section) {
-            $request->getSession()->getFlashBag()->set('failure', 'Could not find section '.$student->getSection().'.');
-            return $this->redirect($this->generateUrl('main_page'));
-        }
+        $section = $student->getSection();
 
         // see if they have a request
 		$db = new Database($this, 'BioSwitchBundle:Request');

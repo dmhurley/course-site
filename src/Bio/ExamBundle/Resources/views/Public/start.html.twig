@@ -1,11 +1,33 @@
 {% extends 'BioExamBundle:Public:main.html.twig' %}
 
 {% block content %}
+	<div id="schedule" class="tableStyle">
+		<table>
+			<thead>
+				<tr>
+					<th>Exam</th>
+					<th>Test</th>
+					<th>Grade</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for e in exams[:3] %}
+					<tr>
+						<td>{{e.title}}</td>
+						<td>{{e.tDate|date('m/d')}} - {{e.tStart|date('h:i a')}} to {{e.tEnd|date('h:i a')}}</td>
+						<td>{{e.gDate|date('m/d')}} - {{e.gStart|date('h:i a')}} to {{e.gEnd|date('h:i a')}}</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
 	<p>{{global.rules}}</p>
 
 	{% if message != null %}
 		<p>{{message}}</p>
-	{% elseif exam != null %}
+	{% endif %}
+
+	{% if exam != null %}
 		<p>Once you begin this test you will have {{exam.tDuration}} minutes or until {{exam.tEnd|date('h:i a')}} to complete it. Grading will begin 
 		{% if date(exam.tDate|date('Y-m-d')~' '~exam.tStart|date('H:i:s')) >= date(exam.gDate|date('Y-m-d')~' '~exam.gStart|date('H:i:s')) %}
 			after you finish the test
@@ -14,7 +36,7 @@
 		{% endif %} 
 		and lasts for {{exam.gDuration}} minutes or until {{exam.gEnd|date('h:i a')}}.</p>
 
-	<p>You can begin <b><span id="time"></span></b>.</p>
+	<p>You can begin {{exam.title}} <b><span id="time"></span></b>.</p>
 	<div id="hidden" style="display:none;">
 		{{ form(form) }}
 	</div>

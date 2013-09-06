@@ -357,7 +357,7 @@ class AdminController extends Controller
             /**** TAKER DATA ****/
             $name = $taker->getStudent()->getLName().", ".$taker->getStudent()->getFName();
             $studentID = $taker->getStudent()->getSid();
-            $section = $taker->getStudent()->getSection();
+            $section = $taker->getStudent()->getSection()->getName();
             $didGrade = $taker->getNumGraded() >= $global->getGrade()?"Yes":$taker->getNumGraded();
 
             if ($taker->getStatus() >= 4) {

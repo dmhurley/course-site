@@ -7,16 +7,14 @@
 	display: block;
 	width: 100%;
 	padding: 15px;
-	padding-top: 18px;
+	padding-top: 30px;
 	font-size: 15pt;
 	text-align: center;
 	position: fixed;
-	top: -150px;
+	top: -15px;
 	left: 0px;
 	z-index:10;
 	color:rgb(200,200,200);
-	animation: hide 8s;
-	-webkit-animation: hide 8s;
 	cursor:n-resize;
 	opacity: .95;
 	-webkit-user-select:none;
@@ -27,19 +25,6 @@
 }
 .failure {
 	background-color: rgb(120, 0, 0);
-}
-
-@keyframes hide {
-	0% {top: -5px;}
-	82% {top: -5px;}
-	84% {top: 0px;}
-	100% { top: -150px;}
-}
-@-webkit-keyframes hide {
-	0% {top: -5px;}
-	82% {top: -5px;}
-	84% {top: 0px;}
-	100% { top: -150px;}
 }
 
 body {

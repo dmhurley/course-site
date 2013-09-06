@@ -17,7 +17,7 @@
 				<tr>
 					<td>{{ entity.sid }}</td>
 					<td>{{ entity.fName }} {{ entity.lName }}</td>
-					<td>{{ entity.section }}</td>
+					<td>{{ entity.section.name }}</td>
 					<td><a href="mailto:{{ entity.email }}">{{ entity.email }}</a></td>
 					<td><a href="{{ path('edit_student', {'id': entity.id}) }}">edit</td>
 					<td><a href="{{ path('reset_password', {'id':entity.id}) }}">reset</a></td>
