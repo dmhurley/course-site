@@ -1,3 +1,13 @@
+#schedule table {
+	width: 100%;
+}
+#schedule {
+	float:right;
+	width: 45%;
+	margin: 10px 15px;
+	margin-top: -20px;
+}
+
 .question {
 	width: 600px;
 	border-radius: 25px;

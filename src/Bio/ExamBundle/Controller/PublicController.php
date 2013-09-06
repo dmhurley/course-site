@@ -55,29 +55,49 @@ class PublicController extends Controller
 
 
 		// get all exams where the grading period hasn't ended.
-		try {
-			$exam = $this->getNextExam($student);
-		} catch (BioException $e) {
-			$message = $e->getMessage();
-		}
+			$exams = $this->getNextExam($student);
+			foreach($exams as $e) {
+				$t = $db->findOne(array('student' => $student, 'exam' => $exam));
+				if ( (!$t || $t->getStatus() < 4) && new \DateTime($e->getTDate()->format('Y-m-d ').$e->getTEnd()->format('H:i:s')) < new \DateTime()) {
+					// not started/or submitted yet
+					// too late to start/finish exam
+					$message = "It is too late to take ".$e->getTitle().".";
+				} else if ( (!$t || $t->getStatus() < 6) && new \DateTime($e->getGDate()->format('Y-m-d ').$e->getGEnd()->format('H:i:s')) < new \DateTime()) {
+					// not finished grading / or not started
+					// to late to start/finish grading
+
+					$message = "It is too late to grade ".$e->getTitle().".";
+					// do nothing? //impossible to get to???
+				} else if (!$t) {
+					// never took this exam
+					// fine to start?
+					$exam = $e;
+					break;
+				} else if ($t->getStatus() === 6) {
+					// finished
+					// find next exam
+				}
+			}
 
 		if ($exam) {
-			// get the appropriate test taker for the student/exam combo
-			$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
+			if (new \DateTime($e->getTDate()->format('Y-m-d ').$e->getTStart()->format('H:i:s')) < new \DateTime()) {
+				// get the appropriate test taker for the student/exam combo
+				$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
 
-			if (!$taker) {
-				$taker = new TestTaker();
-				$taker->setStatus(1)
-					->setStudent($student)
-					->setExam($exam);
+				if (!$taker) {
+					$taker = new TestTaker();
+					$taker->setStatus(1)
+						->setStudent($student)
+						->setExam($exam);
 
-				$db->add($taker);	
-				$db->close();
+					$db->add($taker);	
+					$db->close();
+				}
 			}
 		}
 
 		if (!$taker || $taker->getStatus() === 1 || $taker->getStatus() === 6) {
-			return $this->startAction($request, $exam, $taker, $student, $message, $db);
+			return $this->startAction($request, $exam, $taker, $student, $message, $db, $exams);
 		} else {
 			if ($taker->getStatus() === 2) {
 				return $this->examAction($request, $exam, $taker, $db);
@@ -101,7 +121,7 @@ class PublicController extends Controller
 	 * 
 	 * status 1
 	 */
-	private function startAction(Request $request, $exam, $taker, $student, $message, $db) {
+	private function startAction(Request $request, $exam, $taker, $student, $message, $db, $exams) {
 		// create form
 		$form = $this->createFormBuilder()
 			->add('start', 'submit')
@@ -110,7 +130,6 @@ class PublicController extends Controller
 		// if they pressed submit
 		if ($request->getMethod() === "POST") {
 			if (!$taker || $taker->getStatus() !== 1) {
-				$request->getSession()->getFlashBag()->set('failure', 'You have already completed this test.');
 				return $this->redirect($this->generateUrl('exam_entrance'));
 			}
 
@@ -140,7 +159,7 @@ class PublicController extends Controller
 		$global = $db->findOne(array());
 		$db = new Database($this, 'BioExamBundle:TestTaker');
 		$takers = $db->find(array('student' => $student), array(), false);
-		return $this->render('BioExamBundle:Public:start.html.twig', array('form' => $form->createView(), 'global'=>$global, 'exam' => $exam, 'message' => $message, 'takers' => $takers, 'title' => 'Begin Test'));
+		return $this->render('BioExamBundle:Public:start.html.twig', array('form' => $form->createView(), 'global'=>$global, 'exam' => $exam, 'message' => $message, 'takers' => $takers, 'exams' => $exams, 'title' => 'Begin Test'));
 	}
 
 	/**
@@ -377,14 +396,13 @@ class PublicController extends Controller
 
 	private function getNextExam($student) {
 		$em = $this->getDoctrine()->getManager();
-		$qb = $em->createQueryBuilder();
 
-		$query = $qb->select('p')
+		$query = $em->createQueryBuilder()->select('p')
 			->from('BioExamBundle:Exam', 'p')
-			->where($qb->expr()->orx(
-					'p.gDate > :date',
-					'p.gDate = :date AND p.gEnd >= :time'
-				))
+			->where('p.gDate > :date
+					 OR (p.gDate = :date 
+					 	 AND p.gEnd >= :time)'
+				)
 			->andWhere(":section LIKE CONCAT(p.section, '%')")
 			->andWhere(':student NOT IN (SELECT s FROM BioExamBundle:TestTaker t JOIN t.student s WHERE t.status = 6 AND t.exam = p)')
 			->addOrderBy('p.tDate', 'ASC')
@@ -396,11 +414,7 @@ class PublicController extends Controller
 			->getQuery();
 		$result = $query->getResult();
 
-		if (count($result) === 0) {
-			throw new BioException('No more exams scheduled.');
-		}
-
-		return array_shift($result);
+		return $result;
 	}
 
 	private function findObjectByFieldValue($needle, $haystack, $field) {
