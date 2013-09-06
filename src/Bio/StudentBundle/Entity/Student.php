@@ -51,11 +51,8 @@ class Student extends AbstractUserStudent
     protected $lName;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="section", type="string", length=2)
-     * @Assert\NotBlank()
-     * @Assert\Regex("/^[A-Z][A-Z0-9]?$/")
+     * @ORM\ManyToOne(targetEntity="Bio\InfoBundle\Entity\Section")
+     * @ORM\JoinColumn(name="section_id", referencedColumnName="id")
      */
     protected $section;
 
@@ -190,29 +187,6 @@ class Student extends AbstractUserStudent
     }
 
     /**
-     * Set section
-     *
-     * @param string $section
-     * @return Student
-     */
-    public function setSection($section)
-    {
-        $this->section = $section;
-    
-        return $this;
-    }
-
-    /**
-     * Get section
-     *
-     * @return string 
-     */
-    public function getSection()
-    {
-        return strtoupper($this->section);
-    }
-
-    /**
      * Set password
      *
      * @param string $password
@@ -233,5 +207,28 @@ class Student extends AbstractUserStudent
     public function getPassword()
     {   
         return $this->password;
+    }
+
+    /**
+     * Set section
+     *
+     * @param \Bio\InfoBundle\Entity\Section $section
+     * @return Student
+     */
+    public function setSection(\Bio\InfoBundle\Entity\Section $section = null)
+    {
+        $this->section = $section;
+    
+        return $this;
+    }
+
+    /**
+     * Get section
+     *
+     * @return \Bio\InfoBundle\Entity\Section 
+     */
+    public function getSection()
+    {
+        return $this->section;
     }
 }

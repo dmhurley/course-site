@@ -391,7 +391,7 @@ class PublicController extends Controller
 			->addOrderBy('p.tStart', 'ASC')
 			->setParameter('date', new \DateTime(), \Doctrine\DBAL\Types\Type::DATE)
 			->setParameter('time', new \DateTime(), \Doctrine\DBAL\Types\Type::TIME)
-			->setParameter('section', $student->getSection())
+			->setParameter('section', $student->getSection()->getName())
 			->setParameter('student', $student)
 			->getQuery();
 		$result = $query->getResult();

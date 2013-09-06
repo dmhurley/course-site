@@ -7,6 +7,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Bio\UserBundle\Entity\AbstractUserStudent;
+use Bio\InfoBundle\Entity\Section;
 
 
 /**
@@ -76,7 +77,13 @@ class User extends AbstractUserStudent
         return 'Admin';
     }
     public function getSection() {
-        return 'AA';
+        $section = new Section();
+        $section->setName('A9')
+            ->setStart(new \DateTime('midnight'))
+            ->setEnd(new \DateTime('midnight'))
+            ->setBldg("HCK\tHitchcock Hall")
+            ->setRoom(0);
+        return $section;
     }
 
 

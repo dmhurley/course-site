@@ -11,6 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Form\FormError;
 
 use Bio\StudentBundle\Entity\Student;
+use Bio\InfoBundle\Entity\Section;
 use Bio\StudentBundle\Form\StudentType;
 use Bio\DataBundle\Exception\BioException;
 use Bio\DataBundle\Objects\Database;
@@ -34,11 +35,21 @@ class DefaultController extends Controller
      * @Template()
      */
     public function findAction(Request $request){
+        $findArray = $request->getSession()->getFlashBag()->peek('find');
+        if ( isset($findArray['section'])) {
+            $db = new Database($this, 'BioInfoBundle:Section');
+            $s = $db->find(array('id' => $findArray['section']), array(), false);
+            if (!$s) {
+                unset($findArray['section']);
+            } else {
+                $findArray['section'] = $s;
+            }
+        }
         $form = $this->createFormBuilder($request->getSession()->getFlashBag()->peek('find'))
             ->add('sid', 'text', array('label' => 'Student ID:', 'required' => false, 'attr' => array('disabled' => 'disabled')))
             ->add('fName', 'text', array('label' => 'First Name:', 'required' => false))
             ->add('lName', 'text', array('label' => 'Last Name:', 'required' => false))
-            ->add('section', 'text', array('label' => 'Section:', 'required' => false))
+            ->add('section', 'entity', array('label' => 'Section:', 'required' => false, 'class' => 'BioInfoBundle:Section', 'property' => 'name', 'empty_value' => '', 'query_builder' => function($repo) {return $repo->createQueryBuilder('s')->orderBy('s.name', 'ASC');}))
             ->add('email', 'text', array('label' => 'Email:','required' => false, 'attr' => array('disabled' => 'disabled')))
             ->add('find', 'submit')
             ->getForm();
@@ -51,9 +62,13 @@ class DefaultController extends Controller
                 $result = $this->findStudents($array);
             } else if ($form->isValid()) {
                 $array = array_filter(array_slice($form->getData(), 0, 5));
+                if (isset($array['section'])) {
+                    $array['section'] = $array['section']->getId();
+                }
                 $request->getSession()->getFlashBag()->set('find', $array);
                 $result = $this->findStudents($array);
             } else {
+                var_dump($form->getData());
                 $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
             }
         }
@@ -68,8 +83,13 @@ class DefaultController extends Controller
             ->from('BioStudentBundle:Student', 's');
 
         foreach(array_keys($array) as $i => $key) {
-            $qb->andWhere('s.'.$key.' LIKE :value'.$i)
-                ->setParameter('value'.$i, $array[$key].'%');
+            if (is_string($array[$key])) {
+                $qb->andWhere('s.'.$key.' LIKE :value'.$i)
+                    ->setParameter('value'.$i, $array[$key].'%');
+            } else {
+                $qb->andWhere('s.'.$key.' = :value'.$i)
+                    ->setParameter('value'.$i, $array[$key]);
+            }
         }
         if (count($array) > 0) {
             reset($array);
@@ -200,16 +220,38 @@ class DefaultController extends Controller
     private function uploadStudentList($file) {
         $db = new Database($this, 'BioStudentBundle:Student');
         $dbEnts = $db->find(array(), array(), false);
+
+        $db = new Database($this, 'BioInfoBundle:Section');
+        $dbSections = $db->find(array(), array(), false);
+
         $encoder = $this->get('security.encoder_factory')->getEncoder(new Student());
        
         $sids = [];
         $emails = [];
         $ents = [];
+
+        $sections = [];
+
         for ($i = 1; $i < count($file); $i++) {
-            list($sid, $name, $section, $credits, $gender, $class, $major, $email) = preg_split('/","|,"|",|"/', $file[$i], -1, PREG_SPLIT_NO_EMPTY);
-            if (!($sid && $name && $section && $credits && $gender && $class && $major && $email)) {
+            list($sid, $name, $sectionName, $credits, $gender, $class, $major, $email) = preg_split('/","|,"|",|"/', $file[$i], -1, PREG_SPLIT_NO_EMPTY);
+            if (!($sid && $name && $sectionName && $credits && $gender && $class && $major && $email)) {
                 throw new BioException("The file was badly formatted");
             }
+
+            if (! ($section = $this->findObjectByFieldValue($sectionName, $dbSections, 'name')) && !($section = $this->findObjectByFieldValue($sectionName, $sections, 'name'))) {
+                $section = new Section();
+                $section->setName($sectionName)
+                    ->setStart(new \DateTime('midnight'))
+                    ->setEnd(new \DateTime('midnight'))
+                    ->setDay('m')
+                    ->setBldg("HCK\tHitchcock Hall")
+                    ->setRoom(0);
+                $db->add($section);
+            }
+            if (!in_array($section, $sections)) {
+                $sections[] = $section;
+            }
+
             list($lName, $fName) = explode(", ", $name);
             while (strlen($sid) < 7) {
                 $sid = "0".$sid;
@@ -230,7 +272,7 @@ class DefaultController extends Controller
             }
         }
         foreach ($ents as $ent) {
-            if ($dbEnt = $this->getBySid($dbEnts, $ent)) {
+            if ($dbEnt = $this->findObjectByFieldValue($ent->getSid(), $dbEnts, 'sid')) {
                 $dbEnt->setLName($ent->getLName())
                     ->setFName($ent->getFName())
                     ->setSection($ent->getSection())
@@ -241,8 +283,14 @@ class DefaultController extends Controller
         }
 
         foreach ($dbEnts as $dbEnt) {
-            if (!$this->getBySid($ents, $dbEnt)) {
+            if (!$this->findObjectByFieldValue($dbEnt->getSid(), $ents, 'sid')) {
                 $db->delete($dbEnt);
+            }
+        }
+
+        foreach($dbSections as $dbSection) {
+            if (!$this->findObjectByFieldValue($dbSection->getName(), $sections, 'name')) {
+                $db->delete($dbSection);
             }
         }
 
@@ -251,12 +299,14 @@ class DefaultController extends Controller
     }
 
     // does array contain student, searching by Sid
-    private function getBySid($array, $student) {
-        foreach ($array as $a) {
-            if ($a->getSid() === $student->getSid()) {
-                return $a;
-            }
+    private function findObjectByFieldValue($needle, $haystack, $field) {
+        $getter = 'get'.ucFirst($field);
+
+        foreach ($haystack as $straw) {
+            if (call_user_func_array(array($straw, $getter), array()) === $needle) {
+                return $straw;
+            } 
         }
-        return false;
+        return null;
     }
 }
