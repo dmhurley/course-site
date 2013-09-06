@@ -403,7 +403,7 @@ class PublicController extends Controller
 					 OR (p.gDate = :date 
 					 	 AND p.gEnd >= :time)'
 				)
-			->andWhere(":section LIKE CONCAT(p.section, '%')")
+			->andWhere("(:section LIKE CONCAT(p.section, '%') OR p.section IS NULL)")
 			->andWhere(':student NOT IN (SELECT s FROM BioExamBundle:TestTaker t JOIN t.student s WHERE t.status = 6 AND t.exam = p)')
 			->addOrderBy('p.tDate', 'ASC')
 			->addOrderBy('p.tStart', 'ASC')

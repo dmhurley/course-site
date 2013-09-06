@@ -39,9 +39,8 @@ class Exam
     /**
      * @var string
      *
-     * @ORM\Column(name="section", type="string", length=2)
-     * @Assert\NotBlank()
-     * @Assert\Regex("/^[A-Z][A-Z0-9]?$/")
+     * @ORM\Column(name="section", type="string", length=2, nullable=true)
+     * @Assert\Regex("/(\A\Z)|(^[A-Z][A-Z0-9]?$)/")
      */
     private $section;
 
