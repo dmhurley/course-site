@@ -50,7 +50,7 @@
 				}
 
 				#timer .timer {
-					margin:20px;
+					display:block;
 					padding:10px 15px;
 				}
 
@@ -66,6 +66,14 @@
 				#timer #ttEnd:after {
 					content:"until end";
 				}
+
+				#timer .timer.hidden {
+					padding-top:0px;
+					padding-bottom:0px;
+					height: 0px;
+					line-height: 0px;
+					overflow:hidden;
+				}
 		</style>
 		<script>
 		(function() {
@@ -79,6 +87,11 @@
 						var now = new Date();
 						var ttLate = (this.start.valueOf() - now.valueOf())/1000/60 + duration;
 						var ttEnd = (this.end.valueOf() - now.valueOf())/1000/60;
+
+						if (ttLate > ttEnd) {
+							document.getElementById('ttLate').classList.add('hidden');
+							ttLate = ttEnd;
+						}
 
 						if (ttLate < 1 && !this.endWarning) {
 							var div = document.getElementById('timer');
