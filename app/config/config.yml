@@ -57,6 +57,8 @@ doctrine:
         # path:     %database_path%
         types:
             privatestring: Bio\DataBundle\Type\PrivateTextType
+        mapping_types:
+            privatestring: privatestring
 
     orm:
         auto_generate_proxy_classes: %kernel.debug%
