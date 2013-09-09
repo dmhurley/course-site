@@ -33,6 +33,16 @@ class UpdateCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
+/***************************** MIGRATE ********************************/
+$output->writeln('<info>Migrating database</info>'); // change to migrate
+$output->writeln('<question>--------------------------------------------</question>');
+        $process = new Process('php app/console doctrine:migrations:migrate --no-interaction');
+        $process->run(function($type, $buffer){echo $buffer;});
+
+        if (!$process->isSuccessful()){
+            throw new \Exception('Unable to update schema. '.$process->getExitCodeText());
+        }
+/***************************** INSTALL ********************************/
 $output->writeln('<info>Installing Bundles</info>');
 $output->writeln('<question>--------------------------------------------</question>');
         $process = new Process('php app/console bio:install --no-clear');
@@ -46,21 +56,13 @@ $output->writeln('<question>--------------------------------------------</questi
             throw new \Exception('Unable to install Assets. '.$process->getExitCodeText());
         }
 
+/***************************** DUMP ********************************/
 $output->writeln('<info>Dumping production assets</info>');
 $output->writeln('<question>--------------------------------------------</question>');
         $process = new Process('php app/console assetic:dump --env=prod');
         $process->run(function($type, $buffer){echo $buffer;});
         if (!$process->isSuccessful()) {
             throw new \Exception('Unable to dump Assets. '.$process->getExitCodeText());
-        }
-
-$output->writeln('<info>Updating schema</info>'); // change to migrate
-$output->writeln('<question>--------------------------------------------</question>');
-        $process = new Process('php app/console doctrine:schema:update --force');
-        $process->run(function($type, $buffer){echo $buffer;});
-
-        if (!$process->isSuccessful()){
-            throw new \Exception('Unable to update schema. '.$process->getExitCodeText());
         }
     }
 }

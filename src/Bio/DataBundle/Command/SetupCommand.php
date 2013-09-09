@@ -48,7 +48,7 @@ class SetupCommand extends ContainerAwareCommand
             'Email: ',
             null
         );
-
+/***************************** CREATE DATABASE ********************************/
 $output->writeln('<info>Creating database</info>');
 $output->writeln('<question>--------------------------------------------</question>');
         $process = new Process('php app/console doctrine:database:create', null, null, null, 300);
@@ -57,27 +57,11 @@ $output->writeln('<question>--------------------------------------------</questi
             throw new \Exception('Unable to create database: (run bio:update?) '.$process->getExitCodeText());
         }
 
-$output->writeln('<info>Creating schema</info>');
-$output->writeln('<question>--------------------------------------------</question>');
-        $process = new Process('php app/console doctrine:schema:create', null, null, null, 300);
-        $process->run(function($type, $buffer){echo $buffer;});
-        if (!$process->isSuccessful()) {
-            throw new \Exception('Unable to create schema: '.$process->getExitCodeText());
-        }
-
-
-        // NEVER call  `bio:update --reset`, or you'll get an infinite loop.
+/************************* MIGRATE, CREATE, INSTALL, DUMP *****************************/
         $process = new Process('php app/console bio:update', null, null, null, 300);
         $process->run(function($type, $buffer){echo $buffer;});
 
-$output->writeln('<info>generating entities</info>');
-$output->writeln('<question>--------------------------------------------</question>');
-        try{
-            $this->populateDatabase($output);
-        } catch (\Exception $e) {
-            throw new \Exception('Unable to persist entities to database.');
-        }
-
+/************************* CREATE ACCOUNT *****************************/
         $output->writeln('<info>Creating Account</info>');
 $output->writeln('<question>--------------------------------------------</question>');
         $process = new Process('php app/console bio:create:account --username='.$username.' --password='.$password.' --email='.$email.' --role=ROLE_SUPER_ADMIN', null, null, null, 300);
@@ -101,54 +85,5 @@ $output->writeln('<question>--------------------------------------------</questi
         if (!$process->isSuccessful()) {
             throw new \Exception('Unable to clear dev cache. Clear it manually for changes to take effect.');
         }
-    }
-
-    private function populateDatabase(OutputInterface $output) {
-        // does not matter what repository we use as long as we only persist objects to database. 'BioInfoBundle:Info' is arbitrary
-        $db = new Database($this->getContainer(), 'BioInfoBundle:Info');
-            $info = new Info();
-            $info->setCourseNumber(999)
-                ->setTitle('Biologiology')
-                ->setQtr('summer')
-                ->setYear(2013)
-                ->setDays(array('m', 'w', 'f'))
-                ->setStartTime(new \DateTime())
-                ->setEndTime(new \DateTime())
-                ->setBldg("HCK\tHitchcock Hall")
-                ->setRoom('120')
-                ->setEmail('fakeemail@gmail.com');
-
-            $root = new Folder();
-            $root->setName('root');
-            $root->setPrivate(false);
-
-            $instructor = new Person();
-            $instructor->setfName('John')
-                ->setlName('Doe')
-                ->setEmail('johndoe@gmail.com')
-                ->setBldg("HCK\tHitchcock Hall")
-                ->setRoom('101')
-                ->setTitle('instructor');
-
-            $examGlobal = new ExamGlobal();
-            $examGlobal->setGrade(2)
-                ->setRules("Exam rules go here.");
-
-            $tripGlobal = new TripGlobal();
-            $tripGlobal->setOpening(new \DateTime())
-                ->setClosing(new \Datetime())
-                ->setMaxTrips(1)
-                ->setEvalDue(5)
-                ->setPromo('Trip promo goes here.')
-                ->setInstructions('Trip instructions go here.');
-
-
-        $db->add($info);
-        $db->add($root);
-        $db->add($instructor);
-        $db->add($examGlobal);
-        $db->add($tripGlobal);
-
-        $db->close();
     }
 }
