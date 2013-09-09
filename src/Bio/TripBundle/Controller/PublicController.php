@@ -40,18 +40,27 @@ class PublicController extends Controller
     }
 
     private function tripAction(Request $request, $id, $global) {
-    	$db = new Database($this, 'BioTripBundle:Trip');
-    	$trips = $db->find(array(), array('start' => 'ASC', 'end' => 'ASC'), false);
-
         $student = $this->get('security.context')->getToken()->getUser();
 
         $em = $this->getDoctrine()->getManager();
-        $query = $em->createQuery('
-                SELECT t
-                FROM BioTripBundle:Trip t
-                WHERE :student MEMBER OF t.students
-            ')->setParameter('student', $student);
+        $q = $em->createQueryBuilder()
+            ->select('t')
+            ->from('BioTripBundle:Trip', 't')
+            ->where(':student NOT MEMBER OF t.students')
+            ->andWhere('t.start > :now')
+            ->orderBy('t.start', 'ASC')
+            ->setParameter('student', $student)
+            ->setParameter('now', new \DateTime())
+            ->getQuery();
+        $trips = $q->getResult();
 
+        $query = $em->createQueryBuilder()
+            ->select('t')
+            ->from('BioTripBundle:Trip', 't')
+            ->where(':student MEMBER OF t.students')
+            ->orderBy('t.start', 'ASC')
+            ->setParameter('student', $student)
+            ->getQuery();
         $yourTrips = $query->getResult();
 
     	return $this->render('BioTripBundle:Public:browse.html.twig', array('trips' => $trips, 'current' => $yourTrips, 'global' => $global, 'title' => 'Sign Up'));
@@ -156,7 +165,7 @@ class PublicController extends Controller
         }
 
         /****** DID THEY GO ON TRIP ******/
-        if (!in_array($student, $trip->getStudents())) {
+        if (!in_array($student, $trip->getStudents()->toArray())) {
             $request->getSession()->getFlashBag()->set('failure', 'You did not attend this trip.');
             return $this->redirect($this->generateUrl('trip_entrance'));
         }

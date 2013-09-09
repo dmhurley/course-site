@@ -9,52 +9,25 @@
 
 {% block content %}
 	<div>{{global.instructions|raw}}</div>
-{% for trip in trips %}
-	{% if current != null and trip in current %}
-		{% set cur = 'current' %}
+
+	<h2 style="margin-bottom:0px;">Your Trips</h2>
+	{% for trip in current %}
+		{% include 'BioTripBundle:Public:tripTemplate.html.twig' with {'cur':'current'} %}
 	{% else %}
-		{% set cur = '' %}
-	{% endif %}
-
-	{% if date(trip.start) < date() %}
-		{% set passed = 'passed' %}
-	{% else %}
-		{% set passed = '' %}
-	{% endif %}
-
-	<div class="trip {{cur}} {{passed}}">
-		<h2 style="max-width:70%">{{trip.title}}</h2>
-		<h2>{{trip.start|date('m/d H:i')}} - {{trip.end|date('m/d H:i')}}</h2>
-
-		<p style="clear:both;">{{trip.shortSum|raw}}</p>
-
-		{% if date(trip.start) < date() %}
-			{% if current != null and trip in current %}
-				<a class="eval" href="{{ path('eval_trip', {'id': trip.id, 'tripTitle': trip.title|replace({" " : "_"})}) }}">Evaluate Trip</a>
-			{% else %}
-				<a>Join Trip</a>
-			{% endif %}
-				- trip over.
-		{% elseif current != null and trip in current %}
-			<a href="{{ path('leave_trip', {'id': trip.id}) }}">Leave Trip</a>
-			- {{trip.max - trip.students|length}} spots left.
-		{% else %}
-			{% if current|length >= global.maxTrips %}
-				<a>Join Trip</a>
-			{% else %}
-				<a href="{{ path('join_trip', {'id': trip.id}) }}">Join Trip</a>
-			{% endif %}
-			- {{trip.max - trip.students|length}} spots left.
-		{% endif %}
-		<a href="{{ path('view_trip', {'id': trip.id}) }}">View Trip</a>
-	</div>
-{% else %}
 	<div class="trip">
-		<h2>No trips</h2>
-		<p>Check back soon for more trips.</p>
+		<h3>No trips</h3>
+		<p>You are not signed up for any trips.</p>
 	</div>
-{% endfor %}
+	{% endfor %}
 
-{{parent()}}
+	<h2 style="margin-bottom:0px;">Future Trips</h2>
+	{% for trip in trips %}
+		{% include 'BioTripBundle:Public:tripTemplate.html.twig' with {'cur':''} %}
+	{% else %}
+		<div class="trip">
+			<h3>No trips</h3>
+			<p>Check back soon for more trips.</p>
+		</div>
+	{% endfor %}
 
 {% endblock %}

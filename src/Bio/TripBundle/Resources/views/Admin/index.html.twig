@@ -43,8 +43,8 @@
 		{% for trip in trips %}
 			<tr>
 				<td>{{ trip.title }}</td>
-				<td>{{ trip.start|date('d-m-y H:i:s') }}</td>
-				<td>{{ trip.end|date('d-m-y H:i:s') }}</td>
+				<td>{{ trip.start|date('m-d-y h:i a') }}</td>
+				<td>{{ trip.end|date('m-d-y h:i a') }}</td>
 				<td>{{ trip.students|length }}/{{trip.max}}</td>
 				<td><a href="{{ path('view_trip', {'id':trip.id}) }}">view</a></td>
 				<td><a href="{{ path('edit_trip', {'id':trip.id}) }}">edit</a></td>

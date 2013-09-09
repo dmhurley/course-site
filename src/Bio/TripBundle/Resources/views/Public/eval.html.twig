@@ -22,7 +22,7 @@
 						<div>
 						{% for i in 0..question.data[1] %}
 							<input type="radio" name="{{question.id}}" value={{i}}{% if loop.index == 1 %} checked="checked"{% endif %}>
-							<label>{{i}}</label>
+							<label class="multiple">{{i}}</label>
 						{% endfor %}
 						</div>
 					</div>

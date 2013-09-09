@@ -1,0 +1,38 @@
+{% if date(trip.start) < date() %}
+	{% set passed = 'passed' %}
+{% else %}
+	{% set passed = '' %}
+{% endif %}
+
+<div class="trip {{cur}} {{passed}}">
+
+	<h3 style="max-width:70%">{{trip.title}}</h3>
+	<h3>{{trip.start|date('m/d H:i')}} - {{trip.end|date('m/d H:i')}}</h3>
+
+	<p style="clear:both;">{{trip.shortSum|raw}}</p>
+
+	{#
+	 # If student is signed up for trip, show evalutation link
+	 # If student isn't signed up for trip, won't show...
+	 #}
+	{% if date(trip.start) < date() %} {# if trip is over #}
+		{% if date(trip.end) < date() %}
+			<a href="{{ path('eval_trip', {'id': trip.id, 'tripTitle': trip.title|replace({" " : "_"})}) }}">Evaluate Trip</a>
+			- trip over.
+		{% else %}
+			<a class="eval">Evaluate Trip</a> - trip in progress
+		{% endif %}
+	{% else %} {# if user is signed up for trip #}
+		{% if cur != ''  %}
+			<a href="{{ path('leave_trip', {'id': trip.id}) }}">Leave Trip</a>
+		{% else %}
+			{% if current|length >= global.maxTrips or trip.students|length >= trip.max %}
+				<a>Join Trip</a>
+			{% else %}
+				<a href="{{ path('join_trip', {'id': trip.id}) }}">Join Trip</a>
+			{% endif %}
+		{% endif %}
+		- {{trip.max - trip.students|length}} spots left.
+	{% endif %}
+	<a href="{{ path('view_trip', {'id': trip.id}) }}">View Trip</a>
+</div>

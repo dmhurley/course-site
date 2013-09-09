@@ -16,7 +16,7 @@ use Bio\TripBundle\Entity\Trip;
 use Bio\TripBundle\Entity\Evaluation;
 use Bio\TripBundle\Entity\EvalQuestion;
 use Bio\TripBundle\Entity\Response;
-use Bio\StudentBundle\Entity\Student;
+use Bio\UserBundle\Entity\AbstractUserStudent;
 
 
 /** 
@@ -169,7 +169,7 @@ class AdminController extends Controller
      * @ParamConverter("trip", options={"mapping": {"id": "id"}})
      * @ParamConverter("student", options={"mapping": {"sid": "id"}})
      */
-    public function removeStudentAction(Request $request, Trip $trip = null, Student $student = null) {
+    public function removeStudentAction(Request $request, Trip $trip = null, AbstractUserStudent $student = null) {
         if ($student && $trip) {
             $db = new Database($this, 'BioTripBundle:Trip');
             $trip->removeStudent($student);

@@ -24,16 +24,11 @@
 	opacity: .5;
 }
 
-.current.passed .eval {
-	opacity: 1;
-	font-size: 12pt;
-}
-
-.trip h2 {
+.trip h3 {
 	float:right;
 }
 
-.trip h2:first-child {
+.trip h3:first-child {
 	float:left;
 }
 
@@ -98,7 +93,7 @@ table div input[type=text] {
 	margin-bottom: 0px;
 }
 
-#form > div label {
+#form > div label.multiple {
 	position:relative;
 	display:inline;
 	float:none;
