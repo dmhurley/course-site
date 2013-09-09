@@ -27,11 +27,6 @@ class SetupCommand extends ContainerAwareCommand
         $this
             ->setName('bio:setup')
             ->setDescription('Setup a biology course page.')
-            ->addArgument(
-                'bundles',
-                InputArgument::IS_ARRAY,
-                'default|all|[info folder student clicker score exam trip switch user]'
-            )
         ;
     }
 
@@ -53,44 +48,27 @@ class SetupCommand extends ContainerAwareCommand
             'Email: ',
             null
         );
-        $bundles = $input->getArgument('bundles');
-
-$output->writeln('<info>Installing Bundles</info>');
-$output->writeln('<question>--------------------------------------------</question>');
-        if (count($bundles) === 0 || array_search('default', $bundles) !== false) {
-            $process = new Process('php app/console bio:install -d --no-clear', null, null, null, 300);
-        } else if (array_search('all', $bundles) !== false) {
-            $process = new Process('php app/console bio:install -a --no-clear', null, null, null, 300);
-        } else {
-            $process = new Process('php app/console bio:install '.implode(' ', $bundles).' --no-clear', null, null, null, 300);
-        }
-        $process->run(function($type, $buffer){echo $buffer;});
-
-$output->writeln('<info>Installing assets</info>');
-$output->writeln('<question>--------------------------------------------</question>');
-        $process = new Process('php app/console assets:install --symlink', null, null, null, 300);
-        $process->run(function($type, $buffer){echo $buffer;});
-        if (!$process->isSuccessful()) {
-            throw new \Exception('Unable to install Assets. '.$process->getExitCodeText());
-        }
 
 $output->writeln('<info>Creating database</info>');
 $output->writeln('<question>--------------------------------------------</question>');
         $process = new Process('php app/console doctrine:database:create', null, null, null, 300);
         $process->run(function($type, $buffer){echo $buffer;});
+        if (!$process->isSuccessful()) {
+            throw new \Exception('Unable to create database: (run bio:update?) '.$process->getExitCodeText());
+        }
 
 $output->writeln('<info>Creating schema</info>');
 $output->writeln('<question>--------------------------------------------</question>');
         $process = new Process('php app/console doctrine:schema:create', null, null, null, 300);
         $process->run(function($type, $buffer){echo $buffer;});
         if (!$process->isSuccessful()) {
-            $process = new Process('php app/console doctrine:schema:update --force', null, null, null, 300);
-            $process->run(function($type, $buffer){echo $buffer;});
-
-            if (!$process->isSuccessful()){
-                throw new \Exception('Unable to generate schema. '.$process->getExitCodeText());
-            }
+            throw new \Exception('Unable to create schema: '.$process->getExitCodeText());
         }
+
+
+        // NEVER call  `bio:update --reset`, or you'll get an infinite loop.
+        $process = new Process('php app/console bio:update', null, null, null, 300);
+        $process->run(function($type, $buffer){echo $buffer;});
 
 $output->writeln('<info>generating entities</info>');
 $output->writeln('<question>--------------------------------------------</question>');

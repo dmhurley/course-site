@@ -25,8 +25,6 @@ framework:
 twig:
     debug:            %kernel.debug%
     strict_variables: %kernel.debug%
-    globals:
-        name: %site_name%
     form:
         resources:
             - 'BioPublicBundle::form_errors.html.twig'

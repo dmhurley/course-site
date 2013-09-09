@@ -12,4 +12,4 @@ parameters:
     mailer_dev_address: me@dev.com
     locale: en
     secret: ThisTokenIsNotSoSecretChangeIt
-    site_name: 'Bio 999'
+    bundles: default

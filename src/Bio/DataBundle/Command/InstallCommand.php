@@ -47,27 +47,24 @@ class InstallCommand extends ContainerAwareCommand
     {
         $bundles = $input->getArgument('bundles');
         if ($input->getOption('default')) {
-             $output->writeln('Installing default bundles');
-             $bundles = array('info', 'folder', 'student', 'clicker', 'score', 'user');
-            $this->setSidebar(array('exam', 'trip'), $output);
-            $this->setRouting(array('exam', 'trip'), $output);
+            $this->installDefault($output);
         } else if ($input->getOption('all')) {
-            $output->writeln('Installing all bundles');
-            $bundles = array('info', 'folder', 'student', 'clicker', 'score', 'exam', 'trip', 'switch', 'user');
-            $this->setSidebar($bundles, $output);
-            $this->setRouting($bundles, $output);
-        } else {
-            if (count($bundles) === 0) {
-                $output->writeln("You cannot install 0 bundles.");
+            $this->installAll($output);
+        } else if (count($bundles) === 0) {
+            $bundles = explode(' ', $this->getContainer()->getParameter('bundles'));
+            if (in_array('all', $bundles)) {
+                unset($bundles[array_search('all', $bundles)]);
+                $this->installAll($output);
+            } else if (in_array('default', $bundles)) {
+                unset($bundles[array_search('default', $bundles)]);
+                $this->installDefault($output);
             } else {
-                if (!in_array('user', $bundles)) {
-                    $bundles[] = 'user';
-                }
-                $this->setSidebar($bundles, $output);
-                $this->setRouting($bundles, $output);
+                $this->installBundles($bundles, $output);
             }
-            $output->writeln(implode($bundles, " "));
+        } else {
+            $this->installBundles($bundles, $output);
         }
+
 
         if (!$input->getOption('no-clear')) {
             $output->writeln("Clearing cache.");
@@ -80,6 +77,27 @@ class InstallCommand extends ContainerAwareCommand
         } else {
             $output->writeln("Don't forget to clear the cache.");
         }
+    }
+
+    private function installDefault(OutputInterface $output) {
+        $output->writeln('Installing default bundles');
+        $bundles = array('info', 'folder', 'student', 'clicker', 'score', 'user');
+        $this->installBundles($bundles, $output);
+    }
+
+    private function installAll(OutputInterface $output) {
+        $output->writeln('Installing all bundles');
+        $bundles = array('info', 'folder', 'student', 'clicker', 'score', 'exam', 'trip', 'switch', 'user');
+        $this->installBundles($bundles, $output);
+    }
+
+    private function installBundles(array $bundles, OutputInterface $output) {
+        if (!in_array('user', $bundles)) {
+            $bundles[] = 'user';
+        }
+        $this->setSidebar($bundles, $output);
+        $this->setRouting($bundles, $output);
+        $output->writeln("Installed: ".implode(" ", $bundles));
     }
 
     private function setConfig($bundles, $output, $thing, $pre = null) {
