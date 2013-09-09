@@ -27,65 +27,40 @@ class UpdateCommand extends ContainerAwareCommand
         $this
             ->setName('bio:update')
             ->setDescription('Updates a biology course page.')
-            ->addOption(
-                'reset',
-                null,
-                InputOption::VALUE_NONE,
-                'Fresh start.'
-                )
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if ($input->getOption('reset')) {
-            // $output->writeln('<info>Clearing Database</info>');
-            // $output->writeln('<question>--------------------------------------------</question>');
-            //         $process = new Process('php app/console doctrine:database:drop --force', null, null, null, 300);
-            //         $process->run(function($type, $buffer){echo $buffer;});
 
-            // clear bundles
+$output->writeln('<info>Installing Bundles</info>');
+$output->writeln('<question>--------------------------------------------</question>');
+        $process = new Process('php app/console bio:install --no-clear');
+        $process->run(function($type, $buffer){echo $buffer;});
 
-            // clear assetic
+$output->writeln('<info>Installing assets</info>');
+$output->writeln('<question>--------------------------------------------</question>');
+        $process = new Process('php app/console assets:install --symlink');
+        $process->run(function($type, $buffer){echo $buffer;});
+        if (!$process->isSuccessful()) {
+            throw new \Exception('Unable to install Assets. '.$process->getExitCodeText());
+        }
 
-            // clear routing/sidebar
+$output->writeln('<info>Dumping production assets</info>');
+$output->writeln('<question>--------------------------------------------</question>');
+        $process = new Process('php app/console assetic:dump --env=prod');
+        $process->run(function($type, $buffer){echo $buffer;});
+        if (!$process->isSuccessful()) {
+            throw new \Exception('Unable to dump Assets. '.$process->getExitCodeText());
+        }
 
-            // clear cache
+$output->writeln('<info>Updating schema</info>'); // change to migrate
+$output->writeln('<question>--------------------------------------------</question>');
+        $process = new Process('php app/console doctrine:schema:update --force');
+        $process->run(function($type, $buffer){echo $buffer;});
 
-            // call bio:setup (which in turn calls bio:update again without --reset)
-            echo __DIR__;
-
-        } else {
-
-    $output->writeln('<info>Installing Bundles</info>');
-    $output->writeln('<question>--------------------------------------------</question>');
-            $process = new Process('php app/console bio:install --no-clear', null, null, null, 300);
-            $process->run(function($type, $buffer){echo $buffer;});
-
-    $output->writeln('<info>Installing assets</info>');
-    $output->writeln('<question>--------------------------------------------</question>');
-            $process = new Process('php app/console assets:install --symlink', null, null, null, 300);
-            $process->run(function($type, $buffer){echo $buffer;});
-            if (!$process->isSuccessful()) {
-                throw new \Exception('Unable to install Assets. '.$process->getExitCodeText());
-            }
-
-    $output->writeln('<info>Dumping production assets</info>');
-    $output->writeln('<question>--------------------------------------------</question>');
-            $process = new Process('php app/console assetic:dump --env=prod', null, null, null, 300);
-            $process->run(function($type, $buffer){echo $buffer;});
-            if (!$process->isSuccessful()) {
-                throw new \Exception('Unable to dump Assets. '.$process->getExitCodeText());
-            }
-
-    $output->writeln('<info>Updating schema</info>');
-    $output->writeln('<question>--------------------------------------------</question>');
-            $process = new Process('php app/console doctrine:schema:update --force', null, null, null, 300);
-            $process->run(function($type, $buffer){echo $buffer;});
-
-            if (!$process->isSuccessful()){
-                throw new \Exception('Unable to update schema. '.$process->getExitCodeText());
-            }
+        if (!$process->isSuccessful()){
+            throw new \Exception('Unable to update schema. '.$process->getExitCodeText());
         }
     }
 }

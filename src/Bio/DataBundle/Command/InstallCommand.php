@@ -67,13 +67,21 @@ class InstallCommand extends ContainerAwareCommand
 
 
         if (!$input->getOption('no-clear')) {
-            $output->writeln("Clearing cache.");
-            $process = new Process('php app/console cache:clear');
+            $output->writeln("Clearing caches.");
+            $process = new Process('php app/console cache:clear  --env=prod');
             $process->run(function($type, $buffer){echo $buffer;});
 
             if (!$process->isSuccessful()) {
-                throw new \Exception('Unable to clear cache. Clear it manually for changes to take effect.');
+                throw new \Exception('Unable to clear caches. Clear them manually for changes to take effect.');
             }
+
+            $process = new Process('php app/console cache:clear --env=dev');
+            $process->run(function($type, $buffer){echo $buffer;});
+
+            if (!$process->isSuccessful()) {
+                throw new \Exception('Unable to clear dev cache. Clear it manually for changes to take effect.');
+            }
+
         } else {
             $output->writeln("Don't forget to clear the cache.");
         }
