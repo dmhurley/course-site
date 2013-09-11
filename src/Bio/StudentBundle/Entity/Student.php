@@ -56,14 +56,7 @@ class Student extends AbstractUserStudent
      */
     protected $section;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="email", type="privatestring", unique=true)
-     * @Assert\NotBlank()
-     * @Assert\Email()
-     */
-    protected $email;
+
 
     /**
      * @var string
@@ -161,29 +154,6 @@ class Student extends AbstractUserStudent
     public function getLName()
     {
         return ucfirst($this->lName);
-    }
-
-    /**
-     * Set email
-     *
-     * @param string $email
-     * @return Student
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
-    
-        return $this;
-    }
-
-    /**
-     * Get email
-     *
-     * @return string 
-     */
-    public function getEmail()
-    {
-        return $this->email;
     }
 
     /**

@@ -13,7 +13,7 @@
 			</div>
 			<div>
 				<label style="height:1px"></label>
-				<a href="{{ path('register') }}">register</a>&emsp;<a href="{{ render(controller('BioPublicBundle:Content:email')) }}?subject=I forgot my password :(">forgot password</a>
+				<a href="{{ path('register') }}">register</a>&emsp;<a href="{{ path('user_reset') }}">forgot password</a>
 			</div>
 			<div>
 				<button type="submit" id="form_login" name="form[login]">Login</button>

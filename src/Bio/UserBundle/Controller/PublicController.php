@@ -8,6 +8,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 use Symfony\Component\HttpFoundation\Request;
 use Bio\DataBundle\Objects\Database;
+use Symfony\Component\Form\FormError;
+
 use Bio\UserBundle\Entity\User;
 use Bio\UserBundle\Entity\AbstractUserStudent;
 
@@ -85,6 +87,41 @@ class PublicController extends Controller
         }
 
         return array('form' => $form->createView(), 'title' => 'Register Account');
+    }
+
+    /**
+     * @Route("/reset", name="user_reset")
+     * @Template()
+     */
+    public function selfResetAction(Request $request) {
+        $form = $this->createFormBuilder()
+            ->add('username', 'text', array('label' => 'Username:'))
+            ->add('email', 'email', array('label' => 'Email:'))
+            ->add('reset', 'submit')
+            ->getForm();
+
+        if ($request->getMethod() === "POST") {
+            $form->handleRequest($request);
+
+            if ($form->isValid()) {
+                $db = new Database($this, 'BioUserBundle:AbstractUserStudent');
+                $users = $db->find(array('email' => $form->get('email')->getData()), array(), false);
+                foreach($users as $user) {
+                    if ($user->getUsername() === $form->get('username')->getData()) {
+                        
+                        $this->forward('BioUserBundle:Admin:reset', array('id' => $user->getId()));
+                        $request->getSession()->getFlashBag()->set('success', 'New password sent.');
+                        return $this->redirect($this->generateUrl('main_page'));
+                    }
+                }
+                $error = new FormError("Could not find user with that name and email");
+                $form->get('username')->addError($error);
+                $form->get('email')->addError($error);
+                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+            }
+        }
+
+        return array('form' => $form->createView(), 'title' => 'Reset Password');
     }
 
     /**

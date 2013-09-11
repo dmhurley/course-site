@@ -4,6 +4,7 @@ namespace Bio\UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
@@ -27,6 +28,15 @@ abstract class AbstractUserStudent implements UserInterface
 	 */
 	protected $salt;
 
+	/**
+     * @var string
+     *
+     * @ORM\Column(name="email", type="privatestring")
+     * @Assert\NotBlank()
+     * @Assert\Email()
+     */
+    protected $email;
+
 	public function __construct() {
         $this->salt = md5(uniqid(rand(), true));
     }
@@ -43,9 +53,44 @@ abstract class AbstractUserStudent implements UserInterface
     public abstract function getFName();
     public abstract function getLName();
     public abstract function getSection();
-    public abstract function getEmail();
 
     public function getId() {
     	return $this->id;
+    }
+
+    /**
+     * Set email
+     *
+     * @param privatestring $email
+     * @return AbstractUserStudent
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    
+        return $this;
+    }
+
+    /**
+     * Set salt
+     *
+     * @param string $salt
+     * @return AbstractUserStudent
+     */
+    public function setSalt($salt)
+    {
+        $this->salt = $salt;
+    
+        return $this;
+    }
+
+    /**
+     * Get email
+     *
+     * @return privatestring 
+     */
+    public function getEmail()
+    {
+        return $this->email;
     }
 }
