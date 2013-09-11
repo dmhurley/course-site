@@ -10,6 +10,7 @@ parameters:
     mailer_user: null
     mailer_password: null
     mailer_dev_address: me@dev.com
+    mailer_spool_directory: /Library/Webserver/spool
     locale: en
     secret: ThisTokenIsNotSoSecretChangeIt
     bundles: default

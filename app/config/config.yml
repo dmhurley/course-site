@@ -72,7 +72,7 @@ swiftmailer:
     password:  %mailer_password%
     spool:
         type: file
-        path: %kernel.root_dir%/spool
+        path: %mailer_spool_directory%
 
 stfalcon_tinymce:
         include_jquery: false
