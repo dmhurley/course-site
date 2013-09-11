@@ -32,50 +32,64 @@ Once all major problems are fixed you're ready to set up the project.
 
 #### The Easy Way
 
-		php app/console bio:setup [ [bundles1] ... [bundlesN] | all | default ]
+		php app/console bio:setup
 
-This command will do the complete basic setup for you. Install bundles & assets, create the database tables and columns, and initialize any entities that are necessary for the site to run Finally the command will store the username and hashed password in `app/config/security.yml` allowing you to access the admin pages. The `bundles` option takes in the same options as `bio:install` (explained later) except the key words `default` and `all` take the place of `--default` and `--all`.
+This command will do the complete basic setup for you. Install bundles & assets, create the database tables and columns, and initialize any entities that are necessary for the site to run Finally the command will store the username and hashed password in `app/config/security.yml` allowing you to access the admin pages. Set the bundles you want to install in `app/config/parameters.yml`.
 
 #### The Hard Way
 
 If for some reason `app/console bio:setup` does not work, you can do the setup yourself. From the main directory run
 
-		php app/console assets:install --symlink
-
 		php app/console doctrine:database:create
-
+		
 		php app/console doctrine:schema:create
+		
+		php app/console bio:install --no-clear
+		
+		php app/console assets:install --symlink
+		
+		php app/console assetic:dump --env=prod
 
-to install the public resources for assetic, create the database, and create the tables respectively.
+to create the database and tables; enable the desired bundles; and install and dump public resources.
 
 You must then persist at least these entities.
-
+``` php
 		$info = new Info();
-		    $info->setCourseNumber(999)
-		        ->setTitle('Biologiology')
-		        ->setQtr('summer')
-		        ->setYear(2013)
-		        ->setDays(array('m', 'w', 'f'))
-		        ->setStartTime(new \DateTime())
-		        ->setEndTime(new \DateTime())
-		        ->setBldg('KNE	Kane Hall')
-		        ->setRoom('120')
-		        ->setEmail('fakeemail@gmail.com');
+		$info->setCourseNumber(999)
+			->setTitle('Biologiology')
+			->setQtr('summer')
+			->setYear(2013)
+			->setDays(array('m', 'w', 'f'))
+			->setStartTime(new \DateTime())
+			->setEndTime(new \DateTime())
+			->setBldg("HCK\tHitchcock Hall")
+			->setRoom('120')
+			->setEmail('fakeemail@gmail.com');
 
+		$root = new Folder();
+		$root->setName('root')
+			->setPrivate(false);
 
-		$folder = new Folder();
-		    $folder->setName('root');
+		$instructor = new Person();
+		$instructor->setfName('John')
+			->setlName('Doe')
+			->setEmail('johndoe@gmail.com')
+			->setBldg("HCK\tHitchcock Hall")
+			->setRoom('101')
+			->setTitle('instructor');
 
 		$examGlobal = new ExamGlobal();
-            $examGlobal->setGrade(2)
-                ->setRules("Exam rules go here.");
+		$examGlobal->setGrade(2)
+			->setRules("Exam rules go here.");
 
-        $tripGlobal = new TripGlobal();
-            $tripGlobal->setOpening(date('today'))
-                ->setClosing(date('today'))
-                ->setTourClosing(date('today'))
-                ->maxTrips(1);
-
+		$tripGlobal = new TripGlobal();
+		$tripGlobal->setOpening(new \DateTime())
+			->setClosing(new \Datetime())
+			->setMaxTrips(1)
+			->setEvalDue(5)
+			->setPromo('Trip promo goes here.')
+			->setInstructions('Trip instructions go here.');')
+```
 Make sure that the root folder has an Id of `1`, or it will not be recognized.
 
 #### Optional Bundles
@@ -84,9 +98,16 @@ There are several optional bundles included with the site that are by default no
 
 		php app/console bio:install [-d|--default] [-a|--all] [--no-clear] [bundles1] ... [bundlesN]
 		
-to install them. `bundles` should be replaced with any combination of `info`, `folder`, `student`, `clicker`, `score`, `exam` `trip`, `switch`, and `user`. This command adds the necessary lines to `app/config/parameters.yml` and `app/config/routing.yml`. The `-a` shortcut install alls available bundles, while `-d` installs only the default. After the installation has been completed the command attempts to clear the cache (unless `--no-clear` is enabled). Usually this step will fail and the cache will have to be cleared manually.
+to install them. `bundles` should be replaced with any combination of `info`, `folder`, `student`, `clicker`, `score`, `exam` `trip`, `switch`, and `user`. This command adds the necessary lines to `app/config/sidebar.yml` and `app/config/routing.yml`. The `-a` shortcut install alls available bundles, while `-d` installs only the default. If no bundles are specified, whatever bundles are set in `app/config/parameters.yml` will be used. After the installation has been completed the command attempts to clear the cache (unless `--no-clear` is enabled). Usually this step will fail and the cache will have to be cleared manually.
 
 #### Other Commands
+
+* ###### Update Site
+	To update the site after making major changes or especially after pulling updates from this repository run the command:
+		
+			php app/console bio:update
+	
+	This command makes sure that all new assets are installed and dumped, all changes to the sidebar take effect, and automatically migrates the database as necessary (TODO). All sessions will be removed after calling this command.
 
 * ###### Create User
 	If you need to add an account, you can run the command
