@@ -6,12 +6,17 @@
 				this.handleFileSelect = function(evt) {
 					evt.stopPropagation();
 					evt.preventDefault();
-					var reader = new FileReader();
-					reader.onload = function() {
-						evt.target.editor.insertContent('<img src="'+this.result+'" />');
+					file = evt.dataTransfer.files[0];
+
+					if (file) {
+						var reader = new FileReader();
+						reader.onload = function() {
+							evt.target.editor.insertContent('<img src="'+this.result+'" />');
+						}
+						reader.readAsDataURL(file);
+					} else {
+						evt.target.editor.insertContent('<p>'+evt.dataTransfer.getData('Text')+'</p>');
 					}
-					reader.readAsDataURL(evt.dataTransfer.files[0]);
-					hideDropZones();
 					clearTimeout(this.timeout);
 				}
 
@@ -41,6 +46,12 @@
 						var div = document.createElement('div');
 							div.classList.add('dropzone');
 							div.editor = editor;
+							div.addEventListener('dragover', function(e) {
+								e.preventDefault();
+							});
+							div.addEventListener('dragenter', function(e) {
+								e.preventDefault();
+							});
 							div.addEventListener('drop', this.handleFileSelect);
 							this.dropzones[this.dropzones.length] = div;
 						dropzone.appendChild(div);
