@@ -7,11 +7,35 @@
 					evt.stopPropagation();
 					evt.preventDefault();
 					file = evt.dataTransfer.files[0];
-
-					if (file) {
+					if (file && file.type.indexOf('image') === 0) {
 						var reader = new FileReader();
-						reader.onload = function() {
-							evt.target.editor.insertContent('<img src="'+this.result+'" />');
+						reader.onloadend = function() {
+
+							var canvas = document.createElement("canvas");
+							var ctx = canvas.getContext("2d");
+
+							var img = new Image();
+							var dataUrl = '';
+
+							img.onload = function() {
+								canvas.width = img.width;
+								canvas.height = img.height;
+								ctx.drawImage(img, 0,0);
+
+								if (img.width > 800) {
+									canvas.width = 800;
+									canvas.height = img.height/img.width*800;
+									ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height);
+									dataUrl = canvas.toDataURL();
+								} else {
+									canvas.width = img.width;
+									canvas.height = img.height;
+									ctx.drawImage(img, 0,0);
+									dataUrl = canvas.toDataURL();
+								}
+								evt.target.editor.insertContent('<img src="'+dataUrl+'" />');
+							}
+							img.src = reader.result;
 						}
 						reader.readAsDataURL(file);
 					} else {
