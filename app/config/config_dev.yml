@@ -28,4 +28,8 @@ assetic:
     use_controller: true
 
 swiftmailer:
-   delivery_address: %mailer_dev_address%
+    transport: gmail
+    username: uwbio999
+    password: 
+    delivery_address: %mailer_dev_address%
+
