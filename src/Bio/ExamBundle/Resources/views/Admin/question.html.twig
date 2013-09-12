@@ -17,6 +17,7 @@
 	<table>
 		<tr>
 			<th>Question</th>
+			<th>Id</th>
 			<th>Points</th>
 			<th>Preview</th>
 			<th>Edit</th>
@@ -25,6 +26,7 @@
 		{% for question in questions %}
 			<tr>
 				<td>{{question.question|striptags|replace({'&nbsp;': ''})}}</td>
+				<td>{{question.id}}</td>
 				<td>{{question.points}} pts</td>
 				<td><a href="{{ path('preview') }}?id={{question.id}}&type=question">preview</a></td>
 				<td><a href="{{ path('edit_question', {'id':question.id}) }}">edit</a></td>

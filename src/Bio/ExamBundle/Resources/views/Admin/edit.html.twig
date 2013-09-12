@@ -25,7 +25,7 @@
 					</tr>
 					{% for child in form.questions.children %}
 						<tr class="question" tags="{{ child.parent.vars.choices[child.vars.value].data.tags|join(' ') }}">
-							<td style="text-align:center;">{{ form_widget(child) }}</td>
+							<td >Id: {{child.vars['value']}}&nbsp;&nbsp;&nbsp;&nbsp;{{ form_widget(child) }}</td>
 							<td>{{ form_label(child) }}</td>
 						</tr>
 					{% else %}
