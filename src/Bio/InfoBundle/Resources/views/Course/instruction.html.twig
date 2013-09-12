@@ -1,7 +1,7 @@
 {% extends 'BioPublicBundle:Content:instruction.html.twig' %}
 
 {% block content %}
-	<p> Welcome to the Course Information section. From here you can edit all the information shown on the front page and more. This tool allows you to edit course information; add announcements for students to read; add links to the main page or the sidebar; post contact information and office hours for instructors, TAs, and coordinators; or post section locations and times.</p>
+	<p> Welcome to the Course Information section. From here you can edit most of the information shown on the front page. This tool allows you to edit course information; add announcements for students to read; post contact information and office hours for instructors, TAs, and coordinators; or post section locations and times.</p>
 
 	<div>
 		{% image 'bundles/bioinfo/images/courseinfo.png' output='images/*.png' %}
@@ -23,16 +23,6 @@
 		<p>An announcement with a starting time in the future will be hidden until its start time has passed and will appear yellow from the admin page. This allows you to make announcements that will automatically appear at a certain date and time in the future.</p>
 
 		<p> The text of the announcement can be anything you want, and can include valid HTML. For example, <br /><i>&lt;a href=&quot;{{url('main_page')}}&quot;&gt;This is a link&lt;/a&gt;</i> will appear as <a href="{{url('main_page')}}">This is a link</a>.</p>
-	</div>
-
-	<div>
-		{% image 'bundles/bioinfo/images/links.png' output='images/*.png' %}
-		    <img src="{{ asset_url }}"/>
-		{% endimage %}
-		<h2><a href="{{ path('view', {'entityName' : 'link' }) }}">Links</a></h2>
-		<p> All links you add will be shown on the main page. You can choose to put a link on the sidebar or directly on the main page where it will be shown under the announcements.</p>
-
-		<p> Make sure all external links start with <i>http://</i> or <i>https://</i>, or else the link will not work.</p>
 	</div>
 
 	<div>

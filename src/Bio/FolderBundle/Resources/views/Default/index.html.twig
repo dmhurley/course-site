@@ -9,9 +9,15 @@
 {% endblock %}
 
 {% block content %}
+
+<h2 style="margin-top:30px; margin-bottom:5px;">Front Page Content</h2>
+<ul>
+	{% include 'BioFolderBundle:Default:structure.html.twig' with {'root' : main, 'selected' : selected} %}
+</ul>
+
+<h2 style="margin-top:30px; margin-bottom:5px;">Sidebar Content</h2>
 <ul>
 	{% include 'BioFolderBundle:Default:structure.html.twig' with {'root' : root, 'selected' : selected} %}
-	{% include 'BioFolderBundle:Default:structure.html.twig' with {'root' : main, 'selected' : selected} %}
 </ul>
 
 <div class="f">
