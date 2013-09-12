@@ -25,16 +25,19 @@ class Folder extends FileBase
 
     /**
      * @ORM\OneToMany(targetEntity="Folder", mappedBy="parent", cascade={"remove", "persist", "refresh"}, fetch="LAZY")
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     private $folders;
 
     /**
      * @ORM\OneToMany(targetEntity="File", mappedBy="parent", cascade={"remove", "persist", "refresh"}, fetch="LAZY")
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     private $files;
 
     /**
      * @ORM\OneToMany(targetEntity="Link", mappedBy="parent", cascade={"remove", "persist", "refresh"}, fetch="LAZY")
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     private $links;
 

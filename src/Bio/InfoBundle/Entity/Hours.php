@@ -186,4 +186,8 @@ class Hours extends Base
 
         return $builder;
     }
+
+    public function findSelf($db, $options = array(), $orderBy = array()){
+        return $db->find($options, $orderBy, false);
+    }
 }

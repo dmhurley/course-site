@@ -216,4 +216,8 @@ class Section extends Base
             ->add('room', 'text', array('label' => 'Room:'));
         return $builder;
     }
+
+    public function findSelf($db, $options = array(), $orderBy = array('name' => 'ASC')){
+        return $db->find($options, $orderBy, false);
+    }
 }

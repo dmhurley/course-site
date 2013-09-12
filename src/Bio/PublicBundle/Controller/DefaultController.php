@@ -47,7 +47,7 @@ class DefaultController extends Controller
 
         $em = $this->getDoctrine()->getManager();
         $query = $em->createQuery(
-            'SELECT a FROM BioInfoBundle:Announcement a WHERE a.expiration > :now AND a.timestamp < :now ORDER BY a.expiration ASC'
+            'SELECT a FROM BioInfoBundle:Announcement a WHERE a.expiration > :now AND a.timestamp < :now ORDER BY a.timestamp ASC'
         )->setParameter('now', new \DateTime());
         $anns = $query->getResult();
 
