@@ -57,8 +57,10 @@ class DefaultController extends Controller {
         if ($lc === "announcement"){
             $entities = $db->find(array(), array('expiration' => 'DESC'), false);
         } else if ($lc === 'hours') {
-            $db2 = new Database($this, 'BioInfoBundle:Person');
-            $entities = $db2->find(array(), array(), false);
+            $db = new Database($this, 'BioInfoBundle:Person');
+            $entities = $db->find(array(), array(), false);
+        } else if ($lc === "section") {
+            $entities = $db->find(array(), array('name' => 'ASC'), false);
         } else {
             $entities = $db->find(array(), array(), false);
         }

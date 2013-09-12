@@ -40,7 +40,7 @@ class DefaultController extends Controller
         $info = $db->findOne(array());
 
         $db = new Database($this, 'BioInfoBundle:Section');
-        $sections = $db->find(array(), array(), false);
+        $sections = $db->find(array(), array('name' => 'ASC'), false);
 
         $em = $this->getDoctrine()->getManager();
         $query = $em->createQuery(
