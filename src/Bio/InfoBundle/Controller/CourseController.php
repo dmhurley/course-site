@@ -9,10 +9,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 
 use Bio\InfoBundle\Entity\Info;
-use Bio\InfoBundle\Entity\Hours;
 use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
-use Bio\InfoBundle\Entity\Link;
 
 /**
  * @Route("/admin/course")
@@ -26,27 +24,6 @@ class CourseController extends Controller
      */
     public function instructionAction() {
         return array ('title' => 'Course Info');
-    }
-
-    /**
-     * @Route("/customlink", name="fake_link")
-     * @Template("BioInfoBundle:Link:link.html.twig")
-     */
-    public function addLinkAction(Request $request) {
-        $link = new Link();
-        if ($request->query->get('title') && $request->query->get('route')) {
-            $link->setTitle($request->query->get('title'))
-                ->setAddress($this->get('router')->generate($request->query->get('route'), array(), true));
-        }
-        $form = $link->addToForm($this->createFormBuilder($link))
-            ->setAction($this->generateUrl('view', array('entityName' => 'link')))            
-            ->add('add', 'submit')
-            ->getForm();
-
-        $db = new Database($this, 'BioInfoBundle:Link');
-        $links = $db->find(array(), array(), false);
-
-        return array('form' => $form->createView(), 'links' => $links, 'title' => 'Edit Links');
     }
 
     /**

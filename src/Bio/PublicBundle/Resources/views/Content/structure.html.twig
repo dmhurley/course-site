@@ -1,6 +1,8 @@
 {% if root.folders is not defined or root.private != true %}
 	{% if root.folders is defined %}
 		{% set type = 'folder' %}
+	{% elseif root.address is defined %}
+		{% set type = 'link' %}
 	{% else %}
 		{% set type = 'file' %}
 	{% endif %}
@@ -12,12 +14,13 @@
 	{% endif %}
 
 	<li class="{{type}} {{full}}">
-
-	{% if root.folders is defined %}
-		{{ root.name }}
-	{% else %}
-		<a href="{{ path('download', {'filename' : root.path}) }}"> {{root.name}} </a>
-	{% endif %}
+		{% if root.folders is defined %}
+			{{ root.name }}
+		{% elseif root.address is defined %}
+			<a href="{{ root.address }}">{{root.name}}</a>
+		{% else %}
+			<a href="{{ path('download', {'filename' : root.path}) }}"> {{root.name}} </a>
+		{% endif %}
 	</li>
 
 
@@ -29,6 +32,10 @@
 
 			{% for file in root.files %}
 				{% include 'BioPublicBundle:Content:structure.html.twig' with {'root' : file} %}
+			{% endfor %}
+
+			{% for link in root.links %}
+				{% include 'BioPublicBundle:Content:structure.html.twig' with {'root' : link} %}
 			{% endfor %}
 		</ul>
 	{% endif %}

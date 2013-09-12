@@ -29,7 +29,7 @@
 
 
 				<li class="branch">
-					<a href="{{ path('public_folder', {'id' : 1}) }}">Folders</a>
+					<a>Folders</a>
 					<ul class="twig">
 						{% for folder in root.folders %}
 							{% if folder.private != true %}
@@ -45,7 +45,7 @@
 
 			{% if root.files|length > 0 %}
 				<li class="branch">
-					<a href="{{ path('public_folder', {'id' : 1}) }}">Files</a>
+					<a>Files</a>
 					<ul class="twig">
 						{% for file in root.files %}
 							<li class="leaf">
@@ -56,13 +56,12 @@
 				</li>
 			{% endif %}
 
-
-			{% if links|length > 0 %}
+			{% if root.links|length > 0 %}
 				<li class="branch">
-					<a href="{{ path('public_links') }}">Links</a>
+					<a>Links</a>
 					<ul class="twig">
-						{% for link in links %}
-							<li class="leaf"><a href="{{link.address}}">{{link.title}}</a></li>
+						{% for link in root.links %}
+							<li class="leaf"><a href="{{link.address}}">{{link.name}}</a></li>
 						{% endfor %}
 					</ul>
 				</li>

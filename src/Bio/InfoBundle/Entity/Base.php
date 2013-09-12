@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap({"base" = "Base", "ann"="Announcement", "link"="Link", "person"="Person", "section"="Section", "hours"="Hours"})
+ * @ORM\DiscriminatorMap({"base" = "Base", "ann"="Announcement", "person"="Person", "section"="Section", "hours"="Hours"})
  */
 class Base {
 	/**

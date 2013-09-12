@@ -10,7 +10,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Bio\InfoBundle\Entity\Person;
 use Bio\InfoBundle\Entity\Announcement;
-use Bio\InfoBundle\Entity\Link;
 use Bio\InfoBundle\Entity\Section;
 use Bio\InfoBundle\Entity\Hours;
 use Bio\DataBundle\Objects\Database;
@@ -18,7 +17,7 @@ use Bio\DataBundle\Exception\BioException;
 
 /**
  * @Route("/admin/{entityName}", requirements={
- *      "entityName" = "^announcement|hours|link|person|section$",
+ *      "entityName" = "^announcement|hours|person|section$",
  * })
  */
 class DefaultController extends Controller {
@@ -34,8 +33,6 @@ class DefaultController extends Controller {
         if ($lc === 'announcement') {
             $entity->setTimestamp(new \DateTime());
             $entity->setExpiration((new \DateTime())->modify('+1 week'));
-        } else if ($lc === 'link') {
-            $entity->setAddress('http://');
         }
         $form = $entity->addToForm($this->createFormBuilder($entity))            
             ->add('add', 'submit')

@@ -11,14 +11,19 @@
 {% block content %}
 <ul>
 	{% include 'BioFolderBundle:Default:structure.html.twig' with {'root' : root, 'selected' : selected} %}
+	{% include 'BioFolderBundle:Default:structure.html.twig' with {'root' : main, 'selected' : selected} %}
 </ul>
-<div id="folder">
-	<h2>Add Folder</h2>
-	{{ form(folderForm) }}
-</div>
-<div id="file">
-	<h2>Add File</h2>
-	{{ form(fileForm) }}
-</div>
 
+<div class="f">
+<h2>Add Folder</h2>
+{{ form(folderForm) }}
+</div>
+<div class="f">
+<h2>Add File</h2>
+{{ form(fileForm) }}
+</div>
+<div class="f">
+<h2>Add Link</h2>
+{{ form(linkForm) }}
+</div>
 {% endblock %}

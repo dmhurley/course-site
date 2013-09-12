@@ -34,6 +34,11 @@ class Folder extends FileBase
     private $files;
 
     /**
+     * @ORM\OneToMany(targetEntity="Link", mappedBy="parent", cascade={"remove", "persist", "refresh"}, fetch="LAZY")
+     */
+    private $links;
+
+    /**
      * @ORM\ManyToOne(targetEntity="Folder", inversedBy="folders")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      */
@@ -191,5 +196,38 @@ class Folder extends FileBase
     public function getPrivate()
     {
         return $this->private;
+    }
+
+    /**
+     * Add links
+     *
+     * @param \Bio\FolderBundle\Entity\Link $links
+     * @return Folder
+     */
+    public function addLink(\Bio\FolderBundle\Entity\Link $links)
+    {
+        $this->links[] = $links;
+    
+        return $this;
+    }
+
+    /**
+     * Remove links
+     *
+     * @param \Bio\FolderBundle\Entity\Link $links
+     */
+    public function removeLink(\Bio\FolderBundle\Entity\Link $links)
+    {
+        $this->links->removeElement($links);
+    }
+
+    /**
+     * Get links
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getLinks()
+    {
+        return $this->links;
     }
 }
