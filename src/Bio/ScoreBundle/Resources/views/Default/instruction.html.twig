@@ -17,7 +17,7 @@
 			<img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('find_score') }}">Find Scores</a></h2>
-		<p>This link can be accessed by any student currently registered in the course and added to the course site. But by default this link cannot be found anywhere on the site. You can add a link to it by clicking <a href="{{ path('fake_link') }}?title=Find Scores&route=find_score">here</a>. Or distribute it yourself with the URL <input onClick="this.select();" value="{{ url('find_score') }}" />.</p>
+		<p>This link can be accessed by any student currently registered in the course and added to the course site. But by default this link cannot be found anywhere on the site. You can distribute the link yourself with the URL <input onClick="this.select();" value="{{ url('find_score') }}" />.</p>
 
 		<p> When a student signs in, the page will display their scores along with any statistics given.</p>
 	</div>

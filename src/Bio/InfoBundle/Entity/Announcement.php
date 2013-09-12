@@ -115,4 +115,8 @@ class Announcement extends Base
             ->add('text', 'textarea', array('label' => 'Announcement:'));
         return $builder;
     }
+
+    public function findSelf($db, $options = array(), $orderBy = array('expiration' => 'DESC')){
+        return $db->find($options, $orderBy, false);
+    }
 }

@@ -260,4 +260,8 @@ class Person extends Base
     {
         return $this->hours;
     }
+
+    public function findSelf($db, $options = array(), $orderBy = array('fName' => 'ASC', 'lName' => 'ASC')){
+        return $db->find($options, $orderBy, false);
+    }
 }

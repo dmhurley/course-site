@@ -34,13 +34,40 @@
 				{% endfor %}
 			</div>
 		{% endif %}
-		{% if links|length > 0 %}
+
+		{% if main.folders|length > 0 %}
 			<div class="row">
-				<h2>Links</h2>
+				<h2>Additional Folders</h2>
 				<ul>
 					<ul>
-						{% for link in links %}
-							<li><a href="{{link.address}}">{{link.title}}</a></li>
+						{% for folder in main.folders %}
+							<li><a href="{{ path('public_folder', {'id' : folder.id}) }}">{{folder.name}}</a></li>
+						{% endfor %}
+					</ul>
+				</ul>
+			</div>
+		{% endif %}
+
+		 {% if main.files|length > 0 %}
+			<div class="row">
+				<h2>Additional Files</h2>
+				<ul>
+					<ul>
+						{% for file in main.files %}
+							<li><a href="{{ path('download', {'filename' : file.path}) }}">{{file.name}}</a></li>
+						{% endfor %}
+					</ul>
+				</ul>
+			</div>
+		{% endif %}
+
+		{% if main.links|length > 0 %}
+			<div class="row">
+				<h2>Additional Links</h2>
+				<ul>
+					<ul>
+						{% for link in main.links %}
+							<li><a href="{{link.address}}">{{link.name}}</a></li>
 						{% endfor %}
 					</ul>
 				</ul>

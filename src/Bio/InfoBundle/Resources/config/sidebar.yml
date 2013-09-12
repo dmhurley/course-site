@@ -7,10 +7,6 @@
         route: view
         vars:
             entityName: announcement
-    Links:
-        route: view
-        vars:
-            entityName: link
     Instructors:
         route: view
         vars:

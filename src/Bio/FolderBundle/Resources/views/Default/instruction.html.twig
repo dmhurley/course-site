@@ -1,21 +1,21 @@
 {% extends 'BioPublicBundle:Content:instruction.html.twig' %}
 
 {% block content %}
-	<p>Welcome to the Folder section. From here you can created many levels of nested folders to organize any files you want to be accessible from the main page.</p>
+	<p>Welcome to the Folder section. From here you can created many levels of nested folders to organize any files or links you want to be accessible from the main page or sidebar.</p>
 	<div>
 		{% image 'bundles/biofolder/images/manage.png' output='images/*.png' %}
 			<img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('view_folders') }}">Manage</a></h2>
-		<p> Folders are a great way for you to organize files on your course site. The first folder you'll start with is the root folder, and it cannot be deleted or modified in any way. Any folders that are direct children of the the root folder will show up on the sidebar under <b>Folders</b>. Likewise, any files that are a direct child of the root folder will appear in the sidebar under <b>Files</b>. </p>
+		<p> Folders are a great way for you to organize files and links on your course site. You'll notice two root folders are already created (<i>sidebar</i> and <i>mainpage</i>), these cannot be deleted or modified in any way. Any folders that are direct children of a root folder will show up on the sidebar or front page under <b>Folders</b>. Likewise, any files or links that are a direct child a root folder will appear in the sidebar or front page under there respective sections.</p>
 
-		<p>Folders can have an unlimited number folders and files inside of them, nested many levels deep. To place a file or folder inside another folder, click the latter folder's name. You will then see a small label next to the folder name saying <i> - selected </i>, now anything you create will be a child of that folder.</p>
+		<p>Folders can have an unlimited number folders, files, and links nested inside of them, nested many levels deep. To place a file or folder inside another folder, click the latter folder's name. You will then see a small label next to the folder name saying <i> - selected </i>, now anything you create will be a child of that folder.</p>
 
 		<p>If you wish to create folders that can't be viewed publicly, check the <i>Private</i> box, the folder will not be visible or accessible to anyone but other admins. Files inside private folders however, <b>can</b> be linked to, therefore private folders <b>should not be used to store any sensitive information.</b> The folder system should not be used to store extremely large files, and anything uploaded should also be backed up elsewhere.</p>
 
 		<p>Downloading a file is simple. Just click filename and the download should start. When uploading files make sure that no file in the folder structure has the same name. Or it will be unable to upload</p>
 
-		<p> If you wish to delete a folder, simply click delete on the row cooresponding to the folders name. All subsequent children of the folders will be deleted too. Once deleted, there is <b>no</b> way for the folders or files to be retrieved. If you wish to empty the file system completely you can click the <i>empty</i> link by root or press the <i>Clear</i> link on the sidebar</p>
+		<p> If you wish to delete a folder, simply click delete on the row cooresponding to the folders name. All subsequent children of the folders will be deleted too. Once deleted, there is <b>no</b> way for the contents to be restored. If you wish to empty the file system press the <i>Clear</i> link on the sidebar</p>
 	</div>
 
 	<div>
@@ -23,6 +23,6 @@
 			<img src="{{ asset_url }}"/>
 		{% endimage %}
 		<h2><a href="{{ path('clear_folders') }}">Clear</a></h2>
-		<p>Quickly delete every folder except for <i>root</i>. There is <b>no</b> way to undo this.</p>
+		<p>Quickly delete every folder except for <i>mainpage</i> and <i>sidebar</i>. There is <b>no</b> way to undo this.</p>
 	</div>
 {% endblock %}

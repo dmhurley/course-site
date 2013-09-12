@@ -24,10 +24,7 @@ class ContentController extends Controller
 		} else {
 			$db = new Database($this, 'BioFolderBundle:Folder');
 			$root = $db->findOne(array('id' => 1));
-
-			$db = new Database($this, 'BioInfoBundle:Link');
-			$links = $db->find(array('location' => 'sidebar'), array(), false);
-			return $this->render('BioPublicBundle:Content:sidebar.html.twig', array('root' => $root, 'links' => $links));
+			return $this->render('BioPublicBundle:Content:sidebar.html.twig', array('root' => $root));
 		}
 	}
 

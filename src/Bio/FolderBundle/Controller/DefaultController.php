@@ -16,6 +16,7 @@ use Bio\DataBundle\Exception\BioException;
 use Bio\DataBundle\Objects\Database;
 use Bio\FolderBundle\Entity\Folder;
 use Bio\FolderBundle\Entity\File;
+use Bio\FolderBundle\Entity\Link;
 
 	/**
      * @Route("/admin/folders")
@@ -47,28 +48,38 @@ class DefaultController extends Controller
     	} 
     	$db = new Database($this, 'BioFolderBundle:Folder');
 
-    	$root = $db->findOne(array('id' => 1));
+    	$sidebar = $db->findOne(array('name' => 'sidebar'));
+        $mainpage = $db->findOne(array('name' => 'mainpage'));
+
         $folder = new Folder();
-    	$form = $this->get('form.factory')->createNamedBuilder('form', 'form', $folder)
-    		->add('name', 'text')
-            ->add('private', 'checkbox', array('required' => false, 'attr' => $private?array('checked' => 'checked'):array()))
+    	$form = $this->get('form.factory')->createNamedBuilder('tfolder', 'form', $folder)
+    		->add('name', 'text', array('label' => 'Name:'))
+            ->add('private', 'checkbox', array('label' => 'Private:', 'required' => false, 'attr' => $private?array('checked' => 'checked'):array()))
     		->add('add', 'submit')
     		->add('id', 'hidden', array('mapped' => false, 'data'=>$selected))
     		->getForm();
 
         $file = new File();
-    	$form1 = $this->get('form.factory')->createNamedBuilder('global', 'form', $file)
-    		->add('file', 'file')
-    		->add('name', 'text')
+    	$form1 = $this->get('form.factory')->createNamedBuilder('tfile', 'form', $file)
+    		->add('file', 'file', array('label' => false))
+    		->add('name', 'text', array('label' => 'Name:'))
     		->add('id', 'hidden', array('mapped' => false, 'data' => $selected))
     		->add('upload', 'submit')
     		->getForm();
 
+        $link = new Link();
+        $form2 = $this->get('form.factory')->createNamedBuilder('tlink', 'form', $link)
+            ->add('name', 'text', array('label' => 'Title:'))
+            ->add('address', 'text', array('label' => 'URL:'))
+            ->add('link', 'submit')
+            ->add('id', 'hidden', array('mapped' => false, 'data'=>$selected))
+            ->getForm();
+
         if ($request->getMethod() === "POST") {
 
-            if ($request->request->has('form')) {
+            if ($request->request->has('tfolder')) {
                 $form->handleRequest($request);
-                if ($form->isValid()) {
+                if ($form->isValid() && $form->get('name')->getData() !== "sidebar" && $form->get('name')->getData() !== "mainpage") {
                     $parent = $db->findOne(array('id' => $form->get('id')->getData()));
                     if (!$parent) {
                         $request->getSession()->getFlashBag()->set('failure', "Parent folder could not be found.");
@@ -88,7 +99,7 @@ class DefaultController extends Controller
                 } else {
                     $request->getSession()->getFlashBag()->set('failure', "Invalid form.");
                 }
-            } else if ($request->request->has('global')) {
+            } else if ($request->request->has('tfile')) {
                 $form1->handleRequest($request);
                 if ($form1->isValid()) {
                     $parent = $db->findOne(array('id' => $form1->get('id')->getData()));
@@ -114,17 +125,38 @@ class DefaultController extends Controller
                                 }
                             }
 
-                            $db->delete($file);
                             $parent->removeFile($file);
                         }
                     }
                 } else {
                     $request->getSession()->getFlashBag()->set('failure', "Invalid form.");
                 }
+            } else if ($request->request->has('tlink')) {
+                $form2->handleRequest($request);
+                if ($form2->isValid()) {
+                    $parent = $db->findOne(array('id' => $form2->get('id')->getData()));
+                    if (!$parent) {
+                        $request->getSession()->getFlashBag()->set('failure', "Parent folder could not be found.");
+                    } else {
+                        $parent->addLink($link);
+                        $link->setParent($parent);
+                        try {
+                            $db->add($link);
+                            $db->close();
+                            $request->getSession()->getFlashBag()->set('success', "Link added.");
+                            return $this->redirect($this->generateUrl('view_folders').'?id='.$selected.($private?'&private':''));
+                        } catch (BioException $e) {
+                            $request->getSession()->getFlashBag()->set('failure', 'Link could not be added.');
+                            $parent->removeFile($file);
+                        }
+                    }
+                } else {
+                    $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                }
             }
         }
 
-        return array('root' => $root, 'selected' => $selected, 'folderForm'=>$form->createView(), 'fileForm' => $form1->createView(), 'title' => "View Folders");
+        return array('root' => $sidebar, 'main' => $mainpage, 'selected' => $selected, 'folderForm'=>$form->createView(), 'fileForm' => $form1->createView(), 'linkForm' => $form2->createView(), 'title' => "View Folders");
     }
 
     /**
@@ -132,7 +164,8 @@ class DefaultController extends Controller
      * @ParamConverter("entity", class="BioFolderBundle:FileBase")
      */
     public function deleteAction(Request $request, $entity = null) {
-		if($entity && (($type = method_exists($entity, 'getFiles')?"Folder":"File") === "File" || $entity->getId() !== 1)) {
+        $type = method_exists($entity, 'getFiles')?"Folder":method_exists($entity, 'getAddress')?"Link":"File";
+		if($entity && ($type === "File" || $type === "Link" || $entity->getName() !== "sidebar" || $entity->getName() !== "mainpage")) {
             $db = new Database($this, 'BioFolderBundle:Folder'); 
 			$db->delete($entity);
             try {
@@ -164,9 +197,15 @@ class DefaultController extends Controller
 
             if ($form->isValid()) {
                 $db = new Database($this, 'BioFolderBundle:Folder');
-                $root = $db->findOne(array('id' => 1));
+                $root = $db->findOne(array('name' => "sidebar"));
                 $db->deleteMany($root->getFolders()->toArray());
                 $db->deleteMany($root->getFiles()->toArray());
+                $db->deleteMany($root->getLinks()->toArray());
+
+                $sidebar = $db->findOne(array('name' => "mainpage"));
+                $db->deleteMany($sidebar->getFolders()->toArray());
+                $db->deleteMany($sidebar->getFiles()->toArray());
+                $db->deleteMany($sidebar->getLinks()->toArray());
                 try {
                     $db->close();
                     $request->getSession()->getFlashBag()->set('success', 'All folders deleted.');

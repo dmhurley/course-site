@@ -32,9 +32,9 @@ class DefaultController extends Controller
     public function indexAction(Request $request)
     {
         $db = new Database($this, 'BioInfoBundle:Person');
-        $instructors = $db->find(array('title' => 'instructor'), array(), false);
-        $tas = $db->find(array('title' => 'ta'), array(), false);
-        $coordinators = $db->find(array('title' => 'coordinator'), array(), false);
+        $instructors = $db->find(array('title' => 'instructor'), array('fName' => 'ASC', 'lName' => 'ASC'), false);
+        $tas = $db->find(array('title' => 'ta'), array('fName' => 'ASC', 'lName' => 'ASC'), false);
+        $coordinators = $db->find(array('title' => 'coordinator'), array('fName' => 'ASC', 'lName' => 'ASC'), false);
 
         $db = new Database($this, 'BioInfoBundle:Info');
         $info = $db->findOne(array());
@@ -42,17 +42,17 @@ class DefaultController extends Controller
         $db = new Database($this, 'BioInfoBundle:Section');
         $sections = $db->find(array(), array('name' => 'ASC'), false);
 
+        $db = new Database($this, 'BioFolderBundle:Folder');
+        $main = $db->findOne(array('name' => 'mainpage'));
+
         $em = $this->getDoctrine()->getManager();
         $query = $em->createQuery(
-            'SELECT a FROM BioInfoBundle:Announcement a WHERE a.expiration > :now AND a.timestamp < :now ORDER BY a.expiration ASC'
+            'SELECT a FROM BioInfoBundle:Announcement a WHERE a.expiration > :now AND a.timestamp < :now ORDER BY a.timestamp ASC'
         )->setParameter('now', new \DateTime());
         $anns = $query->getResult();
 
-        $db = new Database($this, 'BioInfoBundle:Link');
-        $links = $db->find(array('location' => 'content'), array(), false);
-
         return array('instructors' => $instructors, 'tas' => $tas, 'coordinators' => $coordinators, 'info' => $info,
-            'sections' => $sections, 'anns' => $anns, 'links' => $links, 'title' => "Welcome");
+            'sections' => $sections, 'anns' => $anns, 'main' => $main, 'title' => "Welcome");
     }
 
     /**
@@ -73,17 +73,5 @@ class DefaultController extends Controller
         }
 
         return array('root' => $root, 'title' => $root->getName().' Folder');
-    }
-
-    /**
-     * @Route("/links", name="public_links")
-     * @Template()
-     */
-    public function linkAction(Request $request) {
-        $db = new Database($this, 'BioInfoBundle:Link');
-        $sidebar = $db->find(array('location' => 'sidebar'), array(), false);
-        $mainpage = $db->find(array('location' => 'content'), array(), false);
-
-        return array('sidelinks' => $sidebar, 'mainlinks' => $mainpage, 'title' => 'Links');
     }
 }

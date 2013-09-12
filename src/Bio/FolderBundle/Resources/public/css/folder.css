@@ -22,6 +22,10 @@
 	list-style-image: url('../images/file.png');
 }
 
+.link {
+	list-style-image: url('../images/link.png');
+}
+
 .folder.private {
 	list-style-image: url('../images/folder_private.png');
 }
@@ -53,22 +57,20 @@
 	padding-right: 15px;
 }
 
-
-#folder, #file {
-	float: left;
-	width: 350px;
-	margin-top: 20px;
-	margin-bottom: 20px;
+.f {
+	float:left;
+	width: 29%;
+	margin: 2%;
 }
 
-#folder {
-	margin-right: 10px;
-}
 
-#folder label, #file label {
+.f label {
 	width: 50px !important;
+	float: left;
+	text-align:right;
+	margin-right: 5px;
 }
 
-#form > div:last-of-type {
-	margin-left: 150px !important;
+form > div > div:last-of-type {
+	margin-left: 100px !important;
 }
