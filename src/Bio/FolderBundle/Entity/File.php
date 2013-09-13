@@ -153,7 +153,6 @@ class File extends FileBase
 
     /**
      * @ORM\PrePersist()
-     * @ORM\PreUpdate()
      */
     public function preUpload() {
         if ($this->getFile() !== null) {
