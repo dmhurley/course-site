@@ -19,6 +19,21 @@
 			</ul>
 		</div>
 
+		{% if cSections|length > 0 %}
+			<div class="row">
+				<h2>Course Sections</h2>
+				{% for section in cSections %}
+					<ul>
+						<li>Section {{section.name|upper}}</li>
+						<ul>
+							<li>{{section.days|join(', ')|title}} {{section.startTime|date('h:i')}} - {{section.endTime|date('h:i')}}</li>
+							<li><a href="http://www.washington.edu/maps/?{{section.bldg|split("	")[0]}}">{{section.bldg}}</a> - {{section.room}}</li>
+						</ul>
+					</ul>
+				{% endfor %}
+			</div>
+		{% endif %}
+
 		{% if anns|length > 0 %}
 			<div class="row">
 				<h2>Announcements</h2>
@@ -155,10 +170,10 @@
 			</div>
 		{% endif %}
 
-		{% if sections|length > 0 %}
+		{% if lSections|length > 0 %}
 			<div class="row">
-				<h2>Sections</h2>
-				{% for section in sections %}
+				<h2>Lab Sections</h2>
+				{% for section in lSections %}
 					<ul>
 						<li>Section {{section.name|upper}}</li>
 						<ul>

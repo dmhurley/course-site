@@ -301,7 +301,7 @@ class DefaultController extends Controller
         $cSections = [];
 
         foreach($sections as $section) {
-            if (!$this->findObjectByFieldValue(substr($section->getName(), 0, 1), $cSections, 'name')) {
+            if (!($c = $this->findObjectByFieldValue(substr($section->getName(), 0, 1), $cSections, 'name')) && !($c = $this->findObjectByFieldValue(substr($section->getName(), 0, 1), $s, 'name'))) {
                 $c = new CourseSection();
                 $c->setName(substr($section->getName(), 0, 1))
                     ->setDays([])
@@ -310,6 +310,8 @@ class DefaultController extends Controller
                     ->setBldg("HCK\tHitchcock Hall")
                     ->setRoom("0");
                 $db->add($c);
+            }
+            if (!in_array($c, $cSections)) {
                 $cSections[] = $c;
             }
         }

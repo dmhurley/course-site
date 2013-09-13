@@ -40,7 +40,10 @@ class DefaultController extends Controller
         $info = $db->findOne(array());
 
         $db = new Database($this, 'BioInfoBundle:Section');
-        $sections = $db->find(array(), array('name' => 'ASC'), false);
+        $lSections = $db->find(array(), array('name' => 'ASC'), false);
+
+        $db = new Database($this, 'BioInfoBundle:CourseSection');
+        $cSections = $db->find(array(), array('name' => 'ASC'), false);
 
         $db = new Database($this, 'BioFolderBundle:Folder');
         $main = $db->findOne(array('name' => 'mainpage'));
@@ -52,7 +55,7 @@ class DefaultController extends Controller
         $anns = $query->getResult();
 
         return array('instructors' => $instructors, 'tas' => $tas, 'coordinators' => $coordinators, 'info' => $info,
-            'sections' => $sections, 'anns' => $anns, 'main' => $main, 'title' => "Welcome");
+            'lSections' => $lSections, 'cSections' => $cSections, 'anns' => $anns, 'main' => $main, 'title' => "Welcome");
     }
 
     /**
