@@ -50,18 +50,6 @@ class CourseController extends Controller
     					'summer' => 'Summer'
     				), 'label' => 'Quarter'))
     		->add('year', 'integer', array('label' => 'Year:'))
-    		->add('days', 'choice', array('choices' => array(
-    					'm' => 'Monday',
-    					'tu' => 'Tuesday',
-    					'w' => 'Wednsday',
-    					'th' => 'Thursday',
-    					'f' => 'Friday',
-    					'sa' => 'Saturday'
-    				), 'multiple' => true, 'label' => 'Days:'))
-    		->add('startTime', 'time', array('label' => 'Start:'))
-    		->add('endTime', 'time', array('label' => 'End:'))
-    		->add('bldg', 'choice', array('choices' => array_combine($array, $array), 'label' => 'Building:'))
-    		->add('room', 'text', array('label' => 'Room:'))
     		->add('email', 'email', array('label' => 'Email:'))
     		->add('save', 'submit')
     		->getForm();

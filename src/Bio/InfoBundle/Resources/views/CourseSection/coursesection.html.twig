@@ -1,0 +1,31 @@
+{% extends 'BioInfoBundle:Course:base.html.twig' %}
+
+{% block content %}
+	{{ form(form) }}
+
+	<table>
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>When</th>
+				<th>Where</th>
+				<th>Edit</th>
+			</tr>
+		</thead>
+
+		<tbody>
+			{% for section in coursesections %}
+				<tr>
+					<td>{{section.name}}</td>
+					<td>{{section.days|join(', ')|title}} {{section.startTime|date('h:i a')}} - {{section.endTime|date('h:i a')}}</td>
+					<td><a href="http://www.washington.edu/maps/?{{section.bldg|split("	")[0]}}">{{section.bldg|split("	")[0]}}</a> - {{section.room}}</td>
+					<td><a href="{{ path('edit', {'entityName':'courseSection', 'id':section.id}) }}">edit</a></td>
+				</tr>
+			{% else %}
+				<tr>
+					<td colspan=3 style="text-align:center">no course sections</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

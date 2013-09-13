@@ -15,8 +15,6 @@
 			<ul>
 				<li>{{info.courseNumber}} - {{info.title}}</li>
 				<li>{{info.qtr|capitalize}} {{info.year}}</li>
-				<li>{{info.days|join(', ')|title}} {{info.startTime|date('h:i')}} - {{info.endTime|date('h:i')}}</li>
-				<li><a href="http://www.washington.edu/maps/?{{info.bldg|split("	")[0]}}">{{info.bldg}}</a> - {{info.room}}</li>
 				<li><a href="mailto:{{info.email}}">{{info.email}}</a></li>
 			</ul>
 		</div>

@@ -9,17 +9,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use Symfony\Component\Process\Process;
 
-use Bio\DataBundle\Objects\Database;
-use Bio\InfoBundle\Entity\Person;
-use Bio\InfoBundle\Entity\Announcement;
-use Bio\InfoBundle\Entity\Link;
-use Bio\InfoBundle\Entity\Section;
-use Bio\InfoBundle\Entity\Hours;
-use Bio\InfoBundle\Entity\Info;
-use Bio\FolderBundle\Entity\Folder;
-use Bio\ExamBundle\Entity\ExamGlobal;
-use Bio\TripBundle\Entity\TripGlobal;
-
 class UpdateCommand extends ContainerAwareCommand
 {
     protected function configure()

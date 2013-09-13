@@ -8,16 +8,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 use Symfony\Component\HttpFoundation\Request;
-use Bio\InfoBundle\Entity\Person;
-use Bio\InfoBundle\Entity\Announcement;
-use Bio\InfoBundle\Entity\Section;
-use Bio\InfoBundle\Entity\Hours;
 use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 
 /**
  * @Route("/admin/{entityName}", requirements={
- *      "entityName" = "^announcement|hours|person|section$",
+ *      "entityName" = "^announcement|hours|person|section|courseSection$",
  * })
  */
 class DefaultController extends Controller {
@@ -28,6 +24,9 @@ class DefaultController extends Controller {
         $uc = ucfirst($entityName);
         $lc = strtolower($entityName);
         $type = 'Bio\InfoBundle\Entity\\'.$uc;
+        $full = [];
+        preg_match_all('/((?:^|[A-Z])[a-z]+)/', $entityName, $full);
+        $full = ucfirst(implode(' ', $full[0]));
 
         $entity = new $type;
         if ($lc === 'announcement') {
@@ -45,7 +44,7 @@ class DefaultController extends Controller {
             if ($form->isValid()) {
                 $db->add($entity);
                 $db->close();
-                $request->getSession()->getFlashBag()->set('success', $uc.' added.');
+                $request->getSession()->getFlashBag()->set('success', $full.' added.');
                 return $this->redirect($this->generateUrl('view', array('entityName' => $entityName)));
             } else {
                 $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
@@ -58,9 +57,9 @@ class DefaultController extends Controller {
             $entities = $entity->findSelf($db);
         }
 
-        $plural = $uc[strlen($uc)-1]==='s'?$uc:$uc.'s';
+        $plural = $uc[strlen($uc)-1]==='s'?$full:$full.'s';
         return $this->render('BioInfoBundle:'.$uc.':'.$lc.'.html.twig', 
-                array('form' => $form->createView(), $lc.'s' => $entities, 'title' => 'Manage '.$plural));
+                array('form' => $form->createView(), $lc.'s' => $entities, 'title' => 'Manage '.$plural ));
     }
 
     /**
@@ -70,24 +69,28 @@ class DefaultController extends Controller {
     public function deleteAction(Request $request, $entityName, $entity = null) {
         $uc = ucfirst($entityName);
         $lc = strtolower($entityName);
+        $full = [];
+        preg_match_all('/((?:^|[A-Z])[a-z]+)/', $entityName, $full);
+        $full = ucfirst(implode(' ', $full[0]));
+
         if ($entity && is_a($entity, "Bio\InfoBundle\Entity\\".$uc)){
             $db = new Database($this, 'BioInfoBundle:Info');
             $db->delete($entity);
 
             try {
                 $db->close();
-                $request->getSession()->getFlashBag()->set('success', $uc.' deleted.');
+                $request->getSession()->getFlashBag()->set('success', $full.' deleted.');
             } catch (BioException $e) {
-                $request->getSession()->getFlashBag()->set('failure', 'Could not delete that '.$lc.'.');
+                $request->getSession()->getFlashBag()->set('failure', 'Could not delete that '.$full.'.');
             }
         } else {
-            $request->getSession()->getFlashBag()->set('failure', 'Could not find that '.$lc.'.');
+            $request->getSession()->getFlashBag()->set('failure', 'Could not find that '.$full.'.');
         }
 
         if ($request->headers->get('referer')){
             return $this->redirect($request->headers->get('referer'));
         } else {
-            return $this->redirect($this->generateUrl('view', array('entityName' => $lc)));
+            return $this->redirect($this->generateUrl('view', array('entityName' => $entityName)));
         }
     }
 
@@ -98,6 +101,9 @@ class DefaultController extends Controller {
     public function editAction(Request $request, $entityName, $entity = null) {
         $uc = ucfirst($entityName);
         $lc = strtolower($entityName);
+        $full = [];
+        preg_match_all('/((?:^|[A-Z])[a-z]+)/', $entityName, $full);
+        $full = ucfirst(implode(' ', $full[0]));
         
         if ($entity && is_a($entity, "Bio\InfoBundle\Entity\\".$uc)) {
             $form = $entity->addToForm($this->createFormBuilder($entity))
@@ -112,8 +118,8 @@ class DefaultController extends Controller {
                     $db = new Database($this, 'BioInfoBundle:'.$uc);
                     try {
                         $db->close();
-                        $request->getSession()->getFlashBag()->set('success', $uc.' edited.');
-                        return $this->redirect($this->generateUrl("view", array('entityName' => $lc)));
+                        $request->getSession()->getFlashBag()->set('success', $full.' edited.');
+                        return $this->redirect($this->generateUrl("view", array('entityName' => $entityName)));
                     } catch (BioException $e) {
                         $request->getSession()->getFlashBag()->set('failure', 'Unable to save changes.');
                     }
@@ -123,9 +129,9 @@ class DefaultController extends Controller {
             }
 
             return $this->render('BioInfoBundle:'.$uc.':edit.html.twig', 
-                    array('form' => $form->createView(), 'title' => 'Edit '.$uc));
+                    array('form' => $form->createView(), 'title' => 'Edit '.$full));
         } else {
-            $request->getSession()->getFlashBag()->set('failure', 'Could not find that '.$lc.'.');
+            $request->getSession()->getFlashBag()->set('failure', 'Could not find that '.$full.'.');
         }
 
         return $this->redirect($this->generateUrl('view', array('entityName' => $lc)));

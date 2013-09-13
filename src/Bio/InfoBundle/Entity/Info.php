@@ -57,45 +57,6 @@ class Info
     private $year;
 
     /**
-     * @var array
-     *
-     * @ORM\Column(name="days", type="array")
-     */
-    private $days;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="startTime", type="time")
-     * @Assert\Time()
-     */
-    private $startTime;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="endTime", type="time")
-     * @Assert\Time()
-     */
-    private $endTime;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="bldg", type="string", length=255)
-     * @Assert\NotBlank()
-     */
-    private $bldg;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="room", type="string", length=255)
-     * @Assert\NotBlank()
-     */
-    private $room;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=255)

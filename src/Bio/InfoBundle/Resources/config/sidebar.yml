@@ -15,7 +15,11 @@
         route: view
         vars:
             entityName: hours
-    Sections:
+    "Course Sections":
+        route: view
+        vars:
+            entityName: courseSection
+    "Lab Sections":
         route: view
         vars:
             entityName: section
