@@ -19,7 +19,7 @@
 					<tr>
 						<td><input type="radio" name="form[match]" value={{choice.value}} ></td>
 						<td>{{choice.data.current.name|upper}}</td>
-						<td>{{choice.data.current.day|capitalize}}</td>
+						<td>{{choice.data.current.days|join(', ')|title}}</td>
 						<td>{{choice.data.current.start|date('h:i a')}}</td>
 						<td>{{choice.data.current.end|date('h:i a')}}</td>
 					</tr>

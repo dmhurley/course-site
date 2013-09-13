@@ -36,7 +36,7 @@ class Link extends FileBase
     private $address;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Folder", inversedBy="files")
+     * @ORM\ManyToOne(targetEntity="Folder", inversedBy="links")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      */
     private $parent;

@@ -177,7 +177,7 @@
 					<ul>
 						<li>Section {{section.name|upper}}</li>
 						<ul>
-							<li>{{section.day|title}} {{section.start|date('h:i')}} - {{section.end|date('h:i')}}</li>
+							<li>{{section.days|join(', ')|title}} : {{section.start|date('h:i')}} - {{section.end|date('h:i')}}</li>
 							<li><a href="http://www.washington.edu/maps/?{{section.bldg|split("	")[0]}}">{{section.bldg}}</a> - {{section.room}}</li>
 						</ul>
 					</ul>

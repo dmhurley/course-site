@@ -19,7 +19,7 @@
 					<tr>
 						<td><input type="checkbox" name="form[want][]" value={{choice.value}} ></td>
 						<td>{{choice.data.name|upper}}</td>
-						<td>{{choice.data.day|capitalize}}</td>
+						<td>{{choice.data.days|join(', ')|title}}</td>
 						<td>{{choice.data.start|date('h:i a')}}</td>
 						<td>{{choice.data.end|date('h:i a')}}</td>
 					</tr>

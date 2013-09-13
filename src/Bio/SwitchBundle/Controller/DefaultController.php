@@ -10,6 +10,8 @@ use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 use Bio\SwitchBundle\Entity\Request;
 
+use Doctrine\ORM\EntityRepository;
+
 class DefaultController extends Controller
 {
     /**
@@ -75,7 +77,10 @@ class DefaultController extends Controller
 
     private function setRequestAction($request, $student, $section, $db) {
     	$form = $this->createFormBuilder()
-    		->add('want', 'entity', array('class' => 'BioInfoBundle:Section', 'property' => 'id', 'multiple' => true, 'expanded' => true))
+    		->add('want', 'entity', array('class' => 'BioInfoBundle:Section', 'property' => 'id', 'multiple' => true, 'expanded' => true, 'query_builder' => function(EntityRepository $repo) {
+                return $repo->createQueryBuilder('e')
+                    ->orderBy('e.name', 'ASC');
+            }))
     		->add('request', 'submit')
     		->getForm();
 

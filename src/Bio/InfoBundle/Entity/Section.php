@@ -31,10 +31,10 @@ class Section extends Base
     /**
      * @var string
      *
-     * @ORM\Column(name="day", type="string", length=255)
-     * @Assert\Choice(choices={"m", "tu", "w", "th", "f", "sa", "su"}, message="Choose a valid day.")
+     * @ORM\Column(name="days", type="array")
+     * @Assert\Choice(choices={"m", "tu", "w", "th", "f", "sa", "su"}, multiple=true, message="Choose a valid day.")
      */
-    protected $day;
+    protected $days;
 
     /**
      * @var \DateTime
@@ -92,26 +92,26 @@ class Section extends Base
     }
 
     /**
-     * Set day
+     * Set days
      *
-     * @param string $day
+     * @param array $days
      * @return Section
      */
-    public function setDay($day)
+    public function setDays($days)
     {
-        $this->day = $day;
+        $this->days = $days;
     
         return $this;
     }
 
     /**
-     * Get day
+     * Get days
      *
-     * @return string 
+     * @return array 
      */
-    public function getDay()
+    public function getDays()
     {
-        return $this->day;
+        return $this->days;
     }
 
     /**
@@ -209,7 +209,14 @@ class Section extends Base
      public function addToForm(FormBuilder $builder) {
         $array = file('bundles/bioinfo/buildings.txt', FILE_IGNORE_NEW_LINES);
         $builder->add('name', 'text', array('label' => 'Name:', 'attr' => array('pattern' => '^[A-Z][A-Z0-9]?$', 'title' => 'Valid capitalized section name.')))
-            ->add('day', 'choice', array('label' => 'Day:', 'choices' =>array("m" => "Monday", "tu" => "Tuesday", "w" => "Wednesday", "th" => "Thursday", "f" => "Friday", "sa" => "Saturday", "su" => "Sunday")))
+            ->add('days', 'choice', array('label' => 'Day:', 'choices' => array(
+                    "m" => "Monday",
+                    "tu" => "Tuesday",
+                    "w" => "Wednesday",
+                    "th" => "Thursday",
+                    "f" => "Friday",
+                    "sa" => "Saturday",
+                    "su" => "Sunday"), 'multiple' => true))
             ->add('start', 'time', array('label' => 'Start Time:'))
             ->add('end', 'time', array('label' => 'End Time:'))
             ->add('bldg', 'choice', array('choices' => array_combine($array, $array), 'validation_groups' => false, 'label' => "Building:"))
