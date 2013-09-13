@@ -81,7 +81,9 @@
 					<ul>
 						<li>{{inst.fullName}}</li>
 						<ul>
-							<li><a href="http://www.washington.edu/maps/?{{inst.bldg|split("	")[0]}}">{{inst.bldg}}</a> - {{inst.room}}</li>
+							{% if inst.bldg != null %}
+								<li><a href="http://www.washington.edu/maps/?{{inst.bldg|split("	")[0]}}">{{inst.bldg}}</a> {% if inst.room != null %} - {{inst.room}}{% endif %}</li>
+							{% endif %}
 							<li><a href="mailto:{{inst.email}}">{{inst.email}}</a></li>
 							{% if inst.hours|length > 0 %}
 								<li>Hours</li>

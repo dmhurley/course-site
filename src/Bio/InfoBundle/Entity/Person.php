@@ -46,7 +46,6 @@ class Person extends Base
      * @var string
      *
      * @ORM\Column(name="bldg", type="string", length=255)
-     * @Assert\NotBlank()
      */
     private $bldg;
 
@@ -54,7 +53,6 @@ class Person extends Base
      * @var string
      *
      * @ORM\Column(name="room", type="string", length=255)
-     * @Assert\NotBlank()
      */
     private $room;
 
@@ -222,8 +220,8 @@ class Person extends Base
         $builder->add('fName', 'text', array('label' => 'First Name:'))
             ->add('lName', 'text', array('label' => 'Last Name:'))
             ->add('email', 'email', array('label' => 'Email:'))
-            ->add('bldg', 'choice', array('choices' => array_combine($array, $array), 'validation_groups' => false, 'label' => 'Building:'))
-            ->add('room', 'text', array('label' => 'Room:'))
+            ->add('bldg', 'choice', array('choices' => array_combine($array, $array), 'empty_value' => '-', 'required' => false, 'label' => 'Building:'))
+            ->add('room', 'text', array('label' => 'Room:', 'required' => false))
             ->add('title', 'choice', array('choices' => array('instructor' => 'Instructor', 'ta' => 'TA', 'coordinator' => 'Coordinator'), 'label' => 'Title:'));
         return $builder;
     }
