@@ -12,6 +12,7 @@ use Symfony\Component\Form\FormError;
 
 use Bio\StudentBundle\Entity\Student;
 use Bio\InfoBundle\Entity\Section;
+use Bio\InfoBundle\Entity\CourseSection;
 use Bio\StudentBundle\Form\StudentType;
 use Bio\DataBundle\Exception\BioException;
 use Bio\DataBundle\Objects\Database;
@@ -291,6 +292,31 @@ class DefaultController extends Controller
         foreach($dbSections as $dbSection) {
             if (!$this->findObjectByFieldValue($dbSection->getName(), $sections, 'name')) {
                 $db->delete($dbSection);
+            }
+        }
+
+        $db = new Database($this, 'BioInfoBundle:CourseSection');
+        $s = $db->find(array(), array(), false);
+
+        $cSections = [];
+
+        foreach($sections as $section) {
+            if (!$this->findObjectByFieldValue(substr($section->getName(), 0, 1), $cSections, 'name')) {
+                $c = new CourseSection();
+                $c->setName(substr($section->getName(), 0, 1))
+                    ->setDays([])
+                    ->setStartTime(new \DateTime('midnight'))
+                    ->setEndTime(new \DateTime('midnight'))
+                    ->setBldg("HCK\tHitchcock Hall")
+                    ->setRoom("0");
+                $db->add($c);
+                $cSections[] = $c;
+            }
+        }
+
+        foreach ($s as $dbS) {
+            if(!$this->findObjectByFieldValue($dbS->getName(), $cSections, 'name')) {
+                $db->delete($dbS);
             }
         }
 

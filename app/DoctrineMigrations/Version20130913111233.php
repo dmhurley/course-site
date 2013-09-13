@@ -54,7 +54,6 @@ class Version20130913111233 extends AbstractMigration implements ContainerAwareI
                     ->setRoom("0");
                 $em->persist($cSection);
                 $cSections[] = $cSection->getName();
-                echo $cSection->getName();
             }
         }
         $em->flush();
