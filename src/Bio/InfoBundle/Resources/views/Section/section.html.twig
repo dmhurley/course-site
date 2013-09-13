@@ -17,7 +17,7 @@
 			<tr>
 				<td>{{section.name|upper}}</td>
 				<td>{{section.days|join(', ')|title}}</td>
-				<td>{{section.start|date('H:i')}}</td>
+				<td>{{section.start|date('h:i a')}}</td>
 				<td>{{section.end|date('H:i')}}</td>
 				<td><a href="http://www.washington.edu/maps/?{{section.bldg|split("	")[0]}}">{{section.bldg}}</a></td>
 				<td>{{section.room}}

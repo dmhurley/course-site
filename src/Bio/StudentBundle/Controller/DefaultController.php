@@ -244,7 +244,7 @@ class DefaultController extends Controller
                 $section->setName($sectionName)
                     ->setStart(new \DateTime('midnight'))
                     ->setEnd(new \DateTime('midnight'))
-                    ->setDay('m')
+                    ->setDays([])
                     ->setBldg("HCK\tHitchcock Hall")
                     ->setRoom(0);
                 $db->add($section);

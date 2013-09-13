@@ -26,7 +26,7 @@
 					<ul>
 						<li>Section {{section.name|upper}}</li>
 						<ul>
-							<li>{{section.days|join(', ')|title}} {{section.startTime|date('h:i')}} - {{section.endTime|date('h:i')}}</li>
+							<li>{{section.days|join(', ')|title}} {{section.startTime|date('h:i')}} - {{section.endTime|date('h:i a')}}</li>
 							<li><a href="http://www.washington.edu/maps/?{{section.bldg|split("	")[0]}}">{{section.bldg}}</a> - {{section.room}}</li>
 						</ul>
 					</ul>
@@ -39,7 +39,7 @@
 				<h2>Announcements</h2>
 				{% for ann in anns %}
 					<ul>
-						<li>{{ann.timestamp|date('m/d/y h:i')}}</li>
+						<li>{{ann.timestamp|date('m/d/y h:i a')}}</li>
 						<ul>
 							<li>{{ann.text|raw}}</li>
 						</ul>
@@ -130,7 +130,7 @@
 								<ul>
 									{% for hour in inst.hours %}
 										{% if not hour.byAppointment %}
-											<li>{{hour.days|title}} {{hour.start|date('h:i')}} - {{hour.end|date('h:i')}}</li>
+											<li>{{hour.days|title}} {{hour.start|date('h:i')}} - {{hour.end|date('h:i a')}}</li>
 										{% else %}
 											<li>By Appointment</li>
 										{% endif %}
@@ -157,7 +157,7 @@
 								<ul>
 									{% for hour in inst.hours %}
 										{% if not hour.byAppointment %}
-											<li>{{hour.days|title}} {{hour.start|date('h:i')}} - {{hour.end|date('h:i')}}</li>
+											<li>{{hour.days|title}} {{hour.start|date('h:i')}} - {{hour.end|date('h:i a')}}</li>
 										{% else %}
 											<li>By Appointment</li>
 										{% endif %}
@@ -177,7 +177,7 @@
 					<ul>
 						<li>Section {{section.name|upper}}</li>
 						<ul>
-							<li>{{section.days|join(', ')|title}} : {{section.start|date('h:i')}} - {{section.end|date('h:i')}}</li>
+							<li>{{section.days|join(', ')|title}} : {{section.start|date('h:i')}} - {{section.end|date('h:i a')}}</li>
 							<li><a href="http://www.washington.edu/maps/?{{section.bldg|split("	")[0]}}">{{section.bldg}}</a> - {{section.room}}</li>
 						</ul>
 					</ul>

@@ -20,8 +20,8 @@
 					<td colspan=3>By Appointment</td>
 				{% else %}
 					<td>{{(person.hours|first).days|title}}</td>
-					<td>{{(person.hours|first).start|date('h:i')}}</td>
-					<td>{{(person.hours|first).end|date('h:i')}}</td>
+					<td>{{(person.hours|first).start|date('h:i a')}}</td>
+					<td>{{(person.hours|first).end|date('h:i a')}}</td>
 				{% endif %}
 				<td><a href="{{ path('edit', {'entityName' : 'hours', 'id' : (person.hours|first).id }) }}">edit</a></td>
 				<td><a href="{{ path('delete', {'entityName' : 'hours', 'id' : (person.hours|first).id}) }}">delete</a></td>

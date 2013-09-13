@@ -29,7 +29,7 @@
 				{% endif %}
 				<td>{{exam.section}}</td>
 				<td>{{exam.tDate|date('m-d-y')}}</td>
-				<td>{{exam.tStart|date('h:i')}}</td>
+				<td>{{exam.tStart|date('h:i a')}}</td>
 				<td>{{exam.questions|length}}</td>
 				<td><a href="{{ path('preview') }}?id={{exam.id}}&type=exam">preview</a></td>
 				<td><a href="{{ path('edit_exam', {'id':exam.id}) }}">edit</a></td>
