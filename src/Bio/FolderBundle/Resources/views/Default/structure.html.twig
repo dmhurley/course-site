@@ -33,12 +33,16 @@
 {% elseif root.address is defined %}
 	<a href="{{root.address}}"> {{root.name}}</a>
 {% elseif root.path is defined %}
-	<a href="{{ path('download', {'filename' : root.path}) }}"> {{root.path|replace({"_" : " "})}} </a>
+	<a href="{{ path('download', {'filename' : root.path}) }}"> {{root.name}}.{{root.path|split('.')|last}} </a>
 {% endif %}
 
-{% if root.folders is not defined or (root.name != 'sidebar' and root.name != 'mainpage') %}
+{% if root.parent != null %}
+<!-- floats right so put in reverse order -->
 <span>
 	<a href="{{ path('delete_folder', {'id':root.id})}}">delete</a>
+</span>
+<span>
+	<a href="{{ path('edit_folder', {'id':root.id}) }}">edit</a>
 </span>
 {% endif %}
 </li>

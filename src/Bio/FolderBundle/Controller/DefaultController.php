@@ -48,8 +48,8 @@ class DefaultController extends Controller
     	} 
     	$db = new Database($this, 'BioFolderBundle:Folder');
 
-    	$sidebar = $db->findOne(array('name' => 'sidebar'));
-        $mainpage = $db->findOne(array('name' => 'mainpage'));
+    	$sidebar = $db->findOne(array('name' => 'sidebar', 'parent' => null));
+        $mainpage = $db->findOne(array('name' => 'mainpage', 'parent' => null));
 
         $folder = new Folder();
     	$form = $this->get('form.factory')->createNamedBuilder('tfolder', 'form', $folder)
@@ -79,7 +79,7 @@ class DefaultController extends Controller
 
             if ($request->request->has('tfolder')) {
                 $form->handleRequest($request);
-                if ($form->isValid() && $form->get('name')->getData() !== "sidebar" && $form->get('name')->getData() !== "mainpage") {
+                if ($form->isValid()) {
                     $parent = $db->findOne(array('id' => $form->get('id')->getData()));
                     if (!$parent) {
                         $request->getSession()->getFlashBag()->set('failure', "Parent folder could not be found.");
@@ -164,8 +164,8 @@ class DefaultController extends Controller
      * @ParamConverter("entity", class="BioFolderBundle:FileBase")
      */
     public function deleteAction(Request $request, $entity = null) {
-        $type = method_exists($entity, 'getFiles')?"Folder":method_exists($entity, 'getAddress')?"Link":"File";
-		if($entity && ($type === "File" || $type === "Link" || $entity->getName() !== "sidebar" || $entity->getName() !== "mainpage")) {
+        $type = $this->getType($entity);
+		if(!$this->isRoot($entity)) {
             $db = new Database($this, 'BioFolderBundle:Folder'); 
 			$db->delete($entity);
             try {
@@ -180,6 +180,61 @@ class DefaultController extends Controller
 		}
 
         return $this->redirect($this->generateUrl('view_folders'));
+    }
+
+    /**
+     * @Route("/edit/{id}", name="edit_folder")
+     * @Template()
+     * @ParamConverter("entity", class="BioFolderBundle:FileBase")
+     */
+    public function editAction(Request $request, $entity = null) {
+        if (!$this->isRoot($entity)) {
+            $type = $this->getType($entity);
+            $formBuilder = $this->createFormBuilder($entity);
+            if ($type === "Folder") {
+                $formBuilder->add('name', 'text', array('label' => 'Name:'))
+                    ->add('private', 'checkbox', array('label' => 'Private:', 'required' => false, 'attr' => $entity->getPrivate()?array('checked' => 'checked'):array()))
+                    ->add('save', 'submit');
+            } else if ($type === "File") {
+                $formBuilder->add('name', 'text', array('label' => 'Name:'))
+                    ->add('save', 'submit');
+            } else if ($type === "Link") {
+                $formBuilder->add('name', 'text', array('label' => 'Title:'))
+                    ->add('address', 'text', array('label' => 'URL:'))
+                    ->add('save', 'submit');
+            }
+            $form = $formBuilder->getForm();
+
+            if ($request->getMethod() === "POST") {
+                $form->handleRequest($request);
+                if($form->isValid()) {
+                    // try {
+                        $this->getDoctrine()->getManager()->flush();
+                        $request->getSession()->getFlashBag()->set('success', $type.' saved.');
+                        return $this->redirect($this->generateUrl('view_folders'));
+                    // } catch (BioException $e) {
+                        
+                    // }
+                }
+            }
+
+            return array('form' => $form->createView(), 'title' => 'Edit '.$type);
+        } else {
+            $request->getSession()->getFlashBag()->set('failure', "Could not find that file.");
+        }
+    }
+
+    private function isRoot($entity = null) {
+        $hasName = method_exists($entity, 'getName'); //f
+        $isFolder = method_exists($entity, 'getFiles'); // f
+        $isParentless = $entity->getParent() === null;
+        $name = $hasName?$entity->getName():''; // ''
+
+        return $isFolder && $hasName && $isParentless && ($name === 'sidebar' || $name === 'mainpage');
+    }
+
+    private function getType($entity = null) {
+        return method_exists($entity, 'getPrivate')?"Folder":(method_exists($entity, 'getAddress')?"Link":"File");
     }
 
     /**
