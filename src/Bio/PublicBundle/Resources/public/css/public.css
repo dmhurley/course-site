@@ -8,6 +8,16 @@
 	width: 100%;
 }
 
+.checker input {
+	font-size:100px;
+	float:right;
+	margin: 10px 30px 10px 10px;
+}
+.checker label {
+	float:right;
+	margin: 6px 0px 6px 6px;
+}
+
 .masonry {
 	-moz-column-count: 2;
 	-webkit-column-count:2;

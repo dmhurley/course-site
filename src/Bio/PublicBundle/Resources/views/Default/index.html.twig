@@ -7,20 +7,38 @@
 	{% endstylesheets %}
 {% endblock %}
 
+{% macro show(child) %}
+	{% if is_granted('ROLE_ADMIN') %}
+		<div class="checker">
+			{{form_widget(child)}}
+			<label>show - </label>
+		</div>
+	{% endif %}
+{% endmacro %}
+
+{% import _self as row %}
+
 {% block content %}
+	{% if is_granted('ROLE_ADMIN') %}
+		{{ form_start(form) }}
+	{% endif %}
 	<div class="masonry">
 
-		<div class="row">
-			<h2>Class Info</h2>
-			<ul>
-				<li>{{info.courseNumber}} - {{info.title}}</li>
-				<li>{{info.qtr|capitalize}} {{info.year}}</li>
-				<li><a href="mailto:{{info.email}}">{{info.email}}</a></li>
-			</ul>
-		</div>
-
-		{% if cSections|length > 0 %}
+		{% if form.showing.children[0].vars['data'] or is_granted('ROLE_ADMIN') %}
 			<div class="row">
+				{{row.show(form.showing.children[0])}}
+				<h2>Class Info</h2>
+				<ul>
+					<li>{{info.courseNumber}} - {{info.title}}</li>
+					<li>{{info.qtr|capitalize}} {{info.year}}</li>
+					<li><a href="mailto:{{info.email}}">{{info.email}}</a></li>
+				</ul>
+			</div>
+		{% endif %}
+
+		{% if (cSections|length > 0 and form.showing.children[1].vars['data']) and is_granted('ROLE_ADMIN') %}
+			<div class="row">
+				{{row.show(form.showing.children[1])}}
 				<h2>Course Sections</h2>
 				{% for section in cSections %}
 					<ul>
@@ -34,8 +52,9 @@
 			</div>
 		{% endif %}
 
-		{% if anns|length > 0 %}
+		{% if (anns|length > 0 and form.showing.children[2].vars['data']) or is_granted('ROLE_ADMIN') %}
 			<div class="row">
+				{{row.show(form.showing.children[2])}}
 				<h2>Announcements</h2>
 				{% for ann in anns %}
 					<ul>
@@ -48,8 +67,9 @@
 			</div>
 		{% endif %}
 
-		{% if main.folders|length > 0 %}
+		{% if (main.folders|length > 0 and form.showing.children[3].vars['data']) or is_granted('ROLE_ADMIN') %}
 			<div class="row">
+				{{row.show(form.showing.children[3])}}
 				<h2>Additional Folders</h2>
 				<ul>
 					<ul>
@@ -61,8 +81,9 @@
 			</div>
 		{% endif %}
 
-		 {% if main.files|length > 0 %}
+		 {% if (main.files|length > 0 and form.showing.children[4].vars['data']) or is_granted('ROLE_ADMIN')  %}
 			<div class="row">
+				{{row.show(form.showing.children[4])}}
 				<h2>Additional Files</h2>
 				<ul>
 					<ul>
@@ -74,8 +95,9 @@
 			</div>
 		{% endif %}
 
-		{% if main.links|length > 0 %}
+		{% if (main.links|length > 0 and form.showing.children[5].vars['data']) or is_granted('ROLE_ADMIN') %}
 			<div class="row">
+				{{row.show(form.showing.children[5])}}
 				<h2>Additional Links</h2>
 				<ul>
 					<ul>
@@ -87,8 +109,9 @@
 			</div>
 		{% endif %}
 
-		{% if instructors|length > 0 %}
+		{% if (instructors|length > 0 and form.showing.children[6].vars['data']) or is_granted('ROLE_ADMIN') %}
 			<div class="row">
+				{{row.show(form.showing.children[6])}}
 				<h2>Instructors</h2>
 				{% for inst in instructors %}
 					<ul>
@@ -116,8 +139,9 @@
 			</div>
 		{% endif %}
 
-		{% if tas|length > 0 %}
+		{% if (tas|length > 0 and form.showing.children[7].vars['data']) or is_granted('ROLE_ADMIN') %}
 			<div class="row">
+				{{row.show(form.showing.children[7])}}
 				<h2>TAs</h2>
 				{% for inst in tas %}
 					<ul>
@@ -143,8 +167,9 @@
 			</div>
 		{% endif %}
 
-		{% if coordinators|length > 0 %}
+		{% if (coordinators|length > 0 and form.showing.children[8].vars['data']) or is_granted('ROLE_ADMIN') %}
 			<div class="row">
+				{{row.show(form.showing.children[8])}}
 				<h2>Coordinators</h2>
 				{% for inst in coordinators %}
 					<ul>
@@ -170,8 +195,9 @@
 			</div>
 		{% endif %}
 
-		{% if lSections|length > 0 %}
+		{% if (lSections|length > 0 and form.showing.children[9].vars['data']) or is_granted('ROLE_ADMIN') %}
 			<div class="row">
+				{{row.show(form.showing.children[9])}}
 				<h2>Lab Sections</h2>
 				{% for section in lSections %}
 					<ul>
@@ -184,6 +210,12 @@
 				{% endfor %}
 			</div>
 		{% endif %}
-
 	</div>
+	{% if is_granted('ROLE_ADMIN') %}
+		<div style="text-align:center;">
+			{{ form_widget(form.save) }}
+		</div>
+		{% do form_rest(form) %}
+		{{ form_end(form) }}
+	{% endif %}
 {% endblock %}
