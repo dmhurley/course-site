@@ -7,4 +7,5 @@ php composer.phar update
 
 app/console bio:update
 
-chmod -R 777 app/cache app/logs web/files web/bundles
+rm -rf app/cache/prod app/cache/dev
+sudo chmod -R 777 app/cache app/logs web/files web/bundles

@@ -26,10 +26,11 @@ class DownloadController extends Controller
      */
     public function downloadAction(Request $request, File $file) {
         if (file_exists($file->getAbsolutePath())) {
-
+            $name = $file->getName();
+            $typeArray = explode('.', $file->getPath());
             $response = $this->render('BioFolderBundle:Download:download.txt.twig', array('text' => file_get_contents($file->getAbsolutePath())));
             $response->headers->set("Content-Type", $file->getMime());
-            $response->headers->set('Content-Disposition', ('attachment; filename="'.$file->getName().'"'));
+            $response->headers->set('Content-Disposition', ('attachment; filename="'.$name.'.'.end($typeArray).'"'));
             $response->headers->set('Content-Length', filesize($file->getAbsolutePath()));
             return $response;
         }
