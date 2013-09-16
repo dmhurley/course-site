@@ -39,6 +39,13 @@ class File extends FileBase
      */
     private $parent;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="mimetype", type="string", length=255)
+     */
+    private $mime;
+
     // are not persisted!
     /**
      * @Assert\File()
@@ -123,6 +130,7 @@ class File extends FileBase
     public function setFile(UploadedFile $file = null)
     {   
         $this->file = $file;
+        $this->mime = $file->getMimeType();
     }
 
     /**
@@ -157,6 +165,7 @@ class File extends FileBase
     public function preUpload() {
         if ($this->getFile() !== null) {
             $extension = $this->getFile()->getClientOriginalExtension();
+            var_dump($this->getFile());
             $extension = $extension === '' ? '' : '.'.$extension;
             $name = preg_replace('/[ \t]/', '_', $this->name).$extension;
             $this->temp = $this->path;
@@ -193,5 +202,28 @@ class File extends FileBase
                 unlink($file);
             }
         }
+    }
+
+    /**
+     * Set mime
+     *
+     * @param string $mime
+     * @return File
+     */
+    public function setMime($mime)
+    {
+        $this->mime = $mime;
+    
+        return $this;
+    }
+
+    /**
+     * Get mime
+     *
+     * @return string 
+     */
+    public function getMime()
+    {
+        return $this->mime;
     }
 }

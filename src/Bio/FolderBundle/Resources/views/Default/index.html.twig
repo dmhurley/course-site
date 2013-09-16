@@ -6,6 +6,10 @@
 	{% stylesheets 'bundles/biofolder/css/folder.css' filter="cssrewrite" output="css/*.css" %}
 		<link rel="stylesheet" href="{{ asset_url }}" />
 	{% endstylesheets %}
+
+	{% javascripts 'bundles/biofolder/js/Namer.js' %}
+		<script src="{{asset_url}}"></script>
+	{% endjavascripts %}
 {% endblock %}
 
 {% block content %}

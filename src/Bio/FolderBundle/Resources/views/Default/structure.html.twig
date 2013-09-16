@@ -33,7 +33,7 @@
 {% elseif root.address is defined %}
 	<a href="{{root.address}}"> {{root.name}}</a>
 {% elseif root.path is defined %}
-	<a href="{{ path('download', {'filename' : root.path}) }}"> {{root.name}}.{{root.path|split('.')|last}} </a>
+	<a href="{{ path('download', {'id' : root.id}) }}"> {{root.name}}.{{root.path|split('.')|last}} </a>
 {% endif %}
 
 {% if root.parent != null %}

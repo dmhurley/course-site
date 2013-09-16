@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 
 use Bio\DataBundle\Exception\BioException;
@@ -20,22 +21,17 @@ use Bio\FolderBundle\Entity\File;
 class DownloadController extends Controller
 {
     /**
-     * @Route("/{filename}", name="download")
-     * @Template()
+     * @Route("/{id}", name="download")
+     * @ParamConverter("file", class="BioFolderBundle:File")
      */
-    public function downloadAction(Request $request, $filename) {
-        $file = $this->get('kernel')->getRootDir()."/../web/files/".$filename;
-        if (file_exists($file)) {
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename='.basename($file));
-            header('Content-Transfer-Encoding: binary');
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate');
-            header('Pragma: public');
-            header('Content-Length: ' . filesize($file));
-            $data = file_get_contents($file);
-            return array('text' => $data);
+    public function downloadAction(Request $request, File $file) {
+        if (file_exists($file->getAbsolutePath())) {
+
+            $response = $this->render('BioFolderBundle:Download:download.txt.twig', array('text' => file_get_contents($file->getAbsolutePath())));
+            $response->headers->set("Content-Type", $file->getMime());
+            $response->headers->set('Content-Disposition', ('attachment; filename="'.$file->getName().'"'));
+            $response->headers->set('Content-Length', filesize($file->getAbsolutePath()));
+            return $response;
         }
 
         $request->getSession()->getFlashBag()->set('failure', 'Could not find file "'.$filename.'".');

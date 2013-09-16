@@ -53,7 +53,7 @@
 				<h2>Additional Folders</h2>
 				<ul>
 					<ul>
-						{% for folder in main.folders %}
+						{% for folder in main.folders if not folder.private %}
 							<li><a href="{{ path('public_folder', {'id' : folder.id}) }}">{{folder.name}}</a></li>
 						{% endfor %}
 					</ul>
@@ -67,7 +67,7 @@
 				<ul>
 					<ul>
 						{% for file in main.files %}
-							<li><a href="{{ path('download', {'filename' : file.path}) }}">{{file.name}}</a></li>
+							<li><a href="{{ path('download', {'id' : file.id}) }}">{{file.name}}</a></li>
 						{% endfor %}
 					</ul>
 				</ul>

@@ -1,4 +1,4 @@
-{% if root.folders is not defined or root.private != true %}
+{% if root.folders is not defined or not root.private %}
 	{% if root.folders is defined %}
 		{% set type = 'folder' %}
 	{% elseif root.address is defined %}
@@ -19,7 +19,7 @@
 		{% elseif root.address is defined %}
 			<a href="{{ root.address }}">{{root.name}}</a>
 		{% else %}
-			<a href="{{ path('download', {'filename' : root.path}) }}"> {{root.name}} </a>
+			<a href="{{ path('download', {'id' : root.id}) }}"> {{root.name}} </a>
 		{% endif %}
 	</li>
 

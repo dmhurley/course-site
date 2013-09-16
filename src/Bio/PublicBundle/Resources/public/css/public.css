@@ -28,3 +28,8 @@
 .masonry ul ul {
 	list-style: circle
 }
+
+.masonry ul ul li {
+	padding-right: 20px;
+	text-align: justify;
+}
