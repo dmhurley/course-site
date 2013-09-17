@@ -3,21 +3,19 @@
 {% block header %}
 	{{parent()}}
 
-	<div id="sign">
-		<div class="login">
-			{% if is_granted('ROLE_USER') %}
-				<a>{{app.user.username}}</a>
-			 	<div class="menu">
-			 		<ul>
-			 			<a href="{{ path('change_password') }}"><li>change password</li></a>
-			 			<li>Role: {{app.user.roles[0][5:]|replace({'_':' '})}}</li>
-			 			<a href="{{ path('logout') }}"><li>logout</li></a>
-			 		</ul>
-			 	</div>
-			{% else %}
-				<a href="{{ path('login') }}">Login</a>
-			{% endif %}
-		</div>
+	<div class="login">
+		{% if is_granted('ROLE_USER') %}
+			<a>{{app.user.username}}</a>
+		 	<div class="menu">
+		 		<ul>
+		 			<a href="{{ path('change_password') }}"><li>change password</li></a>
+		 			<li>Role: {{app.user.roles[0][5:]|replace({'_':' '})}}</li>
+		 			<a href="{{ path('logout') }}"><li>logout</li></a>
+		 		</ul>
+		 	</div>
+		{% else %}
+			<a href="{{ path('login') }}">Login</a>
+		{% endif %}
 	</div>
 
 {% endblock %}

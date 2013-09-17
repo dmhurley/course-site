@@ -1,9 +1,16 @@
-#form > div, #global > div{
-	margin: 10px;
+/***** BORDER STUFF ******/ 
+#content > table td, .tableStyle table td, #content > table th, .tableStyle table th, .border {
+	border-bottom-style: solid;
+	border-color: #A591D9;
+	border-bottom-width: 1px;
+}
+#content > table th, .tableStyle table th {
+	border-bottom-width: 3px;
 }
 
-#form.side, #global.side {
-	
+/******** EVERYTHING ELSE ********/
+#form > div, #global > div{
+	margin: 10px;
 }
 
 #form > div label, #global > div label{
@@ -29,13 +36,6 @@
 	text-align: left;
 }
 
-#content > table th, .tableStyle table th {
-	border-bottom: solid 3px #A591D9;
-}
-
-#content > table td, .tableStyle table td {
-	border-bottom: solid 1px #A591D9;
-}
 /* no border on last td */
 #content > table tr:last-child td, .tableStyle table tr:last-child td {
 	border-bottom: none;
