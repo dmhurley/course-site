@@ -7,15 +7,14 @@
 		{% endstylesheets %}
 	<style type="text/css">
 		td {
-			border-right: 1px solid gray;
+			border-right-width: 1px;
+			border-right-style: solid;
 		}
 	</style>
 {% endblock %}
 
 {% block content %}
-	{% if form is defined %}
-		{{form(form)}}
-	{% endif %}
+	{{form(form)}}
 	{% if scores|length > 0 %}
 		<div class="tableStyle" id="scroller">
 			<table>
