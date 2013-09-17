@@ -34,7 +34,17 @@ Once all major problems are fixed you're ready to set up the project.
 
 This command will do the complete basic setup for you. Install bundles & assets, create the database tables and columns, and initialize any entities that are necessary for the site to run Finally the command will store the username and hashed password in `app/config/security.yml` allowing you to access the admin pages. Set the bundles you want to install in `app/config/parameters.yml`.
 
-2) Other stuff
+2) Custom Styles
+------------------------
+
+You can change the basic appearance of the site very easily with the main style sheet `src/Bio/PublicBundle/Resources/public/css/page.css`. Every rule regarding background, font, header images, and other basic style choices are at the top of the file, in logical groups with identifying comments. It may also be necessary to change the `border-color` at the top of `src/Bio/PublicBundle/Resources/public/css/form.css`.
+
+Changing only a few lines at the top of `page.css`, it is possible to go from this to this:
+<img src="http://i.imgur.com/03vb6m3.png" width=400 align="center"> <img src="http://i.imgur.com/giOhGa3.png" width=400 align="center">
+
+Edit the `href` of the image-links in the header at `src/Bio/PublicBundle/views/main.html.twig`. Edit other portions of the css/html at your own risk.
+
+3) Other stuff
 -------------------------
 
 #### Commands
