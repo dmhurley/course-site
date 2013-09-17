@@ -1,3 +1,60 @@
+/******** BACKGROUND COLORS ********/
+body { background-color: #3f3f3f; }  					/* side filler */
+#container { background-color: white; } 				/* main background */
+#header, #footer { background-color: #3d2480; }			/* header footer */
+.login > a, .login .menu { background-color: #331b6f; }	/* login button/dropdown */
+.success { background-color: rgba(0, 120, 0, .95); }	/* error/success */
+.failure { background-color: rgba(120, 0, 0, .95); }
+
+/******** TEXT COLORS ********/
+#course { color: rgb(245, 245, 245); } 					/* course name in header */
+.login { color: white; } 								/*login button/dropdown */
+#center { color: black; }								/* content text */
+#center h1 { color: rgb(81,95, 24); }					/* titles */
+#center h2 { color: rgb(72, 57, 130); }
+#center h3 { color: inherit; }
+#header, #footer { color: #f3f1c6; }					/* header and footer (unused) */
+.branch a { color: #d0c0aa; } 							/* sidebar parent */
+.leaf a { color: rgb(108, 99, 87); } 					/*  sidebar child */
+.success, .failure { color:rgb(200,200,200); }			/* error/success message */
+
+/******** IMAGES ********/
+#logo {													/* left most */
+	width: 434px;
+	height: 96px;
+	background-image: url(http://www.biology.washington.edu/sites/all/themes/clean/bioStyleC2Images/not-front-bio.png);
+	left: 41px;
+	top: 31px;
+}
+#w {													/* golden W   */
+	background-image: url(../images/w.png);
+	right: 48px;
+	top: 0px;
+	width: 53px;
+	height: 56px;
+}
+#wLogo {												/* university of washington */
+	top: 31px;
+	right: 117px;
+	height: 14px;
+	width: 204px;
+	background-image: url(http://www.biology.washington.edu/sites/all/themes/clean/bioStyleC2Images/uw-text.png);
+}
+.image {
+	display:block;
+	background-repeat: no-repeat;
+	background-position: 0 0;
+	position: absolute;
+}
+
+/******** BORDERS ********/
+.login > a, .menu li { 									/* login button/dropdown */
+	border-color: #4c3782; 
+	border-style: solid;
+	border-width: 1px;
+}
+
+/******* EVERYTHING ELSE *******/
 * {
 	margin:0px;
 	padding:0px;
@@ -14,27 +71,16 @@
 	top: -15px;
 	left: 0px;
 	z-index:10;
-	color:rgb(200,200,200);
 	cursor:n-resize;
-	opacity: .95;
 	-webkit-user-select:none;
 	-user-select:none;
 }
-.success {
-	background-color: rgb(0, 120, 0);
-}
-.failure {
-	background-color: rgb(120, 0, 0);
-}
 
 body {
-	background-color: #3f3f3f;
 	font-family: "Trebuchet MS";
-	color: #494949;
 }
 
 #container {
-	background-color: white;
 	width: 1024px;
 	margin: 0 auto;
 }
@@ -76,7 +122,6 @@ body {
 	}
 
 		.branch a {
-			color: #d0c0aa;
 			font-size: 14px;
 			line-height: 20px;
 			padding-left: 20px;
@@ -88,12 +133,7 @@ body {
 	.trunk .branch {
 		background-image: none;
 		display: block;
-		color: #483882;
 	}
-
-		.top a {
-			color: #483882;
-		}
 
 		.branch .twig {
 			margin-top: 8px;
@@ -109,7 +149,6 @@ body {
 			}
 
 				.leaf a {
-					color: rgb(108, 99, 87);
 					text-transform: none;
 					font-weight: normal;
 					font-style: normal;
@@ -123,14 +162,12 @@ body {
 #center {
 	font-size: 13px;
 	line-height: 22px;
-	color: black;
 	width: 710px;
 	float:left;
 	margin-bottom: 1em;
 }
 	#center h1 {
 		font-size: 24px;
-		color: rgb(81,95, 24);
 		margin-bottom: 18px;
 		line-height: 28.8px;
 		margin-top: 38px;
@@ -139,7 +176,6 @@ body {
 	#center h2 {
 		font-size: 16px;
 		line-height: 22px;
-		color: rgb(72, 57, 130);
 		margin-bottom: 18px;
 		margin-top: 18px;
 	}
@@ -148,7 +184,6 @@ body {
 		margin-bottom: 1.5em;
 		font-size: 13px;
 		line-height: 22px;
-		color: black;
 		text-indent: 30px;
 	}
 
@@ -160,70 +195,16 @@ body {
 #header {
 	width: 1024px;
 	height: 154px;
-	background-color: #3d2480;
 	position:relative;
 	left: -37px;
 }
 
-	#logo {
-		display: block;
-		width: 434px;
-		height: 96px;
-		background-image: url(http://www.biology.washington.edu/sites/all/themes/clean/bioStyleC2Images/not-front-bio.png);
-		background-repeat: no-repeat;
-		background-position: 0 0;
-		position: relative;
-		left: 41px;
-		top: 31px;
-	}
-
-	#dub {
-		top: -119px;
-		left: 590px;
-		width: 430px;
-		height: 80px;
-		position: relative;
-	}
-
-		#wLogo {
-			padding-left: 100px;
-			top: 22px;
-			position: relative;
-			height: 80px;
-			width: 300px;
-			background-image: url(http://www.biology.washington.edu/sites/all/themes/clean/bioStyleC2Images/uw-text.png);
-			background-repeat: no-repeat;
-			background-position: 113px 32px;
-			overflow: hidden;
-		}
-
-		#w {
-			background-color: rgb(222, 185, 57);
-			left: 333px;
-			width: 53px;
-			height: 57px;
-			position: absolute;
-		}
-
-			#w a {
-				height: 50px;
-				top: 4px;
-				display: block;
-				width: 50px;
-				position: relative;
-				background-image: url(http://www.biology.washington.edu/sites/all/themes/clean/bioStyleC2Images/w-front-small.png);
-				background-repeat: no-repeat;
-				background-position: 6px 17px;
-
-			}
-
 	#course {
-		position: relative;
-		bottom: 90px;
-		color: rgb(245, 245, 245);
+		position: absolute;
+		top: 87px;
 		left: 263px;
 		font-size: 20pt;
-		width: 500px;
+		width: 550px;
 	}
 
 		#course a {
@@ -231,31 +212,17 @@ body {
 			text-decoration: inherit;
 		}
 
-	#sign {
-		position: relative;
-		bottom: 78px;
-		left: 827px;
-		padding-right: 2px;
-		padding-left: 2px;
-		display: inline;
-
-	}
-
-	#sign .login {
+	.login {
 		position: absolute;
-		top: 5px;
-		left: 0px;
-
+		bottom: 19px;
+		right: 184px;
 		text-decoration: none;
 		text-transform: uppercase;
 		font: 11px "Trebuchet MS" !important;
-		color: white;
 		letter-spacing: 1px;
 	}
 
-		#sign .login > a {
-			background-color: #331b6f;
-			border: 1px solid #4c3782;
+		.login > a {
 			padding: 6px 12px;
 			display:block;
 			height: 12px;
@@ -263,22 +230,19 @@ body {
 			top: -8px;
 		}
 
-		#sign a {
+		.login a {
 			color: inherit;
 			text-decoration:inherit;
 		}
 
-		#sign .login .menu {
-			background: red;
+		.login .menu {
 			position: absolute;
 			top: 18px;
-			background-color: #331b6f;
 			width: 150px;
-
 			display:none;
 		}
 
-		#sign .login:hover .menu {
+		.login:hover .menu {
 			display:block;
 		}
 			.login .menu ul {
@@ -286,14 +250,10 @@ body {
 			}	
 				.menu li {
 					padding: 8px 12px;
-					border: 1px solid #4c3782;
 				}
 
 #footer {
-	background-color: #3d2480;
-	color: #f3f1c6;
 	text-transform: uppercase;
-	/*border-top-color:#453384;*/
 	clear: both;
 	padding: 1.5em 0 1em 0;
 }

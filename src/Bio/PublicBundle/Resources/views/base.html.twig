@@ -39,24 +39,14 @@
 
 				<div id="header">
 					{% block header %}
-						<a id="logo" href="http://www.biology.washington.edu"></a>
-						<div id="dub">
-							<div id="wLogo">
-								<div id="w">
-									<a href="http://www.washington.edu"></a>
-								</div>
-								<!-- <div id="x">
-									<a href="http://www.washington.edu/"></a>
-								</div> -->
-							</div>
-						</div>
-
+						<a id="logo" class="image" href="http://www.biology.washington.edu"></a>
+						<a id="w" class="image" href="http://www.washington.edu"></a>
+						<a id="wLogo" class="image"></a>
 						<div id="course">
 							<a href="{{ path('main_page') }}">
 								{{tt}}
 							</a>
 						</div>
-
 					{% endblock %}
 				</div>
 
