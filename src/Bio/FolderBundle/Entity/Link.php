@@ -21,25 +21,11 @@ class Link extends FileBase
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255)
-     * @Assert\NotBlank()
-     */
-    private $name;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="address", type="string", length=2048)
      * @Assert\NotBlank()
      * @Assert\Url(protocols={"http", "https", "ftp"}, message="Invalid URL. Remember URLs must start with http://");
      */
     private $address;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Folder", inversedBy="links")
-     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
-     */
-    private $parent;
 
     /**
      * Set address
@@ -62,51 +48,5 @@ class Link extends FileBase
     public function getAddress()
     {
         return $this->address;
-    }
-
-    /**
-     * Set parent
-     *
-     * @param \Bio\FolderBundle\Entity\Folder $parent
-     * @return Link
-     */
-    public function setParent(\Bio\FolderBundle\Entity\Folder $parent = null)
-    {
-        $this->parent = $parent;
-    
-        return $this;
-    }
-
-    /**
-     * Get parent
-     *
-     * @return \Bio\FolderBundle\Entity\Folder 
-     */
-    public function getParent()
-    {
-        return $this->parent;
-    }
-
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return Link
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-    
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
     }
 }

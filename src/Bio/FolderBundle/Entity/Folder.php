@@ -16,14 +16,6 @@ class Folder extends FileBase
 {
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="name", type="string", length=255)
-     * @Assert\NotBlank()
-     */
-    private $name;
-
-    /**
      * @ORM\OneToMany(targetEntity="Folder", mappedBy="parent", cascade={"remove", "persist", "refresh"}, fetch="LAZY")
      * @ORM\OrderBy({"name" = "ASC"})
      */
@@ -42,12 +34,6 @@ class Folder extends FileBase
     private $links;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Folder", inversedBy="folders")
-     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
-     */
-    private $parent;
-
-    /**
      * @var boolean
      * 
      * @ORM\Column(name="private", type="boolean")
@@ -59,57 +45,12 @@ class Folder extends FileBase
     }
 
     /**
-     * Set name
-     *
-     * @param string $name
-     * @return Folder
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-    
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-    /**
      * Constructor
      */
     public function __construct()
     {
         $this->folders = new \Doctrine\Common\Collections\ArrayCollection();
         $this->files = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
-     * Set parent
-     *
-     * @param \Bio\FolderBundle\Entity\Folder $parent
-     * @return Folder
-     */
-    public function setParent(\Bio\FolderBundle\Entity\Folder $parent = null)
-    {
-        $this->parent = $parent;
-    
-        return $this;
-    }
-
-    /**
-     * Get parent
-     *
-     * @return \Bio\FolderBundle\Entity\Folder 
-     */
-    public function getParent()
-    {
-        return $this->parent;
     }
 
     /**

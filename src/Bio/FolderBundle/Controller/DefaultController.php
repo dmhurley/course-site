@@ -85,15 +85,19 @@ class DefaultController extends Controller
                         $request->getSession()->getFlashBag()->set('failure', "Parent folder could not be found.");
                     } else {
                         $folder->setParent($parent);
-                        $parent->addFolder($folder);
-                        $db->add($folder);
-                        try {
-                          $db->close();
-                          $request->getSession()->getFlashBag()->set('success', "Folder \"".$folder->getName()."\" added.");
-                          return $this->redirect($this->generateUrl('view_folders').'?id='.$selected.($private?'&private=1':''));
-                        } catch (BioException $e) {
-                            $request->getSession()->getFlashBag()->set('failure', "Folder could not be added.");
-                            $db->delete($folder);
+                        if ($this->validate($folder, $form, 'name')) {
+                            $parent->addFolder($folder);
+                            $db->add($folder);
+                            try {
+                                $db->close();
+                                $request->getSession()->getFlashBag()->set('success', "Folder \"".$folder->getName()."\" added.");
+                                return $this->redirect($this->generateUrl('view_folders').'?id='.$selected.($private?'&private=1':''));
+                            } catch (BioException $e) {
+                                $request->getSession()->getFlashBag()->set('failure', "Folder could not be added.");
+                                $db->delete($folder);
+                            }
+                        } else {
+                            $request->getSession()->getFlashBag()->set('failure', "Invalid form.");
                         }
                     }
                 } else {
@@ -106,26 +110,28 @@ class DefaultController extends Controller
                     if (!$parent) {
                          $request->getSession()->getFlashBag()->set('failure', "Parent folder could not be found.");
                     } else {
-                        $parent->addFile($file);
                         $file->setParent($parent);
-                        try {
-                            $db->add($file);
-                            $db->close("1");
-                            $request->getSession()->getFlashBag()->set('success', "File \"".$file->getPath()."\" uploaded.");
-                            return $this->redirect($this->generateUrl('view_folders').'?id='.$selected.($private?'&private':''));
-                        } catch (BioException $e) {
-                            if ($e->getMessage() === '1') {
-                                $request->getSession()->getFlashBag()->set('failure', 'File could not be uploaded.');
-                            } else {
-                                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
-                                if ($e->getMessage() === '2') {
-                                    $form1->get('name')->addError(new FormError('A file with that name already exists.'));
-                                } else if ($e->getMessage() === '3') {
-                                    $form1->get('file')->addError(new FormError('No file uploaded.'));
+                        if ($this->validate($file, $form1, 'name')) {
+                            $parent->addFile($file);
+                            try {
+                                $db->add($file);
+                                $db->close("1");
+                                $request->getSession()->getFlashBag()->set('success', "File \"".$file->getName()."\" uploaded.");
+                                return $this->redirect($this->generateUrl('view_folders').'?id='.$selected.($private?'&private':''));
+                            } catch (BioException $e) {
+                                if ($e->getMessage() === '1') {
+                                    $request->getSession()->getFlashBag()->set('failure', 'File could not be uploaded.');
+                                } else {
+                                    $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                                    if ($e->getMessage() === '3') {
+                                        $form1->get('file')->addError(new FormError('No file uploaded.'));
+                                    }
                                 }
-                            }
 
-                            $parent->removeFile($file);
+                                $parent->removeFile($file);
+                            }
+                        } else {
+                            $request->getSession()->getFlashBag()->set('failure', "Invalid form.");
                         }
                     }
                 } else {
@@ -138,16 +144,20 @@ class DefaultController extends Controller
                     if (!$parent) {
                         $request->getSession()->getFlashBag()->set('failure', "Parent folder could not be found.");
                     } else {
-                        $parent->addLink($link);
                         $link->setParent($parent);
-                        try {
+                        if ($this->validate($link, $form2, 'name')) {
+                            $parent->addLink($link);
                             $db->add($link);
-                            $db->close();
-                            $request->getSession()->getFlashBag()->set('success', "Link added.");
-                            return $this->redirect($this->generateUrl('view_folders').'?id='.$selected.($private?'&private':''));
-                        } catch (BioException $e) {
-                            $request->getSession()->getFlashBag()->set('failure', 'Link could not be added.');
-                            $parent->removeFile($file);
+                            try {
+                                $db->close();
+                                $request->getSession()->getFlashBag()->set('success', "Link added.");
+                                return $this->redirect($this->generateUrl('view_folders').'?id='.$selected.($private?'&private':''));
+                            } catch (BioException $e) {
+                                $request->getSession()->getFlashBag()->set('failure', 'Link could not be added.');
+                                $parent->removeFile($file);
+                            }
+                        } else {
+                            $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
                         }
                     }
                 } else {
@@ -157,6 +167,17 @@ class DefaultController extends Controller
         }
 
         return array('root' => $sidebar, 'main' => $mainpage, 'selected' => $selected, 'folderForm'=>$form->createView(), 'fileForm' => $form1->createView(), 'linkForm' => $form2->createView(), 'title' => "View Folders");
+    }
+
+    private function validate($entity, $form, $field) {
+        $validator = $this->get('validator');
+        $errors = $validator->validate($entity);
+        if (count($errors) > 0) {
+            $form->get($field)->addError(new FormError($errors[0]->getMessage()));
+            return false;
+        } else {
+            return true;
+        }
     }
 
     /**
