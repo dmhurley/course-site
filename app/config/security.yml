@@ -28,7 +28,7 @@ security:
     providers:
         chain_provider:
             chain:
-                providers: [students, admins, default] #
+                providers: [students, admins]#, default] #
         admins:
             entity: { class: Bio\UserBundle\Entity\User, property: username}
         students:
