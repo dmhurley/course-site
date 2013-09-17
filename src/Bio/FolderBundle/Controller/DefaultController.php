@@ -7,10 +7,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
-
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Form\FormError;
+use Doctrine\ORM\EntityRepository;
 
 use Bio\DataBundle\Exception\BioException;
 use Bio\DataBundle\Objects\Database;
@@ -208,13 +208,9 @@ class DefaultController extends Controller
             if ($request->getMethod() === "POST") {
                 $form->handleRequest($request);
                 if($form->isValid()) {
-                    // try {
-                        $this->getDoctrine()->getManager()->flush();
-                        $request->getSession()->getFlashBag()->set('success', $type.' saved.');
-                        return $this->redirect($this->generateUrl('view_folders'));
-                    // } catch (BioException $e) {
-                        
-                    // }
+                    $this->getDoctrine()->getManager()->flush();
+                    $request->getSession()->getFlashBag()->set('success', $type.' saved.');
+                    return $this->redirect($this->generateUrl('view_folders'));
                 }
             }
 
@@ -225,16 +221,45 @@ class DefaultController extends Controller
     }
 
     private function isRoot($entity = null) {
-        $hasName = method_exists($entity, 'getName'); //f
-        $isFolder = method_exists($entity, 'getFiles'); // f
+        $hasName = method_exists($entity, 'getName');
+        $isFolder = method_exists($entity, 'getFiles');
         $isParentless = $entity->getParent() === null;
-        $name = $hasName?$entity->getName():''; // ''
+        $name = $hasName?$entity->getName():'';
 
         return $isFolder && $hasName && $isParentless && ($name === 'sidebar' || $name === 'mainpage');
     }
 
     private function getType($entity = null) {
         return method_exists($entity, 'getPrivate')?"Folder":(method_exists($entity, 'getAddress')?"Link":"File");
+    }
+
+    /**
+     * @Route("/students", name="student_folders")
+     * @Template()
+     */
+    public function studentAction(Request $request) {
+        $form = $this->createFormBuilder()
+            // ->add('name', 'text', array('label' => 'Folder Name:'))
+            ->add('parent', 'entity', array(
+                'label' => 'Parent:',
+                'class' => 'BioFolderBundle:Folder',
+                'property' => 'name',
+                'query_builder' => function(EntityRepository $repo) {
+                    return $repo->createQueryBuilder('f')
+                        ->where('f.parent IS NULL');
+                }))
+            ->add('confirmation', 'checkbox', array('label' => "Are you sure?"))
+            ->add('create', 'submit')
+            ->getForm();
+
+        if($request->getMethod() === "POST") {
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+
+            }
+        }
+
+        return array('form' => $form->createView(), 'title' => 'Create Student Folders');
     }
 
     /**
