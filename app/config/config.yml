@@ -73,6 +73,7 @@ swiftmailer:
     spool:
         type: file
         path: %mailer_spool_directory%
+    sender_address: %mailer_dev_address%
 
 stfalcon_tinymce:
         include_jquery: false
