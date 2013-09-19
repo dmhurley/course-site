@@ -270,6 +270,7 @@ body {
 			}	
 				.menu li {
 					padding: 8px 12px;
+					word-wrap: break-word;
 				}
 
 #footer {

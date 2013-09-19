@@ -25,7 +25,7 @@ class ContentController extends Controller
 			$db = new Database($this, 'BioFolderBundle:Folder');
 			$root = $db->findOne(array('name' => 'sidebar', 'parent' => null));
 
-			$folders = $db->find(array('parent' => $root));
+			$folders = $db->find(array('parent' => $root), array(), false);
 
 			$db = new Database($this, 'BioFolderBundle:File');
 			$files = $db->find(array('parent' => $root), array('name' => 'ASC'), false);
