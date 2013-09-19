@@ -96,16 +96,21 @@ class AdminController extends Controller
             $encoder = $this->get('security.encoder_factory')->getEncoder($user);
             $pwd = substr(md5(rand()), 0, 7);
             $user->setPassword($encoder->encodePassword($pwd, $user->getSalt()));
+
+            $db = new Database($this, 'BioInfoBundle:Info');
+            $info = $db->findOne(array());
+
             $this->getDoctrine()->getManager()->flush();
 
             $message = \Swift_Message::newInstance()
                 ->setSubject('Password Reset')
-                ->setFrom('fakeemail@email.com')
+                ->setFrom($info->getEmail())
                 ->setTo($user->getEmail())
                 ->setContentType('text/html')
-                ->setBody('Your temporary password is <code>'. $pwd .'</code>. Please sign in to change it.');
+                ->setBody('Your new password for '. $info->getTitle() .' is <code>'. $pwd .'</code>. Please sign in to change it.');
 
             $this->get('mailer')->send($message);
+            $request->getSession()->getFlashBag()->set('success', 'Password reset.');
         } else {
             $request->getSession()->getFlashBag()->set('failure', 'Could not find user.');
         }

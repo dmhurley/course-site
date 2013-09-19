@@ -165,7 +165,7 @@ class DefaultController extends Controller
                         ->setSubject("Someone wants to switch sections")
                         ->setFrom($info->getEmail())
                         ->setTo($r->getMatch()->getStudent()->getEmail())
-                        ->setBody($this->renderView('BioSwitchBundle:Default:notificationEmail.html.twig', array('student' => $r->getMatch()->getStudent())))
+                        ->setBody($this->renderView('BioSwitchBundle:Default:notificationEmail.html.twig', array('student' => $r->getMatch()->getStudent(), 'info' => $info)))
                         ->setPriority('high')
                         ->setContentType('text/html');
 
@@ -216,7 +216,7 @@ class DefaultController extends Controller
                 ->addBcc($r->getStudent()->getEmail())
                 ->addBcc($m->getStudent()->getEmail())
                 ->setBody($this->renderView('BioSwitchBundle:Default:declineEmail.html.twig', 
-                        array('a' => $r, 'b' => $m)))
+                        array('a' => $r, 'b' => $m, 'c' => $info)))
                 ->setPriority('high')
                 ->setContentType('text/html');
 
@@ -255,7 +255,7 @@ class DefaultController extends Controller
     	    			->addTo($r->getStudent()->getEmail())
     	    			->addTo($m->getStudent()->getEmail())
     	    			->setBody($this->renderView('BioSwitchBundle:Default:confirmationEmail.html.twig', 
-                                array('a' => $r, 'b' => $m)))
+                                array('a' => $r, 'b' => $m, 'c' => $info)))
                         ->setPriority('high')
                         ->setContentType('text/html');
 
