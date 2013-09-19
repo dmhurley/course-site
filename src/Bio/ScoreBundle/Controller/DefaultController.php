@@ -33,6 +33,8 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
+        $flash = $request->getSession()->getFlashBag();
+
     	$form = $this->createFormBuilder()
     		->add('file', 'file', array('label' => '.txt File:'))
     		->add('upload', 'submit')
@@ -52,12 +54,12 @@ class DefaultController extends Controller
 
 		    	try {
 		    		$this->uploadStudentScores($file, $db);
-		    		$request->getSession()->getFlashBag()->set('success', 'Scores uploaded.');
+		    		$flash->set('success', 'Scores uploaded.');
 		    	} catch (BioException $e) {
-		    		$request->getSession()->getFlashBag()->set('failure', $e->getMessage());
+		    		$flash->set('failure', $e->getMessage());
 		    	}
 		    } else {
-		    	$request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+		    	$flash->set('failure', 'Invalid form.');
 		    }
 		    return $this->redirect($this->generateUrl('scores'));
 	    }
@@ -66,7 +68,11 @@ class DefaultController extends Controller
     	$db = new Database($this, 'BioScoreBundle:Stat');
     	$stats = $db->find(array(), array(), false);
 
-        return array('form' => $form->createView(), 'scores' => $scores, 'stats'=>$stats, 'title' => 'Scores');
+        return array(
+            'form' => $form->createView(),
+            'scores' => $scores, 'stats'=>$stats,
+            'title' => 'Scores'
+            );
     }
 
     /**
@@ -74,20 +80,25 @@ class DefaultController extends Controller
      * @Template()
      */
     public function findAction(Request $request) {
+        $flash = $request->getSession()->getFlashBag();
         $student = $this->get('security.context')->getToken()->getUser();
 
         $db = new Database($this, 'BioScoreBundle:Scores');
         $score = $db->findOne(array('sid' => $student->getSid()), array(), false);
 
         if (!$score) {
-            $request->getSession()->getFlashBag()->set('failure', 'Could not find any scores.');
+            $flash->set('failure', 'Could not find any scores.');
             return $this->redirect($this->generateUrl('main_page'));
         }
 
         $db = new Database($this, 'BioScoreBundle:Stat');
         $stats = $db->find(array(), array(), false);
 
-        return array('score' => $score, 'stats' => $stats, 'title' => 'View Your Scores');
+        return array(
+            'score' => $score,
+            'stats' => $stats,
+            'title' => 'View Your Scores'
+            );
     }
 
     private function uploadStudentScores($file, $db) {

@@ -36,7 +36,9 @@ class DefaultController extends Controller
      * @Template()
      */
     public function findAction(Request $request){
-        $findArray = $request->getSession()->getFlashBag()->peek('find');
+        $flash = $request->getSession()->getFlashBag();
+
+        $findArray = $flash->peek('find');
         if ( isset($findArray['section'])) {
             $db = new Database($this, 'BioInfoBundle:Section');
             $s = $db->find(array('id' => $findArray['section']), array(), false);
@@ -84,21 +86,20 @@ class DefaultController extends Controller
             ->getForm();
 
         $result = array();
-        if ($request->getMethod() === "POST" || $request->getSession()->getFlashBag()->has('find')) {
+        if ($request->getMethod() === "POST" || $flash->has('find')) {
             $form->handleRequest($request);
             if ($request->getMethod() !== "POST") {
-                $array = $request->getSession()->getFlashBag()->peek('find');
+                $array = $flash->peek('find');
                 $result = $this->findStudents($array);
             } else if ($form->isValid()) {
                 $array = array_filter(array_slice($form->getData(), 0, 5));
                 if (isset($array['section'])) {
                     $array['section'] = $array['section']->getId();
                 }
-                $request->getSession()->getFlashBag()->set('find', $array);
+                $flash->set('find', $array);
                 $result = $this->findStudents($array);
             } else {
-                var_dump($form->getData());
-                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                $flash->set('failure', 'Invalid form.');
             }
         }
 
@@ -140,7 +141,9 @@ class DefaultController extends Controller
      * @Template()
      */
     public function addAction(Request $request)
-    {
+    {   
+        $flash = $request->getSession()->getFlashBag();
+
     	$entity = new Student();
     	$form = $this->createForm(new StudentType(), $entity, array('label' => 'add'));
 
@@ -153,16 +156,16 @@ class DefaultController extends Controller
                     $entity->setPassword($encoder->encodePassword($entity->getLName(), $entity->getSalt()));
                     $db->add($entity);
                     $db->close("That Student ID or email is already registered.");
-                    $request->getSession()->getFlashBag()->set('success', 'Student added.');
+                    $flash->set('success', 'Student added.');
                     return $this->redirect($this->generateUrl('add_student'));
                 } catch (BioException $e) {
                     $error = new FormError("That student ID or email is already registered");
                     $form->get('sid')->addError($error);
                     $form->get('email')->addError($error);
-                    $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                    $flash->set('failure', 'Invalid form.');
                 }
     		} else {
-    			$request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+    			$flash->set('failure', 'Invalid form.');
     		}
     	}
         return array('form' => $form->createView(), 'title' => "Add Student");
@@ -172,15 +175,17 @@ class DefaultController extends Controller
      * @Route("/delete/{id}", name="delete_student")
      */
     public function deleteAction(Request $request, Student $student = null) {
+        $flash = $request->getSession()->getFlashBag();
+
         if ($student !== null){
             $db = new Database($this, 'BioStudentBundle:Student');
             $db->delete($student);
 
             try {
                 $db->close();
-                $request->getSession()->getFlashBag()->set('success', "Student removed.");
+                $flash->set('success', "Student removed.");
             } catch (BioException $e){
-                $request->getSession()->getFlashBag()->set('failure', "Could not delete student");
+                $flash->set('failure', "Could not delete student");
             }
         }
     	
@@ -196,8 +201,10 @@ class DefaultController extends Controller
      * @Template("BioStudentBundle:Default:add.html.twig")
      */
     public function editAction(Request $request, Student $student = null) {
+        $flash = $request->getSession()->getFlashBag();
+
         if ($student === null) {
-            $request->getSession()->getFlashBag()->set('failure', 'Could not find that student.');
+            $flash->set('failure', 'Could not find that student.');
             return $this->redirect($this->generateUrl('find_student'));
         }
 
@@ -213,14 +220,14 @@ class DefaultController extends Controller
     			$db = new Database($this, 'BioStudentBundle:Student');
                 try {
                     $db->close();
-                    $request->getSession()->getFlashBag()->set('success', 'Student edited.');
+                    $flash->set('success', 'Student edited.');
                     return $this->redirect($this->generateUrl('find_student'));
                 } catch (BioException $e) {
                     $form->get('email')->addError(new FormError("A student already has that email."));
-                    $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                    $flash->set('failure', 'Invalid form.');
                 }
     		} else {
-                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                $flash->set('failure', 'Invalid form.');
             }
     	}
 
@@ -232,6 +239,8 @@ class DefaultController extends Controller
      * @Template()
      */
     public function uploadAction(Request $request) {
+        $flash = $request->getSession()->getFlashBag();
+
     	$form = $this->createFormBuilder()
     		->add('file', 'file', array('label' => 'File:'))
     		->add('Upload', 'submit')
@@ -244,10 +253,10 @@ class DefaultController extends Controller
     			$file = file($data, FILE_IGNORE_NEW_LINES);
     			try {
                     $count = $this->uploadStudentList($file);
-                    $request->getSession()->getFlashBag()->set('success', "Uploaded $count students.");
+                    $flash->set('success', "Uploaded $count students.");
                 } catch (BioException $e) {
                     $form->get('file')->addError(new FormError($e->getMessage()));
-                    $request->getSession()->getFlashBag()->set('failure', 'Upload error.');
+                    $flash->set('failure', 'Upload error.');
                 }
 	    	}
     	}
