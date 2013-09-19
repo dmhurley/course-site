@@ -47,11 +47,11 @@
 </span>
 {% endif %}
 
-	{% if root.children is defined and root.children|length > 0 %}
-		<ul>
-			{% for child in root.children %}
-				{% include 'BioFolderBundle:Default:structure.html.twig' with {'root' : child, 'selected' : selected} %}
-			{% endfor %}
-		</ul>
-	{% endif %}
+{% if root.children is defined and root.children|length > 0 %}
+	<ul>
+		{% for child in root.children %}
+			{% include 'BioFolderBundle:Default:structure.html.twig' with {'root' : child, 'selected' : selected} %}
+		{% endfor %}
+	</ul>
+{% endif %}
 </li>

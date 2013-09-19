@@ -299,16 +299,17 @@ class DefaultController extends Controller
                     if ( !($f = $this->findObjectByFieldValue($student, $dbStudentFolders, 'student'))) {
                         $f = new Folder();
                         $f->setName($student->getFName().' '.$student->getLName().' ')
+                            ->setStudent($student)
                             ->setParent($folder)
                             ->setPrivate(false);
-                        $folder->addFolder($f);
+                        $folder->addChild($f);
                         $db->add($f);
                     }
                     $studentFolders[] = $f;
                 }
 
                 foreach($dbStudentFolders as $f) {
-                    if (!in_array($f, $studentFolders)) {
+                    if (!in_array($f, $studentFolders, true)) {
                         $db->delete($f);
                     }
                 }

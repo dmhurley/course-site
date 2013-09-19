@@ -1,3 +1,7 @@
+{% if parent and root.parent != null and not root.parent.private %}
+	<li class="folder"><a href="{{ path('public_folder', {'id': root.parent.id}) }}">..</a></li>
+{% endif %}
+
 {% if root.children is defined %}
 	{% set type = 'folder' %}
 {% elseif root.address is defined %}
@@ -13,9 +17,10 @@
 {% endif %}
 
 <li class="{{type}}">
-
-{% if root.children is defined %}
-	{{ root.name }}
+{% if root.children is defined and parent %}
+	<b>{{root.name}}</b>
+{% elseif root.children is defined %}
+	<a href="{{ path('public_folder', {id: root.id}) }}">{{ root.name }}</a>
 	<span class="{{full}}"></span>
 {% elseif root.address is defined %}
 	<a href="{{root.address}}"> {{root.name}}</a>
@@ -23,10 +28,16 @@
 	<a href="{{ path('download', {'id' : root.id}) }}"> {{root.name}}.{{root.path|split('.')|last}} </a>
 {% endif %}
 
+{% if root.children is not defined and root.parent and root.parent.student == app.user %}
+<span>
+	<a href="{{ path('delete_public_file', {'id':root.parent.id, 'id2':root.id})}}">delete</a>
+</span>
+{% endif %}
+
 {% if root.children is defined and root.children|length > 0 %}
 		<ul>
 			{% for child in root.children if child.private is not defined or child.private == false %}
-				{% include 'BioPublicBundle:Content:structure.html.twig' with {'root' : child} %}
+				{% include 'BioPublicBundle:Content:structure.html.twig' with {'root' : child, 'parent': false} %}
 			{% endfor %}
 		</ul>
 	{% endif %}
