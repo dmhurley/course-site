@@ -288,7 +288,7 @@ class PublicController extends Controller
 			}
 		}
 
-		return $this->render('BioExamBundle:Public:wait.html.twig', array('taker' => $taker, 'exam' => $exam, 'title' => 'Finding Test'));
+		return $this->render('BioExamBundle:Public:wait.html.twig', array('taker' => $taker, 'exam' => $exam, 'global' => $global, 'title' => 'Finding Test'));
 	}
 
 	/**
