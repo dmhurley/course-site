@@ -47,11 +47,39 @@ class DefaultController extends Controller
             }
         }
         $form = $this->createFormBuilder($request->getSession()->getFlashBag()->peek('find'))
-            ->add('sid', 'text', array('label' => 'Student ID:', 'required' => false, 'attr' => array('disabled' => 'disabled')))
-            ->add('fName', 'text', array('label' => 'First Name:', 'required' => false))
-            ->add('lName', 'text', array('label' => 'Last Name:', 'required' => false))
-            ->add('section', 'entity', array('label' => 'Section:', 'required' => false, 'class' => 'BioInfoBundle:Section', 'property' => 'name', 'empty_value' => '', 'query_builder' => function($repo) {return $repo->createQueryBuilder('s')->orderBy('s.name', 'ASC');}))
-            ->add('email', 'text', array('label' => 'Email:','required' => false, 'attr' => array('disabled' => 'disabled')))
+            ->add('sid', 'text', array(
+                'label' => 'Student ID:',
+                'required' => false,
+                'attr' => array('disabled' => 'disabled')
+                )
+            )
+            ->add('fName', 'text', array(
+                'label' => 'First Name:',
+                'required' => false
+                )
+            )
+            ->add('lName', 'text', array(
+                'label' => 'Last Name:',
+                'required' => false
+                )
+            )
+            ->add('section', 'entity', array(
+                'label' => 'Section:',
+                'required' => false,
+                'class' => 'BioInfoBundle:Section',
+                'property' => 'name',
+                'empty_value' => '',
+                'query_builder' => function($repo) {
+                    return $repo->createQueryBuilder('s')->orderBy('s.name', 'ASC');
+                }
+                )
+            )
+            ->add('email', 'text', array(
+                'label' => 'Email:',
+                'required' => false,
+                'attr' => array('disabled' => 'disabled')
+                )
+            )
             ->add('find', 'submit')
             ->getForm();
 
@@ -74,7 +102,11 @@ class DefaultController extends Controller
             }
         }
 
-        return array('form' => $form->createView(), 'entities' => $result, 'title' => 'Find Student');
+        return array(
+            'form' => $form->createView(),
+            'entities' => $result,
+            'title' => 'Find Student'
+            );
     }
 
     private function findStudents($array) {
@@ -169,7 +201,11 @@ class DefaultController extends Controller
             return $this->redirect($this->generateUrl('find_student'));
         }
 
-    	$form = $this->createForm(new StudentType(), $student, array('title' => 'save', 'edit' => true));
+    	$form = $this->createForm(new StudentType(), $student, array(
+            'title' => 'save',
+            'edit' => true
+            )
+        );
 
     	if ($request->getMethod() === "POST") {		// if request was sent
     		$form->handleRequest($request);
@@ -235,11 +271,13 @@ class DefaultController extends Controller
 
         for ($i = 1; $i < count($file); $i++) {
             list($sid, $name, $sectionName, $credits, $gender, $class, $major, $email) = preg_split('/","|,"|",|"/', $file[$i], -1, PREG_SPLIT_NO_EMPTY);
-            if (!($sid && $name && $sectionName && $credits && $gender && $class && $major && $email)) {
+            if (!($sid && $name && $sectionName &&
+                  $credits && $gender && $class && $major && $email)) {
                 throw new BioException("The file was badly formatted");
             }
 
-            if (! ($section = $this->findObjectByFieldValue($sectionName, $dbSections, 'name')) && !($section = $this->findObjectByFieldValue($sectionName, $sections, 'name'))) {
+            if ( !($section = $this->findObjectByFieldValue($sectionName, $dbSections, 'name')) && 
+                 !($section = $this->findObjectByFieldValue($sectionName, $sections, 'name'))) {
                 $section = new Section();
                 $section->setName($sectionName)
                     ->setStart(new \DateTime('midnight'))
@@ -301,7 +339,8 @@ class DefaultController extends Controller
         $cSections = [];
 
         foreach($sections as $section) {
-            if (!($c = $this->findObjectByFieldValue(substr($section->getName(), 0, 1), $cSections, 'name')) && !($c = $this->findObjectByFieldValue(substr($section->getName(), 0, 1), $s, 'name'))) {
+            if ( !($c = $this->findObjectByFieldValue(substr($section->getName(), 0, 1), $cSections, 'name')) &&
+                 !($c = $this->findObjectByFieldValue(substr($section->getName(), 0, 1), $s, 'name'))) {
                 $c = new CourseSection();
                 $c->setName(substr($section->getName(), 0, 1))
                     ->setDays([])
