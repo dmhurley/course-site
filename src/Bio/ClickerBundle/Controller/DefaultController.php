@@ -32,8 +32,20 @@ class DefaultController extends Controller {
      * @Template()
      */
     public function registerAction(Request $request) {
+        $flash = $request->getSession()->getFlashBag();
     	$form = $this->createFormBuilder()
-    		->add('cid', 'text', array('label' => "Clicker ID:", 'constraints' => array(new Assert\Regex("/^[0-9A-Fa-f]{6}$/"), new Assert\NotBlank()), 'attr' => array('pattern' => '[0-9A-Fa-f]{6}', 'title' => '6 digit clicker ID')))
+    		->add('cid', 'text', array(
+                'label' => "Clicker ID:",
+                'constraints' => array(
+                    new Assert\Regex("/^[0-9A-Fa-f]{6}$/"),
+                    new Assert\NotBlank()
+                    ),
+                'attr' => array(
+                    'pattern' => '[0-9A-Fa-f]{6}',
+                    'title' => '6 digit clicker ID'
+                    )
+                )
+            )
     		->add('Register', 'submit')
     		->getForm();
 
@@ -46,10 +58,10 @@ class DefaultController extends Controller {
 	    		
 				$db = new Database($this, 'BioClickerBundle:Clicker');
                 if ($dbClicker = $db->findOne(array('student' => $student))){
-                    $request->getSession()->getFlashBag()->set('success', "Clicker ID changed to #".$form->get('cid')->getData());
+                    $flash->set('success', "Clicker ID changed to #".$form->get('cid')->getData());
                     $clicker = $dbClicker;
                 } else {
-                    $request->getSession()->getFlashBag()->set('success', "Clicker ID #".$form->get('cid')->getData()." registered.");
+                    $flash->set('success', "Clicker ID #".$form->get('cid')->getData()." registered.");
                     $db->add($clicker);
                     $clicker->setStudent($student);
                 }
@@ -59,9 +71,9 @@ class DefaultController extends Controller {
 					$db->close();
                     return $this->redirect($this->generateUrl('register_clicker'));
 				} catch (BioException $e) {
-					$request->getSession()->getFlashBag()->set('failure', "Invalid form.");
+					$flash->set('failure', "Invalid form.");
                     $form->get('cid')->addError(new FormError('Someone else is already registered to that clicker.'));
-					$request->getSession()->getFlashBag()->get('success'); // remove the successful flash message that was set earlier
+					$flash->get('success'); // remove the successful flash message that was set earlier
 				}
 
 	    	} else {
@@ -102,8 +114,14 @@ class DefaultController extends Controller {
      * @Template()
      */
     public function clearAction(Request $request) {
+        $flash = $request->getSession()->getFlashBag();
     	$form = $this->createFormBuilder()
-    		->add('confirmation', 'checkbox', array('constraints' => new Assert\True(array('message' => 'You must confirm.'))))
+    		->add('confirmation', 'checkbox', array(
+                'constraints' => new Assert\True(
+                    array('message' => 'You must confirm.')
+                    )
+                )
+            )
     		->add('clear', 'submit', array('label' => 'Clear Clickers'))
     		->getForm();
     	if ($request->getMethod() === "POST") {
@@ -112,10 +130,10 @@ class DefaultController extends Controller {
     		if ($form->isValid()) {
     			$db = new Database($this, 'BioClickerBundle:Clicker');
                 $db->truncate();
-		        $request->getSession()->getFlashBag()->set('success', 'All clicker registrations cleared.');
+		        $flash->set('success', 'All clicker registrations cleared.');
                 return $this->redirect($this->generateUrl('clear_list'));
     		} else {
-                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                $flash->set('failure', 'Invalid form.');
             }
     	}
 
