@@ -5,10 +5,17 @@
 	{% stylesheets 'bundles/biofolder/css/folder.css' filter="cssrewrite" output="css/*.css" %}
 		<link rel="stylesheet" href="{{ asset_url }}" />
 	{% endstylesheets %}
+
+	{% javascripts 'bundles/biopublic/js/Namer.js' %}
+		<script src="{{asset_url}}"></script>
+	{% endjavascripts %}
 {% endblock %}
 
 {% block content %}
 <ul>
-	{% include 'BioPublicBundle:Content:structure.html.twig' with {'root' : root} %}
+	{% include 'BioPublicBundle:Content:structure.html.twig' with {'root' : root, 'parent':true} %}
 </ul>
+{% if form is not null %}
+	{{form(form)}}
+{% endif %}
 {% endblock %}

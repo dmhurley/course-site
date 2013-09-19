@@ -16,15 +16,9 @@ use Bio\FolderBundle\Entity\FileBase;
  * @ORM\HasLifecycleCallbacks
  */
 class File extends FileBase
-{
+{   
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="name", type="string", length=255)
-     * @Assert\NotBlank()
-     */
-    private $name;
+    protected $order = "20";
 
     /**
      * @var string
@@ -32,12 +26,6 @@ class File extends FileBase
      * @ORM\Column(name="path", type="string", length=1024)
      */
     private $path;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Folder", inversedBy="files")
-     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
-     */
-    private $parent;
 
     /**
      * @var string
@@ -52,29 +40,6 @@ class File extends FileBase
      */
     private $file;
     private $temp;
-
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return File
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-    
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
 
     /**
      * Set path
@@ -97,29 +62,6 @@ class File extends FileBase
     public function getPath()
     {
         return $this->path;
-    }
-
-    /**
-     * Set parent
-     *
-     * @param \Bio\FolderBundle\Entity\Folder $parent
-     * @return File
-     */
-    public function setParent(\Bio\FolderBundle\Entity\Folder $parent = null)
-    {
-        $this->parent = $parent;
-    
-        return $this;
-    }
-
-    /**
-     * Get parent
-     *
-     * @return \Bio\FolderBundle\Entity\Folder 
-     */
-    public function getParent()
-    {
-        return $this->parent;
     }
 
     /**
@@ -165,15 +107,10 @@ class File extends FileBase
     public function preUpload() {
         if ($this->getFile() !== null) {
             $extension = $this->getFile()->getClientOriginalExtension();
-            var_dump($this->getFile());
             $extension = $extension === '' ? '' : '.'.$extension;
-            $name = preg_replace('/[ \t]/', '_', $this->name).$extension;
+            $name = preg_replace('/[ \t]/', '_', $this->getName()).(new \DateTime())->format('YmdHis').$extension;
             $this->temp = $this->path;
             $this->path = $name;
-
-            if (file_exists($this->getAbsolutePath())) {
-                throw new BioException("2");
-            }
         } else {
             throw new BioException("3");
         }

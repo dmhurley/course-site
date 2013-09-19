@@ -17,7 +17,7 @@ security:
             switch_user: true
 
     access_control:
-        # - { path: ^/user/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY } #
+        # - { path: ^/user/(login|reset)$, roles: IS_AUTHENTICATED_ANONYMOUSLY } #
         - { path: ^/admin/user/, roles: ROLE_SUPER_ADMIN }
         - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/, roles: ROLE_USER } #

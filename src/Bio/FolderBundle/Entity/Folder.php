@@ -15,37 +15,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Folder extends FileBase
 {
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="name", type="string", length=255)
-     * @Assert\NotBlank()
-     */
-    private $name;
+    protected $order = "10";
 
     /**
-     * @ORM\OneToMany(targetEntity="Folder", mappedBy="parent", cascade={"remove", "persist", "refresh"}, fetch="LAZY")
-     * @ORM\OrderBy({"name" = "ASC"})
+     * @ORM\OneToMany(targetEntity="FileBase", mappedBy="parent", fetch="LAZY")
+     * @ORM\OrderBy({"order" = "ASC", "name" = "ASC"})
      */
-    private $folders;
-
-    /**
-     * @ORM\OneToMany(targetEntity="File", mappedBy="parent", cascade={"remove", "persist", "refresh"}, fetch="LAZY")
-     * @ORM\OrderBy({"name" = "ASC"})
-     */
-    private $files;
-
-    /**
-     * @ORM\OneToMany(targetEntity="Link", mappedBy="parent", cascade={"remove", "persist", "refresh"}, fetch="LAZY")
-     * @ORM\OrderBy({"name" = "ASC"})
-     */
-    private $links;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Folder", inversedBy="folders")
-     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
-     */
-    private $parent;
+    private $children;
 
     /**
      * @var boolean
@@ -54,128 +30,19 @@ class Folder extends FileBase
      */
     private $private;
 
-    public function __contruct() {
-        $this->private = false;
-    }
-
     /**
-     * Set name
-     *
-     * @param string $name
-     * @return Folder
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-    
-        return $this;
-    }
+     * @ORM\ManyToOne(targetEntity="\Bio\StudentBundle\Entity\Student")
+     * @ORM\JoinColumn(name="studentID", referencedColumnName="id", onDelete="CASCADE")
+     **/ 
+    private $student;
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
     /**
      * Constructor
      */
     public function __construct()
-    {
-        $this->folders = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->files = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
-     * Set parent
-     *
-     * @param \Bio\FolderBundle\Entity\Folder $parent
-     * @return Folder
-     */
-    public function setParent(\Bio\FolderBundle\Entity\Folder $parent = null)
-    {
-        $this->parent = $parent;
-    
-        return $this;
-    }
-
-    /**
-     * Get parent
-     *
-     * @return \Bio\FolderBundle\Entity\Folder 
-     */
-    public function getParent()
-    {
-        return $this->parent;
-    }
-
-    /**
-     * Add folders
-     *
-     * @param \Bio\FolderBundle\Entity\Folder $folders
-     * @return Folder
-     */
-    public function addFolder(\Bio\FolderBundle\Entity\Folder $folders)
-    {
-        $this->folders[] = $folders;
-    
-        return $this;
-    }
-
-    /**
-     * Remove folders
-     *
-     * @param \Bio\FolderBundle\Entity\Folder $folders
-     */
-    public function removeFolder(\Bio\FolderBundle\Entity\Folder $folders)
-    {
-        $this->folders->removeElement($folders);
-    }
-
-    /**
-     * Get folders
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getFolders()
-    {
-        return $this->folders;
-    }
-
-    /**
-     * Add files
-     *
-     * @param \Bio\FolderBundle\Entity\File $files
-     * @return Folder
-     */
-    public function addFile(\Bio\FolderBundle\Entity\File $files)
-    {
-        $this->files[] = $files;
-    
-        return $this;
-    }
-
-    /**
-     * Remove files
-     *
-     * @param \Bio\FolderBundle\Entity\File $files
-     */
-    public function removeFile(\Bio\FolderBundle\Entity\File $files)
-    {
-        $this->files->removeElement($files);
-    }
-
-    /**
-     * Get files
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getFiles()
-    {
-        return $this->files;
+    {   
+        $this->private = false;
+        $this->children = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -204,12 +71,12 @@ class Folder extends FileBase
     /**
      * Add links
      *
-     * @param \Bio\FolderBundle\Entity\Link $links
+     * @param \Bio\FolderBundle\Entity\FileBase $child
      * @return Folder
      */
-    public function addLink(\Bio\FolderBundle\Entity\Link $links)
+    public function addChild(\Bio\FolderBundle\Entity\FileBase $child)
     {
-        $this->links[] = $links;
+        $this->children[] = $child;
     
         return $this;
     }
@@ -217,11 +84,11 @@ class Folder extends FileBase
     /**
      * Remove links
      *
-     * @param \Bio\FolderBundle\Entity\Link $links
+     * @param \Bio\FolderBundle\Entity\FileBase $child
      */
-    public function removeLink(\Bio\FolderBundle\Entity\Link $links)
+    public function removeChild(\Bio\FolderBundle\Entity\FileBase $child)
     {
-        $this->links->removeElement($links);
+        $this->children->removeElement($child);
     }
 
     /**
@@ -229,8 +96,18 @@ class Folder extends FileBase
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getLinks()
+    public function getChildren()
     {
-        return $this->links;
+        return $this->children;
+    }
+
+    public function setStudent(\Bio\StudentBundle\Entity\Student $student) {
+        $this->student = $student;
+
+        return $this;
+    }
+
+    public function getStudent() {
+        return $this->student;
     }
 }

@@ -29,19 +29,19 @@
 .folder.private {
 	list-style-image: url('../images/folder_private.png');
 }
-
+.empty, .selected{ float: none !important; }
 .empty:after {
 	content: '  -empty';
 	font-size: 8pt;
 	opacity: .3;
 }
 
-#selected a {
+#selected > a {
 	font-weight: bolder;
 	text-decoration: underline;
 }
 
-#selected:after {
+.selected:after {
 	content: '  -selected';
 	font-size: 8pt;
 	opacity: .3;

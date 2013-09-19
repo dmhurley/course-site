@@ -3,5 +3,7 @@ Folders:
         route: folders_instruct
     Manage:
         route: view_folders
+    "Create Student Folders":
+        route: student_folders
     Clear:
         route: clear_folders
