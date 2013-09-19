@@ -17,6 +17,8 @@ class Version20130917140542 extends AbstractMigration
         
         $this->addSql("ALTER TABLE FileBase ADD studentID INT DEFAULT NULL, CHANGE name name VARCHAR(255) NOT NULL");
         $this->addSql("ALTER TABLE FileBase ADD CONSTRAINT FK_FBD8A46AA3D10F50 FOREIGN KEY (studentID) REFERENCES Student (id) ON DELETE CASCADE");
+        $this->addSql("ALTER TABLE filebase DROP FOREIGN KEY FK_FBD8A46A727ACA70;");
+        $this->addSql("ALTER TABLE filebase ADD CONSTRAINT FK_FBD8A46A727ACA70 FOREIGN KEY (parent_id) REFERENCES FileBase (id) ON DELETE CASCADE");
         $this->addSql("CREATE INDEX IDX_FBD8A46AA3D10F50 ON FileBase (studentID)");
 
         $this->addSql("ALTER TABLE filebase ADD `alpha` VARCHAR(2) DEFAULT NOT NULL");

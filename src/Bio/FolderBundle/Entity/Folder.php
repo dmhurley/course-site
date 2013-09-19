@@ -18,7 +18,7 @@ class Folder extends FileBase
     protected $order = "10";
 
     /**
-     * @ORM\OneToMany(targetEntity="FileBase", mappedBy="parent", cascade={"remove", "persist", "refresh"}, fetch="LAZY")
+     * @ORM\OneToMany(targetEntity="FileBase", mappedBy="parent", fetch="LAZY")
      * @ORM\OrderBy({"order" = "ASC", "name" = "ASC"})
      */
     private $children;

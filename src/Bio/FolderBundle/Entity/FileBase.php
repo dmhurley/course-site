@@ -39,7 +39,7 @@ class FileBase {
 
     /**
      * @ORM\ManyToOne(targetEntity="Folder", inversedBy="children")
-     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", onDelete="CASCADE")
      */
     protected $parent;
 
