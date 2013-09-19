@@ -75,7 +75,8 @@ class EmailCommand extends ContainerAwareCommand {
 				foreach($students as $student) {
 					$message->addBcc($student->getEmail(), $student->getFName().' '.$student->getLName());
 				}
-				$message->setBody($this->getContainer()->get('templating')->render('BioDataBundle:Default:email.html.twig', array('global' => $global)))
+				$message->setBody($this->getContainer()->get('templating')
+					->render('BioDataBundle:Default:email.html.twig', array('global' => $global)))
 					->setPriority('high')
 					->setContentType('text/html');
 

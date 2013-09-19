@@ -89,13 +89,29 @@ class InstallCommand extends ContainerAwareCommand
 
     private function installDefault(OutputInterface $output) {
         $output->writeln('Installing default bundles');
-        $bundles = array('info', 'folder', 'student', 'clicker', 'score', 'user');
+        $bundles = array('info',
+            'folder',
+            'student',
+            'clicker',
+            'score',
+            'user'
+        );
         $this->installBundles($bundles, $output);
     }
 
     private function installAll(OutputInterface $output) {
         $output->writeln('Installing all bundles');
-        $bundles = array('info', 'folder', 'student', 'clicker', 'score', 'exam', 'trip', 'switch', 'user');
+        $bundles = array(
+            'info',
+            'folder',
+            'student',
+            'clicker',
+            'score',
+            'exam',
+            'trip',
+            'switch',
+            'user'
+        );
         $this->installBundles($bundles, $output);
     }
 
