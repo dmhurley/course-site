@@ -1,42 +1,33 @@
-{% if root.folders is not defined or not root.private %}
-	{% if root.folders is defined %}
-		{% set type = 'folder' %}
-	{% elseif root.address is defined %}
-		{% set type = 'link' %}
-	{% else %}
-		{% set type = 'file' %}
-	{% endif %}
+{% if root.children is defined %}
+	{% set type = 'folder' %}
+{% elseif root.address is defined %}
+	{% set type = 'link' %}
+{% else %}
+	{% set type = 'file' %}
+{% endif %}
 
-	{% if root.folders is defined and root.folders|length == 0  and root.files|length == 0 %}
-		{% set full = 'empty' %}
-	{% else %}
-		{% set full = '' %}
-	{% endif %}
+{% if root.children is defined and root.children|length == 0 %}
+	{% set full = 'empty' %}
+{% else %}
+	{% set full = '' %}
+{% endif %}
 
-	<li class="{{type}} {{full}}">
-		{% if root.folders is defined %}
-			{{ root.name }}
-		{% elseif root.address is defined %}
-			<a href="{{ root.address }}">{{root.name}}</a>
-		{% else %}
-			<a href="{{ path('download', {'id' : root.id}) }}"> {{root.name}} </a>
-		{% endif %}
-	</li>
+<li class="{{type}}">
 
+{% if root.children is defined %}
+	{{ root.name }}
+	<span class="{{full}}"></span>
+{% elseif root.address is defined %}
+	<a href="{{root.address}}"> {{root.name}}</a>
+{% elseif root.path is defined %}
+	<a href="{{ path('download', {'id' : root.id}) }}"> {{root.name}}.{{root.path|split('.')|last}} </a>
+{% endif %}
 
-	{% if root.folders is defined and (root.files|length > 0 or root.folders|length > 0) %}
+{% if root.children is defined and root.children|length > 0 %}
 		<ul>
-			{% for folder in root.folders %}
-				{% include 'BioPublicBundle:Content:structure.html.twig' with {'root' : folder} %}
-			{% endfor %}
-
-			{% for file in root.files %}
-				{% include 'BioPublicBundle:Content:structure.html.twig' with {'root' : file} %}
-			{% endfor %}
-
-			{% for link in root.links %}
-				{% include 'BioPublicBundle:Content:structure.html.twig' with {'root' : link} %}
+			{% for child in root.children if child.private is not defined or child.private == false %}
+				{% include 'BioPublicBundle:Content:structure.html.twig' with {'root' : child} %}
 			{% endfor %}
 		</ul>
 	{% endif %}
-{% endif %}
+</li>

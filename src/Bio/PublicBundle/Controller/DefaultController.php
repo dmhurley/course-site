@@ -46,9 +46,17 @@ class DefaultController extends Controller
         $db = new Database($this, 'BioInfoBundle:CourseSection');
         $cSections = $db->find(array(), array('name' => 'ASC'), false);
 
-        /**************** GET FOLDERS ***************/
+        /**************** GET DIRECTORIES ***************/
         $db = new Database($this, 'BioFolderBundle:Folder');
-        $main = $db->findOne(array('name' => 'mainpage'));
+        $root = $db->findOne(array('name' => 'mainpage', 'parent' => null));
+
+        $folders = $db->find(array('parent' => $root), array('name' => 'ASC'), false);
+
+        $db = new Database($this, 'BioFolderBundle:File');
+        $files = $db->find(array('parent' => $root), array('name' => 'ASC'), false);
+
+        $db = new Database($this, 'BioFolderBundle:Link');
+        $links = $db->find(array('parent' => $root), array('name' => 'ASC'), false);
 
         /**************** GET GET ANNOUNCEMENTS ***************/
         $em = $this->getDoctrine()->getManager();
@@ -75,7 +83,8 @@ class DefaultController extends Controller
 
 
         return array('instructors' => $instructors, 'tas' => $tas, 'coordinators' => $coordinators, 'info' => $info,
-            'lSections' => $lSections, 'cSections' => $cSections, 'anns' => $anns, 'main' => $main, 'form' => $form->createView(), 'title' => "Welcome");
+            'lSections' => $lSections, 'cSections' => $cSections, 'anns' => $anns, 'form' => $form->createView(),
+            'folders' => $folders, 'files' => $files, 'links' => $links ,'title' => "Welcome");
     }
 
     /**

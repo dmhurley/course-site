@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 
 class ContentController extends Controller
-{
+{	
 	/**
 	 * @Template()
 	 */
@@ -23,11 +23,19 @@ class ContentController extends Controller
 
 		} else {
 			$db = new Database($this, 'BioFolderBundle:Folder');
-			$root = $db->findOne(array('id' => 1));
-			return $this->render('BioPublicBundle:Content:sidebar.html.twig', array('root' => $root));
+			$root = $db->findOne(array('name' => 'sidebar', 'parent' => null));
+
+			$folders = $db->find(array('parent' => $root));
+
+			$db = new Database($this, 'BioFolderBundle:File');
+			$files = $db->find(array('parent' => $root), array('name' => 'ASC'), false);
+
+			$db = new Database($this, 'BioFolderBundle:Link');
+			$links = $db->find(array('parent' => $root), array('name' => 'ASC'), false);
+
+			return $this->render('BioPublicBundle:Content:sidebar.html.twig', array('folders' => $folders, 'links' => $links, 'files' => $files));
 		}
 	}
-
 	/**
 	 * @Template()
 	 */
