@@ -43,7 +43,7 @@ class PublicController extends Controller
         $student = $this->get('security.context')->getToken()->getUser();
 
         $em = $this->getDoctrine()->getManager();
-        $q = $em->createQueryBuilder()
+        $futureQuery = $em->createQueryBuilder()
             ->select('t')
             ->from('BioTripBundle:Trip', 't')
             ->where(':student NOT MEMBER OF t.students')
@@ -52,18 +52,29 @@ class PublicController extends Controller
             ->setParameter('student', $student)
             ->setParameter('now', new \DateTime())
             ->getQuery();
-        $trips = $q->getResult();
+        $futureTrips = $futureQuery->getResult();
 
-        $query = $em->createQueryBuilder()
+        $pastQuery = $em->createQueryBuilder()
+            ->select('t')
+            ->from('BioTripBundle:Trip', 't')
+            ->where(':student NOT MEMBER OF t.students')
+            ->andWhere('t.start <= :now')
+            ->orderBy('t.start', 'ASC')
+            ->setParameter('student', $student)
+            ->setParameter('now', new \DateTime())
+            ->getQuery();
+        $pastTrips = $pastQuery->getResult();
+
+        $yourQuery = $em->createQueryBuilder()
             ->select('t')
             ->from('BioTripBundle:Trip', 't')
             ->where(':student MEMBER OF t.students')
             ->orderBy('t.start', 'ASC')
             ->setParameter('student', $student)
             ->getQuery();
-        $yourTrips = $query->getResult();
+        $yourTrips = $yourQuery->getResult();
 
-    	return $this->render('BioTripBundle:Public:browse.html.twig', array('trips' => $trips, 'current' => $yourTrips, 'global' => $global, 'title' => 'Sign Up'));
+    	return $this->render('BioTripBundle:Public:browse.html.twig', array('future' => $futureTrips, 'past' => $pastTrips, 'your' => $yourTrips, 'global' => $global, 'title' => 'Sign Up'));
 
     }
 

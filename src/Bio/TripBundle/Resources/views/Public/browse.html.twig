@@ -10,23 +10,34 @@
 {% block content %}
 	<div>{{global.instructions|raw}}</div>
 
-	<h2 style="margin-bottom:0px;">Your Trips</h2>
-	{% for trip in current %}
-		{% include 'BioTripBundle:Public:tripTemplate.html.twig' with {'cur':'current'} %}
-	{% else %}
-	<div class="trip">
-		<h3>No trips</h3>
-		<p>You are not signed up for any trips.</p>
-	</div>
-	{% endfor %}
+	{% if is_granted('ROLE_STUDENT') %}
+		<h2 style="margin-bottom:0px;">Your Trips</h2>
+		{% for trip in your %}
+			{% include 'BioTripBundle:Public:tripTemplate.html.twig' with {'cur':'current'} %}
+		{% else %}
+		<div class="trip">
+			<h3>No trips</h3>
+			<p>You are not signed up for any trips.</p>
+		</div>
+		{% endfor %}
+	{% endif %}
 
 	<h2 style="margin-bottom:0px;">Future Trips</h2>
-	{% for trip in trips %}
+	{% for trip in future %}
 		{% include 'BioTripBundle:Public:tripTemplate.html.twig' with {'cur':''} %}
 	{% else %}
 		<div class="trip">
 			<h3>No trips</h3>
 			<p>Check back soon for more trips.</p>
+		</div>
+	{% endfor %}
+
+	<h2 style="margin-bottom:0px;">Past Trips</h2>
+	{% for trip in past %}
+		{% include 'BioTripBundle:Public:tripTemplate.html.twig' with {'cur':''} %}
+	{% else %}
+		<div class="trip">
+			<h3>No trips</h3>
 		</div>
 	{% endfor %}
 

@@ -21,7 +21,7 @@ security:
         - { path: ^/admin/user/, roles: ROLE_SUPER_ADMIN }
         - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/, roles: ROLE_USER } #
-        - { path: ^/trip/promo$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: "^/trip(/promo|/view/[0-9]*)?$", roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/(exam|trip|switch|clicker|scores), roles: ROLE_STUDENT }
         - { path: ^/user/change, roles: ROLE_USER }
 
