@@ -215,18 +215,35 @@ class CourseSection extends Base
 
     public function addToForm(FormBuilder $builder) {
         $array = file('bundles/bioinfo/buildings.txt', FILE_IGNORE_NEW_LINES);
-        $builder->add('name', 'text', array('label' => 'Name:', 'attr' => array('pattern' => '^[A-Z]$', 'title' => 'Valid capitalized course section name.')))
-            ->add('days', 'choice', array('choices' => array(
+        $builder
+            ->add('name', 'text', array(
+                'label' => 'Name:',
+                'attr' => array(
+                    'pattern' => '^[A-Z]$',
+                    'title' => 'Valid capitalized course section name.'
+                    )
+                )
+            )
+            ->add('days', 'choice', array(
+                'choices' => array(
                      'm' => 'Monday',
                      'tu' => 'Tuesday',
                      'w' => 'Wednsday',
                      'th' => 'Thursday',
                      'f' => 'Friday',
                      'sa' => 'Saturday'
-                 ), 'multiple' => true, 'label' => 'Days:'))
+                 ),
+                'multiple' => true,
+                'label' => 'Days:'
+                )
+            )
             ->add('startTime', 'time', array('label' => 'Start:'))
             ->add('endTime', 'time', array('label' => 'End:'))
-            ->add('bldg', 'choice', array('choices' => array_combine($array, $array), 'label' => 'Building:'))
+            ->add('bldg', 'choice', array(
+                'choices' => array_combine($array, $array),
+                'label' => 'Building:'
+                )
+            )
             ->add('room', 'text', array('label' => 'Room:'));
 
         return $builder;
