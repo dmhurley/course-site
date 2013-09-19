@@ -25,15 +25,32 @@ class ContentController extends Controller
 			$db = new Database($this, 'BioFolderBundle:Folder');
 			$root = $db->findOne(array('name' => 'sidebar', 'parent' => null));
 
-			$folders = $db->find(array('parent' => $root), array(), false);
+			$folders = $db->find(
+				array('parent' => $root),
+				array(),
+				false
+				);
 
 			$db = new Database($this, 'BioFolderBundle:File');
-			$files = $db->find(array('parent' => $root), array('name' => 'ASC'), false);
+			$files = $db->find(
+				array('parent' => $root),
+				array('name' => 'ASC'),
+				false
+				);
 
 			$db = new Database($this, 'BioFolderBundle:Link');
-			$links = $db->find(array('parent' => $root), array('name' => 'ASC'), false);
+			$links = $db->find(
+				array('parent' => $root),
+				array('name' => 'ASC'),
+				false
+				);
 
-			return $this->render('BioPublicBundle:Content:sidebar.html.twig', array('folders' => $folders, 'links' => $links, 'files' => $files));
+			return $this->render('BioPublicBundle:Content:sidebar.html.twig', array(
+				'folders' => $folders,
+				'links' => $links,
+				'files' => $files
+				)
+			);
 		}
 	}
 	/**
