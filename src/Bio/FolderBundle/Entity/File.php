@@ -16,7 +16,9 @@ use Bio\FolderBundle\Entity\FileBase;
  * @ORM\HasLifecycleCallbacks
  */
 class File extends FileBase
-{
+{   
+
+    protected $order = "20";
 
     /**
      * @var string

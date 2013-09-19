@@ -18,10 +18,10 @@ use Bio\FolderBundle\Entity\Folder;
 use Bio\FolderBundle\Entity\File;
 use Bio\FolderBundle\Entity\Link;
 
-	/**
-     * @Route("/admin/folders")
-     * @Template()
-     */
+/**
+ * @Route("/admin/folders")
+ * @Template()
+ */
 class DefaultController extends Controller
 {
     /**
@@ -86,7 +86,7 @@ class DefaultController extends Controller
                     } else {
                         $folder->setParent($parent);
                         if ($this->validate($folder, $form, 'name')) {
-                            $parent->addFolder($folder);
+                            $parent->addChild($folder);
                             $db->add($folder);
                             try {
                                 $db->close();
@@ -95,6 +95,7 @@ class DefaultController extends Controller
                             } catch (BioException $e) {
                                 $request->getSession()->getFlashBag()->set('failure', "Folder could not be added.");
                                 $db->delete($folder);
+                                $parent->removeChild($folder);
                             }
                         } else {
                             $request->getSession()->getFlashBag()->set('failure', "Invalid form.");
@@ -112,7 +113,7 @@ class DefaultController extends Controller
                     } else {
                         $file->setParent($parent);
                         if ($this->validate($file, $form1, 'name')) {
-                            $parent->addFile($file);
+                            $parent->addChild($file);
                             try {
                                 $db->add($file);
                                 $db->close("1");
@@ -128,7 +129,7 @@ class DefaultController extends Controller
                                     }
                                 }
 
-                                $parent->removeFile($file);
+                                $parent->removeChild($file);
                             }
                         } else {
                             $request->getSession()->getFlashBag()->set('failure', "Invalid form.");
@@ -146,7 +147,7 @@ class DefaultController extends Controller
                     } else {
                         $link->setParent($parent);
                         if ($this->validate($link, $form2, 'name')) {
-                            $parent->addLink($link);
+                            $parent->addChild($link);
                             $db->add($link);
                             try {
                                 $db->close();
@@ -154,7 +155,7 @@ class DefaultController extends Controller
                                 return $this->redirect($this->generateUrl('view_folders').'?id='.$selected.($private?'&private':''));
                             } catch (BioException $e) {
                                 $request->getSession()->getFlashBag()->set('failure', 'Link could not be added.');
-                                $parent->removeFile($file);
+                                $parent->removeChild($link);
                             }
                         } else {
                             $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
@@ -276,11 +277,60 @@ class DefaultController extends Controller
         if($request->getMethod() === "POST") {
             $form->handleRequest($request);
             if ($form->isValid()) {
+                // does folder exist?
+                $db = new Database($this, 'BioFolderBundle:Folder');
+                $folder = $db->findOne(array('name' => 'Student Folders', 'parent' => $form->get('parent')->getData()));
+                if (!$folder) {
+                    $folder = new Folder();
+                    $folder->setName('Student Folders')
+                        ->setParent($form->get('parent')->getData())
+                        ->setPrivate(false);
+                    $db->add($folder);
+                    $db->close();
+                }
 
+                $dbStudentFolders = $db->find(array('parent' => $folder), array(), false);
+                $studentFolders = [];
+
+                $db = new Database($this, 'BioStudentBundle:Student');
+                $students = $db->find(array(), array(), false);
+
+                foreach($students as $student) {
+                    if ( !($f = $this->findObjectByFieldValue($student, $dbStudentFolders, 'student'))) {
+                        $f = new Folder();
+                        $f->setName($student->getFName().' '.$student->getLName().' ')
+                            ->setParent($folder)
+                            ->setPrivate(false);
+                        $folder->addFolder($f);
+                        $db->add($f);
+                    }
+                    $studentFolders[] = $f;
+                }
+
+                foreach($dbStudentFolders as $f) {
+                    if (!in_array($f, $studentFolders)) {
+                        $db->delete($f);
+                    }
+                }
+
+                $db->close();
+
+                return $this->redirect($this->generateUrl('view_folders'));
             }
         }
 
         return array('form' => $form->createView(), 'title' => 'Create Student Folders');
+    }
+
+    private function findObjectByFieldValue($needle, $haystack, $field) {
+        $getter = 'get'.ucFirst($field);
+
+        foreach ($haystack as $straw) {
+            if (call_user_func_array(array($straw, $getter), array()) === $needle) {
+                return $straw;
+            } 
+        }
+        return null;
     }
 
     /**

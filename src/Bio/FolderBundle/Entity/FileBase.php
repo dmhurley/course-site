@@ -25,18 +25,23 @@ class FileBase {
     private $id;
 
     /**
+     * @ORM\Column(name="alpha", type="string", length=2)
+     */
+    protected $order;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
      * @Assert\NotBlank()
      */
-    private $name;
+    protected $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Folder", inversedBy="folders")
+     * @ORM\ManyToOne(targetEntity="Folder", inversedBy="children")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      */
-    private $parent;
+    protected $parent;
 
     /**
      * Get id

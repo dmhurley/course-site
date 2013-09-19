@@ -16,7 +16,9 @@ use Bio\FolderBundle\Entity\FileBase;
  * @ORM\Entity
  */
 class Link extends FileBase
-{
+{   
+
+    protected $order = "30";
 
     /**
      * @var string
