@@ -72,15 +72,28 @@ class DefaultController extends Controller
 			return $this->confirmationAction($request, $r, $db);
 		}
 
-    	return $this->forward('BioPublicBundle:Default:sign', array('request' => $request, 'redirect' => 'request_switch'));
+    	return $this->forward('BioPublicBundle:Default:sign', array(
+            'request' => $request,
+            'redirect' => 'request_switch'
+            )
+        );
     }
 
     private function setRequestAction($request, $student, $section, $db) {
+        $flash = $request->getSession()->getFlashBag();
+
     	$form = $this->createFormBuilder()
-    		->add('want', 'entity', array('class' => 'BioInfoBundle:Section', 'property' => 'id', 'multiple' => true, 'expanded' => true, 'query_builder' => function(EntityRepository $repo) {
-                return $repo->createQueryBuilder('e')
-                    ->orderBy('e.name', 'ASC');
-            }))
+    		->add('want', 'entity', array(
+                'class' => 'BioInfoBundle:Section',
+                'property' => 'id',
+                'multiple' => true,
+                'expanded' => true,
+                'query_builder' => function(EntityRepository $repo) {
+                    return $repo->createQueryBuilder('e')
+                        ->orderBy('e.name', 'ASC');
+                    }
+                )
+            )
     		->add('request', 'submit')
     		->getForm();
 
@@ -101,9 +114,9 @@ class DefaultController extends Controller
 
                     try {
         			     $db->close();
-        			     $request->getSession()->getFlashBag()->set('success', 'Request sent.');
+        			     $flash->set('success', 'Request sent.');
                     } catch (BioException $e) {
-                        $request->getSession()->getFlashBag()->set('failure', 'Could not send request.');
+                        $flash->set('failure', 'Could not send request.');
                     }
                 }
 
@@ -111,10 +124,17 @@ class DefaultController extends Controller
     		}
     	}
 
-    	return $this->render('BioSwitchBundle:Default:choose.html.twig', array('form' => $form->createView(), 'student' => $student, 'title' => "Request Sections"));
+    	return $this->render('BioSwitchBundle:Default:choose.html.twig', array(
+            'form' => $form->createView(),
+            'student' => $student,
+            'title' => "Request Sections"
+            )
+        );
     }
 
     private function viewRequestAction($request, $r, $db) {
+        $flash = $request->getSession()->getFlashBag();
+
     	$em = $this->getDoctrine()->getManager();
 
     	$ids = array();
@@ -124,7 +144,8 @@ class DefaultController extends Controller
     	$queryBuilder = $em->createQueryBuilder();
         $queryBuilder->select('r')
     		->from('BioSwitchBundle:Request', 'r')
-            ->leftJoin('BioSwitchBundle:Request', 'o', 'WITH', 'r.current = o.current AND r.lastUpdated > o.lastUpdated') // change .id to last updated, this will keep the last update person as first pick
+            // change .id to last updated, this will keep the last update person as first pick
+            ->leftJoin('BioSwitchBundle:Request', 'o', 'WITH', 'r.current = o.current AND r.lastUpdated > o.lastUpdated') 
             ->where('o.id IS NULL')
     		->andWhere('r.current IN (:want)')
             ->andWhere(':current MEMBER OF r.want')
@@ -134,7 +155,13 @@ class DefaultController extends Controller
             ->setParameter('current', $r->getCurrent());
 
     	$form = $this->createFormBuilder()
-    		->add('match', 'entity', array('class' => 'BioSwitchBundle:Request', 'property' => 'status', 'query_builder' => $queryBuilder, 'expanded' => true))
+    		->add('match', 'entity', array(
+                'class' => 'BioSwitchBundle:Request',
+                'property' => 'status',
+                'query_builder' => $queryBuilder,
+                'expanded' => true
+                )
+            )
     		->add('submit', 'submit')
     		->getForm();
 
@@ -154,9 +181,9 @@ class DefaultController extends Controller
 
                     try {
         			    $db->close();
-                        $request->getSession()->getFlashBag()->set('success', 'Request sent.');
+                        $flash->set('success', 'Request sent.');
                     } catch (BioException $e) {
-                        $request->getSession()->getFlashBag()->set('failure', 'Could not send request.');
+                        $flash->set('failure', 'Could not send request.');
                     }
 
                     $db = new Database($this, 'BioInfoBundle:Info');
@@ -165,7 +192,13 @@ class DefaultController extends Controller
                         ->setSubject("Someone wants to switch sections")
                         ->setFrom($info->getEmail())
                         ->setTo($r->getMatch()->getStudent()->getEmail())
-                        ->setBody($this->renderView('BioSwitchBundle:Default:notificationEmail.html.twig', array('student' => $r->getMatch()->getStudent(), 'info' => $info)))
+                        ->setBody(
+                            $this->renderView('BioSwitchBundle:Default:notificationEmail.html.twig', array(
+                                'student' => $r->getMatch()->getStudent(),
+                                'info' => $info
+                                )
+                            )
+                        )
                         ->setPriority('high')
                         ->setContentType('text/html');
 
@@ -176,19 +209,26 @@ class DefaultController extends Controller
     		}
     	}
 
-		return $this->render('BioSwitchBundle:Default:matches.html.twig', array('form' => $form->createView(), 'request' => $r, 'title' => 'Choose Section'));
+		return $this->render('BioSwitchBundle:Default:matches.html.twig', array(
+            'form' => $form->createView(),
+            'request' => $r,
+            'title' => 'Choose Section'
+            )
+        );
     }
 
     private function confirmationAction($request, $r, $db) {
+        $flash = $request->getSession()->getFlashBag();
+
     	// check if the other requester cancelled request
     	if ($r->getMatch() === null) {
     		$r->setStatus(2);
             try {
                 $db->close();
-                $request->getSession()->getFlashBag()->set('failure', 'Partner cancelled their request.');
+                $flash->set('failure', 'Partner cancelled their request.');
                 return $this->redirect($this->generateUrl('request_switch'));
             } catch (BioException $e) {
-                $request->getSession()->getFlashBag()->set('failure', 'Error.');
+                $flash->set('failure', 'Error.');
                 return $this->redirect($this->generateUrl('main_page'));
             }
     	}
@@ -203,9 +243,9 @@ class DefaultController extends Controller
             
             try {
     		    $db->close();
-                $request->getSession()->getFlashBag()->set('success', 'Request declined.');
+                $flash->set('success', 'Request declined.');
             } catch (BioException $e) {
-                $request->getSession()->getFlashBag()->set('failure', 'Error declining request.');
+                $flash->set('failure', 'Error declining request.');
             }
 
             $db = new Database($this, 'BioInfoBundle:Info');
@@ -215,8 +255,15 @@ class DefaultController extends Controller
                 ->setFrom($info->getEmail())
                 ->addBcc($r->getStudent()->getEmail())
                 ->addBcc($m->getStudent()->getEmail())
-                ->setBody($this->renderView('BioSwitchBundle:Default:declineEmail.html.twig', 
-                        array('a' => $r, 'b' => $m, 'c' => $info)))
+                ->setBody(
+                    $this->renderView('BioSwitchBundle:Default:declineEmail.html.twig', 
+                        array(
+                            'a' => $r,
+                            'b' => $m,
+                            'c' => $info
+                            )
+                        )
+                    )
                 ->setPriority('high')
                 ->setContentType('text/html');
 
@@ -227,7 +274,11 @@ class DefaultController extends Controller
     	}
 
     	if ($r->getStatus() === 4 && $r->getMatch()->getStatus() === 3) {
-    		return $this->render('BioSwitchBundle:Default:wait.html.twig', array('request' => $r, 'title' => 'Waiting...'));
+    		return $this->render('BioSwitchBundle:Default:wait.html.twig', array(
+                'request' => $r,
+                'title' => 'Waiting...'
+                )
+            );
     	}
 
     	if ($r->getStatus() === 3) {
@@ -254,22 +305,34 @@ class DefaultController extends Controller
     	    			->setFrom($info->getEmail())
     	    			->addTo($r->getStudent()->getEmail())
     	    			->addTo($m->getStudent()->getEmail())
-    	    			->setBody($this->renderView('BioSwitchBundle:Default:confirmationEmail.html.twig', 
-                                array('a' => $r, 'b' => $m, 'c' => $info)))
+    	    			->setBody(
+                            $this->renderView('BioSwitchBundle:Default:confirmationEmail.html.twig', 
+                                array(
+                                    'a' => $r,
+                                    'b' => $m,
+                                    'c' => $info
+                                    )
+                                )
+                            )
                         ->setPriority('high')
                         ->setContentType('text/html');
 
     	    		$this->get('mailer')->send($message);
 
                     // sign out
-    	    		$request->getSession()->getFlashBag()->set('success', 'Contact information sent.');
+    	    		$flash->set('success', 'Contact information sent.');
                 } catch (Exception $e) {
-                    $request->getSession()->getFlashBag()->set('failure', 'Error confirming match.');
+                    $flash->set('failure', 'Error confirming match.');
                 }
 	    		return $this->redirect($this->generateUrl('main_page'));
 	    	}
 
-    		return $this->render('BioSwitchBundle:Default:confirm.html.twig', array('form'=> $form->createView(), 'request' => $r, 'title' => 'Confirm Pairing'));
+    		return $this->render('BioSwitchBundle:Default:confirm.html.twig', array(
+                'form'=> $form->createView(),
+                'request' => $r,
+                'title' => 'Confirm Pairing'
+                )
+            );
     	}
     }
 }

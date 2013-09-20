@@ -1,7 +1,7 @@
 {% extends 'BioExamBundle:Public:main.html.twig' %}
 
 {% block content %}
-		<p>Your answers have been submitted for grading. Stay on this page to be assigned a practice test to grade. Press the grade button once it appears to begin grading a peer's test, you must grade a total of {{global.grade}} tests in {{exam.gDuration}} minutes or by {{exam.gEnd|date('h:i a')}} to finish. Give each response a numeric score, with 0 being the lowest score possible, base your grade off the rubric given below their answer. You will not get any points if you do not grade {{global.grade}} tests.</p>
+		<p>Your answers have been submitted for grading. Stay on this page to be assigned a practice test to grade. Press the grade button once it appears to begin grading a peer's test, you must grade a total of {{global.grade}} tests in {{exam.gDuration}} minutes or by {{exam.gEnd|date('h:i a')}} to finish. Give each response a numeric score, with 0 being the lowest score possible, base your grade off the rubric given below their answer. You will not get any points if you do not grade {{global.grade}} test(s).</p>
 
 		<div id="submit">
 			<form id="button" method="POST" action="" style="display:none">

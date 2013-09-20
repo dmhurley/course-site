@@ -32,9 +32,21 @@ class DefaultController extends Controller
     {
         /**************** GET PEOPLE ***************/
         $db = new Database($this, 'BioInfoBundle:Person');
-        $instructors = $db->find(array('title' => 'instructor'), array('fName' => 'ASC', 'lName' => 'ASC'), false);
-        $tas = $db->find(array('title' => 'ta'), array('fName' => 'ASC', 'lName' => 'ASC'), false);
-        $coordinators = $db->find(array('title' => 'coordinator'), array('fName' => 'ASC', 'lName' => 'ASC'), false);
+        $instructors = $db->find(
+            array('title' => 'instructor'),
+            array('fName' => 'ASC', 'lName' => 'ASC'),
+            false
+            );
+        $tas = $db->find(
+            array('title' => 'ta'),
+            array('fName' => 'ASC', 'lName' => 'ASC'),
+            false
+            );
+        $coordinators = $db->find(
+            array('title' => 'coordinator'),
+            array('fName' => 'ASC', 'lName' => 'ASC'),
+            false
+            );
 
         /**************** GET INFO ***************/
         $db = new Database($this, 'BioInfoBundle:Info');
@@ -42,36 +54,76 @@ class DefaultController extends Controller
 
         /**************** GET SECTIONS ***************/
         $db = new Database($this, 'BioInfoBundle:Section');
-        $lSections = $db->find(array(), array('name' => 'ASC'), false);
+        $lSections = $db->find(
+            array(),
+            array('name' => 'ASC'),
+            false
+            );
 
         $db = new Database($this, 'BioInfoBundle:CourseSection');
-        $cSections = $db->find(array(), array('name' => 'ASC'), false);
+        $cSections = $db->find(
+            array(),
+            array('name' => 'ASC'),
+            false
+        );
 
         /**************** GET DIRECTORIES ***************/
         $db = new Database($this, 'BioFolderBundle:Folder');
         $root = $db->findOne(array('name' => 'mainpage', 'parent' => null));
 
-        $folders = $db->find(array('parent' => $root), array('name' => 'ASC'), false);
+        $folders = $db->find(
+            array('parent' => $root),
+            array('name' => 'ASC'),
+            false
+            );
 
         $db = new Database($this, 'BioFolderBundle:File');
-        $files = $db->find(array('parent' => $root), array('name' => 'ASC'), false);
+        $files = $db->find(
+            array('parent' => $root),
+            array('name' => 'ASC'),
+            false
+        );
 
         $db = new Database($this, 'BioFolderBundle:Link');
-        $links = $db->find(array('parent' => $root), array('name' => 'ASC'), false);
+        $links = $db->find(
+            array('parent' => $root),
+            array('name' => 'ASC'),
+            false
+        );
 
         /**************** GET GET ANNOUNCEMENTS ***************/
         $em = $this->getDoctrine()->getManager();
         $query = $em->createQuery(
-            'SELECT a FROM BioInfoBundle:Announcement a WHERE a.expiration > :now AND a.timestamp < :now ORDER BY a.timestamp ASC'
+            'SELECT a 
+             FROM BioInfoBundle:Announcement a 
+             WHERE a.expiration > :now 
+             AND a.timestamp < :now 
+             ORDER BY a.timestamp ASC'
         )->setParameter('now', new \DateTime());
         $anns = $query->getResult();
         
         /**************** CREATE FORM ***************/
         $db = new Database($this, 'BioPublicBundle:PublicGlobal');
         $global = $db->findOne(array());
-        $choiceArray = ['info', 'cSection', 'anns', 'folders', 'files', 'links', 'instructors', 'tas', 'coordinators', 'lSections'];
+        $choiceArray = [
+            'info',
+            'cSection',
+            'anns',
+            'folders',
+            'files',
+            'links',
+            'instructors',
+            'tas',
+            'coordinators',
+            'lSections'
+            ];
         $form = $this->createFormBuilder($global)
-            ->add('showing', 'choice', array('choices' => $choiceArray, 'expanded' => true, 'multiple' => true))
+            ->add('showing', 'choice', array(
+                'choices' => $choiceArray,
+                'expanded' => true,
+                'multiple' => true
+                )
+            )
             ->add('save', 'submit')
             ->getForm();
 
@@ -83,9 +135,20 @@ class DefaultController extends Controller
         }
 
 
-        return array('instructors' => $instructors, 'tas' => $tas, 'coordinators' => $coordinators, 'info' => $info,
-            'lSections' => $lSections, 'cSections' => $cSections, 'anns' => $anns, 'form' => $form->createView(),
-            'folders' => $folders, 'files' => $files, 'links' => $links ,'title' => "Welcome");
+        return array(
+            'instructors' => $instructors,
+            'tas' => $tas,
+            'coordinators' => $coordinators,
+            'info' => $info,
+            'lSections' => $lSections,
+            'cSections' => $cSections,
+            'anns' => $anns,
+            'form' => $form->createView(),
+            'folders' => $folders,
+            'files' => $files,
+            'links' => $links,
+            'title' => "Welcome"
+            );
     }
 
     /**
@@ -93,11 +156,13 @@ class DefaultController extends Controller
      * @Template()
      */
     public function folderAction(Request $request, $id) {
+        $flash = $request->getSession()->getFlashBag();
+
         $db = new Database($this, 'BioFolderBundle:Folder');
         $root = $db->findOne(array('id' => $id));
 
         if (!$root || $root->getPrivate()) {
-            $request->getSession()->getFlashBag()->set('failure', 'Folder does not exist.');
+            $flash->set('failure', 'Folder does not exist.');
             if ($request->headers->get('referer')) {
                 return $this->redirect($request->headers->get('referer'));
             } else {
@@ -128,19 +193,25 @@ class DefaultController extends Controller
             $form = $form->createView();
         }
 
-        return array('root' => $root, 'form' => $form, 'title' => $root->getName().' Folder');
+        return array(
+            'root' => $root,
+            'form' => $form,
+            'title' => $root->getName().' Folder'
+            );
     }
 
     /**
      * @Route("/folder/{id}/delete/{id2}", name="delete_public_file")
      */
     public function deleteFolderAction(Request $request, $id, $id2) {
+        $flash = $request->getSession()->getFlashBag();
+
         $db = new Database($this, 'BioFolderBundle:File');
         $root = $db->findOne(array('id' => $id2));
         $student = $this->get('security.context')->getToken()->getUser();
 
         if (!$root || $root->getParent()->getStudent() !== $student) {
-            $request->getSession()->getFlashBag()->set('failure', 'Folder does not exist.');
+            $flash->set('failure', 'Folder does not exist.');
         } else {
             $db->delete($root);
             $db->close();

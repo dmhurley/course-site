@@ -31,6 +31,8 @@ class CourseController extends Controller
      * @Template()
      */
     public function indexAction(Request $request) {
+        $flash = $request->getSession()->getFlashBag();
+
         $db = new Database($this, 'BioInfoBundle:Info');
 		$info = $db->findOne();
 
@@ -43,12 +45,16 @@ class CourseController extends Controller
     	$form = $this->createFormBuilder($info)
     		->add('courseNumber', 'text', array('label' => 'Course Number:'))
     		->add('title', 'text', array('label' => 'Course Name:'))
-    		->add('qtr', 'choice', array('choices' => array(
+    		->add('qtr', 'choice', array(
+                'choices' => array(
     					'autumn' => 'Autumn',
     					'winter' => 'Winter',
     					'spring' => 'Spring',
     					'summer' => 'Summer'
-    				), 'label' => 'Quarter'))
+    				), 
+                'label' => 'Quarter'
+                )
+            )
     		->add('year', 'integer', array('label' => 'Year:'))
     		->add('email', 'email', array('label' => 'Email:'))
     		->add('save', 'submit')
@@ -60,12 +66,12 @@ class CourseController extends Controller
     		if ($form->isValid()) {
     			try {
     				$db->close();
-                    $request->getSession()->getFlashBag()->set('success', 'Course information updated.');
+                    $flash->set('success', 'Course information updated.');
     			} catch (BioException $e) {
-                    $request->getSession()->getFlashBag()->set('failure', 'Unable to save changes.');
+                    $flash->set('failure', 'Unable to save changes.');
     			}
     		} else {
-                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                $flash->set('failure', 'Invalid form.');
             }
     	}
 

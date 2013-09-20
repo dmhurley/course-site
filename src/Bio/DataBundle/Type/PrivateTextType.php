@@ -15,12 +15,42 @@ class PrivateTextType extends StringType
 
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        return trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $this->getSalt(), base64_decode($value), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));
+        return trim(
+            mcrypt_decrypt(
+                MCRYPT_RIJNDAEL_256,
+                $this->getSalt(),
+                base64_decode($value),
+                MCRYPT_MODE_ECB,
+                mcrypt_create_iv(
+                    mcrypt_get_iv_size(
+                        MCRYPT_RIJNDAEL_256,
+                        MCRYPT_MODE_ECB
+                    )
+                    ,MCRYPT_RAND
+                )
+            )
+        );
     }
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        return trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $this->getSalt(), $value, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));
+        return trim(
+            base64_encode(
+                mcrypt_encrypt(
+                    MCRYPT_RIJNDAEL_256,
+                    $this->getSalt(),
+                    $value,
+                    MCRYPT_MODE_ECB,
+                    mcrypt_create_iv(
+                        mcrypt_get_iv_size(
+                            MCRYPT_RIJNDAEL_256,
+                            MCRYPT_MODE_ECB
+                        ),
+                        MCRYPT_RAND
+                    )
+                )
+            )
+        );
     }
 
     public function getName()

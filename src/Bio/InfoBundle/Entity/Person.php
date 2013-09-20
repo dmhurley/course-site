@@ -220,9 +220,23 @@ class Person extends Base
         $builder->add('fName', 'text', array('label' => 'First Name:'))
             ->add('lName', 'text', array('label' => 'Last Name:'))
             ->add('email', 'email', array('label' => 'Email:'))
-            ->add('bldg', 'choice', array('choices' => array_combine($array, $array), 'empty_value' => '-', 'required' => false, 'label' => 'Building:'))
+            ->add('bldg', 'choice', array(
+                'choices' => array_combine($array, $array),
+                'empty_value' => '-',
+                'required' => false,
+                'label' => 'Building:'
+                )
+            )
             ->add('room', 'text', array('label' => 'Room:', 'required' => false))
-            ->add('title', 'choice', array('choices' => array('instructor' => 'Instructor', 'ta' => 'TA', 'coordinator' => 'Coordinator'), 'label' => 'Title:'));
+            ->add('title', 'choice', array(
+                'choices' => array(
+                    'instructor' => 'Instructor',
+                    'ta' => 'TA',
+                    'coordinator' => 'Coordinator'
+                ),
+                'label' => 'Title:'
+                )
+            );
         return $builder;
     }
     

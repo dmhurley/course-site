@@ -38,27 +38,71 @@ class AdminController extends Controller
      */
     public function indexAction(Request $request)
     {	
+        $flash = $request->getSession()->getFlashBag();
+
     	$trip = new Trip();
     	$form = $this->get('form.factory')->createNamedBuilder('form', 'form', $trip)
     		->add('title', 'text', array('label' => 'Title:'))
-    		->add('start', 'datetime', array('label' => 'Start:', 'attr' => array('class' => 'datetime')))
-    		->add('end', 'datetime', array('label' => 'End:', 'attr' => array('class' => 'datetime')))
+    		->add('start', 'datetime', array(
+                'label' => 'Start:',
+                'attr' => array('class' => 'datetime')
+                )
+            )
+    		->add('end', 'datetime', array(
+                'label' => 'End:',
+                'attr' => array('class' => 'datetime')
+                )
+            )
     		->add('max', 'integer', array('label' => 'Limit:'))
     		->add('email', 'email', array('label' => 'Leader Email:'))
-            ->add('shortSum', 'textarea', array('label' => 'Short Summary:', 'attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
-            ->add('longSum', 'textarea', array('label' => 'Long Summary:', 'attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
+            ->add('shortSum', 'textarea', array(
+                'label' => 'Short Summary:',
+                'attr' => array(
+                    'class' => 'tinymce',
+                    'data-theme' => 'bio'
+                    )
+                )
+            )
+            ->add('longSum', 'textarea', array(
+                'label' => 'Long Summary:',
+                'attr' => array(
+                    'class' => 'tinymce',
+                    'data-theme' => 'bio'
+                    )
+                )
+            )
     		->add('add', 'submit')
     		->getForm();
 
         $db = new Database($this, 'BioTripBundle:TripGlobal');
         $global = $db->findOne(array());
         $globalForm = $this->get('form.factory')->createNamedBuilder('global', 'form', $global)
-            ->add('opening', 'datetime', array('label' => 'Signup Start:', 'attr' => array('class' => 'datetime')))
-            ->add('closing', 'datetime', array('label' => 'Evaluations Due:', 'attr' => array('class' => 'datetime')))
+            ->add('opening', 'datetime', array(
+                'label' => 'Signup Start:',
+                'attr' => array('class' => 'datetime')
+                )
+            )
+            ->add('closing', 'datetime', array(
+                'label' => 'Evaluations Due:',
+                'attr' => array('class' => 'datetime')
+                )
+            )
             ->add('maxTrips', 'integer', array('label' => "Max Trips:"))
-            ->add('evalDue', 'integer', array('label' => "Days Until Late:"))
-            ->add('instructions', 'textarea', array('label' => 'Trip Instructions', 'attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
-            ->add('guidePass', 'password', array('label' => 'Tour Guide Password:', 'always_empty' => false, 'attr' => array('value' => $global->getGuidePass())))
+            ->add('evalDue', 'integer',  array('label' => "Days Until Late:"))
+            ->add('instructions', 'textarea', array(
+                'label' => 'Trip Instructions',
+                'attr' => array(
+                    'class' => 'tinymce',
+                    'data-theme' => 'bio'
+                    )
+                )
+            )
+            ->add('guidePass', 'password', array(
+                'label' => 'Tour Guide Password:',
+                'always_empty' => false,
+                'attr' => array('value' => $global->getGuidePass())
+                )
+            )
             ->add('set', 'submit')
             ->getForm();
 
@@ -85,17 +129,27 @@ class AdminController extends Controller
             if ($isValid) {
                 try {
                     $db->close();
-                    $request->getSession()->getFlashBag()->set('success', 'Saved change.');
+                    $flash->set('success', 'Saved change.');
                     return $this->redirect($this->generateUrl('manage_trips'));
                 } catch (BioException $e) {
-                    $request->getSession()->getFlashBag()->set('failure', 'Unable to save change.');
+                    $flash->set('failure', 'Unable to save change.');
                 }
             } else {
-                $request->getSession()->getFlashBag()->set('failure', 'Invalid Form.');
+                $flash->set('failure', 'Invalid Form.');
             }
     	}
-    	$trips = $db->find(array(), array('start' => 'ASC', 'end' => 'ASC'), false);
-        return array('form' => $form->createView(), 'globalForm' => $globalForm->createView(), 'trips' => $trips, 'title' => "Manage Trips");
+    	$trips = $db->find(
+            array(),
+            array('start' => 'ASC', 'end' => 'ASC'),
+            false
+            );
+
+        return array(
+            'form' => $form->createView(),
+            'globalForm' => $globalForm->createView(),
+            'trips' => $trips,
+            'title' => "Manage Trips"
+            );
     }
 
     /**
@@ -103,16 +157,39 @@ class AdminController extends Controller
      * @Template()
      */
     public function editAction(Request $request, Trip $entity = null) {
-    	
+    	$flash = $request->getSession()->getFlashBag();
+
         if ($entity) {
         	$form = $this->createFormBuilder($entity)
         		->add('title', 'text', array('label' => 'Title:'))
-        		->add('start', 'datetime', array('label' => 'Start:', 'attr' => array('class' => 'datetime')))
-        		->add('end', 'datetime', array('label' => 'End:', 'attr' => array('class' => 'datetime')))
+        		->add('start', 'datetime', array(
+                    'label' => 'Start:',
+                    'attr' => array('class' => 'datetime')
+                    )
+                )
+        		->add('end', 'datetime', array(
+                    'label' => 'End:',
+                    'attr' => array('class' => 'datetime')
+                    )
+                )
         		->add('max', 'integer', array('label' => 'Limit:'))
         		->add('email', 'email', array('label' => 'Leader Email:'))
-                ->add('shortSum', 'textarea', array('label' => 'Short Summary:', 'attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
-                 ->add('longSum', 'textarea', array('label' => 'Long Summary:', 'attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
+                ->add('shortSum', 'textarea', array(
+                    'label' => 'Short Summary:',
+                    'attr' => array(
+                        'class' => 'tinymce',
+                        'data-theme' => 'bio'
+                        )
+                    )
+                )
+                 ->add('longSum', 'textarea', array(
+                    'label' => 'Long Summary:',
+                    'attr' => array(
+                        'class' => 'tinymce',
+                        'data-theme' => 'bio'
+                        )
+                    )
+                 )
         		->add('id', 'hidden')
         		->add('save', 'submit')
         		->getForm();
@@ -124,17 +201,21 @@ class AdminController extends Controller
                     $db = new Database($this, 'BioTripBundle:Trip');
                     try {
         			    $db->close();
-                        $request->getSession()->getFlashBag()->set('success', 'Trip edited.');
+                        $flash->set('success', 'Trip edited.');
                         return $this->redirect($this->generateUrl('manage_trips'));
                     } catch (BioException $e) {
-                        $request->getSession()->getFlashBag()->set('failure', 'Unable to save changes.');
+                        $flash->set('failure', 'Unable to save changes.');
                     }
                 } else {
-                    $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                    $flash->set('failure', 'Invalid form.');
                 }
         	}
 
-        	return array('form' => $form->createView(), 'trip' => $entity, 'title' => 'Edit Trip');
+        	return array(
+                'form' => $form->createView(),
+                'trip' => $entity, 
+                'title' => 'Edit Trip'
+                );
         }
     }
 
@@ -142,18 +223,19 @@ class AdminController extends Controller
      * @Route("/delete/{id}", name="delete_trip")
      */
     public function deleteAction(Request $request, Trip $entity = null) {
+        $flash = $request->getSession()->getFlashBag();
 
         if ($entity) {
             $db = new Database($this, 'BioTripBundle:Trip');
             $db->delete($entity);
             try {
                 $db->close();
-                $request->getSession()->getFlashBag()->set('success', 'Trip deleted.');
+                $flash->set('success', 'Trip deleted.');
             } catch (BioException $e) {
-                $request->getSession()->getFlashBag()->set('failure', 'Could not delete trip.');
+                $flash->set('failure', 'Could not delete trip.');
             }
         } else {
-            $request->getSession()->getFlashBag()->set('failure', 'Could not find trip.');
+            $flash->set('failure', 'Could not find trip.');
         }
 
         if ($request->headers->get('referer')){
@@ -170,13 +252,15 @@ class AdminController extends Controller
      * @ParamConverter("student", options={"mapping": {"sid": "id"}})
      */
     public function removeStudentAction(Request $request, Trip $trip = null, AbstractUserStudent $student = null) {
+        $flash = $request->getSession()->getFlashBag();
+
         if ($student && $trip) {
             $db = new Database($this, 'BioTripBundle:Trip');
             $trip->removeStudent($student);
             $db->close();
-            $request->getSession()->getFlashBag()->set('success', 'Removed student.');
+            $flash->set('success', 'Removed student.');
         } else {
-            $request->getSession()->getFlashBag()->set('failure', 'Could not find that trip or student.');
+            $flash->set('failure', 'Could not find that trip or student.');
         }
 
         if ($request->headers->get('referer')){
@@ -191,6 +275,8 @@ class AdminController extends Controller
      * @Template()
      */
     public function evalsAction(Request $request) {
+        $flash = $request->getSession()->getFlashBag();
+
         $db = new Database($this, 'BioTripBundle:TripGlobal');
         $global = $db->findOne(array());
         $db = new Database($this, 'BioTripBundle:EvalQuestion');
@@ -205,7 +291,7 @@ class AdminController extends Controller
                     $question = $db->findOne(array('id' => $key));
 
                     if ($question === null) {
-                        $request->getSession()->getFlashBag()->set('failure', 'Error.');
+                        $flash->set('failure', 'Error.');
                         return $this->redirect($this->generateUrl('trip_evals'));
                     }
                 }
@@ -213,7 +299,7 @@ class AdminController extends Controller
                 $question->setType(is_array($data)?"multiple":"response");
                 if ($question->getType() === 'multiple'){
                     if (!filter_var($data[1], FILTER_VALIDATE_INT)){
-                        $request->getSession()->getFlashBag()->set('failure', 'Not a number.');
+                        $flash->set('failure', 'Not a number.');
                         return $this->redirect($this->generateUrl('trip_evals'));
                     } else {
                         $data[0] = filter_var($data[0], FILTER_SANITIZE_STRING);
@@ -230,26 +316,29 @@ class AdminController extends Controller
             }
             $global->setEvalQuestions($evalQuestions);
 
-            /** DELETE ORPHANS **
-             *      O --"OK"   *
-             *    *-|-*        *
-             *     /\          *
-            ********************/
-
             $em = $this->getDoctrine()->getManager();
             $query = $em->createQuery('
-                    SELECT q FROM BioTripBundle:EvalQuestion q
-                    WHERE NOT EXISTS(SELECT 1 FROM BioTripBundle:Response t WHERE t.evalQuestion = q.id)
-                    AND NOT EXISTS(SELECT g FROM BioTripBundle:TripGlobal g WHERE q MEMBER OF g.evalQuestions)
+                    SELECT q 
+                    FROM BioTripBundle:EvalQuestion q
+                    WHERE NOT EXISTS(
+                        SELECT 1 
+                        FROM BioTripBundle:Response t
+                        WHERE t.evalQuestion = q.id
+                    )
+                    AND NOT EXISTS(
+                        SELECT g
+                        FROM BioTripBundle:TripGlobal g
+                        WHERE q MEMBER OF g.evalQuestions
+                    )
                 ');
             $toDelete = $query->getResult();
             $db->deleteMany($toDelete);
 
             try {
                 $db->close();
-                $request->getSession()->getFlashBag()->set('success', 'Evaluation questions saved.');
+                $flash->set('success', 'Evaluation questions saved.');
             } catch (BioException $e) {
-                $request->getSession()->getFlashBag()->set('failure', 'Unable to save changes.');
+                $flash->set('failure', 'Unable to save changes.');
             }
         }
 
@@ -266,17 +355,24 @@ class AdminController extends Controller
      * @Template()
      */
     public function reviewAction(Request $request, $id, $title) {
+        $flash = $request->getSession()->getFlashBag();
+
         $em = $this->getDoctrine()->getManager();
         $query = $em->createQueryBuilder()
-            ->select('e')->from('BioTripBundle:Evaluation', 'e')
-            ->where('e.trip = (SELECT t FROM BioTripBundle:Trip t WHERE t.id = :id)')
+            ->select('e')
+            ->from('BioTripBundle:Evaluation', 'e')
+            ->where('e.trip = (
+                SELECT t
+                FROM BioTripBundle:Trip t
+                WHERE t.id = :id)
+            ')
             ->andwhere('e.score IS NULL')
             ->setParameter('id', $id)
             ->getQuery();
 
         $evals = $query->getResult();
         if (count($evals) === 0) {
-            $request->getSession()->getFlashBag()->set('success', 'All Evaluations reviewed for trip: '. $title .'.');
+            $flash->set('success', 'All Evaluations reviewed for trip: '. $title .'.');
             return $this->redirect($this->generateUrl('trip_evals'));
         } else {
             $eval = $evals[0];
@@ -284,9 +380,20 @@ class AdminController extends Controller
 
 
         $form = $this->createFormBuilder()
-            ->add('score', 'choice', array('choices' => array(0, 15, 20, 25)))
-            ->add('i', 'hidden', array('mapped' => false, 'data' => $eval->getId()))
-            ->add('d', 'hidden', array('mapped' => false, 'data' => $eval->getTimestamp()->format('Y-m-d H:i:s')))
+            ->add('score', 'choice', array(
+                'choices' => array(0, 15, 20, 25)
+                )
+            )
+            ->add('i', 'hidden', array(
+                'mapped' => false,
+                'data' => $eval->getId()
+                )
+            )
+            ->add('d', 'hidden', array(
+                'mapped' => false,
+                'data' => $eval->getTimestamp()->format('Y-m-d H:i:s')
+                )
+            )
             ->add('grade', 'submit')
             ->getForm();
 
@@ -295,7 +402,12 @@ class AdminController extends Controller
 
             if ($form->isValid()) {
                 $db = new Database($this, 'BioTripBundle:Evaluation');
-                $dbEval = $db->findOne(array('id' => $form->get('i')->getData(), 'timestamp' => new \Datetime($form->get('d')->getData())));
+                $dbEval = $db->findOne(
+                    array(
+                        'id' => $form->get('i')->getData(),
+                        'timestamp' => new \Datetime($form->get('d')->getData())
+                        )
+                    );
 
                 $dbEval->setScore($form->get('score')->getData());
                 $db->close();
@@ -312,6 +424,8 @@ class AdminController extends Controller
      * @Template("BioFolderBundle:Download:download.html.twig")
      */
     public function downloadAction(Request $request, Trip $trip = null) {
+        $flash = $request->getSession()->getFlashBag();
+
         if ($trip) {
             header('Content-Description: File Transfer');
             header('Content-Type: application/octet-stream');
@@ -334,7 +448,7 @@ class AdminController extends Controller
             }
             return array('text' => '');
         } else {
-            $request->getSession()->getFlashBag()->set('failure', 'Could not find trip.');
+            $flash->set('failure', 'Could not find trip.');
             return $this->redirect($this->generateUrl('trip_evals'));
         }
     }

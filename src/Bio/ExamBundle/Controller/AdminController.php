@@ -34,17 +34,27 @@ class AdminController extends Controller
      */
     public function examAction(Request $request)
     {
+        $flash = $request->getSession()->getFlashBag();
         $exam = new Exam();
     	$form = $this->get('form.factory')->createNamedBuilder('form', 'form', $exam)
     		->add('title', 'text', array('label'=>'Exam Name:'))
-            ->add('section', 'text', array('label'=>'Section:', 'required' => false, 'empty_data' => '', 'attr' => array('pattern' => '(\A\Z)|(^[A-Z][A-Z0-9]?$)', 'title' => 'One or two letter capitalized section name.')))
-    		->add('tDate', 'date', array('label' => 'Test Date:'))
-    		->add('tStart', 'time', array('label'=>'Test Start:'))
-    		->add('tEnd', 'time', array('label'=>'Test End:'))
+            ->add('section', 'text', array(
+                'label'=>'Section:',
+                'required' => false,
+                'empty_data' => '',
+                'attr' => array(
+                    'pattern' => '(\A\Z)|(^[A-Z][A-Z0-9]?$)',
+                    'title' => 'One or two letter capitalized section name.'
+                    )
+                )
+            )
+    		->add('tDate', 'date',        array('label' => 'Test Date:'))
+    		->add('tStart', 'time',       array('label'=>'Test Start:'))
+    		->add('tEnd', 'time',         array('label'=>'Test End:'))
     		->add('tDuration', 'integer', array('label'=>'Test Length (m):'))
-            ->add('gDate', 'date', array('label' => 'Grading Date:'))
-            ->add('gStart', 'time', array('label'=>'Grading Start:'))
-            ->add('gEnd', 'time', array('label'=>'Grading End:'))
+            ->add('gDate', 'date',        array('label' => 'Grading Date:'))
+            ->add('gStart', 'time',       array('label'=>'Grading Start:'))
+            ->add('gEnd', 'time',         array('label'=>'Grading End:'))
             ->add('gDuration', 'integer', array('label'=>'Grade Length (m):'))
    			->add('add', 'submit')
    			->getForm();
@@ -81,32 +91,40 @@ class AdminController extends Controller
             if ($isValid) {
                 try {
                     $db->close();
-                    $request->getSession()->getFlashBag()->set('success', 'Saved change.');
+                    $flash->set('success', 'Saved change.');
                     return $this->redirect($this->generateUrl('manage_exams'));
                 } catch (BioException $e) {
-                    $request->getSession()->getFlashBag()->set('failure', 'Unable to save change.');
+                    $flash->set('failure', 'Unable to save change.');
                 }
             } else {
-                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                $flash->set('failure', 'Invalid form.');
             }
    		}
 
         $db = new Database($this, 'BioExamBundle:Exam');
    		$exams = $db->find(array(), array('tDate' => 'ASC'), false);
-    	return array('form' => $form->createView(), 'globalForm' => $globalForm->createView(), 'exams' => $exams, 'title' => 'Manage Exams');
+
+    	return array(
+            'form' => $form->createView(),
+            'globalForm' => $globalForm->createView(),
+            'exams' => $exams,
+            'title' => 'Manage Exams'
+            );
     }
 
     /**
      * @Route("/delete/{id}", name="delete_exam")
      */
-    public function deleteAction(Request $request, Exam $exam) {
+    public function deleteAction(Request $request, Exam $exam = null) {
+        $flash = $request->getSession()->getFlashBag();
+
 		if ($exam) {
             $db = new Database($this, 'BioExamBundle:Exam');
 			$db->delete($exam);
 			$db->close();
-			$request->getSession()->getFlashBag()->set('success', 'Exam deleted.');
+			$flash->set('success', 'Exam deleted.');
 		} else {
-			$request->getSession()->getFlashBag()->set('failure', 'Could not find that exam.');
+			$flash->set('failure', 'Could not find that exam.');
 		}
 
     	if ($request->headers->get('referer')){
@@ -120,24 +138,39 @@ class AdminController extends Controller
      * @Route("/edit/{id}", name="edit_exam")
      * @Template()
      */
-    public function editAction(Request $request, Exam $exam) {
+    public function editAction(Request $request, Exam $exam = null) {
+        $flash = $request->getSession()->getFlashBag();
         if (!$exam) {
-            $request->getSession()->getFlashBag()->set('failure', 'Unable to find that exam.');
+            $flash->set('failure', 'Unable to find that exam.');
             return $this->redirect($this->generateUrl('manage_exams'));
         }
 
 		$form = $this->createFormBuilder($exam)
 			->add('title', 'text', array('label'=>'Exam Name:'))
-            ->add('section', 'text', array('label'=>'Section:', 'required' => false, 'empty_data' => '', 'attr' => array('pattern' => '(\A\Z)|(^[A-Z][A-Z0-9]?$)', 'title' => 'One or two letter capitalized section name.')))
-    		->add('tDate', 'date', array('label' => 'Date:'))
-    		->add('tStart', 'time', array('label'=>'Start Time:'))
-    		->add('tEnd', 'time', array('label'=>'End Time:'))
+            ->add('section', 'text', array('label'=>'Section:',
+                'required' => false,
+                'empty_data' => '',
+                'attr' => array(
+                    'pattern' => '(\A\Z)|(^[A-Z][A-Z0-9]?$)',
+                    'title' => 'One or two letter capitalized section name.'
+                    )
+                )
+            )
+    		->add('tDate', 'date',        array('label' => 'Date:'))
+    		->add('tStart', 'time',       array('label'=>'Start Time:'))
+    		->add('tEnd', 'time',         array('label'=>'End Time:'))
     		->add('tDuration', 'integer', array('label'=>'Duration (m):'))
-            ->add('gDate', 'date', array('label' => 'Grading Date:'))
-            ->add('gStart', 'time', array('label'=>'Grading Start:'))
-            ->add('gEnd', 'time', array('label'=>'Grading End:'))
+            ->add('gDate', 'date',        array('label' => 'Grading Date:'))
+            ->add('gStart', 'time',       array('label'=>'Grading Start:'))
+            ->add('gEnd', 'time',         array('label'=>'Grading End:'))
             ->add('gDuration', 'integer', array('label'=>'Grade Length (m):'))
-    		->add('questions', 'entity', array('class' => 'BioExamBundle:Question', 'property'=>'formattedQuestion', 'multiple' => true, 'expanded'=> true))
+    		->add('questions', 'entity', array(
+                'class' => 'BioExamBundle:Question',
+                'property'=>'formattedQuestion',
+                'multiple' => true,
+                'expanded'=> true
+                )
+            )
     		->add('id', 'hidden')
    			->add('save', 'submit')
    			->getForm();
@@ -150,13 +183,13 @@ class AdminController extends Controller
  
                     try {
 	   				    $db->close();
-                        $request->getSession()->getFlashBag()->set('success', 'Exam edited.');
+                        $flash->set('success', 'Exam edited.');
                     } catch (BioException $e) {
-                        $request->getSession()->getFlashBag()->set('failure', 'Unable to save changes.');
+                        $flash->set('failure', 'Unable to save changes.');
                     }
 	   				return $this->redirect($this->generateUrl('manage_exams'));
 	   		} else {
-                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                $flash->set('failure', 'Invalid form.');
             }
     	}
 
@@ -168,12 +201,35 @@ class AdminController extends Controller
      * @Template()
      */
     public function questionAction(Request $request) {
+        $flash = $request->getSession()->getFlashBag();
     	$q = new Question();
     	$form = $this->createFormBuilder($q)
-    		->add('question', 'textarea', array('label' => 'Question:', 'attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
-    		->add('answer', 'textarea', array('label' => 'Answer/Rubric:','attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
+    		->add('question', 'textarea', array(
+                'label' => 'Question:',
+                'attr' => array(
+                    'class' => 'tinymce',
+                    'data-theme' => 'bio'
+                    )
+                )
+            )
+    		->add('answer', 'textarea', array(
+                'label' => 'Answer/Rubric:',
+                'attr' => array(
+                    'class' => 'tinymce',
+                    'data-theme' => 'bio'
+                    )
+                )
+            )
     		->add('points', 'integer', array('label' => 'Points:'))
-            ->add('tags', 'text', array('label' => 'Tags:', 'mapped' => false, 'required' => false, 'attr' => array('pattern' => '[a-z\s]+', 'title' => 'Lower case tags seperated by spaces. a-z only.')))
+            ->add('tags', 'text',      array('label' => 'Tags:',
+                'mapped' => false,
+                'required' => false,
+                'attr' => array(
+                    'pattern' => '[a-z\s]+',
+                    'title' => 'Lower case tags seperated by spaces. a-z only.'
+                    )
+                )
+            )
     		->add('add', 'submit')
     		->getForm();
 
@@ -188,24 +244,29 @@ class AdminController extends Controller
     			$db->add($q);
                 try {
                     $db->close();
-                    $request->getSession()->getFlashBag()->set('success', 'Added question.');
+                    $flash->set('success', 'Added question.');
                     return $this->redirect($this->generateUrl('manage_questions'));
                 } catch (BioException $e) {
-                    $request->getSession()->getFlashBag()->set('failure', 'Unable to add question.');
+                    $flash->set('failure', 'Unable to add question.');
                 }
     		} else {
-                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                $flash->set('failure', 'Invalid form.');
             }
     	}
 
     	$questions = $db->find(array(), array(), false);
-    	return array('form' => $form->createView(), 'questions' => $questions, 'title' => 'Questions');
+    	return array(
+            'form' => $form->createView(),
+            'questions' => $questions,
+            'title' => 'Questions'
+            );
     }
 
     /**
      * @Route("/questions/delete/{id}", name="delete_question")
      */
-    public function deleteQuestionAction(Request $request, Question $q) {
+    public function deleteQuestionAction(Request $request, Question $q = null) {
+        $flash = $request->getSession()->getFlashBag();
 		if ($q) {
             $em = $this->getDoctrine()->getManager();
             $qb = $em->createQueryBuilder();
@@ -219,15 +280,15 @@ class AdminController extends Controller
             $result = $query->getResult();
 
             if (count($result) > 0) {
-                $request->getSession()->getFlashBag()->set('failure', 'That question is used in an Exam.');
+                $flash->set('failure', 'That question is used in an Exam.');
             } else {
                 $db = new Database($this, 'BioExamBundle:Question');
     			$db->delete($q);
     			$db->close();
-    			$request->getSession()->getFlashBag()->set('success', 'Question deleted.');
+    			$flash->set('success', 'Question deleted.');
             }
 		} else {
-			$request->getSession()->getFlashBag()->set('failure', 'Could not find that question.');
+			$flash->set('failure', 'Could not find that question.');
 		}
 
     	if ($request->headers->get('referer')){
@@ -241,13 +302,35 @@ class AdminController extends Controller
      * @Route("/questions/edit/{id}", name="edit_question")
      * @Template()
      */
-    public function editQuestionAction(Request $request, Question $q) {
-
+    public function editQuestionAction(Request $request, Question $q = null) {
+        $flash = $request->getSession()->getFlashBag();
 		$form = $this->createFormBuilder($q)
-			->add('question', 'textarea', array('attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
-    		->add('answer', 'textarea', array('attr' => array('class' => 'tinymce', 'data-theme' => 'bio')))
+			->add('question', 'textarea', array(
+                'attr' => array(
+                    'class' => 'tinymce',
+                    'data-theme' => 'bio'
+                    )
+                )
+            )
+    		->add('answer', 'textarea', array(
+                'attr' => array(
+                    'class' => 'tinymce',
+                    'data-theme' => 'bio'
+                    )
+                )
+            )
     		->add('points', 'integer')
-            ->add('tags', 'text', array('label' => 'Tags:', 'data' => implode(' ', $q->getTags()), 'mapped' => false, 'required' => false, 'attr' => array('pattern' => '[a-z\s]+', 'title' => 'Lower case tags seperated by spaces. a-z only.')))
+            ->add('tags', 'text', array(
+                'label' => 'Tags:',
+                'data' => implode(' ', $q->getTags()),
+                'mapped' => false,
+                'required' => false,
+                'attr' => array(
+                    'pattern' => '[a-z\s]+',
+                    'title' => 'Lower case tags seperated by spaces. a-z only.'
+                    )
+                )
+            )
     		->add('id', 'hidden')
    			->add('save', 'submit')
    			->getForm();
@@ -259,13 +342,13 @@ class AdminController extends Controller
                 try {
                     $q->setTags(explode(" ", $form->get('tags')->getData()));
    				    $db->close();
-                    $request->getSession()->getFlashBag()->set('success', 'Question edited.');
+                    $flash->set('success', 'Question edited.');
                 } catch (BioException $e) {
-                    $request->getSession()->getFlashBag()->set('failure', 'Unable to save changes.');
+                    $flash->set('failure', 'Unable to save changes.');
                 }
    				return $this->redirect($this->generateUrl('manage_questions'));
 	   		} else {
-                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                $flash->set('failure', 'Invalid form.');
             }
     	}
 
@@ -277,6 +360,8 @@ class AdminController extends Controller
      * @Template()
      */
     public function previewAction(Request $request) {
+        $flash = $request->getSession()->getFlashBag();
+
         if ($request->query->get('id') && $request->query->get('type')) {
             $id = $request->query->get('id');
             $type = $request->query->get('type');
@@ -294,7 +379,7 @@ class AdminController extends Controller
 
                 return array('exam' => $exam, 'title' => 'Preview');
             } else {
-                $request->getSession()->getFlashBag()->set('failure', 'Could not find that '.$type.'.');
+                $flash->set('failure', 'Could not find that '.$type.'.');
                 return $this->redirect($this->generateUrl('manage_'.$type.'s'));
             }
         }
@@ -306,7 +391,6 @@ class AdminController extends Controller
      * @Template("BioExamBundle:Admin:download.txt.twig")
      */
     public function downloadAction(Request $request, Exam $exam) {
-
         if (!$exam) {
             $request->getSession()->getFlashBag()->set('failure', 'Exam does not exist.');
             return $this->redirect($this->generateUrl('manage_exams'));
@@ -375,7 +459,27 @@ class AdminController extends Controller
 
             // if the person never submitted their test, return now with lots of things blank
             if ($answerCount === 0 || $taker->getStatus() < 4) {
-                $this->echoArray(array($examID, '', '', $studentID, '', $name, $section, $didGrade, 0, $timeElapsedMinutes, $timeElapsedSeconds, $timeEntered, '', '', $answerCount, '', '', 0, 0));
+                $this->echoArray(array(
+                    $examID,                    // exam id
+                    '',                         // question id
+                    '',                         // answer id
+                    $studentID,                 // student id
+                    '',                         // grader id
+                    $name,                      // name
+                    $section,                   // section
+                    $didGrade,                  // did grade
+                    0,                          // grader score (always 0)
+                    $timeElapsedMinutes,        // time elapsed
+                    $timeElapsedSeconds,        // time (s)
+                    $timeEntered,               // time entered
+                    '',                         // time scored
+                    '',                         // time scored (s)
+                    $answerCount,               // answer count
+                    '',                         // grade time
+                    '',                         // answer
+                    0,                          // score
+                    0                           // total mean score
+                ));
             } else {
                 foreach ($taker->getAnswers() as $answer) { // status >= 3
 
@@ -387,7 +491,27 @@ class AdminController extends Controller
 
                     // if the person finished their test but was never graded
                     if (!$answer->isGraded()) {
-                        $this->echoArray(array($examID, $questionID, $answerID, $studentID, '', $name, $section, $didGrade, 0, $timeElapsedMinutes, $timeElapsedSeconds, $timeEntered, '', '', $answerCount, '', $answerText, "", "NOT GRADED"));
+                        $this->echoArray(array(
+                            $examID,                    // exam id
+                            $questionID,                // question id
+                            $answerID,                  // answer id
+                            $studentID,                 // student id
+                            '',                         // grader id
+                            $name,                      // name
+                            $section,                   // section
+                            $didGrade,                  // did grade
+                            0,                          // grader score (always 0)
+                            $timeElapsedMinutes,        // time elapsed
+                            $timeElapsedSeconds,        // time (s)
+                            $timeEntered,               // time entered
+                            '',                         // time scored
+                            '',                         // time scored (s)
+                            $answerCount,               // answer count
+                            '',                         // grade time
+                            $answerText,                // answer
+                            "",                          // score
+                            'NOT GRADED'                // total mean score
+                        ));
                     } else {
 
                         /**** POINTS DATA ****/
@@ -425,8 +549,28 @@ class AdminController extends Controller
                                 $points = '';
                             }
                             /**** END GRADE DATA ****/
-
-                            $this->echoArray(array($examID, $questionID, $answerID, $studentID, $graderID, $name, $section, $didGrade, 0, $timeElapsedMinutes, $timeElapsedSeconds, $timeEntered, $timeScoredMinutes, $timeScoredSeconds, $answerCount, $gradeTime, $answerText, $points, $totalMean));
+                            
+                            $this->echoArray(array(
+                                $examID,                    // exam id
+                                $questionID,                // question id
+                                $answerID,                  // answer id
+                                $studentID,                 // student id
+                                $graderID,                  // grader id
+                                $name,                      // name
+                                $section,                   // section
+                                $didGrade,                  // did grade
+                                0,                          // grader score (always 0)
+                                $timeElapsedMinutes,        // time elapsed
+                                $timeElapsedSeconds,        // time (s)
+                                $timeEntered,               // time entered
+                                $timeScoredMinutes,         // time scored
+                                $timeScoredSeconds,         // time scored (s)
+                                $answerCount,               // answer count
+                                $gradeTime,                 // grade time
+                                $answerText,                // answer
+                                $points,                    // score
+                                $totalMean                  // total mean score
+                            ));
                         }
                     }
                 }

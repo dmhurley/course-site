@@ -58,11 +58,19 @@ class PublicController extends Controller
 			$exams = $this->getNextExam($student);
 			foreach($exams as $e) {
 				$t = $db->findOne(array('student' => $student, 'exam' => $exam));
-				if ( (!$t || $t->getStatus() < 4) && new \DateTime($e->getTDate()->format('Y-m-d ').$e->getTEnd()->format('H:i:s')) < new \DateTime()) {
+				if ( 
+					(!$t || $t->getStatus() < 4) && 
+					new \DateTime($e->getTDate()->format('Y-m-d ').
+					 	$e->getTEnd()->format('H:i:s')
+					) < new \DateTime()) {
 					// not started/or submitted yet
 					// too late to start/finish exam
 					$message = "It is too late to take ".$e->getTitle().".";
-				} else if ( (!$t || $t->getStatus() < 6) && new \DateTime($e->getGDate()->format('Y-m-d ').$e->getGEnd()->format('H:i:s')) < new \DateTime()) {
+				} else if (
+					(!$t || $t->getStatus() < 6) &&
+					new \DateTime($e->getGDate()->format('Y-m-d ').
+						$e->getGEnd()->format('H:i:s')
+					) < new \DateTime()) {
 					// not finished grading / or not started
 					// to late to start/finish grading
 
@@ -97,21 +105,21 @@ class PublicController extends Controller
 		}
 
 		if (!$taker || $taker->getStatus() === 1 || $taker->getStatus() === 6) {
-			return $this->startAction($request, $exam, $taker, $student, $message, $db, $exams);
+			return $this->startAction($request, $exam, $taker, $student, $message, $flash, $db, $exams);
 		} else {
 			if ($taker->getStatus() === 2) {
-				return $this->examAction($request, $exam, $taker, $db);
+				return $this->examAction($request, $exam, $taker, $flash, $db);
 			}
 
 			// skips status code 3
 
 			if ($taker->getStatus() === 4) {
 				
-				return $this->waitAction($request, $exam, $taker, $db);
+				return $this->waitAction($request, $exam, $taker, $flash, $db);
 			}
 
 			if ($taker->getStatus() === 5) {
-				return $this->gradeAction($request, $exam, $taker, $db);
+				return $this->gradeAction($request, $exam, $taker, $flash, $db);
 			}
 		}
 	}
@@ -121,7 +129,7 @@ class PublicController extends Controller
 	 * 
 	 * status 1
 	 */
-	private function startAction(Request $request, $exam, $taker, $student, $message, $db, $exams) {
+	private function startAction(Request $request, $exam, $taker, $student, $message, $flash, $db, $exams) {
 		// create form
 		$form = $this->createFormBuilder()
 			->add('start', 'submit')
@@ -148,18 +156,27 @@ class PublicController extends Controller
 
 				$db->close();
 
-				$request->getSession()->getFlashBag()->set('success', 'Exam started.');
+				$flash->set('success', 'Exam started.');
 				return $this->redirect($this->generateUrl('exam_entrance'));
 			} else {
 				// INSPECT ELEMENT CHEATERS GO HERE!
-				$request->getSession()->getFlashBag()->set('failure', 'Exam has not started yet.');
+				$flash->set('failure', 'Exam has not started yet.');
 			}
 		}
 		$db = new Database($this, 'BioExamBundle:ExamGlobal');
 		$global = $db->findOne(array());
 		$db = new Database($this, 'BioExamBundle:TestTaker');
 		$takers = $db->find(array('student' => $student), array(), false);
-		return $this->render('BioExamBundle:Public:start.html.twig', array('form' => $form->createView(), 'global'=>$global, 'exam' => $exam, 'message' => $message, 'takers' => $takers, 'exams' => $exams, 'title' => 'Begin Test'));
+		return $this->render('BioExamBundle:Public:start.html.twig', array(
+			'form' => $form->createView(),
+			'global'=> $global,
+			'exam' => $exam,
+			'message' => $message,
+			'takers' => $takers,
+			'exams' => $exams,
+			'title' => 'Begin Test'
+			)
+		);
 	}
 
 	/**
@@ -168,7 +185,7 @@ class PublicController extends Controller
 	 *
 	 * @Template()
 	 */
-	private function examAction(Request $request, $exam, $taker, $db) {
+	private function examAction(Request $request, $exam, $taker, $flash, $db) {
 		// if they submitted the exam
 		if ($request->getMethod() === "POST") {
 
@@ -176,7 +193,7 @@ class PublicController extends Controller
 			$validator = $this->get('validator');
 
 			if (count($request->request->keys()) !== count($exam->getQuestions()) + 1){
-				$request->getSession()->getFlashBag()->set('failure', 'Error.');
+				$flash->set('failure', 'Error.');
 			} else {
 
 				foreach($request->request->keys() as $key) {
@@ -187,14 +204,14 @@ class PublicController extends Controller
 					if ($answer) {
 						$answer->setAnswer($request->request->get($key));
 					} else {
-						$request->getSession()->getFlashBag()->set('failure', 'Invalid IDs.');
+						$flash->set('failure', 'Invalid IDs.');
 						$areErrors = true;
 						break;
 					}
 
 					$errors = $validator->validate($answer);
 					if (count($errors) > 0 && $request->request->has('submit')) {
-						$request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+						$flash->set('failure', 'Invalid form.');
 						$areErrors = true;
 						$answer->errors = $errors;
 					}
@@ -204,20 +221,24 @@ class PublicController extends Controller
 					if (!$areErrors && $request->request->has('submit')) {
 						$taker->setStatus(4);
 						$db->close();
-						$request->getSession()->getFlashBag()->set('success', 'Answers submitted.');
+						$flash->set('success', 'Answers submitted.');
 						return $this->redirect($this->generateUrl('exam_entrance'));
 					} else {
 						if ($request->request->has('save')) {
-							$request->getSession()->getFlashBag()->set('success', 'Answers saved.');
+							$flash->set('success', 'Answers saved.');
 						}
 						$db->close();
 					}
 				} catch (BioException $e) {
-					$request->getSession()->getFlashBag()->set('failure', 'Could not save progress.');
+					$flash->set('failure', 'Could not save progress.');
 				}
 			}
 		}
-		return $this->render('BioExamBundle:Public:exam.html.twig', array('taker' => $taker, 'title' => $exam->getTitle()));
+		return $this->render('BioExamBundle:Public:exam.html.twig', array(
+			'taker' => $taker,
+			'title' => $exam->getTitle()
+			)
+		);
 	}
 
 	/**
@@ -225,7 +246,7 @@ class PublicController extends Controller
 	 *
 	 * status 4
 	 */
-	private function waitAction(Request $request, $exam, $taker, $db) {
+	private function waitAction(Request $request, $exam, $taker, $flash, $db) {
 		$db = new Database($this, 'BioExamBundle:ExamGlobal');
 		$global = $db->findOne(array());
 		if ($taker->getNumGraded() >= $global->getGrade()) {
@@ -233,7 +254,7 @@ class PublicController extends Controller
 			$code = base64_encode($code);
 			$taker->setStatus(6);
 			$db->close();
-			$request->getSession()->getFlashBag()->set('success', "Finished exam.");
+			$flash->set('success', "Finished exam.");
 
 
 			// email confirmation code
@@ -243,7 +264,10 @@ class PublicController extends Controller
 				->setSubject($taker->getExam()->getTitle().' confirmation')
 				->setFrom($info->getEmail())
 				->setTo($taker->getStudent()->getEmail())
-				->setBody($this->renderView('BioExamBundle:Public:email.html.twig', array('code' => $code, 'taker' => $taker)))
+				->setBody($this->renderView('BioExamBundle:Public:email.html.twig', 
+						array('code' => $code, 'taker' => $taker)
+					)
+				)
 				->setContentType('text/html');
 			$this->get('mailer')->send($message);
 
@@ -254,7 +278,7 @@ class PublicController extends Controller
 		$now = new \DateTime();
 		$gradeStart = new \DateTime($exam->getGDate()->format("Y-m-d")." ".$exam->getGStart()->format("H:i:s"));
 		if ($now < $gradeStart) {
-			$request->getSession()->getFlashBag()->set('failure', 'Grading starts at '.$gradeStart->format('m/d').' at '. $gradeStart->format('h:i a').'.');
+			$flash->set('failure', 'Grading starts at '.$gradeStart->format('m/d').' at '. $gradeStart->format('h:i a').'.');
 		} else
 
 		// if the pressed submit
@@ -288,7 +312,12 @@ class PublicController extends Controller
 			}
 		}
 
-		return $this->render('BioExamBundle:Public:wait.html.twig', array('taker' => $taker, 'exam' => $exam, 'global' => $global, 'title' => 'Finding Test'));
+		return $this->render('BioExamBundle:Public:wait.html.twig', array(
+			'taker' => $taker,
+			'exam' => $exam,
+			'global' => $global,
+			'title' => 'Finding Test'
+			));
 	}
 
 	/**
@@ -296,19 +325,28 @@ class PublicController extends Controller
 	 *
 	 * status 5
 	 */
-	private function gradeAction(Request $request, $exam, $taker, $db) {
+	private function gradeAction(Request $request, $exam, $taker, $flash, $db) {
 		if ($request->getMethod() === "POST") {
 			if (count($request->request->keys()) !== count($exam->getQuestions())) {
-				$request->getSession()->getFlashBag()->set('failure', 'Answer all the questions.');
+				$flash->set('failure', 'Answer all the questions.');
 			} else {
 				$targetAnswers = $taker->getGrading()->getAnswers();
 				foreach($request->request->keys() as $key) { // keys are answer ids
 					$answer = $this->findObjectByFieldValue($key, $targetAnswers, 'id');
-					if ($answer && $answer->getQuestion()->getPoints() >= (int)$request->request->get($key) && (int)$request->request->get($key) >= 0){
+					if (
+						$answer && 
+						$answer->getQuestion()->getPoints() >= (int)$request->request->get($key) && 
+						(int)$request->request->get($key) >= 0
+					){
 						$answer->grade($taker, (int) $request->request->get($key));
 					} else {
-						$request->getSession()->getFlashBag()->set('failure', "Invalid form.");
-						return $this->render('BioExamBundle:Public:grade.html.twig', array('taker' => $taker->getGrading(), 'start' => $taker->getTimecard()[5], 'title' => 'Grade Exam'));
+						$flash->set('failure', "Invalid form.");
+						return $this->render('BioExamBundle:Public:grade.html.twig', array(
+							'taker' => $taker->getGrading(),
+							'start' => $taker->getTimecard()[5],
+							'title' => 'Grade Exam'
+							)
+						);
 					}
 				}
 				$taker->addGraded($taker->getGrading())
@@ -317,7 +355,7 @@ class PublicController extends Controller
 				$db = new Database($this, 'BioExamBundle:ExamGlobal');
 				$global = $db->findOne(array());
 
-				$request->getSession()->getFlashBag()->set('success', 'Test graded. '.($global->getGrade()-count($taker->getGraded()).' left.'));
+				$flash->set('success', 'Test graded. '.($global->getGrade()-count($taker->getGraded()).' left.'));
 				$taker->setStatus(4);
 
 				$db->close();
@@ -325,7 +363,12 @@ class PublicController extends Controller
 			}
 		}
 
-		return $this->render('BioExamBundle:Public:grade.html.twig', array('taker' => $taker->getGrading(), 'start' => $taker->getTimecard()[5], 'title' => 'Grade Exam'));
+		return $this->render('BioExamBundle:Public:grade.html.twig', array(
+			'taker' => $taker->getGrading(),
+			'start' => $taker->getTimecard()[5],
+			'title' => 'Grade Exam'
+			)
+		);
 	}
 
 	/**
@@ -404,7 +447,15 @@ class PublicController extends Controller
 					 	 AND p.gEnd >= :time)'
 				)
 			->andWhere("(:section LIKE CONCAT(p.section, '%') OR p.section IS NULL)")
-			->andWhere(':student NOT IN (SELECT s FROM BioExamBundle:TestTaker t JOIN t.student s WHERE t.status = 6 AND t.exam = p)')
+			->andWhere(
+				':student NOT IN 
+					(SELECT s 
+					FROM BioExamBundle:TestTaker t
+					JOIN t.student s
+					WHERE t.status = 6
+					AND t.exam = p)
+				'
+			)
 			->addOrderBy('p.tDate', 'ASC')
 			->addOrderBy('p.tStart', 'ASC')
 			->setParameter('date', new \DateTime(), \Doctrine\DBAL\Types\Type::DATE)

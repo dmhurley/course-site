@@ -36,7 +36,7 @@
 			</div>
 		{% endif %}
 
-		{% if (cSections|length > 0 and form.showing.children[1].vars['data']) and is_granted('ROLE_ADMIN') %}
+		{% if (cSections|length > 0 and form.showing.children[1].vars['data']) or is_granted('ROLE_ADMIN') %}
 			<div class="row">
 				{{row.show(form.showing.children[1])}}
 				<h2>Course Sections</h2>

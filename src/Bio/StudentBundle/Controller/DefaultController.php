@@ -36,9 +36,11 @@ class DefaultController extends Controller
      * @Template()
      */
     public function findAction(Request $request){
-        $findArray = $request->getSession()->getFlashBag()->peek('find');
+        $flash = $request->getSession()->getFlashBag();
+
+        $db = new Database($this, 'BioInfoBundle:Section');
+        $findArray = $flash->peek('find');
         if ( isset($findArray['section'])) {
-            $db = new Database($this, 'BioInfoBundle:Section');
             $s = $db->find(array('id' => $findArray['section']), array(), false);
             if (!$s) {
                 unset($findArray['section']);
@@ -47,34 +49,66 @@ class DefaultController extends Controller
             }
         }
         $form = $this->createFormBuilder($request->getSession()->getFlashBag()->peek('find'))
-            ->add('sid', 'text', array('label' => 'Student ID:', 'required' => false, 'attr' => array('disabled' => 'disabled')))
-            ->add('fName', 'text', array('label' => 'First Name:', 'required' => false))
-            ->add('lName', 'text', array('label' => 'Last Name:', 'required' => false))
-            ->add('section', 'entity', array('label' => 'Section:', 'required' => false, 'class' => 'BioInfoBundle:Section', 'property' => 'name', 'empty_value' => '', 'query_builder' => function($repo) {return $repo->createQueryBuilder('s')->orderBy('s.name', 'ASC');}))
-            ->add('email', 'text', array('label' => 'Email:','required' => false, 'attr' => array('disabled' => 'disabled')))
+            ->add('sid', 'text', array(
+                'label' => 'Student ID:',
+                'required' => false,
+                'attr' => array('disabled' => 'disabled')
+                )
+            )
+            ->add('fName', 'text', array(
+                'label' => 'First Name:',
+                'required' => false
+                )
+            )
+            ->add('lName', 'text', array(
+                'label' => 'Last Name:',
+                'required' => false
+                )
+            )
+            ->add('section', 'entity', array(
+                'label' => 'Section:',
+                'required' => false,
+                'class' => 'BioInfoBundle:Section',
+                'property' => 'name',
+                'data' => $flash->has('find')?$db->findOne(array('id' => $flash->peek('find'))):'',
+                'empty_value' => '',
+                'query_builder' => function($repo) {
+                    return $repo->createQueryBuilder('s')->orderBy('s.name', 'ASC');
+                }
+                )
+            )
+            ->add('email', 'text', array(
+                'label' => 'Email:',
+                'required' => false,
+                'attr' => array('disabled' => 'disabled')
+                )
+            )
             ->add('find', 'submit')
             ->getForm();
 
         $result = array();
-        if ($request->getMethod() === "POST" || $request->getSession()->getFlashBag()->has('find')) {
+        if ($request->getMethod() === "POST" || $flash->has('find')) {
             $form->handleRequest($request);
             if ($request->getMethod() !== "POST") {
-                $array = $request->getSession()->getFlashBag()->peek('find');
+                $array = $flash->peek('find');
                 $result = $this->findStudents($array);
             } else if ($form->isValid()) {
                 $array = array_filter(array_slice($form->getData(), 0, 5));
                 if (isset($array['section'])) {
                     $array['section'] = $array['section']->getId();
                 }
-                $request->getSession()->getFlashBag()->set('find', $array);
+                $flash->set('find', $array);
                 $result = $this->findStudents($array);
             } else {
-                var_dump($form->getData());
-                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                $flash->set('failure', 'Invalid form.');
             }
         }
 
-        return array('form' => $form->createView(), 'entities' => $result, 'title' => 'Find Student');
+        return array(
+            'form' => $form->createView(),
+            'entities' => $result,
+            'title' => 'Find Student'
+            );
     }
 
     private function findStudents($array) {
@@ -108,7 +142,9 @@ class DefaultController extends Controller
      * @Template()
      */
     public function addAction(Request $request)
-    {
+    {   
+        $flash = $request->getSession()->getFlashBag();
+
     	$entity = new Student();
     	$form = $this->createForm(new StudentType(), $entity, array('label' => 'add'));
 
@@ -121,16 +157,16 @@ class DefaultController extends Controller
                     $entity->setPassword($encoder->encodePassword($entity->getLName(), $entity->getSalt()));
                     $db->add($entity);
                     $db->close("That Student ID or email is already registered.");
-                    $request->getSession()->getFlashBag()->set('success', 'Student added.');
+                    $flash->set('success', 'Student added.');
                     return $this->redirect($this->generateUrl('add_student'));
                 } catch (BioException $e) {
                     $error = new FormError("That student ID or email is already registered");
                     $form->get('sid')->addError($error);
                     $form->get('email')->addError($error);
-                    $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                    $flash->set('failure', 'Invalid form.');
                 }
     		} else {
-    			$request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+    			$flash->set('failure', 'Invalid form.');
     		}
     	}
         return array('form' => $form->createView(), 'title' => "Add Student");
@@ -140,15 +176,17 @@ class DefaultController extends Controller
      * @Route("/delete/{id}", name="delete_student")
      */
     public function deleteAction(Request $request, Student $student = null) {
+        $flash = $request->getSession()->getFlashBag();
+
         if ($student !== null){
             $db = new Database($this, 'BioStudentBundle:Student');
             $db->delete($student);
 
             try {
                 $db->close();
-                $request->getSession()->getFlashBag()->set('success', "Student removed.");
+                $flash->set('success', "Student removed.");
             } catch (BioException $e){
-                $request->getSession()->getFlashBag()->set('failure', "Could not delete student");
+                $flash->set('failure', "Could not delete student");
             }
         }
     	
@@ -164,12 +202,18 @@ class DefaultController extends Controller
      * @Template("BioStudentBundle:Default:add.html.twig")
      */
     public function editAction(Request $request, Student $student = null) {
+        $flash = $request->getSession()->getFlashBag();
+
         if ($student === null) {
-            $request->getSession()->getFlashBag()->set('failure', 'Could not find that student.');
+            $flash->set('failure', 'Could not find that student.');
             return $this->redirect($this->generateUrl('find_student'));
         }
 
-    	$form = $this->createForm(new StudentType(), $student, array('title' => 'save', 'edit' => true));
+    	$form = $this->createForm(new StudentType(), $student, array(
+            'title' => 'save',
+            'edit' => true
+            )
+        );
 
     	if ($request->getMethod() === "POST") {		// if request was sent
     		$form->handleRequest($request);
@@ -177,14 +221,14 @@ class DefaultController extends Controller
     			$db = new Database($this, 'BioStudentBundle:Student');
                 try {
                     $db->close();
-                    $request->getSession()->getFlashBag()->set('success', 'Student edited.');
+                    $flash->set('success', 'Student edited.');
                     return $this->redirect($this->generateUrl('find_student'));
                 } catch (BioException $e) {
                     $form->get('email')->addError(new FormError("A student already has that email."));
-                    $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                    $flash->set('failure', 'Invalid form.');
                 }
     		} else {
-                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                $flash->set('failure', 'Invalid form.');
             }
     	}
 
@@ -196,6 +240,8 @@ class DefaultController extends Controller
      * @Template()
      */
     public function uploadAction(Request $request) {
+        $flash = $request->getSession()->getFlashBag();
+
     	$form = $this->createFormBuilder()
     		->add('file', 'file', array('label' => 'File:'))
     		->add('Upload', 'submit')
@@ -205,13 +251,13 @@ class DefaultController extends Controller
     		$form->handleRequest($request);
     		$data = $form->get('file')->getData();
     		if ($data !== null) {
-    			$file = file($data, FILE_IGNORE_NEW_LINES);
+    			$file = preg_split('/\n\r|\r\n|\n|\r/', file_get_contents($data));
     			try {
                     $count = $this->uploadStudentList($file);
-                    $request->getSession()->getFlashBag()->set('success', "Uploaded $count students.");
+                    $flash->set('success', "Uploaded $count students.");
                 } catch (BioException $e) {
                     $form->get('file')->addError(new FormError($e->getMessage()));
-                    $request->getSession()->getFlashBag()->set('failure', 'Upload error.');
+                    $flash->set('failure', 'Upload error.');
                 }
 	    	}
     	}
@@ -232,14 +278,17 @@ class DefaultController extends Controller
         $ents = [];
 
         $sections = [];
-
         for ($i = 1; $i < count($file); $i++) {
-            list($sid, $name, $sectionName, $credits, $gender, $class, $major, $email) = preg_split('/","|,"|",|"/', $file[$i], -1, PREG_SPLIT_NO_EMPTY);
-            if (!($sid && $name && $sectionName && $credits && $gender && $class && $major && $email)) {
+            $array = array();
+            preg_match_all('/(?<=^|,)(\"(?:[^\"]|\"\")*\"|[^,]*)/', $file[$i], $array);
+            list($sid, $name, $sectionName, $credits, $gender, $class, $major, $email) = $array[0];
+            if (!($sid && $name && $sectionName &&
+                  $credits && $gender && $class && $major)) {
                 throw new BioException("The file was badly formatted");
             }
 
-            if (! ($section = $this->findObjectByFieldValue($sectionName, $dbSections, 'name')) && !($section = $this->findObjectByFieldValue($sectionName, $sections, 'name'))) {
+            if ( !($section = $this->findObjectByFieldValue($sectionName, $dbSections, 'name')) && 
+                 !($section = $this->findObjectByFieldValue($sectionName, $sections, 'name'))) {
                 $section = new Section();
                 $section->setName($sectionName)
                     ->setStart(new \DateTime('midnight'))
@@ -253,7 +302,9 @@ class DefaultController extends Controller
                 $sections[] = $section;
             }
 
-            list($lName, $fName) = explode(", ", $name);
+            list($lName, $fName) = explode(",", substr($name, 1, -1) );
+            $lName = trim($lName);
+            $fName = trim($fName);
             while (strlen($sid) < 7) {
                 $sid = "0".$sid;
             }
@@ -266,7 +317,9 @@ class DefaultController extends Controller
                 ->setPassword($encoder->encodePassword($lName, $entity->getSalt()));
             if (!in_array($sid, $sids) && !in_array($email, $emails)) {
                 $sids[] = $sid;
-                $emails[] = $email;
+                if ($email) {
+                    $emails[] = $email;
+                }
                 $ents[] = $entity;
             } else {
                 throw new BioException("The file contained duplicate Student IDs or emails.");
@@ -301,7 +354,8 @@ class DefaultController extends Controller
         $cSections = [];
 
         foreach($sections as $section) {
-            if (!($c = $this->findObjectByFieldValue(substr($section->getName(), 0, 1), $cSections, 'name')) && !($c = $this->findObjectByFieldValue(substr($section->getName(), 0, 1), $s, 'name'))) {
+            if ( !($c = $this->findObjectByFieldValue(substr($section->getName(), 0, 1), $cSections, 'name')) &&
+                 !($c = $this->findObjectByFieldValue(substr($section->getName(), 0, 1), $s, 'name'))) {
                 $c = new CourseSection();
                 $c->setName(substr($section->getName(), 0, 1))
                     ->setDays([])
