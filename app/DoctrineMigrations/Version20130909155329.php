@@ -5,26 +5,11 @@ namespace Application\Migrations;
 use Doctrine\DBAL\Migrations\AbstractMigration,
     Doctrine\DBAL\Schema\Schema;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface,
-    Symfony\Component\DependencyInjection\ContainerInterface;
-
-use Bio\InfoBundle\Entity\Person;
-use Bio\InfoBundle\Entity\Announcement;
-use Bio\InfoBundle\Entity\Link;
-use Bio\InfoBundle\Entity\Section;
-use Bio\InfoBundle\Entity\Hours;
-use Bio\InfoBundle\Entity\Info;
-use Bio\FolderBundle\Entity\Folder;
-use Bio\ExamBundle\Entity\ExamGlobal;
-use Bio\TripBundle\Entity\TripGlobal;
-
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-class Version20130909155329 extends AbstractMigration implements ContainerAwareInterface
+class Version20130909155329 extends AbstractMigration
 {   
-    private $container;
-
     public function up(Schema $schema)
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -91,6 +76,11 @@ class Version20130909155329 extends AbstractMigration implements ContainerAwareI
         $this->addSql("ALTER TABLE Request ADD CONSTRAINT FK_F42AB603427EB8A5 FOREIGN KEY (request_id) REFERENCES Request (id) ON DELETE SET NULL");
         $this->addSql("ALTER TABLE requested_sections ADD CONSTRAINT FK_5AE50A08427EB8A5 FOREIGN KEY (request_id) REFERENCES Request (id) ON DELETE CASCADE");
         $this->addSql("ALTER TABLE requested_sections ADD CONSTRAINT FK_5AE50A08577906E4 FOREIGN KEY (sections_id) REFERENCES Base (id) ON DELETE CASCADE");
+
+        $this->addSql("INSERT INTO `TripGlobal` (`opening`, `closing`, `maxTrips`, `evalDue`, `guidePass`, `instructions`, `promo`) VALUES ('2013-09-20 09:39:25', '2013-09-20 09:39:25', 1, 5, '', 'Trip instructions go here.', 'Trip promo goes here.');");
+        $this->addSql("INSERT INTO `ExamGlobal` (`grade`, `rules`) VALUES (2, 'Exam rules go here.');");
+        $this->addSql("INSERT INTO `FileBase` (`id`, `parent_id`, `type`, `name`, `private`, `path`) VALUES (1, NULL, 'folder', 'root', 0, NULL);");
+        $this->addSql("INSERT INTO `Info` (`courseNumber`, `title`, `qtr`, `year`, `days`, `startTime`, `endTime`, `bldg`, `room`, `email`) VALUES ('999', 'Biologiology', 'summer', 2013, 'a:3:{i:0;s:1:\"m\";i:1;s:1:\"w\";i:2;s:1:\"f\";}', '09:15:14', '09:15:14', 'HCK	Hitchcock Hall', '120', 'fakeemail@gmail.com')");
     }
 
     public function down(Schema $schema)
@@ -159,57 +149,5 @@ class Version20130909155329 extends AbstractMigration implements ContainerAwareI
         $this->addSql("DROP TABLE graded_by");
         $this->addSql("DROP TABLE Request");
         $this->addSql("DROP TABLE requested_sections");
-    }
-
-    public function setContainer(ContainerInterface $container = null) {
-        $this->container = $container;
-    }
-
-    public function postUp(Schema $schema) {
-        $em = $this->container->get('doctrine.orm.entity_manager');
-
-         $info = new Info();
-            $info->setCourseNumber(999)
-                ->setTitle('Biologiology')
-                ->setQtr('summer')
-                ->setYear(2013)
-                ->setDays(array('m', 'w', 'f'))
-                ->setStartTime(new \DateTime())
-                ->setEndTime(new \DateTime())
-                ->setBldg("HCK\tHitchcock Hall")
-                ->setRoom('120')
-                ->setEmail('fakeemail@gmail.com');
-
-            $root = new Folder();
-            $root->setName('root');
-            $root->setPrivate(false);
-
-            $instructor = new Person();
-            $instructor->setfName('John')
-                ->setlName('Doe')
-                ->setEmail('johndoe@gmail.com')
-                ->setBldg("HCK\tHitchcock Hall")
-                ->setRoom('101')
-                ->setTitle('instructor');
-
-            $examGlobal = new ExamGlobal();
-            $examGlobal->setGrade(2)
-                ->setRules("Exam rules go here.");
-
-            $tripGlobal = new TripGlobal();
-            $tripGlobal->setOpening(new \DateTime())
-                ->setClosing(new \Datetime())
-                ->setMaxTrips(1)
-                ->setEvalDue(5)
-                ->setPromo('Trip promo goes here.')
-                ->setInstructions('Trip instructions go here.');
-
-        $em->persist($info);
-        $em->persist($root);
-        $em->persist($instructor);
-        $em->persist($examGlobal);
-        $em->persist($tripGlobal);
-
-        $em->flush();
     }
 }
