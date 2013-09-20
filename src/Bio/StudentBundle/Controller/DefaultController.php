@@ -250,7 +250,7 @@ class DefaultController extends Controller
     		$form->handleRequest($request);
     		$data = $form->get('file')->getData();
     		if ($data !== null) {
-    			$file = file($data, FILE_IGNORE_NEW_LINES);
+    			$file = preg_split('/\n\r|\r\n|\n|\r/', file_get_contents($data));
     			try {
                     $count = $this->uploadStudentList($file);
                     $flash->set('success', "Uploaded $count students.");
@@ -277,11 +277,12 @@ class DefaultController extends Controller
         $ents = [];
 
         $sections = [];
-
         for ($i = 1; $i < count($file); $i++) {
-            list($sid, $name, $sectionName, $credits, $gender, $class, $major, $email) = preg_split('/","|,"|",|"/', $file[$i], -1, PREG_SPLIT_NO_EMPTY);
+            $array = array();
+            preg_match_all('/(?<=^|,)(\"(?:[^\"]|\"\")*\"|[^,]*)/', $file[$i], $array);
+            list($sid, $name, $sectionName, $credits, $gender, $class, $major, $email) = $array[0];
             if (!($sid && $name && $sectionName &&
-                  $credits && $gender && $class && $major && $email)) {
+                  $credits && $gender && $class && $major)) {
                 throw new BioException("The file was badly formatted");
             }
 
@@ -300,7 +301,9 @@ class DefaultController extends Controller
                 $sections[] = $section;
             }
 
-            list($lName, $fName) = explode(", ", $name);
+            list($lName, $fName) = explode(",", substr($name, 1, -1) );
+            $lName = trim($lName);
+            $fName = trim($fName);
             while (strlen($sid) < 7) {
                 $sid = "0".$sid;
             }
@@ -313,7 +316,9 @@ class DefaultController extends Controller
                 ->setPassword($encoder->encodePassword($lName, $entity->getSalt()));
             if (!in_array($sid, $sids) && !in_array($email, $emails)) {
                 $sids[] = $sid;
-                $emails[] = $email;
+                if ($email) {
+                    $emails[] = $email;
+                }
                 $ents[] = $entity;
             } else {
                 throw new BioException("The file contained duplicate Student IDs or emails.");
