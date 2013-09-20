@@ -74,7 +74,14 @@ class PublicController extends Controller
             ->getQuery();
         $yourTrips = $yourQuery->getResult();
 
-    	return $this->render('BioTripBundle:Public:browse.html.twig', array('future' => $futureTrips, 'past' => $pastTrips, 'your' => $yourTrips, 'global' => $global, 'title' => 'Sign Up'));
+    	return $this->render('BioTripBundle:Public:browse.html.twig', array(
+            'future' => $futureTrips,
+            'past' => $pastTrips,
+            'your' => $yourTrips,
+            'global' => $global,
+            'title' => 'Sign Up'
+            )
+        );
 
     }
 
@@ -82,26 +89,28 @@ class PublicController extends Controller
      * @Route("/join/{id}", name="join_trip")
      */
     public function joinAction(Request $request, Trip $trip = null) {
+        $flash = $request->getSession()->getFlashBag();
+
         $db = new Database($this, 'BioTripBundle:TripGlobal');
         $global = $db->findOne(array());
     	if (!$trip) {
-    		$request->getSession()->getFlashBag()->set('failure', 'Trip could not be found.');
+    		$flash->set('failure', 'Trip could not be found.');
     	} else if ($trip->getStart() < new \DateTime()) {
-            $request->getSession()->getFlashBag()->set('failure', 'Too late to join.');
+            $flash->set('failure', 'Too late to join.');
         } else if ($global->getOpening() > new \DateTime() || $global->getClosing() < new \DateTime()) {
-
+            // flash filled by testAction
         } else {
     		$student = $this->get('security.context')->getToken()->getUser();
             // TODO make sure trip hasn't passed!!!!!!
 			if (count($trip->getStudents()) >= $trip->getMax()) {
-				$request->getSession()->getFlashBag()->set('failure', 'Trip is full.');
+				$flash->set('failure', 'Trip is full.');
 			} else {
     			$trip->addStudent($student);
     			try {
     				$db->close();
-    				$request->getSession()->getFlashBag()->set('success', 'Joined trip.');
+    				$flash->set('success', 'Joined trip.');
     			} catch (BioException $e) {
-    				$request->getSession()->getFlashBag()->set('failure', 'You cannot sign up for any more trips.');
+    				$flash->set('failure', 'You cannot sign up for any more trips.');
     			}
     		}
     	}
@@ -112,14 +121,16 @@ class PublicController extends Controller
      * @Route("/leave/{id}", name="leave_trip")
      */
     public function leaveAction(Request $request, Trip $trip = null) {
+        $flash = $request->getSession()->getFlashBag();
+
         $db = new Database($this, 'BioTripBundle:TripGlobal');
         $global = $db->findOne(array());
     	if (!$trip) {
-    		$request->getSession()->getFlashBag()->set('failure', 'Trip not found.');
+    		$flash->set('failure', 'Trip not found.');
     	} else if ($trip->getStart() < new \DateTime()) {
-            $request->getSession()->getFlashBag()->set('failure', 'Too late to leave.');
+            $flash->set('failure', 'Too late to leave.');
         } else if ($global->getOpening() > new \DateTime() || $global->getClosing() < new \DateTime()) {
-
+            // flash filled by test action
         }  else {
     		$student = $this->get('security.context')->getToken()->getUser();
             // TODO make sure trip hasn't passed!!!!!!
@@ -127,9 +138,9 @@ class PublicController extends Controller
             try {
               $db = new Database($this, 'BioTripBundle:Trip');  
     		  $db->close();
-    		  $request->getSession()->getFlashBag()->set('success', 'Left trip.');
+    		  $flash->set('success', 'Left trip.');
             } catch (BioException $e) {
-                $request->getSession()->getFlashBag()->set('failure', 'Error.');
+                $flash->set('failure', 'Error.');
             }
     	}
 
@@ -154,6 +165,8 @@ class PublicController extends Controller
      * @Template()
      */
     public function evalAction(Request $request, Trip $trip = null) {
+        $flash = $request->getSession()->getFlashBag();
+
         /****** GET STUFF FROM DATABASE ******/
         $db = new Database($this, 'BioTripBundle:TripGlobal');
         $global = $db->findOne(array()); 
@@ -165,30 +178,30 @@ class PublicController extends Controller
 
         /****** DOES STUDENT/TRIP EXISTS ******/
         if (!$trip) {
-            $request->getSession()->getFlashBag()->set('failure', 'Could not find trip.');
+            $flash->set('failure', 'Could not find trip.');
             return $this->redirect($this->generateUrl('trip_entrance'));
         }
 
         /****** HAVE THEY NOT EVALUATED IT ******/
         if ($eval) {
-            $request->getSession()->getFlashBag()->set('failure', 'You have already submitted an evaluation.');
+            $flash->set('failure', 'You have already submitted an evaluation.');
             return $this->redirect($this->generateUrl('trip_entrance'));
         }
 
         /****** DID THEY GO ON TRIP ******/
         if (!in_array($student, $trip->getStudents()->toArray())) {
-            $request->getSession()->getFlashBag()->set('failure', 'You did not attend this trip.');
+            $flash->set('failure', 'You did not attend this trip.');
             return $this->redirect($this->generateUrl('trip_entrance'));
         }
 
         if ($trip->getEnd() > new \DateTime()) {
-            $request->getSession()->getFlashBag()->set('failure', 'This trip has not occured');
+            $flash->set('failure', 'This trip has not occured');
             return $this->redirect($this->generateUrl('trip_entrance'));
         }
 
         /****** IS TOO LATE TO EVALUATE? ******/
         if ($global->getClosing() < new \DateTime()) {
-            $request->getSession()->getFlashBag()->set('failure', 'It is too late to submit evaluations.');
+            $flash->set('failure', 'It is too late to submit evaluations.');
             return $this->redirect($this->generateUrl('trip_entrance'));
         }
 
@@ -202,7 +215,7 @@ class PublicController extends Controller
                 ->setTrip($trip);
             $db->add($eval);
             if (count($request->request->keys()) !== count($global->getEvalQuestions())) {
-                $request->getSession()->getFlashBag()->set('failure', 'Error.');
+                $flash->set('failure', 'Error.');
             } else {
                 foreach($request->request->keys() as $key) {
                     $question = $this->findObjectByFieldValue($key, $global->getEvalQuestions(), 'id');
@@ -214,12 +227,12 @@ class PublicController extends Controller
                         $eval->addResponse($response);
                     } else {
                         $areErrors = true;
-                        $request->getSession()->getFlashBag()->set('failure', 'Invalid IDs.');
+                        $flash->set('failure', 'Invalid IDs.');
                     }
 
                     $errors = $validator->validate($response);
                     if (count($errors) > 0){
-                        $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                        $flash->set('failure', 'Invalid form.');
                         $areErrors = true;
                         $question->errors = $errors;
                     }
@@ -227,10 +240,10 @@ class PublicController extends Controller
                 if (!$areErrors) {
                     try {
                         $db->close();
-                        $request->getSession()->getFlashBag()->set('success', 'Evaluation saved.');
+                        $flash->set('success', 'Evaluation saved.');
                         return $this->redirect($this->generateUrl('trip_entrance'));
                     } catch (BioException $e) {
-                        $request->getSession()->getFlashBag()->set('failure', 'Could not save evaluation.');
+                        $flash->set('failure', 'Could not save evaluation.');
                     }
                 }
             }
@@ -256,9 +269,11 @@ class PublicController extends Controller
         }
     }
     private function signIn(Request $request) {
+        $flash = $request->getSession()->getFlashBag();
+
         $form = $this->createFormBuilder()
-            ->add('email', 'text', array('label' => 'Email:'))
-            ->add('password', 'password', array('label' => 'Password:'))
+            ->add('email', 'text',          array('label' => 'Email:'))
+            ->add('password', 'password',   array('label' => 'Password:'))
             ->add('login', 'submit')
             ->getForm();
 
@@ -276,31 +291,37 @@ class PublicController extends Controller
                         $request->getSession()->set('leaderEmail', $form->get('email')->getData());
                         return $this->redirect($this->generateUrl('tour_guide_entrance'));
                     } else {
-                        $request->getSession()->getFlashBag()->set('failure', 'Wrong password.');
+                        $flash->set('failure', 'Wrong password.');
                     }
                 } else {
-                    $request->getSession()->getFlashBag()->set('failure', 'You are not leading any trips under that email.');
+                    $flash->set('failure', 'You are not leading any trips under that email.');
                 }
             } else {
-                $request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+                $flash->set('failure', 'Invalid form.');
             }
         }
 
-        return $this->render('BioTripBundle:Public:sign.html.twig', array('form' => $form->createView(), 'title' => 'Sign In'));
+        return $this->render('BioTripBundle:Public:sign.html.twig', array(
+            'form' => $form->createView(),
+            'title' => 'Sign In'
+            )
+        );
     }
     /**
      * @Route("/guide/trip/{id}", name="tour_guide_view_trip")
      * @Template()
      */
     public function guideViewTripAction(Request $request, Trip $trip = null) {
+        $flash = $request->getSession()->getFlashBag();
+
         if (!$request->getSession()->has('leaderEmail')) {
-            $request->getSession()->getFlashBag()->set('failure', 'Not signed in.');
+            $flash->set('failure', 'Not signed in.');
             return $this->redirect($this->generateUrl('tour_guide_entrance'));
         } else if (!$trip) {
-            $request->getSession()->getFlashBag()->set('failure', 'Trip not found');
+            $flash->set('failure', 'Trip not found');
             return $this->redirect($this->generateUrl('tour_guide_entrance'));
         } else if ($request->getSession()->get('leaderEmail') !== $trip->getEmail()) {
-            $request->getSession()->getFlashBag()->set('failure', 'Trip not found');
+            $flash->set('failure', 'Trip not found');
             return $this->redirect($this->generateUrl('tour_guide_entrance'));
         } else {
             return array('trip' => $trip, 'title' => $trip->getTitle());
@@ -317,7 +338,13 @@ class PublicController extends Controller
 
         if ($this->get('security.context')->isGranted('ROLE_ADMIN')) {
             $form = $this->createFormBuilder($global)
-                ->add('promo', 'textarea', array('attr' => array('class'=> 'tinymce', 'data-theme' => 'bio')))
+                ->add('promo', 'textarea', array(
+                    'attr' => array(
+                        'class'=> 'tinymce',
+                        'data-theme' => 'bio'
+                        )
+                    )
+                )
                 ->add('save', 'submit')
                 ->getForm();
 
