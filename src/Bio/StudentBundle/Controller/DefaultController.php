@@ -38,9 +38,9 @@ class DefaultController extends Controller
     public function findAction(Request $request){
         $flash = $request->getSession()->getFlashBag();
 
+        $db = new Database($this, 'BioInfoBundle:Section');
         $findArray = $flash->peek('find');
         if ( isset($findArray['section'])) {
-            $db = new Database($this, 'BioInfoBundle:Section');
             $s = $db->find(array('id' => $findArray['section']), array(), false);
             if (!$s) {
                 unset($findArray['section']);
@@ -70,6 +70,7 @@ class DefaultController extends Controller
                 'required' => false,
                 'class' => 'BioInfoBundle:Section',
                 'property' => 'name',
+                'data' => $flash->has('find')?$db->findOne(array('id' => $flash->peek('find'))):'',
                 'empty_value' => '',
                 'query_builder' => function($repo) {
                     return $repo->createQueryBuilder('s')->orderBy('s.name', 'ASC');

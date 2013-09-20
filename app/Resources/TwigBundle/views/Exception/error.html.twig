@@ -5,8 +5,8 @@
 {% block header %}
     {{parent()}}
 
-    <div id="sign">
-        <a href="{{ path('main_admin_page') }}">Admin</a>
+    <div class="login">
+        <a href="{{ path('main_admin_page') }}">Login</a>
     </div>
 
 {% endblock %}
@@ -15,8 +15,6 @@
     <h2>The server returned a "{{ status_code }} {{ status_text }}".</h2>
 
     <div>
-        Something is broken. Please e-mail us at [email] and let us know
-        what you were doing when this error occurred. We will fix it as soon
-        as possible. Sorry for any inconvenience caused.
+        Something is broken. Please let us know what you were doing when this error occurred. We will fix it as soon as possible. Sorry for any inconvenience caused.
     </div>
 {% endblock %}

@@ -8,6 +8,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
+use Doctrine\ORM\EntityRepository;
 
 class StudentType extends AbstractType {
 
@@ -27,7 +28,12 @@ class StudentType extends AbstractType {
             	'label' => "Section:",
             	'class' => 'BioInfoBundle:Section',
             	'property' => 'name',
-            	'empty_value' => '')
+            	'empty_value' => '',
+            	'query_builder' => function(EntityRepository $repo) {
+            			return $repo->createQueryBuilder('s')
+            				->orderBy('s.name', 'ASC');
+            		}
+            	)
             )
     		->add('email', 'email', array('label' => "Email:"))
     		->add($options['title'], 'submit');

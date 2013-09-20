@@ -17,6 +17,10 @@
 						<td>{{e.tDate|date('m/d')}} - {{e.tStart|date('h:i a')}} to {{e.tEnd|date('h:i a')}}</td>
 						<td>{{e.gDate|date('m/d')}} - {{e.gStart|date('h:i a')}} to {{e.gEnd|date('h:i a')}}</td>
 					</tr>
+				{% else %}
+					<tr>
+						<td colspan=3 style="text-align:center;">none scheduled</td>
+					</tr>
 				{% endfor %}
 			</tbody>
 		</table>

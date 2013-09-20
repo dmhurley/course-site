@@ -115,14 +115,16 @@ class AdminController extends Controller
     /**
      * @Route("/delete/{id}", name="delete_exam")
      */
-    public function deleteAction(Request $request, Exam $exam) {
+    public function deleteAction(Request $request, Exam $exam = null) {
+        $flash = $request->getSession()->getFlashBag();
+
 		if ($exam) {
             $db = new Database($this, 'BioExamBundle:Exam');
 			$db->delete($exam);
 			$db->close();
-			$request->getSession()->getFlashBag()->set('success', 'Exam deleted.');
+			$flash->set('success', 'Exam deleted.');
 		} else {
-			$request->getSession()->getFlashBag()->set('failure', 'Could not find that exam.');
+			$flash->set('failure', 'Could not find that exam.');
 		}
 
     	if ($request->headers->get('referer')){
@@ -136,10 +138,10 @@ class AdminController extends Controller
      * @Route("/edit/{id}", name="edit_exam")
      * @Template()
      */
-    public function editAction(Request $request, Exam $exam) {
+    public function editAction(Request $request, Exam $exam = null) {
         $flash = $request->getSession()->getFlashBag();
         if (!$exam) {
-            $request->getSession()->getFlashBag()->set('failure', 'Unable to find that exam.');
+            $flash->set('failure', 'Unable to find that exam.');
             return $this->redirect($this->generateUrl('manage_exams'));
         }
 
@@ -263,7 +265,7 @@ class AdminController extends Controller
     /**
      * @Route("/questions/delete/{id}", name="delete_question")
      */
-    public function deleteQuestionAction(Request $request, Question $q) {
+    public function deleteQuestionAction(Request $request, Question $q = null) {
         $flash = $request->getSession()->getFlashBag();
 		if ($q) {
             $em = $this->getDoctrine()->getManager();
@@ -300,7 +302,7 @@ class AdminController extends Controller
      * @Route("/questions/edit/{id}", name="edit_question")
      * @Template()
      */
-    public function editQuestionAction(Request $request, Question $q) {
+    public function editQuestionAction(Request $request, Question $q = null) {
         $flash = $request->getSession()->getFlashBag();
 		$form = $this->createFormBuilder($q)
 			->add('question', 'textarea', array(
@@ -358,6 +360,8 @@ class AdminController extends Controller
      * @Template()
      */
     public function previewAction(Request $request) {
+        $flash = $request->getSession()->getFlashBag();
+
         if ($request->query->get('id') && $request->query->get('type')) {
             $id = $request->query->get('id');
             $type = $request->query->get('type');
@@ -375,7 +379,7 @@ class AdminController extends Controller
 
                 return array('exam' => $exam, 'title' => 'Preview');
             } else {
-                $request->getSession()->getFlashBag()->set('failure', 'Could not find that '.$type.'.');
+                $flash->set('failure', 'Could not find that '.$type.'.');
                 return $this->redirect($this->generateUrl('manage_'.$type.'s'));
             }
         }
@@ -387,7 +391,6 @@ class AdminController extends Controller
      * @Template("BioExamBundle:Admin:download.txt.twig")
      */
     public function downloadAction(Request $request, Exam $exam) {
-
         if (!$exam) {
             $request->getSession()->getFlashBag()->set('failure', 'Exam does not exist.');
             return $this->redirect($this->generateUrl('manage_exams'));

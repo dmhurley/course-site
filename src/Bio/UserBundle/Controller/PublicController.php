@@ -47,7 +47,7 @@ class PublicController extends Controller
     }
 
     /**
-     * @Route("/register", name="register")
+     * @Route("/admin/register", name="register")
      * @Template()
      */
     public function registerAction(Request $request) {
@@ -93,7 +93,7 @@ class PublicController extends Controller
                 $flash->set('failure', 'Invalid form.');
             }
         } else {
-            $flash->set('failure', 'An instructor will have to approve this account. Don\'t bother signing up without permission');
+            // $flash->set('failure', 'An instructor will have to approve this account. Don\'t bother signing up if you are a student or don\'t have permission.');
         }
 
         return array('form' => $form->createView(), 'title' => 'Register Account');

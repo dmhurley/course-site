@@ -11,7 +11,7 @@ Welcome to a GitHub Repository for the University of Washington Biology Departme
 * MySQL must installed. Or at least another doctrine compatible database.
 * The latest version of mcrypt and libmcrypt must be installed.
 * The permissions of `app/cache`, `app/log`, `web/bundles`, and `web/files` [***must*** be set correctly](http://symfony.com/doc/current/book/installation.html#configuration-and-setup)
-* if apache does not follow symlinks. Assets must be installed with `php app/console assets:install`
+* If apache does not follow symlinks. Assets must be installed with `php app/console assets:install`
 
 The best way to get this repository running on your computer is to use Composer. If you don't have Composer installed you can run the following commands from the project directory to install the various Bundles this project uses.
 
@@ -40,7 +40,7 @@ This command will do the complete basic setup for you. Install bundles & assets,
 You can change the basic appearance of the site very easily with the main style sheet `src/Bio/PublicBundle/Resources/public/css/page.css`. Every rule regarding background, font, header images, and other basic style choices are at the top of the file, in logical groups with identifying comments. It may also be necessary to change the `border-color` at the top of `src/Bio/PublicBundle/Resources/public/css/form.css`.
 
 Changing only a few lines at the top of `page.css`, it is possible to go from this to this:
-<img src="http://i.imgur.com/03vb6m3.png" width=400 align="center"> <img src="http://i.imgur.com/giOhGa3.png" width=400 align="center">
+<img src="http://i.imgur.com/03vb6m3.png" width=350 align="center"> <img src="http://i.imgur.com/giOhGa3.png" width=350 align="center">
 
 Edit the `href` of the image-links in the header at `src/Bio/PublicBundle/views/main.html.twig`. Edit other portions of the css/html at your own risk.
 
@@ -56,7 +56,7 @@ In addition to `bio:setup` there are several other console commands to make your
 
 			php app/console bio:install [-d|--default] [-a|--all] [--no-clear] [bundles1] ... [bundlesN]
 		
-	to install them. `bundles` should be replaced with any combination of `info`, `folder`, `student`, `clicker`, 	`score`, `exam` `trip`, `switch`, and `user`. This command adds the necessary lines to `app/config/sidebar.yml` and 	`app/config/routing.yml`. The `-a` shortcut install alls available bundles, while `-d` installs only the default. If no bundles are specified, whatever bundles are set in `app/config/parameters.yml` will be used. After the installation has been completed the command attempts to clear the cache (unless `--no-clear` is enabled). Usually this step will fail and the cache will have to be cleared manually.
+	to install them. `bundles` should be replaced with any combination of `info`, `folder`, `student`, `clicker`, 	`score`, `exam` `trip`, `switch`, and `user`. This command adds the necessary lines to `app/config/sidebar.yml` and 	`app/config/routing.yml`. The `-a` shortcut installs all available bundles, while `-d` installs only the default. If no bundles are specified, whatever bundles are set in `app/config/parameters.yml` will be used. After the installation has been completed the command attempts to clear the cache (unless `--no-clear` is enabled). Usually this step will fail and the cache will have to be cleared manually.
 
 * ###### Update Site
 	To update the site after making major changes or especially after pulling updates from this repository run the command:
@@ -74,7 +74,7 @@ In addition to `bio:setup` there are several other console commands to make your
 	
 	Four roles are possible, `ROLE_USER`, `ROLE_ADMIN`, `ROLE_SUPER_ADMIN`, and `ROLE_SETUP`. With each role inheriting the permissions of the previous.
  
- 1. `ROLE_USER`: can log in and that's it. All newly registed accounts start at this role.
+ 1. `ROLE_USER`: can log in and that's it. All newly registered accounts start at this role.
  2. `ROLE_ADMIN`: can edit all aspects of the site ***except*** for other users.
  3. `ROLE_SUPER_ADMIN`: can promote, demote, or delete users.
  4. `ROLE_SETUP`: Used for debugging. Can't be seen or deleted on the User admin screen. Can [switch roles](http://symfony.com/doc/current/book/security.html#impersonating-a-user).
@@ -82,7 +82,7 @@ In addition to `bio:setup` there are several other console commands to make your
 
 * ###### Trip Email Reminder
 
-	This command is made to be run as a cron job once every 24 hours. It finds students who are signed up for a trip that has passed and have not yet evaluated it. It sends an email 5 days after their trip, and twice again the two days before evaluations close. The command is:
+	This command should be run by a cron job or scheduled task once every 24 hours. It finds students who are signed up for a trip that has passed and have not yet evaluated it. It sends an email 5 days after their trip, and twice again the two days before evaluations close. The command is:
 	
 			php app/console bio:email
 
@@ -99,3 +99,5 @@ In addition to `bio:setup` there are several other console commands to make your
 * The order of the sidebar will be the same order you write the bundle names down. You can use `bio:install` to change the order or move the lines in `app/config/sidebar.yml` manually.
 
 * `bio:install` will automatically install the `user` bundle at the end if it has not already been added. This is necessary to access any of the admin content.
+
+* This project uses Doctrine Migrations to preserve information in the database when updating. Only up migrations are supported, down migrations will most likely cause problems.

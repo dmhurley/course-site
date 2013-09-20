@@ -426,14 +426,10 @@ class DefaultController extends Controller
             if ($form->isValid()) {
                 $db = new Database($this, 'BioFolderBundle:Folder');
                 $root = $db->findOne(array('name' => "sidebar"));
-                $db->deleteMany($root->getFolders()->toArray());
-                $db->deleteMany($root->getFiles()->toArray());
-                $db->deleteMany($root->getLinks()->toArray());
+                $db->deleteMany($root->getChildren()->toArray());
 
                 $sidebar = $db->findOne(array('name' => "mainpage"));
-                $db->deleteMany($sidebar->getFolders()->toArray());
-                $db->deleteMany($sidebar->getFiles()->toArray());
-                $db->deleteMany($sidebar->getLinks()->toArray());
+                $db->deleteMany($sidebar->getChildren()->toArray());
                 try {
                     $db->close();
                     $flash->set('success', 'All folders deleted.');

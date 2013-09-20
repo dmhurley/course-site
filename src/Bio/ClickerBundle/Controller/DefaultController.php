@@ -77,7 +77,7 @@ class DefaultController extends Controller {
 				}
 
 	    	} else {
-	    		$request->getSession()->getFlashBag()->set('failure', 'Invalid form.');
+	    		$flash->set('failure', 'Invalid form.');
 	    	}
     	}
 
