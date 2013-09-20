@@ -33,7 +33,6 @@ class Version20130913111233 extends AbstractMigration
 
         $cSections = [];
 
-        print_r($sections);
         foreach ($sections as $section) {
             if (!in_array(substr($section['name'], 0, 1), $cSections)) {
                 $conn->insert('Base', array(
