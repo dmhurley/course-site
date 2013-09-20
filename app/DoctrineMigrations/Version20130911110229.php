@@ -5,21 +5,11 @@ namespace Application\Migrations;
 use Doctrine\DBAL\Migrations\AbstractMigration,
     Doctrine\DBAL\Schema\Schema;
 
-use Symfony\Component\DependencyInjection\ContainerAwareInterface,
-    Symfony\Component\DependencyInjection\ContainerInterface;
-
-use Doctrine\DBAL\DriverManager;
-
-
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
 class Version20130911110229 extends AbstractMigration implements ContainerAwareInterface
 {
-    private $container;
-    private $students = [];
-
-
     public function up(Schema $schema)
     {
         // this up() migration is auto-generated, please modify it to your needs
@@ -55,9 +45,5 @@ class Version20130911110229 extends AbstractMigration implements ContainerAwareI
 
         // drop old table
         $this->addSql("ALTER TABLE AbstractUserStudent DROP email");
-    }
-
-    public function setContainer(ContainerInterface $container = null) {
-        $this->container = $container;
     }
 }
