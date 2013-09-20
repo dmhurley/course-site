@@ -33,6 +33,8 @@ class AdminController extends Controller
      * @Route("/{type}mote/{id}", name="mote_user", requirements={"type" = "de|pro"})
      */
     public function mote(Request $request, $type, User $entity = null) {
+        $flash = $request->getSession()->getFlashBag();
+
     	if ($entity && $entity->getRoles()[0] !== 'ROLE_SETUP' && $entity !== $this->getUser()) {
             $role = $entity->getRoles()[0];
 
@@ -52,12 +54,12 @@ class AdminController extends Controller
             $db = new Database($this, 'BioUserBundle:User');
             try {
                 $db->close();
-                $request->getSession()->getFlashBag()->set('success', ucfirst($type)."moted '".$entity->getUserName()."'.");
+                $flash->set('success', ucfirst($type)."moted '".$entity->getUserName()."'.");
             } catch (BioException $e) {
-                $request->getSession()->getFlashBag()->set('failure', 'Could not '.$type.'mote that user.');
+                $flash->set('failure', 'Could not '.$type.'mote that user.');
             }
         } else {
-            $request->getSession()->getFlashBag()->set('failure', 'Could not find that user.');
+            $flash->set('failure', 'Could not find that user.');
         }
 
         if ($request->headers->get('referer')){
@@ -71,13 +73,15 @@ class AdminController extends Controller
      * @Route("/delete/{id}", name="delete_user")
      */
     public function delete(Request $request, User $entity = null) {
+        $flash = $request->getSession()->getFlashBag();
+
         if ($entity && $entity->getRoles()[0] !== 'ROLE_SETUP' && $entity !== $this->getUser()) {
             $db = new Database($this, 'BioUserBundle:User');
             $db->delete($entity);
             $db->close();
-            $request->getSession()->getFlashBag()->set('success', "Deleted '".$entity->getUsername()."'.");
+            $flash->set('success', "Deleted '".$entity->getUsername()."'.");
         } else {
-            $request->getSession()->getFlashBag()->set('failure', 'Could not find that user.');
+            $flash->set('failure', 'Could not find that user.');
         }
 
         if ($request->headers->get('referer')){
@@ -92,6 +96,8 @@ class AdminController extends Controller
      * @Route("/reset/{id}", name="reset_password")
      */
     public function resetAction(Request $request, AbstractUserStudent $user = null) {
+        $flash = $request->getSession()->getFlashBag();
+
         if ($user) {
             $encoder = $this->get('security.encoder_factory')->getEncoder($user);
             $pwd = substr(md5(rand()), 0, 7);
@@ -107,12 +113,15 @@ class AdminController extends Controller
                 ->setFrom($info->getEmail())
                 ->setTo($user->getEmail())
                 ->setContentType('text/html')
-                ->setBody('Your new password for '. $info->getTitle() .' is <code>'. $pwd .'</code>. Please sign in to change it.');
+                ->setBody(
+                    'Your new password for '. $info->getTitle() .
+                    ' is <code>'. $pwd .'</code>. Please sign in to change it.'
+                    );
 
             $this->get('mailer')->send($message);
-            $request->getSession()->getFlashBag()->set('success', 'Password reset.');
+            $flash->set('success', 'Password reset.');
         } else {
-            $request->getSession()->getFlashBag()->set('failure', 'Could not find user.');
+            $flash->set('failure', 'Could not find user.');
         }
 
         if ($request->headers->get('referer')){
