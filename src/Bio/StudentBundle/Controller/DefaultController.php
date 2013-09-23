@@ -279,9 +279,7 @@ class DefaultController extends Controller
 
         $sections = [];
         for ($i = 1; $i < count($file); $i++) {
-            $array = array();
-            preg_match_all('/(?<=^|,)(\"(?:[^\"]|\"\")*\"|[^,]*)/', $file[$i], $array);
-            list($sid, $name, $sectionName, $credits, $gender, $class, $major, $email) = $array[0];
+            list($sid, $name, $sectionName, $credits, $gender, $class, $major, $email) = str_getcsv($file[$i]);
             if (!($sid && $name && $sectionName &&
                   $credits && $gender && $class && $major)) {
                 throw new BioException("The file was badly formatted");
@@ -302,7 +300,7 @@ class DefaultController extends Controller
                 $sections[] = $section;
             }
 
-            list($lName, $fName) = explode(",", substr($name, 1, -1) );
+            list($lName, $fName) = explode(",", $name);
             $lName = trim($lName);
             $fName = trim($fName);
             while (strlen($sid) < 7) {

@@ -381,7 +381,12 @@ class AdminController extends Controller
 
         $form = $this->createFormBuilder()
             ->add('score', 'choice', array(
-                'choices' => array(0=>0, 15=>15, 20=>20, 25=>25)
+                'choices' => array(
+                    0 => 0,
+                    15 => 15,
+                    20 => 20,
+                    25 => 25
+                    )
                 )
             )
             ->add('i', 'hidden', array(
