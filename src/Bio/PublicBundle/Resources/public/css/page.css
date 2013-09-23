@@ -204,12 +204,15 @@ body {
 		margin-bottom: 1.5em;
 		font-size: 13px;
 		line-height: 22px;
-		text-indent: 30px;
 	}
 
 	#logout {
 		text-align:center;
 		margin-top: 25px;
+	}
+
+	#center ul {
+		margin-left: 20px;
 	}
 
 #header {
