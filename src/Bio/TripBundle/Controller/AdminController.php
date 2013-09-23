@@ -44,12 +44,14 @@ class AdminController extends Controller
     	$form = $this->get('form.factory')->createNamedBuilder('form', 'form', $trip)
     		->add('title', 'text', array('label' => 'Title:'))
     		->add('start', 'datetime', array(
+                'widget' => 'single_text',
                 'label' => 'Start:',
                 'attr' => array('class' => 'datetime')
                 )
             )
     		->add('end', 'datetime', array(
                 'label' => 'End:',
+                'widget' => 'single_text',
                 'attr' => array('class' => 'datetime')
                 )
             )
@@ -79,11 +81,13 @@ class AdminController extends Controller
         $globalForm = $this->get('form.factory')->createNamedBuilder('global', 'form', $global)
             ->add('opening', 'datetime', array(
                 'label' => 'Signup Start:',
+                'widget' => 'single_text',
                 'attr' => array('class' => 'datetime')
                 )
             )
             ->add('closing', 'datetime', array(
                 'label' => 'Evaluations Due:',
+                'widget' => 'single_text',
                 'attr' => array('class' => 'datetime')
                 )
             )
@@ -164,11 +168,13 @@ class AdminController extends Controller
         		->add('title', 'text', array('label' => 'Title:'))
         		->add('start', 'datetime', array(
                     'label' => 'Start:',
+                    'widget' => 'single_text',
                     'attr' => array('class' => 'datetime')
                     )
                 )
         		->add('end', 'datetime', array(
                     'label' => 'End:',
+                    'widget' => 'single_text',
                     'attr' => array('class' => 'datetime')
                     )
                 )
@@ -245,7 +251,35 @@ class AdminController extends Controller
         }
     }
 
-    // TODO error handling
+    /**
+     * @Route("/copy/{id}", name="copy_trip")
+     */
+    public function copyAction(Request $request, Trip $entity = null) {
+        $flash = $request->getSession()->getFlashBag();
+
+        if ($entity) {
+            $db = new Database($this, 'BioTripBundle:Trip');
+            $trip = new Trip();
+            $trip->setTitle($entity->getTitle())
+                ->setShortSum($entity->getShortSum())
+                ->setLongSum($entity->getLongSum())
+                ->setStart($entity->getStart())
+                ->setEnd($entity->getEnd())
+                ->setMax($entity->getMax())
+                ->setEmail($entity->getEmail());
+            $db->add($trip);
+            $db->close();
+        } else {
+            $flash->set('failure', 'Could not find trip.');
+        }
+
+         if ($request->headers->get('referer')){
+            return $this->redirect($request->headers->get('referer'));
+        } else {
+            return $this->redirect($this->generateUrl('manage_trips'));
+        }
+    }
+
     /**
      * @Route("/edit/{id}/remove/{sid}", name="remove_student")
      * @ParamConverter("trip", options={"mapping": {"id": "id"}})

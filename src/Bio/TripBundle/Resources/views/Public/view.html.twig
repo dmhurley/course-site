@@ -22,10 +22,6 @@
 				<td>{{trip.end|date('m/d h:i a')}}</td>
 			</tr>
 			<tr>
-				<td>Leader Email</td>
-				<td><a href="mailto:{{trip.email}}">{{trip.email}}</a></td>
-			</tr>
-			<tr>
 				<td>Spots Left</td>
 				<td>
 					{% if date(trip.start) < date() %}
