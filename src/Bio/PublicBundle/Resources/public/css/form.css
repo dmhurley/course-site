@@ -45,7 +45,7 @@ button {
 	padding: 3px;
 }
 
-.datetime {
+div.datetime {
 	padding-left: 115px; /*equal to the width + the padding-right of the label*/
 }
 

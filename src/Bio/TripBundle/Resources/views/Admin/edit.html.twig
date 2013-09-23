@@ -2,11 +2,13 @@
 
 {% block head %}
 	{{ parent() }}
-	{% stylesheets 'bundles/biotrip/css/trip.css' filter="cssrewrite" output="css/*.css" %}
+	{% stylesheets 'bundles/biotrip/css/trip.css'
+				   'bundles/biotrip/css/pikaday.css' filter="cssrewrite" output="css/*.css" %}
 		<link rel="stylesheet" href="{{ asset_url }}" />
 	{% endstylesheets %}
 
-	{% javascripts 'bundles/biopublic/js/DragDrop.js' output="js/*.js" %}
+	{% javascripts 'bundles/biopublic/js/DragDrop.js'
+				   'bundles/biotrip/js/pikaday.js' output="js/*.js" %}
 		<script src="{{asset_url}}"></script>
 	{% endjavascripts %}
 {% endblock %}
@@ -48,4 +50,18 @@
 
 {% block java %}
 	{{ tinymce_init() }}
+	<script>
+		(function() {
+			window.addEventListener('load', function() {
+				var datetimes = document.querySelectorAll('input.datetime');
+					for(var i = 0; _datetime = datetimes[i]; i++) {
+						new Pikaday({
+							field: _datetime,
+							showTime: true
+						});
+					}
+				}
+			);
+		})();
+	</script>
 {% endblock %}

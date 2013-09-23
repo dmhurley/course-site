@@ -2,12 +2,14 @@
 
 {% block head %}
 	{{ parent() }}
-	{% stylesheets 'bundles/biotrip/css/trip.css' filter="cssrewrite" output="css/*.css" %}
+	{% stylesheets 'bundles/biotrip/css/trip.css'
+				   'bundles/biotrip/css/pikaday.css' filter="cssrewrite" output="css/*.css" %}
 		<link rel="stylesheet" href="{{ asset_url }}" />
 	{% endstylesheets %}
 
 	{% javascripts 'bundles/biotrip/js/switcher.js'
-				   'bundles/biopublic/js/DragDrop.js' output="js/*.js" %}
+				   'bundles/biopublic/js/DragDrop.js'
+				   'bundles/biotrip/js/pikaday.js' output="js/*.js" %}
 		<script src="{{asset_url}}"></script>
 	{% endjavascripts %}
 {% endblock %}
@@ -37,6 +39,7 @@
 			<th>End</th>
 			<th>Spots Taken</th>
 			<th>View</th>
+			<th>Copy</th>
 			<th>Edit</th>
 			<th>Delete</th>
 		</tr>
@@ -47,6 +50,7 @@
 				<td>{{ trip.end|date('m-d-y h:i a') }}</td>
 				<td>{{ trip.students|length }}/{{trip.max}}</td>
 				<td><a href="{{ path('view_trip', {'id':trip.id}) }}">view</a></td>
+				<td><a href="{{ path('copy_trip', {'id':trip.id}) }}">copy</a></td>
 				<td><a href="{{ path('edit_trip', {'id':trip.id}) }}">edit</a></td>
 				<td><a href="{{ path('delete_trip', {'id':trip.id}) }}">delete</a></td>
 			</tr>
@@ -58,4 +62,18 @@
 
 {% block java %}
 	{{ tinymce_init() }}
+	<script>
+		(function() {
+			window.addEventListener('load', function() {
+				var datetimes = document.querySelectorAll('input.datetime');
+					for(var i = 0; _datetime = datetimes[i]; i++) {
+						new Pikaday({
+							field: _datetime,
+							showTime: true
+						});
+					}
+				}
+			);
+		})();
+	</script>
 {% endblock %}

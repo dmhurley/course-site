@@ -96,8 +96,8 @@ class Trip
 
 
     public function __construct() {
-        $this->start = new \DateTime();
-        $this->end = new \DateTime('+1 day');
+        $this->start = new \DateTime('8 am');
+        $this->end = new \DateTime('5 pm');
         $this->students = new \Doctrine\Common\Collections\ArrayCollection();
         $this->evals = new \Doctrine\Common\Collections\ArrayCollection();
     }
