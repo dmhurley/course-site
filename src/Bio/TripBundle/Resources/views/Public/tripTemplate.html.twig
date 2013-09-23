@@ -17,10 +17,20 @@
 	 #}
 	{% if date(trip.start) < date() %} {# if trip is over #}
 		{% if date(trip.end) < date() %}
-			<a href="{{ path('eval_trip', {'id': trip.id, 'tripTitle': trip.title|replace({" " : "_"})}) }}">Evaluate Trip</a>
-			- trip over.
+			{% if cur != '' %}
+				<a class="eval" href="{{ path('eval_trip', {'id': trip.id, 'tripTitle': trip.title|replace({" " : "_"})}) }}">Evaluate Trip</a> - 
+			{% else %}
+				<a></a>
+			{% endif %}
+
+			trip over.
 		{% else %}
-			<a class="eval">Evaluate Trip</a> - trip in progress
+			{% if cur != '' %}
+				<a class="eval">Evaluate Trip</a> - 
+			{% else %}
+				<a></a>
+			{% endif %}
+			trip in progress.
 		{% endif %}
 	{% else %} {# if user is signed up for trip #}
 		{% if cur != ''  %}
