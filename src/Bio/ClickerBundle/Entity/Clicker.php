@@ -27,7 +27,7 @@ class Clicker
      * @var string
      *
      * @ORM\Column(name="cid", type="string", length=255, unique=true)
-     * @Assert\Regex("/^[0-9A-Fa-f]{6}$/")
+     * @Assert\Regex( pattern="/^[0-9A-Fa-f]{6}$/", message="6 character clicker ID (0-9 A-F).")
      */
     private $cid;
 
@@ -56,7 +56,7 @@ class Clicker
      */
     public function setCid($cid)
     {
-        $this->cid = $cid;
+        $this->cid = strtoupper($cid);
     
         return $this;
     }

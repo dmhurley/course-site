@@ -11,6 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Form\FormError;
 
 use Bio\ClickerBundle\Entity\Clicker;
+use Bio\ClickerBundle\Entity\ClickerGlobal;
 use Bio\StudentBundle\Entity\Student;
 use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
@@ -28,6 +29,55 @@ class DefaultController extends Controller {
     }
 
     /**
+     * @Route("/manage", name="manage_clickers")
+     * @Template()
+     */
+    public function manageAction(Request $request) {
+        $flash = $request->getSession()->getFlashBag();
+
+        $db = new Database($this, 'BioClickerBundle:ClickerGlobal');
+        $global = $db->findOne(array());
+        $form = $this->createFormBuilder($global)
+            ->add('notifications', 'checkbox', array('label' => 'Notifications:'))
+            ->add('start', 'datetime', array(
+                'label' => 'Start:',
+                'attr' => array('class' => 'datetime')
+                )
+            )
+            ->add('save', 'submit')
+            ->getForm();
+
+        if ($request->getMethod() === "POST") {
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                $db->close();
+                $flash->set('success', 'Changes saved.');
+            } else {
+                $flash->set('failure', 'Changes not saved.');
+            }
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $query = $em->createQuery('
+            SELECT s
+            FROM BioStudentBundle:Student s
+            WHERE NOT EXISTS (
+                    SELECT c
+                    FROM BioClickerBundle:Clicker c
+                    WHERE s = c.student
+                )
+            ORDER BY s.lName ASC
+            ');
+        $students = $query->getResult();
+
+        return array(
+            'form' => $form->createView(),
+            'students' => $students,
+            'title' => 'Manage Clickers'
+            );
+    }
+
+    /**
      * @Route("/../../clicker", name="register_clicker")
      * @Template()
      */
@@ -37,12 +87,14 @@ class DefaultController extends Controller {
     		->add('cid', 'text', array(
                 'label' => "Clicker ID:",
                 'constraints' => array(
-                    new Assert\Regex("/^[0-9A-Fa-f]{6}$/"),
+                    new Assert\Regex(array(
+                        "pattern" => "/^[0-9A-Fa-f]{6}$/",
+                        "message" => "6 digit clicker ID (0-9 A-F).")),
                     new Assert\NotBlank()
                     ),
                 'attr' => array(
                     'pattern' => '[0-9A-Fa-f]{6}',
-                    'title' => '6 digit clicker ID'
+                    'title' => '6 digit clicker ID (0-9 A-F).'
                     )
                 )
             )
@@ -56,6 +108,11 @@ class DefaultController extends Controller {
     		if ($form->isValid()){
                 $student = $this->get('security.context')->getToken()->getUser();
 	    		
+                $db = new Database($this, 'BioClickerBundle:ClickerGlobal');
+                $global = $db->findOne(array());
+                $db = new Database($this, 'BioInfoBundle:Info');
+                $info = $db->findOne(array());
+
 				$db = new Database($this, 'BioClickerBundle:Clicker');
                 if ($dbClicker = $db->findOne(array('student' => $student))){
                     $flash->set('success', "Clicker ID changed to #".$form->get('cid')->getData());
@@ -69,6 +126,23 @@ class DefaultController extends Controller {
 
 				try {
 					$db->close();
+
+                    if ($global->getStart() <= new \DateTime() && $global->getNotifications()) {
+                        $message = \Swift_Message::newInstance()
+                            ->setSubject(
+                                'New Clicker Registration: '. $clicker->getCid().
+                                ' - '.$student->getFName()." ".$student->getLName()
+                                )
+                            ->setFrom($this->container->getParameter('mailer_dev_address'))
+                            ->setTo($info->getEmail())
+                            ->setBody(
+                                    $student->getFName().' '. $student->getLName() .
+                                    ' registered clicker #'. $clicker->getId() .
+                                    ' at '.(new \DateTime())->format('Y-m-d H:i:s').'.'
+                                    );
+                        $this->container->get('mailer')->send($message);
+                    }
+
                     return $this->redirect($this->generateUrl('register_clicker'));
 				} catch (BioException $e) {
 					$flash->set('failure', "Invalid form.");
@@ -89,24 +163,48 @@ class DefaultController extends Controller {
      * @Template()
      */
     public function downloadAction(Request $request) {
-        header("Cache-Control: public");
-        header("Content-Description: File Transfer");
-        header("Content-Disposition: attachment; filename=clickerReg.xls");
-        header("Content-Type: application/octet-stream; "); 
-        header("Content-Transfer-Encoding: binary");
-
         $db = new Database($this, 'BioClickerBundle:Clicker');
         $clickers = $db->find(array(), array(), false);
+        $em = $this->getDoctrine()->getManager();
+        $query = $em->createQuery('
+            SELECT s
+            FROM BioStudentBundle:Student s
+            WHERE NOT EXISTS (
+                    SELECT c
+                    FROM BioClickerBundle:Clicker c
+                    WHERE s = c.student
+                )
+            ORDER BY s.lName ASC
+            ');
+        $students = $query->getResult();
 
-    	echo "Last Name\tFirst Name\tclicker ID\tStudent ID\n";
+    	$responseText = ["Last Name\tFirst Name\tclicker ID\tStudent ID"];
     	foreach ($clickers as $clicker) {
-    		echo $clicker->getStudent()->getLName()."\t";
-    		echo $clicker->getStudent()->getFName()."\t";
-    		echo $clicker->getCid()."\t";
-    		echo $clicker->getStudent()->getSid()."\n";
+    		$responseText[] = $clicker->getStudent()->getLName()."\t".
+    		    $clicker->getStudent()->getFName()."\t".
+    		    $clicker->getCid()."\t".
+    		    $clicker->getStudent()->getSid();
     	}
+        $responseText[] = "\n\n";
+        foreach ($students as $student) {
+            $responseText[] = $student->getLName()."\t".
+                $student->getFName()."\t".
+                "\t".
+                $clicker->getStudent()->getSid();
+        }
 
-	    return array('test' => '');
+        $response = $this->render('BioClickerBundle:Default:download.html.twig', array(
+            'test' => implode("\n", $responseText)
+            )
+        );
+        $response->headers->set(
+            "Content-Type", 'application/vnd.ms-excel'
+            );
+
+        $response->headers->set(
+            'Content-Disposition', ('attachment; filename="clickerReg.xls"')
+            );
+        return $response;
     }
 
     /**

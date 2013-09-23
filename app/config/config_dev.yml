@@ -32,4 +32,6 @@ swiftmailer:
     username: uwbio999
     password: 
     delivery_address: %mailer_dev_address%
+    spool:
+        type: memory
 

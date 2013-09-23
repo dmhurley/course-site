@@ -381,7 +381,12 @@ class AdminController extends Controller
 
         $form = $this->createFormBuilder()
             ->add('score', 'choice', array(
-                'choices' => array(0, 15, 20, 25)
+                'choices' => array(
+                    0 => 0,
+                    15 => 15,
+                    20 => 20,
+                    25 => 25
+                    )
                 )
             )
             ->add('i', 'hidden', array(
@@ -421,32 +426,36 @@ class AdminController extends Controller
 
     /**
      * @Route("/evals/download/{id}", name="trip_download")
-     * @Template("BioFolderBundle:Download:download.html.twig")
      */
     public function downloadAction(Request $request, Trip $trip = null) {
         $flash = $request->getSession()->getFlashBag();
 
         if ($trip) {
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename='.$trip->getTitle().'Evals.txt');
-            header('Content-Transfer-Encoding: binary');
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate');
-            header('Pragma: public');
-
-            echo "trip\tstudentID\tquestion\tanswer\ttimestamp\tscore\n";
+            $responseText = ["trip\tstudentID\tquestion\tanswer\ttimestamp\tscore"];
             foreach ($trip->getEvals() as $eval) {
                 foreach($eval->getAnswers() as $answer) {
-                    echo $trip->getTitle()."\t";
-                    echo $eval->getStudent()->getSid()."\t";
-                    echo $answer->getEvalQuestion()->getID()."\t";
-                    echo $answer->getAnswer()."\t";
-                    echo $eval->getTimestamp()->format('Y-m-d H:i:s')."\t";
-                    echo $eval->getScore()."\n";
+                    $responseText[] = $trip->getTitle()."\t".
+                        $eval->getStudent()->getSid()."\t".
+                        $answer->getEvalQuestion()->getID()."\t".
+                        $answer->getAnswer()."\t".
+                        $eval->getTimestamp()->format('Y-m-d H:i:s')."\t".
+                        $eval->getScore();
                 }
             }
-            return array('text' => '');
+
+             $response = $this->render('BioExamBundle:Admin:download.html.twig', array(
+                'text' => implode("\n", $responseText)
+                )
+            );
+            $response->headers->set(
+                "Content-Type", 'application/plaintext'
+                );
+
+            $response->headers->set(
+                'Content-Disposition', ('attachment; filename="'.$trip->getTitle().'_eval.txt"')
+                );
+            return $response;
+
         } else {
             $flash->set('failure', 'Could not find trip.');
             return $this->redirect($this->generateUrl('trip_evals'));

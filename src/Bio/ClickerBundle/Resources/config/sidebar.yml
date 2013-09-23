@@ -1,9 +1,11 @@
 Clickers:
+    Manage:
+        route: manage_clickers
     Clickers:
         route: clicker_instruct
-    Register:
-        route: register_clicker
     Download:
         route: download_list
     Clear:
         route: clear_list
+    Register:
+        route: register_clicker

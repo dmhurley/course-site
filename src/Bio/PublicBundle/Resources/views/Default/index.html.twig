@@ -16,6 +16,32 @@
 	{% endif %}
 {% endmacro %}
 
+{% macro personRow(people) %}
+{% for person in people %}
+	<ul>
+		<li>{{person.fullName}}</li>
+		<ul>
+			{% if person.bldg != null %}
+				<li><a href="http://www.washington.edu/maps/?{{person.bldg|split("	")[0]}}">{{person.bldg}}</a> {% if person.room != null %} - {{person.room}}{% endif %}</li>
+			{% endif %}
+			<li><a href="mailto:{{person.email}}">{{person.email}}</a></li>
+			{% if person.hours|length > 0 %}
+				<li>Hours</li>
+				<ul>
+					{% for hour in person.hours %}
+						{% if not hour.byAppointment %}
+							<li>{{hour.days|title}} {{hour.start|date('h:i')}} - {{hour.end|date('h:i')}}</li>
+						{% else %}
+							<li>By Appointment</li>
+						{% endif %}
+					{% endfor %}
+				</ul>
+			{% endif %}
+		</ul>
+	</ul>
+{% endfor %}
+{% endmacro %}
+
 {% import _self as row %}
 
 {% block content %}
@@ -113,29 +139,7 @@
 			<div class="row">
 				{{row.show(form.showing.children[6])}}
 				<h2>Instructors</h2>
-				{% for inst in instructors %}
-					<ul>
-						<li>{{inst.fullName}}</li>
-						<ul>
-							{% if inst.bldg != null %}
-								<li><a href="http://www.washington.edu/maps/?{{inst.bldg|split("	")[0]}}">{{inst.bldg}}</a> {% if inst.room != null %} - {{inst.room}}{% endif %}</li>
-							{% endif %}
-							<li><a href="mailto:{{inst.email}}">{{inst.email}}</a></li>
-							{% if inst.hours|length > 0 %}
-								<li>Hours</li>
-								<ul>
-									{% for hour in inst.hours %}
-										{% if not hour.byAppointment %}
-											<li>{{hour.days|title}} {{hour.start|date('h:i')}} - {{hour.end|date('h:i')}}</li>
-										{% else %}
-											<li>By Appointment</li>
-										{% endif %}
-									{% endfor %}
-								</ul>
-							{% endif %}
-						</ul>
-					</ul>
-				{% endfor %}
+				{{row.personRow(instructors)}}
 			</div>
 		{% endif %}
 
@@ -143,27 +147,7 @@
 			<div class="row">
 				{{row.show(form.showing.children[7])}}
 				<h2>TAs</h2>
-				{% for inst in tas %}
-					<ul>
-						<li>{{inst.fullName}}</li>
-						<ul>
-							<li><a href="http://www.washington.edu/maps/?{{inst.bldg|split("	")[0]}}">{{inst.bldg}}</a> - {{inst.room}}</li>
-							<li><a href="mailto:{{inst.email}}">{{inst.email}}</a></li>
-							{% if inst.hours|length > 0 %}
-								<li>Hours</li>
-								<ul>
-									{% for hour in inst.hours %}
-										{% if not hour.byAppointment %}
-											<li>{{hour.days|title}} {{hour.start|date('h:i')}} - {{hour.end|date('h:i a')}}</li>
-										{% else %}
-											<li>By Appointment</li>
-										{% endif %}
-									{% endfor %}
-								</ul>
-							{% endif %}
-						</ul>
-					</ul>
-				{% endfor %}
+				{{row.personRow(tas)}}
 			</div>
 		{% endif %}
 
@@ -171,27 +155,7 @@
 			<div class="row">
 				{{row.show(form.showing.children[8])}}
 				<h2>Coordinators</h2>
-				{% for inst in coordinators %}
-					<ul>
-						<li>{{inst.fullName}}</li>
-						<ul>
-							<li><a href="http://www.washington.edu/maps/?{{inst.bldg|split("	")[0]}}">{{inst.bldg}}</a> - {{inst.room}}</li>
-							<li><a href="mailto:{{inst.email}}">{{inst.email}}</a></li>
-							{% if inst.hours|length > 0 %}
-								<li>Hours</li>
-								<ul>
-									{% for hour in inst.hours %}
-										{% if not hour.byAppointment %}
-											<li>{{hour.days|title}} {{hour.start|date('h:i')}} - {{hour.end|date('h:i a')}}</li>
-										{% else %}
-											<li>By Appointment</li>
-										{% endif %}
-									{% endfor %}
-								</ul>
-							{% endif %}
-						</ul>
-					</ul>
-				{% endfor %}
+				{{row.personRow(coordinators)}}
 			</div>
 		{% endif %}
 
