@@ -47,6 +47,13 @@ class DefaultController extends Controller {
             ->add('save', 'submit')
             ->getForm();
 
+        if ($request->getMethod() === "POST") {
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                $db->close();
+            }
+        }
+
         $em = $this->getDoctrine()->getManager();
         $query = $em->createQuery('
             SELECT s
@@ -117,19 +124,21 @@ class DefaultController extends Controller {
 				try {
 					$db->close();
                     return $this->redirect($this->generateUrl('register_clicker'));
-                    $message = \Swift_Message::newInstance()
-                        ->setSubject(
-                            'New Clicker Registration: '. $clicker->getCid().
-                            ' - '.$student->getFName()." ".$student->getLName()
-                            )
-                        ->setFrom($this->getContainer()->getParameters()->get('mailer_dev_address'))
-                        ->setTo($info->getEmail())
-                        ->setBody(
-                                $student->getFName().' '. $student->getLName() .
-                                ' registered clicker #'. $clicker->getId() .'
-                                at '.(new DateTime())->format('Y-m-d H:i:s'). '.
-                            ');
-                    $this->getContainer()->get('mailer')->send($message);
+                    if ($global->getStart() <= new \DateTime() && $global->getNotifications()) {
+                        $message = \Swift_Message::newInstance()
+                            ->setSubject(
+                                'New Clicker Registration: '. $clicker->getCid().
+                                ' - '.$student->getFName()." ".$student->getLName()
+                                )
+                            ->setFrom($this->getContainer()->getParameters()->get('mailer_dev_address'))
+                            ->setTo($info->getEmail())
+                            ->setBody(
+                                    $student->getFName().' '. $student->getLName() .
+                                    ' registered clicker #'. $clicker->getId() .'
+                                    at '.(new \DateTime())->format('Y-m-d H:i:s'). '.
+                                ');
+                        $this->getContainer()->get('mailer')->send($message);
+                    }
 				} catch (BioException $e) {
 					$flash->set('failure', "Invalid form.");
                     $form->get('cid')->addError(new FormError('Someone else is already registered to that clicker.'));
