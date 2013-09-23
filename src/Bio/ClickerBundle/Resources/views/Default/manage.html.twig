@@ -1,0 +1,27 @@
+{% extends 'BioPublicBundle::main.html.twig' %}
+
+{% block content %}
+	<h2>Settings</h2>
+		{{form(form)}}
+	<h2>Unregistered</h2>
+	<table>
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th width="75%">Email</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td><a href="mailto:{% for student in students %}{{student.email}},{% endfor %}">email all</a></td>
+				<td><input style="width:100%" onClick="this.select()" value="{% for student in students %}{{student.email}},{% endfor %}">
+			</tr>
+			{% for student in students %}
+				<tr>
+					<td>{{student.fName}} {{student.lName}} </td>
+					<td><a href="mailto:{{student.email}}">{{student.email}}</a></td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}
