@@ -16,6 +16,7 @@ class Version20130923111554 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != "mysql", "Migration can only be executed safely on 'mysql'.");
         
         $this->addSql("CREATE TABLE ClickerGlobal (id INT AUTO_INCREMENT NOT NULL, notifications TINYINT(1) NOT NULL, start DATETIME NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB");
+        $this->addSql("INSERT INTO `ClickerGlobal` (`notifications`, `start`) VALUES (FALSE, '2013-09-24 00:00:00') ");
     }
 
     public function down(Schema $schema)
@@ -27,6 +28,6 @@ class Version20130923111554 extends AbstractMigration
     }
 
     public function postUp(Schema $schema) {
-        $this->addSql("INSERT INTO `ClickerGlobal` (`notifications`, `start`) VALUES (FALSE, '2013-09-24 00:00:00') ");
+
     }
 }

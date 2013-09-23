@@ -126,21 +126,21 @@ class DefaultController extends Controller {
 
 				try {
 					$db->close();
-                    
+
                     if ($global->getStart() <= new \DateTime() && $global->getNotifications()) {
                         $message = \Swift_Message::newInstance()
                             ->setSubject(
                                 'New Clicker Registration: '. $clicker->getCid().
                                 ' - '.$student->getFName()." ".$student->getLName()
                                 )
-                            ->setFrom($this->getContainer()->getParameters()->get('mailer_dev_address'))
+                            ->setFrom($this->container->getParameter('mailer_dev_address'))
                             ->setTo($info->getEmail())
                             ->setBody(
                                     $student->getFName().' '. $student->getLName() .
-                                    ' registered clicker #'. $clicker->getId() .'
-                                    at '.(new \DateTime())->format('Y-m-d H:i:s'). '.
-                                ');
-                        $this->getContainer()->get('mailer')->send($message);
+                                    ' registered clicker #'. $clicker->getId() .
+                                    ' at '.(new \DateTime())->format('Y-m-d H:i:s').'.'
+                                    );
+                        $this->container->get('mailer')->send($message);
                     }
 
                     return $this->redirect($this->generateUrl('register_clicker'));
