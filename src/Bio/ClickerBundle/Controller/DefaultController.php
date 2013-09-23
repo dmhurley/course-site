@@ -38,7 +38,11 @@ class DefaultController extends Controller {
         $db = new Database($this, 'BioClickerBundle:ClickerGlobal');
         $global = $db->findOne(array());
         $form = $this->createFormBuilder($global)
-            ->add('notifications', 'checkbox', array('label' => 'Notifications:'))
+            ->add('notifications', 'checkbox', array(
+                'label' => 'Notifications:',
+                'required' => false
+                )
+            )
             ->add('start', 'datetime', array(
                 'label' => 'Start:',
                 'attr' => array('class' => 'datetime')
@@ -190,7 +194,7 @@ class DefaultController extends Controller {
             $responseText[] = $student->getLName()."\t".
                 $student->getFName()."\t".
                 "\t".
-                $clicker->getStudent()->getSid();
+                $student->getSid();
         }
 
         $response = $this->render('BioClickerBundle:Default:download.html.twig', array(

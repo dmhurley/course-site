@@ -26,7 +26,7 @@ class ClickerGlobal
      * @var boolean
      *
      * @ORM\Column(name="notifications", type="boolean")
-     * @Assert\NotBlank()
+     * @Assert\Type(type="boolean")
      */
     private $notifications;
 
