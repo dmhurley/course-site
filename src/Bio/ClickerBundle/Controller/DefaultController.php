@@ -51,6 +51,9 @@ class DefaultController extends Controller {
             $form->handleRequest($request);
             if ($form->isValid()) {
                 $db->close();
+                $flash->set('success', 'Changes saved.');
+            } else {
+                $flash->set('failure', 'Changes not saved.');
             }
         }
 
@@ -123,7 +126,7 @@ class DefaultController extends Controller {
 
 				try {
 					$db->close();
-                    return $this->redirect($this->generateUrl('register_clicker'));
+                    
                     if ($global->getStart() <= new \DateTime() && $global->getNotifications()) {
                         $message = \Swift_Message::newInstance()
                             ->setSubject(
@@ -139,6 +142,8 @@ class DefaultController extends Controller {
                                 ');
                         $this->getContainer()->get('mailer')->send($message);
                     }
+
+                    return $this->redirect($this->generateUrl('register_clicker'));
 				} catch (BioException $e) {
 					$flash->set('failure', "Invalid form.");
                     $form->get('cid')->addError(new FormError('Someone else is already registered to that clicker.'));
