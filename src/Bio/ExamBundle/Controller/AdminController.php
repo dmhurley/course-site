@@ -388,7 +388,7 @@ class AdminController extends Controller
 
     /**
      * @Route("/download/{id}", name="download_exam")
-     * @Template("BioExamBundle:Admin:download.txt.twig")
+     * @Template("BioExamBundle:Admin:download.html.twig")
      */
     public function downloadAction(Request $request, Exam $exam) {
         if (!$exam) {
@@ -404,35 +404,28 @@ class AdminController extends Controller
 
 
         // create header
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename='.$exam->getTitle().'.txt');
-        header('Content-Transfer-Encoding: binary');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate');
-        header('Pragma: public');
-
-
-        /******* COLUMN NAMES *******/
-        echo "ExamID\t";            // guaranteed
-        echo "QuestionID\t";        // guaranteed
-        echo "AnswerID\t";          // guaranteed?
-        echo "StudentID\t";         // guaranteed
-        echo "GraderID\t";          // guaranteed
-        echo "Name\t";              // guaranteed
-        echo "Section\t";           // guaranteed
-        echo "Did Grade\t";         // guaranteed
-        echo "grader score\t";      // 0
-        echo "Time (elapsed)\t";    // possible to not finish (status 6)
-        echo "Time (s)\t";          // ..
-        echo "Time Entered\t";      // possible to not submit scores (status 4)
-        echo "Time Scored\t";       // can only estimate
-        echo "Time Scored (s)\t";   // can only estimate
-        echo "Answer Count\t";      // ?
-        echo "Grade Time (s)\t";    // what?
-        echo "Answer\t";            // didn't have to submit
-        echo "Score\t";             // didn't have to be graded
-        echo "Total Mean\n";
+        $responseText = [
+            /******* COLUMN NAMES *******/
+            "ExamID\t".            // guaranteed
+            "QuestionID\t".        // guaranteed
+            "AnswerID\t".          // guaranteed?
+            "StudentID\t".         // guaranteed
+            "GraderID\t".          // guaranteed
+            "Name\t".              // guaranteed
+            "Section\t".           // guaranteed
+            "Did Grade\t".         // guaranteed
+            "grader score\t".      // 0
+            "Time (elapsed)\t".    // possible to not finish (status 6)
+            "Time (s)\t".          // ..
+            "Time Entered\t".      // possible to not submit scores (status 4)
+            "Time Scored\t".       // can only estimate
+            "Time Scored (s)\t".   // can only estimate
+            "Answer Count\t".      // ?
+            "Grade Time (s)\t".    // what?
+            "Answer\t".            // didn't have to submit
+            "Score\t".             // didn't have to be graded
+            "Total Mean"
+        ];
 
         /******* DATA *******/
         $examID = $exam->getId();
@@ -459,27 +452,29 @@ class AdminController extends Controller
 
             // if the person never submitted their test, return now with lots of things blank
             if ($answerCount === 0 || $taker->getStatus() < 4) {
-                $this->echoArray(array(
-                    $examID,                    // exam id
-                    '',                         // question id
-                    '',                         // answer id
-                    $studentID,                 // student id
-                    '',                         // grader id
-                    $name,                      // name
-                    $section,                   // section
-                    $didGrade,                  // did grade
-                    0,                          // grader score (always 0)
-                    $timeElapsedMinutes,        // time elapsed
-                    $timeElapsedSeconds,        // time (s)
-                    $timeEntered,               // time entered
-                    '',                         // time scored
-                    '',                         // time scored (s)
-                    $answerCount,               // answer count
-                    '',                         // grade time
-                    '',                         // answer
-                    0,                          // score
-                    0                           // total mean score
-                ));
+                $responseText[] = $this->echoArray(
+                    array(
+                        $examID,                    // exam id
+                        '',                         // question id
+                        '',                         // answer id
+                        $studentID,                 // student id
+                        '',                         // grader id
+                        $name,                      // name
+                        $section,                   // section
+                        $didGrade,                  // did grade
+                        0,                          // grader score (always 0)
+                        $timeElapsedMinutes,        // time elapsed
+                        $timeElapsedSeconds,        // time (s)
+                        $timeEntered,               // time entered
+                        '',                         // time scored
+                        '',                         // time scored (s)
+                        $answerCount,               // answer count
+                        '',                         // grade time
+                        '',                         // answer
+                        0,                          // score
+                        0                           // total mean score
+                    )
+                );
             } else {
                 foreach ($taker->getAnswers() as $answer) { // status >= 3
 
@@ -491,27 +486,29 @@ class AdminController extends Controller
 
                     // if the person finished their test but was never graded
                     if (!$answer->isGraded()) {
-                        $this->echoArray(array(
-                            $examID,                    // exam id
-                            $questionID,                // question id
-                            $answerID,                  // answer id
-                            $studentID,                 // student id
-                            '',                         // grader id
-                            $name,                      // name
-                            $section,                   // section
-                            $didGrade,                  // did grade
-                            0,                          // grader score (always 0)
-                            $timeElapsedMinutes,        // time elapsed
-                            $timeElapsedSeconds,        // time (s)
-                            $timeEntered,               // time entered
-                            '',                         // time scored
-                            '',                         // time scored (s)
-                            $answerCount,               // answer count
-                            '',                         // grade time
-                            $answerText,                // answer
-                            "",                          // score
-                            'NOT GRADED'                // total mean score
-                        ));
+                        $responseText[] = $this->echoArray(
+                            array(
+                                $examID,                    // exam id
+                                $questionID,                // question id
+                                $answerID,                  // answer id
+                                $studentID,                 // student id
+                                '',                         // grader id
+                                $name,                      // name
+                                $section,                   // section
+                                $didGrade,                  // did grade
+                                0,                          // grader score (always 0)
+                                $timeElapsedMinutes,        // time elapsed
+                                $timeElapsedSeconds,        // time (s)
+                                $timeEntered,               // time entered
+                                '',                         // time scored
+                                '',                         // time scored (s)
+                                $answerCount,               // answer count
+                                '',                         // grade time
+                                $answerText,                // answer
+                                "",                          // score
+                                'NOT GRADED'                // total mean score
+                            )
+                        );
                     } else {
 
                         /**** POINTS DATA ****/
@@ -550,40 +547,54 @@ class AdminController extends Controller
                             }
                             /**** END GRADE DATA ****/
                             
-                            $this->echoArray(array(
-                                $examID,                    // exam id
-                                $questionID,                // question id
-                                $answerID,                  // answer id
-                                $studentID,                 // student id
-                                $graderID,                  // grader id
-                                $name,                      // name
-                                $section,                   // section
-                                $didGrade,                  // did grade
-                                0,                          // grader score (always 0)
-                                $timeElapsedMinutes,        // time elapsed
-                                $timeElapsedSeconds,        // time (s)
-                                $timeEntered,               // time entered
-                                $timeScoredMinutes,         // time scored
-                                $timeScoredSeconds,         // time scored (s)
-                                $answerCount,               // answer count
-                                $gradeTime,                 // grade time
-                                $answerText,                // answer
-                                $points,                    // score
-                                $totalMean                  // total mean score
-                            ));
+                            $responseText[] = $this->echoArray(
+                                array(
+                                    $examID,                    // exam id
+                                    $questionID,                // question id
+                                    $answerID,                  // answer id
+                                    $studentID,                 // student id
+                                    $graderID,                  // grader id
+                                    $name,                      // name
+                                    $section,                   // section
+                                    $didGrade,                  // did grade
+                                    0,                          // grader score (always 0)
+                                    $timeElapsedMinutes,        // time elapsed
+                                    $timeElapsedSeconds,        // time (s)
+                                    $timeEntered,               // time entered
+                                    $timeScoredMinutes,         // time scored
+                                    $timeScoredSeconds,         // time scored (s)
+                                    $answerCount,               // answer count
+                                    $gradeTime,                 // grade time
+                                    $answerText,                // answer
+                                    $points,                    // score
+                                    $totalMean                  // total mean score
+                                )
+                            );
                         }
                     }
                 }
             }
         }
 
-        return array();
+        $response = $this->render('BioExamBundle:Admin:download.html.twig', array(
+            'text' => implode("\n", $responseText)
+            )
+        );
+        $response->headers->set(
+            "Content-Type", 'application/plaintext'
+            );
+
+        $response->headers->set(
+            'Content-Disposition', ('attachment; filename="'.$exam->getTitle().'.txt"')
+            );
+        return $response;
     }
 
     private function echoArray(array $args) {
+        $text = "";
         for ($i = 0; $i < count($args) - 1; $i++) {
-            echo $args[$i]."\t";
+            $text.= $args[$i]."\t";
         }
-        echo $args[count($args) - 1]."\n";
+        return $text.$args[count($args) - 1];
     }
 }
