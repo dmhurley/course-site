@@ -7,38 +7,31 @@
 	{% endstylesheets %}
 {% endblock %}
 
+{% macro trip(trips, name, cur, message, global, maxed) %}
+	<h2 class="tripSection border">{{name}}</h2>
+	{% for trip in trips %}
+		{% include 'BioTripBundle:Public:tripTemplate.html.twig' %}
+	{% else %}
+	<div class="trip">
+		<h3>No trips</h3>
+		{% if message != '' %}
+			<p>{{message}}</p>
+		{% endif %}
+	</div>
+	{% endfor %}
+{% endmacro %}
+
+{% import _self as row %}
+
 {% block content %}
 	<div>{{global.instructions|raw}}</div>
 
 	{% if is_granted('ROLE_STUDENT') %}
-		<h2 style="margin-bottom:0px;">Your Trips</h2>
-		{% for trip in your %}
-			{% include 'BioTripBundle:Public:tripTemplate.html.twig' with {'cur':'current'} %}
-		{% else %}
-		<div class="trip">
-			<h3>No trips</h3>
-			<p>You are not signed up for any trips.</p>
-		</div>
-		{% endfor %}
+		{{row.trip(your, 'Your Trips', 'current', 'You are not signed up for any trips.', global, false)}}
 	{% endif %}
 
-	<h2 style="margin-bottom:0px;">Future Trips</h2>
-	{% for trip in future %}
-		{% include 'BioTripBundle:Public:tripTemplate.html.twig' with {'cur':''} %}
-	{% else %}
-		<div class="trip">
-			<h3>No trips</h3>
-			<p>Check back soon for more trips.</p>
-		</div>
-	{% endfor %}
+	{{row.trip(future, 'Future Trips', '', 'Check back soon for more trips', global, your|length >= global.maxTrips )}}
 
-	<h2 style="margin-bottom:0px;">Past Trips</h2>
-	{% for trip in past %}
-		{% include 'BioTripBundle:Public:tripTemplate.html.twig' with {'cur':''} %}
-	{% else %}
-		<div class="trip">
-			<h3>No trips</h3>
-		</div>
-	{% endfor %}
+	{{row.trip(past, 'Past Trips', '', '', global, false)}}
 
 {% endblock %}

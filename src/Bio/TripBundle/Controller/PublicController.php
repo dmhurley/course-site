@@ -91,6 +91,17 @@ class PublicController extends Controller
     public function joinAction(Request $request, Trip $trip = null) {
         $flash = $request->getSession()->getFlashBag();
 
+        $student = $this->get('security.context')->getToken()->getUser();
+        $em = $this->getDoctrine()->getManager();
+        $yourQuery = $em->createQueryBuilder()
+            ->select('t')
+            ->from('BioTripBundle:Trip', 't')
+            ->where(':student MEMBER OF t.students')
+            ->orderBy('t.start', 'ASC')
+            ->setParameter('student', $student)
+            ->getQuery();
+        $yourTrips = $yourQuery->getResult();
+
         $db = new Database($this, 'BioTripBundle:TripGlobal');
         $global = $db->findOne(array());
     	if (!$trip) {
@@ -104,14 +115,12 @@ class PublicController extends Controller
             // TODO make sure trip hasn't passed!!!!!!
 			if (count($trip->getStudents()) >= $trip->getMax()) {
 				$flash->set('failure', 'Trip is full.');
-			} else {
+			} else if (count($yourTrips) >= $global->getMaxTrips()) {
+                $flash->set('failure', "Already signed up for ". $global->getMaxTrips() . " trip(s).");
+            } else {
     			$trip->addStudent($student);
-    			try {
-    				$db->close();
-    				$flash->set('success', 'Joined trip.');
-    			} catch (BioException $e) {
-    				$flash->set('failure', 'You cannot sign up for any more trips.');
-    			}
+				$db->close();
+				$flash->set('success', 'Joined trip.');
     		}
     	}
     	return $this->redirect($this->generateUrl('trip_entrance'));

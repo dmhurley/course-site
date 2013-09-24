@@ -3,11 +3,16 @@
 	padding: 10px;
 }
 
+#content h2.tripSection {
+	margin-bottom: 0px;
+	border-width: 6px;
+}
+
 .space {
 	margin-top: 20px;
 }
 
-.passed {
+.passed * {
 	opacity: .5;
 }
 

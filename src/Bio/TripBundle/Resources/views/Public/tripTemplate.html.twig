@@ -36,7 +36,7 @@
 		{% if cur != ''  %}
 			<a href="{{ path('leave_trip', {'id': trip.id}) }}">Leave Trip</a>
 		{% else %}
-			{% if your|length >= global.maxTrips or trip.students|length >= trip.max %}
+			{% if maxed or trip.students|length >= trip.max %}
 				<a>Join Trip</a>
 			{% else %}
 				<a href="{{ path('join_trip', {'id': trip.id}) }}">Join Trip</a>
