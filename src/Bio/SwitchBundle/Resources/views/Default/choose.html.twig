@@ -1,4 +1,4 @@
-{% extends 'BioSwitchBundle:Default:main.html.twig' %}
+{% extends 'BioPublicBundle::main.html.twig' %}
 
 {% block content %}
 	<p>Select all sections you would like to switch into.</p>
@@ -32,5 +32,4 @@
 			{{form_row(form.request)}}
 		</div>
 	{{ form_end(form) }}
-	{{parent()}}
 {% endblock %}

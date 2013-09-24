@@ -29,7 +29,7 @@ class DownloadController extends Controller
             $name = $file->getName();
             $typeArray = explode('.', $file->getPath());
 
-            $response = $this->render('BioFolderBundle:Download:download.txt.twig', array(
+            $response = $this->render('BioPublicBundle:Template:blank.html.twig', array(
                 'text' => file_get_contents($file->getAbsolutePath())
                 )
             );

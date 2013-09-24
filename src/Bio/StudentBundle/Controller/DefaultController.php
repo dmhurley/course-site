@@ -139,7 +139,7 @@ class DefaultController extends Controller
 
     /**
      * @Route("/add", name="add_student")
-     * @Template()
+     * @Template("BioPublicBundle:Template:singleForm.html.twig")
      */
     public function addAction(Request $request)
     {   
@@ -199,7 +199,7 @@ class DefaultController extends Controller
 
     /**
      * @Route("/edit/{id}", name="edit_student")
-     * @Template("BioStudentBundle:Default:add.html.twig")
+     * @Template("BioPublicBundle:Template:singleForm.html.twig")
      */
     public function editAction(Request $request, Student $student = null) {
         $flash = $request->getSession()->getFlashBag();
@@ -237,7 +237,7 @@ class DefaultController extends Controller
 
 	/**
      * @Route("/upload", name="upload_student")
-     * @Template()
+     * @Template("BioPublicBundle:Template:singleForm.html.twig")
      */
     public function uploadAction(Request $request) {
         $flash = $request->getSession()->getFlashBag();

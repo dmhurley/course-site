@@ -301,7 +301,7 @@ class PublicController extends Controller
             }
         }
 
-        return $this->render('BioTripBundle:Public:sign.html.twig', array(
+        return $this->render('BioPublicBundle:Template:singleForm.html.twig', array(
             'form' => $form->createView(),
             'title' => 'Sign In'
             )

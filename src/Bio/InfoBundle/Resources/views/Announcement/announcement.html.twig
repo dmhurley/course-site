@@ -1,4 +1,11 @@
-{% extends 'BioInfoBundle:Course:base.html.twig' %}
+{% extends 'BioPublicBundle::main.html.twig' %}
+
+{% block head %}
+	{{ parent() }}
+	{% stylesheets 'bundles/bioinfo/css/form_extension.css' filter="cssrewrite" output="css/*.css" %}
+		<link rel="stylesheet" href="{{ asset_url }}" />
+	{% endstylesheets %}
+{% endblock %}
 
 {% block content %}
 	{{ form(form) }}

@@ -164,7 +164,6 @@ class DefaultController extends Controller {
 
     /**
      * @Route("/download", name="download_list")
-     * @Template()
      */
     public function downloadAction(Request $request) {
         $db = new Database($this, 'BioClickerBundle:Clicker');
@@ -197,8 +196,8 @@ class DefaultController extends Controller {
                 $student->getSid();
         }
 
-        $response = $this->render('BioClickerBundle:Default:download.html.twig', array(
-            'test' => implode("\n", $responseText)
+        $response = $this->render('BioPublicBundle:Template:blank.html.twig', array(
+            'text' => implode("\n", $responseText)
             )
         );
         $response->headers->set(

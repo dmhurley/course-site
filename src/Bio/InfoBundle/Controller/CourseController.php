@@ -28,7 +28,7 @@ class CourseController extends Controller
 
     /**
      * @Route("/edit", name="edit_info")
-     * @Template()
+     * @Template("BioPublicBundle:Template:singleForm.html.twig")
      */
     public function indexAction(Request $request) {
         $flash = $request->getSession()->getFlashBag();

@@ -244,7 +244,7 @@ class DefaultController extends Controller
 
     /**
      * @Route("/edit/{id}", name="edit_folder")
-     * @Template()
+     * @Template("BioPublicBundle:Template:singleForm.html.twig")
      * @ParamConverter("entity", class="BioFolderBundle:FileBase")
      */
     public function editAction(Request $request, $entity = null) {
@@ -312,7 +312,7 @@ class DefaultController extends Controller
 
     /**
      * @Route("/students", name="student_folders")
-     * @Template()
+     * @Template("BioPublicBundle:Template:singleForm.html.twig")
      */
     public function studentAction(Request $request) {
         $flash = $request->getSession()->getFlashBag();

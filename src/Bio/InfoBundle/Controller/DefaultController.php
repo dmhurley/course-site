@@ -105,6 +105,7 @@ class DefaultController extends Controller {
     /**
      * @Route("/edit/{id}", name="edit")
      * @ParamConverter("entity", class="BioInfoBundle:Base")
+     * @Template("BioPublicBundle:Template:singleForm.html.twig")
      */
     public function editAction(Request $request, $entityName, $entity = null) {
         $flash = $request->getSession()->getFlashBag();
@@ -138,11 +139,7 @@ class DefaultController extends Controller {
                 }
             }
 
-            return $this->render('BioInfoBundle:'.$uc.':edit.html.twig', array(
-                        'form' => $form->createView(),
-                        'title' => 'Edit '.$full
-                        )
-                    );
+            return array('form' => $form->createView(), 'title' => 'Edit '.$full);
         } else {
             $flash->set('failure', 'Could not find that '.$full.'.');
         }

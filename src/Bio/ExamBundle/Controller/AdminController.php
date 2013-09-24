@@ -388,7 +388,6 @@ class AdminController extends Controller
 
     /**
      * @Route("/download/{id}", name="download_exam")
-     * @Template("BioExamBundle:Admin:download.html.twig")
      */
     public function downloadAction(Request $request, Exam $exam) {
         if (!$exam) {
@@ -576,7 +575,7 @@ class AdminController extends Controller
             }
         }
 
-        $response = $this->render('BioExamBundle:Admin:download.html.twig', array(
+        $response = $this->render('BioPublicBundle:Template:blank.html.twig', array(
             'text' => implode("\n", $responseText)
             )
         );

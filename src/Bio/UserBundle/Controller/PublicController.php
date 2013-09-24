@@ -48,7 +48,7 @@ class PublicController extends Controller
 
     /**
      * @Route("/admin/register", name="register")
-     * @Template()
+     * @Template("BioPublicBundle:Template:singleForm.html.twig")
      */
     public function registerAction(Request $request) {
         $flash = $request->getSession()->getFlashBag();
@@ -101,7 +101,7 @@ class PublicController extends Controller
 
     /**
      * @Route("/reset", name="user_reset")
-     * @Template()
+     * @Template("BioPublicBundle:Template:singleForm.html.twig")
      */
     public function selfResetAction(Request $request) {
         $flash = $request->getSession()->getFlashBag();
@@ -138,7 +138,7 @@ class PublicController extends Controller
 
     /**
      * @Route("/change", name="change_password")
-     * @Template()
+     * @Template("BioPublicBundle:Template:singleForm.html.twig")
      */
     public function passwordAction(Request $request) {
         $flash = $request->getSession()->getFlashBag();
