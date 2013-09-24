@@ -31,14 +31,17 @@ class EmailCommand extends ContainerAwareCommand {
 			 * and have not finished an evaluation for that trip
 			 */
 			$queryString = '
-					Select s
-					FROM BioUserBundle:AbstractUserStudent s
-					LEFT OUTER JOIN BioTripBundle:Trip t
+					SELECT 	DATE_DIFF(CURRENT_DATE(), t.end) as days,
+							t.title as title,
+							s.email as email
+
+					FROM BioTripBundle:Trip t
+					LEFT OUTER JOIN BioUserBundle:AbstractUserStudent s
 					WITH s MEMBER OF t.students
 					LEFT OUTER JOIN BioTripBundle:Evaluation e
 					WITH e.student = s
 					AND e MEMBER OF t.evals
-					WHERE t IS NOT NULL
+					WHERE s IS NOT NULL
 					AND e IS NULL
 					AND t.end < :now
 					AND (
@@ -80,36 +83,43 @@ class EmailCommand extends ContainerAwareCommand {
 				->setParameter('threesubone', new \DateTime('-'.$daysArray[2].' day -1 hour'));
 
 
+
 			/********* SEND EMAILS ************/
 
 
-			$students = $afterTripQuery->getResult();
-			if (count($students) !== 0) {
+			$results = $afterTripQuery->getResult();
+
+			print_r(array_keys($results));
+			if (count($results) !== 0) {
 				/******* SEND EMAILS TO STUDENTS *******/
-				$output->writeln("Sending email(s) to:");
 
 				$db = new Database($this->getContainer(), 'BioInfoBundle:Info');
 				$info = $db->findOne(array());
 
 				$message = \Swift_Message::newInstance()
 					->setSubject('Evaluation Reminder')
-					->setFrom($info->getEmail());
-				foreach($students as $student) {
-					$message->addBcc($student->getEmail(), $student->getFName().' '.$student->getLName());
-					$output->writeln("    ".$student->getEmail());
-				}
-				$message->setBody(
-					$this->getContainer()->get('templating')->render('BioDataBundle:Default:email.html.twig', 
-							array('global' => $global)
-						)
-					)
+					->setFrom($info->getEmail())
 					->setPriority('high')
 					->setContentType('text/html');
 
-				$output->writeln('Sending...');
-				$this->getContainer()->get('mailer')->send($message);
+				$output->writeln("Sending email(s) to:");
+				foreach($results as $result) {
+					$output->writeln("    ".$result['email']." - ". $result['title'].' - '.$result['days'] ." day(s) left.");
 
+					$message->setTo($result['email'])
+						->setBody(
+							$this->getContainer()->get('templating')->render('BioDataBundle:Default:email.html.twig', 
+								array(
+									'global' => $global,
+									'days' => $result['days'],
+									'title' => $result['title']
+								)
+							)
+						);
+					$this->getContainer()->get('mailer')->send($message);
+				}
 				$output->writeln("Success.");
+
 			} else {
 				$output->writeln("All evaluations graded.");
 			}
