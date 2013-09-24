@@ -260,16 +260,21 @@ class PublicController extends Controller
 			// email confirmation code
 			$db = new Database($this, 'BioInfoBundle:Info');
             $info = $db->findOne(array());
-			$message = \Swift_Message::newInstance()
-				->setSubject($taker->getExam()->getTitle().' confirmation')
-				->setFrom($info->getEmail())
-				->setTo($taker->getStudent()->getEmail())
-				->setBody($this->renderView('BioExamBundle:Public:email.html.twig', 
-						array('code' => $code, 'taker' => $taker)
+
+            if ($taker->getStudent()->getEmail() === '') {
+            	$flash->set('success', "Finished exam. Confirmation code: '".$code."'.");
+            } else {
+				$message = \Swift_Message::newInstance()
+					->setSubject($taker->getExam()->getTitle().' confirmation')
+					->setFrom($info->getEmail())
+					->setTo($taker->getStudent()->getEmail())
+					->setBody($this->renderView('BioExamBundle:Public:email.html.twig', 
+							array('code' => $code, 'taker' => $taker)
+						)
 					)
-				)
-				->setContentType('text/html');
-			$this->get('mailer')->send($message);
+					->setContentType('text/html');
+				$this->get('mailer')->send($message);
+			}
 
 
 			return $this->redirect($this->generateUrl('exam_entrance'));

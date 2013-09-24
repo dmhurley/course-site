@@ -48,6 +48,9 @@ class DefaultController extends Controller
         if ($this->get('security.context')->isGranted('ROLE_ADMIN')) {
             $flash->set('failure', 'Only students can switch sections.');
             return $this->redirect($this->generateUrl('switch_requests'));
+        } else if ($student && $student->getEmail() === '') {
+            $flash->set('failure', 'You need to have an email to switch sections.');
+            return $this->redirect($this->generateUrl('main_page'));
         }
 
         // get section

@@ -33,7 +33,8 @@ class EmailCommand extends ContainerAwareCommand {
 			$queryString = '
 					SELECT 	DATE_DIFF(CURRENT_DATE(), t.end) as days,
 							t.title as title,
-							s.email as email
+							s.email as email,
+							s.id as id
 
 					FROM BioTripBundle:Trip t
 					LEFT OUTER JOIN BioUserBundle:AbstractUserStudent s
@@ -104,28 +105,30 @@ class EmailCommand extends ContainerAwareCommand {
 
 				$output->writeln("Sending email(s) to:");
 				foreach($results as $result) {
-					$output->writeln("    ".$result['email']." - ". $result['title'].' - '.$result['days'] ." day(s) left.");
-
-					$message->setTo($result['email'])
-						->setBody(
-							$this->getContainer()->get('templating')->render('BioDataBundle:Default:email.html.twig', 
-								array(
-									'global' => $global,
-									'days' => $result['days'],
-									'title' => $result['title']
+					if ($result['email'] === '') {
+						$output->writeln("    Could not send email to: ". $result['id']);
+					} else {
+						$output->writeln("    ".$result['email']." - ". $result['title'].' - '.$result['days'] ." day(s) left.");
+						$message->setTo($result['email'])
+							->setBody(
+								$this->getContainer()->get('templating')->render('BioDataBundle:Default:email.html.twig', 
+									array(
+										'global' => $global,
+										'days' => $result['days'],
+										'title' => $result['title']
+									)
 								)
-							)
-						);
-					$this->getContainer()->get('mailer')->send($message);
+							);
+						$this->getContainer()->get('mailer')->send($message);
+					}
 				}
-				$output->writeln("Success.");
 
 			} else {
-				$output->writeln("All evaluations graded.");
+				$output->writeln("No emails sent. None needed.");
 			}
 			
 		} else {
-			$output->writeln("No evaluations can be made.");
+			$output->writeln("No emails sent. Evals not open.");
 		}
 	}
 }

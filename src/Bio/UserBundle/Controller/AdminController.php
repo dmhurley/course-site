@@ -98,7 +98,11 @@ class AdminController extends Controller
     public function resetAction(Request $request, AbstractUserStudent $user = null) {
         $flash = $request->getSession()->getFlashBag();
 
-        if ($user) {
+        if (!$user) {
+            $flash->set('failure', 'Could not find user.');
+        } else if ($user->getEmail() === '') {
+            $flash->set('failure', 'Cannot reset a password without an email.');
+        } else {
             $encoder = $this->get('security.encoder_factory')->getEncoder($user);
             $pwd = substr(md5(rand()), 0, 7);
             $user->setPassword($encoder->encodePassword($pwd, $user->getSalt()));
@@ -122,8 +126,6 @@ class AdminController extends Controller
 
             $this->get('mailer')->send($message);
             $flash->set('success', 'Password reset.');
-        } else {
-            $flash->set('failure', 'Could not find user.');
         }
 
         if ($request->headers->get('referer')){
