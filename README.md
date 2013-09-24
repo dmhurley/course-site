@@ -82,7 +82,7 @@ In addition to `bio:setup` there are several other console commands to make your
 
 * ###### Trip Email Reminder
 
-	This command should be run by a cron job or scheduled task once every 24 hours. It finds students who are signed up for a trip that has passed and have not yet evaluated it. It sends an email 5 days after their trip, and twice again the two days before evaluations close. The command is:
+	This command should be run by a cron job or scheduled task once every 1 hour. It finds students who are signed up for a trip that has passed and have not yet evaluated it. It sends two to three evenly spaced personalized reminder emails before a set number of days after. The command is:
 	
 			php app/console bio:email
 
@@ -99,5 +99,7 @@ In addition to `bio:setup` there are several other console commands to make your
 * The order of the sidebar will be the same order you write the bundle names down. You can use `bio:install` to change the order or move the lines in `app/config/sidebar.yml` manually.
 
 * `bio:install` will automatically install the `user` bundle at the end if it has not already been added. This is necessary to access any of the admin content.
+
+* If `bio:email` is run more or less frequently then once per hour, emails may not send or may be sent many times in an hour.
 
 * This project uses Doctrine Migrations to preserve information in the database when updating. Only up migrations are supported, down migrations will most likely cause problems.
