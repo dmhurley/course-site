@@ -1,5 +1,7 @@
-<p>This is a reminder that you have one or more field trips left to evaluate. You have until <i>{{ global.closing|date('F jS, Y \a\t H:i a') }}</i> to finish your evaluations. Email your professor if you think there has been an error.</p>
+<p>This is a reminder that you have {{global.evalDue}} days from the end of a field trip to evaluate it. Late evaluations lose 5 points. Failing to complete your evaluations by {{global.closing|date('m-d-Y h:i a')}} will result in an incomplete for the course.</p>
 
-<p>You can sign in and evaluate your field trip(s) <a href="{{ url('trip_entrance') }}">here</a>. If the link does not work copy and paste this url into your web browser.</p> 
+<p>Our records show that you not completed all your evaluations. Email Celese Spencer, Field Trip Coordinator, at <a href="mailto:celese@uw.edu">celese@uw.edu</a> if you think there has been an error.</p>
+
+<p>You can <b>sign in</b> and evaluate your field trip(s) <a href="{{ url('trip_entrance') }}">here</a>. All the trips you've attended will appear at the top of the page. If the link does not work copy and paste this url into your web browser.</p> 
 
 <blockquote><i><a>{{ url('trip_entrance') }}</a></i></blockquote>

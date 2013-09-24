@@ -25,63 +25,89 @@ class EmailCommand extends ContainerAwareCommand {
 		if ($global->getOpening() < new \DateTime() && $global->getClosing() > new \DateTime()){
 			
 			/******* GET STUDENTS WHO NEED NOTIFICATIONS *******/
+			/*
+			 * select students
+			 * who are in a trip that has ended
+			 * and have not finished an evaluation for that trip
+			 */
 			$queryString = '
 					Select s
-					FROM BioStudentBundle:Student s
+					FROM BioUserBundle:AbstractUserStudent s
 					LEFT OUTER JOIN BioTripBundle:Trip t
 					WITH s MEMBER OF t.students
 					LEFT OUTER JOIN BioTripBundle:Evaluation e
 					WITH e.student = s
 					AND e MEMBER OF t.evals
 					WHERE t IS NOT NULL
-					AND e IS NULL';
+					AND e IS NULL
+					AND t.end < :now
+					AND (
+							(
+								t.end < :one
+								AND t.end > :onesubone
+							)
+							OR 
+							(
+								t.end < :two
+								AND t.end > :twosubone
+						 	)
+							OR
+							(
+								t.end < :three
+								AND t.end > :threesubone
+							)
+						)';
+			
+			$v = $global->getEvalDue();
+			$days = floor($v/3 + .5);
 
-			// if the closing time is more than two days away,
-			// look for students who finished a trip <5> days ago
-			$addParameters = false;
-			if ($global->getClosing() > new \DateTime('+2 days')) {
-				$queryString.= '
-					AND t.end < :high
-					AND t.end > :low';
-				$addParameters = true;
-				$output->writeln("Finding students who have finished a trip > 5 days ago.");
-			} else {
-				$output->writeln("Finding students.");
-			}
+			$daysArray = [$days, $days*2, $days*3];
 
-			$afterTripQuery = $em->createQuery($queryString);
-				
+			$daysArray = array_map(function($value) use ($v) {
+					if ($value >= $v) {
+						return -$value;
+					}
+					return $v - $value;
+				}, $daysArray);
 
-			// add parameters if necessary
-			if ($addParameters) {
-				$afterTripQuery->setParameter('high', new \DateTime('-5 days'))
-							   ->setParameter('low', new \DateTime('-6 days'));
-			}
+			$afterTripQuery = $em->createQuery($queryString)
+				->setParameter('now', new \DateTime())
+				->setParameter('one', new \DateTime('-'.$daysArray[0].' day'))
+				->setParameter('onesubone', new \DateTime('-'.$daysArray[0].' day -1 hour'))
+				->setParameter('two', new \DateTime('-'.$daysArray[1].' day'))
+				->setParameter('twosubone', new \DateTime('-'.$daysArray[1].' day -1 hour'))
+				->setParameter('three', new \DateTime('-'.$daysArray[2].' day'))
+				->setParameter('threesubone', new \DateTime('-'.$daysArray[2].' day -1 hour'));
+
+
+			/********* SEND EMAILS ************/
+
 
 			$students = $afterTripQuery->getResult();
-
 			if (count($students) !== 0) {
 				/******* SEND EMAILS TO STUDENTS *******/
 				$output->writeln("Sending email(s) to:");
-				foreach ($students as $student){
-					$output->writeln("    ".$student->getEmail());
-				}
 
 				$db = new Database($this->getContainer(), 'BioInfoBundle:Info');
 				$info = $db->findOne(array());
+
 				$message = \Swift_Message::newInstance()
 					->setSubject('Evaluation Reminder')
 					->setFrom($info->getEmail());
 				foreach($students as $student) {
 					$message->addBcc($student->getEmail(), $student->getFName().' '.$student->getLName());
+					$output->writeln("    ".$student->getEmail());
 				}
-				$message->setBody($this->getContainer()->get('templating')
-					->render('BioDataBundle:Default:email.html.twig', array('global' => $global)))
+				$message->setBody(
+					$this->getContainer()->get('templating')->render('BioDataBundle:Default:email.html.twig', 
+							array('global' => $global)
+						)
+					)
 					->setPriority('high')
 					->setContentType('text/html');
 
+				$output->writeln('Sending...');
 				$this->getContainer()->get('mailer')->send($message);
-
 
 				$output->writeln("Success.");
 			} else {
