@@ -114,8 +114,10 @@ class AdminController extends Controller
                 ->setTo($user->getEmail())
                 ->setContentType('text/html')
                 ->setBody(
-                    'Your new password for '. $info->getTitle() .
-                    ' is <code>'. $pwd .'</code>. Please sign in to change it.'
+                    'Your new password for the biol'. $info->getCourseNumber() .
+                    ' site is <code>'. $pwd .'</code>. Please sign in at '.
+                    '<a href="'.$this->generateUrl('change_password').'">'.$this->generateUrl('change_password').'</a> '.
+                    'with the username: <code>'.$user->getUsername().'</code> to change it.'
                     );
 
             $this->get('mailer')->send($message);

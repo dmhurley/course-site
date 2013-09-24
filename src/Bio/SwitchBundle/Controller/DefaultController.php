@@ -45,6 +45,11 @@ class DefaultController extends Controller
         // get student/user from session
 		$student = $this->get('security.context')->getToken()->getUser();
 
+        if ($this->get('security.context')->isGranted('ROLE_ADMIN')) {
+            $flash->set('failure', 'Only students can switch sections.');
+            return $this->redirect($this->generateUrl('switch_requests'));
+        }
+
         // get section
         $db = new Database($this, 'BioInfoBundle:Section');
         $section = $student->getSection();
@@ -71,12 +76,9 @@ class DefaultController extends Controller
 		if ($r->getStatus() === 3 || ($r->getMatch()->getStatus() === 3 && $r->getStatus() === 4)) {
 			return $this->confirmationAction($request, $r, $db);
 		}
-
-    	return $this->forward('BioPublicBundle:Default:sign', array(
-            'request' => $request,
-            'redirect' => 'request_switch'
-            )
-        );
+        // should never reach here.. just in case...
+        $flash->set('failure', 'Oops. Something went wrong.');
+        return $this->redirect($this->generateUrl('main_page'));
     }
 
     private function setRequestAction($request, $student, $section, $db) {
