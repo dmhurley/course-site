@@ -175,7 +175,14 @@ class DefaultController extends Controller
         if ($root->getStudent() === $student && $student) {
             $file = new File();
             $form = $this->createFormBuilder($file)
-                ->add('file', 'file', array('label' => 'File:'))
+                ->add('file', 'file', array(
+                    'label' => 'File:', 
+                        'constraints' => new Assert\File(array(
+                                'maxSize' => '32M'
+                            )
+                        )
+                    )
+                )
                 ->add('name', 'text', array('label' => 'Name:'))
                 ->add('upload', 'submit')
                 ->getForm();

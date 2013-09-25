@@ -28,7 +28,7 @@
 	<a href="{{ path('download', {'id' : root.id}) }}"> {{root.name}}.{{root.path|split('.')|last}} </a>
 {% endif %}
 
-{% if root.children is not defined and root.parent and root.parent.student == app.user %}
+{% if root.children is not defined and root.parent and app.user and root.parent.student == app.user %}
 <span>
 	<a href="{{ path('delete_public_file', {'id':root.parent.id, 'id2':root.id})}}">delete</a>
 </span>

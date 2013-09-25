@@ -251,7 +251,7 @@ class DefaultController extends Controller
     		$form->handleRequest($request);
     		$data = $form->get('file')->getData();
     		if ($data !== null) {
-    			$file = preg_split('/\n\r|\r\n|\n|\r/', file_get_contents($data));
+    			$file = preg_split('/\n\r|\r\n|\n|\r/', file_get_contents($data), -1, PREG_SPLIT_NO_EMPTY);
     			try {
                     $count = $this->uploadStudentList($file);
                     $flash->set('success', "Uploaded $count students.");

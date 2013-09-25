@@ -74,7 +74,15 @@ class DefaultController extends Controller
         /****** ADD FILE FORM ******/
         $file = new File();
     	$form1 = $this->get('form.factory')->createNamedBuilder('tfile', 'form', $file)
-    		->add('file', 'file', array('label' => false))
+    		->add('file', 'file', array(
+                'label' => false, 
+                'constraints' => new Assert\File(
+                        array(
+                            "maxSize" => "32M"
+                        )
+                    )
+                )
+            )
     		->add('name', 'text', array('label' => 'Name:'))
     		->add('id', 'hidden', array(
                 'mapped' => false,

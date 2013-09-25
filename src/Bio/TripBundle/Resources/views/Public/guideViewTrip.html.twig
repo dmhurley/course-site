@@ -72,7 +72,7 @@
 				{% for answer in eval.answers %}
 					{% if loop.index != 1 %}
 						<tr>
-							<td rowspan=2 >Question {{loop.index + 1}}</td>
+							<td rowspan=2 >Question {{loop.index}}</td>
 							<td>question</td>
 							<td>{{answer.evalQuestion.data[0]}}</td>
 						</tr>
