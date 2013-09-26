@@ -28,6 +28,13 @@ class PublicGlobal
      */
     private $showing;
 
+    /** 
+     * @var array
+     *
+     * @ORM\Column(name="description", type="text")
+     */
+    private $description;
+
     public function __construct() {
         $this->showing = [0,1,2,3,4,5,6,7,8,9];
     }
@@ -63,5 +70,15 @@ class PublicGlobal
     public function getShowing()
     {
         return $this->showing;
+    }
+
+    public function setDescription($description) {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getDescription() {
+        return $this->description;
     }
 }

@@ -211,7 +211,7 @@ body {
 		margin-top: 25px;
 	}
 
-	#center ul {
+	#center ul, #center ol {
 		margin-left: 20px;
 	}
 
@@ -243,6 +243,7 @@ body {
 		text-transform: uppercase;
 		font: 11px "Trebuchet MS" !important;
 		letter-spacing: 1px;
+		z-index: 10000
 	}
 
 		.login > a {

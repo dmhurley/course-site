@@ -5,6 +5,10 @@
 	{% stylesheets 'bundles/biopublic/css/public.css' filter="cssrewrite" output="css/*.css" %}
 		<link rel="stylesheet" href="{{ asset_url }}" />
 	{% endstylesheets %}
+
+	{% javascripts 'bundles/biopublic/js/DragDrop.js' output="js/*.js" %}
+		<script src="{{asset_url}}"></script>
+	{% endjavascripts %}
 {% endblock %}
 
 {% macro show(child) %}
@@ -48,6 +52,17 @@
 	{% if is_granted('ROLE_ADMIN') %}
 		{{ form_start(form) }}
 	{% endif %}
+
+	{% if is_granted('ROLE_ADMIN') or form.description.vars['data'] != '' %}
+		<div id="description">
+			{% if is_granted('ROLE_ADMIN') %}
+				{{ form_widget(form.description) }}
+			{% else %}
+				{{ form.description.vars['data']|raw}}
+			{% endif %}
+		</div>
+	{% endif %}
+
 	<div class="masonry">
 
 		{% if form.showing.children[0].vars['data'] or is_granted('ROLE_ADMIN') %}
@@ -182,4 +197,8 @@
 		{% do form_rest(form) %}
 		{{ form_end(form) }}
 	{% endif %}
+{% endblock %}
+
+{% block java %}
+	{{ tinymce_init() }}
 {% endblock %}

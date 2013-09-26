@@ -29,7 +29,9 @@ class DefaultController extends Controller
      * @Template()
      */
     public function indexAction(Request $request)
-    {
+    {   
+        $flash = $request->getSession()->getFlashBag();
+
         /**************** GET PEOPLE ***************/
         $db = new Database($this, 'BioInfoBundle:Person');
         $instructors = $db->find(
@@ -124,13 +126,24 @@ class DefaultController extends Controller
                 'multiple' => true
                 )
             )
+            ->add('description', 'textarea', array(
+                'label' => false,
+                'attr' => array(
+                    'class' => 'tinymce',
+                    'data-theme' => 'bio'
+                    )
+                )
+            )
             ->add('save', 'submit')
             ->getForm();
 
-        if ($request->getMethod() === "POST") {
+        if ($request->getMethod() === "POST" && $this->get('security.context')->isGranted('ROLE_ADMIN')) {
             $form->handleRequest($request);
             if ($form->isValid()) {
                 $this->getDoctrine()->getManager()->flush();
+                $flash->set('success', 'Changes saved.');
+            } else {
+                $flash->set('failure', 'Form Invalid.');
             }
         }
 
@@ -177,7 +190,8 @@ class DefaultController extends Controller
             $form = $this->createFormBuilder($file)
                 ->add('file', 'file', array(
                     'label' => 'File:', 
-                        'constraints' => new Assert\File(array(
+                        'constraints' => new Assert\File(
+                            array(
                                 'maxSize' => '32M'
                             )
                         )
