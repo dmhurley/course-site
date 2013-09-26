@@ -141,7 +141,7 @@ class DefaultController extends Controller {
                             ->setTo($info->getEmail())
                             ->setBody(
                                     $student->getFName().' '. $student->getLName() .
-                                    ' registered clicker #'. $clicker->getId() .
+                                    ' registered clicker #'. $clicker->getCid() .
                                     ' at '.(new \DateTime())->format('Y-m-d H:i:s').'.'
                                     );
                         $this->container->get('mailer')->send($message);
