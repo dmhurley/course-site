@@ -16,7 +16,8 @@ use Bio\InfoBundle\Entity\CourseSection;
 use Bio\StudentBundle\Form\StudentType;
 use Bio\DataBundle\Exception\BioException;
 use Bio\DataBundle\Objects\Database;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Type as DBALType;
+use Bio\DataBundle\Type\Type;
 
 /**
  * @Route("/admin/student")
@@ -52,7 +53,11 @@ class DefaultController extends Controller
             ->add('sid', 'text', array(
                 'label' => 'Student ID:',
                 'required' => false,
-                'attr' => array('disabled' => 'disabled')
+                'constraints' => new Assert\Regex("/[0-9]{7}/"),
+                'attr' => array(
+                        'pattern' => '[0-9]{7}',
+                        'title' => "7 digit student ID"
+                    )
                 )
             )
             ->add('fName', 'text', array(
@@ -80,7 +85,7 @@ class DefaultController extends Controller
             ->add('email', 'text', array(
                 'label' => 'Email:',
                 'required' => false,
-                'attr' => array('disabled' => 'disabled')
+                'constraints' => new Assert\Email()
                 )
             )
             ->add('find', 'submit')
@@ -118,6 +123,10 @@ class DefaultController extends Controller
             ->from('BioStudentBundle:Student', 's');
 
         foreach(array_keys($array) as $i => $key) {
+            if ($key === 'sid' || $key === 'email') {
+                $array[$key] = DBALType::getType('privatestring')->encrypt($array[$key]);
+            }
+
             if (is_string($array[$key])) {
                 $qb->andWhere('s.'.$key.' LIKE :value'.$i)
                     ->setParameter('value'.$i, $array[$key].'%');

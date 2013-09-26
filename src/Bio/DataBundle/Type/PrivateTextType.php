@@ -15,6 +15,10 @@ class PrivateTextType extends StringType
 
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
+        return $this->decrypt($value);
+    }
+
+    public function decrypt($value) {
         return trim(
             mcrypt_decrypt(
                 MCRYPT_RIJNDAEL_256,
@@ -34,6 +38,10 @@ class PrivateTextType extends StringType
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
+        return $this->encrypt($value);
+    }
+
+    public function encrypt($value) {
         return trim(
             base64_encode(
                 mcrypt_encrypt(
