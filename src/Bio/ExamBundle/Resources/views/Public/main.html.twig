@@ -5,4 +5,9 @@
 	{% stylesheets 'bundles/bioexam/css/exam.css' filter="cssrewrite" output="css/*.css" %}
 		<link rel="stylesheet" href="{{ asset_url }}" />
 	{% endstylesheets %}
+
+	{% javascripts 'bundles/bioexam/js/Loader.js' output="css/*.css" %}
+		<script src="{{asset_url}}"></script>
+	{% endjavascripts %}
+
 {% endblock %}

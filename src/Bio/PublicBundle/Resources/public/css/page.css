@@ -100,6 +100,12 @@ body {
 	font-family: "Trebuchet MS";
 }
 
+.link {
+	cursor:pointer;
+	text-decoration:underline;
+	color: rgb(0, 0, 238);
+}
+
 #container {
 	width: 1024px;
 	margin: 0 auto;
