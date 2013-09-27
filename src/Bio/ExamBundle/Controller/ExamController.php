@@ -21,9 +21,8 @@ class ExamController extends Controller
     /**
      * Lists all Exam entities.
      *
-     * @Route("/", name="exam_exam")
-     * @Method("GET")
-     * @Template()
+     * @Route("/get", name="exam_exam")
+     * @Template("BioExamBundle:Exam:index.json.twig")
      */
     public function indexAction()
     {
@@ -205,43 +204,21 @@ class ExamController extends Controller
     /**
      * Deletes a Exam entity.
      *
-     * @Route("/{id}", name="exam_exam_delete")
-     * @Method("DELETE")
+     * @Route("/delete/{id}", name="exam_exam_delete")
+     * @Template("BioExamBundle:Exam:response.json.twig")
      */
     public function deleteAction(Request $request, $id)
     {
-        $form = $this->createDeleteForm($id);
-        $form->handleRequest($request);
+        $em = $this->getDoctrine()->getManager();
+        $entity = $em->getRepository('BioExamBundle:Exam')->find($id);
 
-        if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('BioExamBundle:Exam')->find($id);
-
-            if (!$entity) {
-                throw $this->createNotFoundException('Unable to find Exam entity.');
-            }
-
-            $em->remove($entity);
-            $em->flush();
+        if (!$entity) {
+            return array('error' => 'Unable to find entity.');
         }
 
-        return $this->redirect($this->generateUrl('exam_exam'));
-    }
+        $em->remove($entity);
+        $em->flush();
 
-    /**
-     * Creates a form to delete a Exam entity by id.
-     *
-     * @param mixed $id The entity id
-     *
-     * @return \Symfony\Component\Form\Form The form
-     */
-    private function createDeleteForm($id)
-    {
-        return $this->createFormBuilder()
-            ->setAction($this->generateUrl('exam_exam_delete', array('id' => $id)))
-            ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Delete'))
-            ->getForm()
-        ;
+        return array();
     }
 }

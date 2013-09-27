@@ -13,27 +13,46 @@ function Loader(settings) {
 		ajax.send(post);
 	}
 
-	this.success(message) {
+	this.success = function(message) {
 
 	}
 
-	this.failure(message) {
+	this.failure = function(message) {
 
 	}
 /************* PRIVATE FUNCTION ***************/
 
-	this._addRow = function(array) {
-		
+	this._addRow = function(data) {
+		console.log(data);
+		row = this.settings.table.querySelector('tbody').insertRow();
+
+		for (var i = this.settings.buttons.length - 1; button = this.settings.buttons[i]; i--) {
+			var cell = row.insertCell();
+			cell.classList.add('link');
+			cell.classList.add(button);
+			cell.innerHTML = button;
+			cell.setAttribute('data-id', data.id)
+			cell.addEventListener('click', (function(b, bn, s) {
+						return function() {
+							s._callFunction(bn, b, s);
+						}
+					})(cell, button, this));
+			}
+
+		for(var i = this.settings.columns.length - 1; header = this.settings.columns[i]; i--) {
+			row.insertCell().innerHTML = data[header]?data[header]:header
+		}
 	}
 
 	this._generateUrl = function(action, id) {
-		var url = this.settings.url + '/' + 
+		console.log(id);
+		var url = this.settings.url + 
 			   this.settings.bundle + '/' + 
-			   this.settings.entity + '/' + action + (id?'/' + id:'');
+			   this.settings.entity + '/' + action + (id?('/' + id):'');
 
 		console.log('generated ' + url);
-		return 'http://localhost/~nick/course-site/web/app_dev.php/';
-		// return url;
+		// return 'http://localhost/~nick/course-site/web/app_dev.php/';
+		return url;
 	}
 
 	// calls a function found in the settings matching fn
@@ -53,7 +72,8 @@ function Loader(settings) {
 		if (!settings ||
 			!settings.bundle ||
 			!settings.entity ||
-			!settings.table ) {
+			!settings.table ||
+			!settings.columns ) {
 			throw "Required settings not set.";
 		}
 
@@ -73,7 +93,8 @@ function Loader(settings) {
 			},
 			'edit': function() {
 				console.log('editing');
-			}
+			},
+			'columns': []
 		};
 
 		for (key in defaults) {
@@ -101,7 +122,15 @@ function Loader(settings) {
 	this._getExisting = function(n) {
 		this.sendRequest(this._generateUrl('get') , n, (function(self) {
 			return function() {
-				// add a bunch of rows
+				console.log(this.responseText);
+				var data = JSON.parse(this.responseText);
+				if (data.success) {
+					for (var i = 0; row = data.data[i]; i++) {
+						self._addRow(row)
+					}
+				} else {
+					self.failure(data.message);
+				}
 			}
 		})(this));
 		console.log("Retrieving existing rows...")

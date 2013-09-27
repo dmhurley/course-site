@@ -32,33 +32,17 @@
 			</tr>
 		</thead>
 		<tbody>
-			{% for exam in exams %}
-				<tr>
-					{% if date() > date(exam.gDate|date('Y-m-d')~' '~exam.gEnd|date('H:i:s')) %}
-						<td><a href="{{ path('download_exam', {'id' : exam.id}) }}">{{exam.title}}</a></td>
-					{% else %}
-						<td>{{exam.title}}</td>
-					{% endif %}
-					<td>{{exam.section}}</td>
-					<td>{{exam.tDate|date('m-d-y')}}</td>
-					<td>{{exam.tStart|date('h:i a')}}</td>
-					<td>{{exam.questions|length}}</td>
-					<td><a href="{{ path('preview') }}?id={{exam.id}}&type=exam">preview</a></td>
-					<td class="link edit" data-id="{{exam.id}}" }}>edit</td>
-					<td class="link delete" data-id="{{exam.id}}" }}>delete</td>
-				</tr>
-			{% else %}
-				<tr><td colspan=8 style="text-align:center;">no exams</td></tr>
-			{% endfor %}
+			
 		</tbody>
 	</table>
 {% endblock %}
 
 {% block java %}
 	<script>var loader = new Loader({
-		'url': '{{ url('main_page')}}admin',
+		'url': '{{ url('main_page')}}',
 		'bundle': 'exam',
 		'entity': 'exam',
-		'table': document.querySelector('table')
+		'table': document.querySelector('table'),
+		'columns': ['title', 'section', 'tDate', 'tStart', 'questions', '<a href="">preview</a>']
 	}); </script>
 {% endblock %}
