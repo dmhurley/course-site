@@ -10,6 +10,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Bio\DataBundle\Objects\Database;
 use Bio\UserBundle\Entity\User;
 use Bio\UserBundle\Entity\AbstractUserStudent;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * @Route("/admin/user")
@@ -90,6 +92,60 @@ class AdminController extends Controller
             return $this->redirect($this->generateUrl('view_users'));
         }
 
+    }
+
+    /**
+     * @Route("/register", name="register")
+     * @Template("BioPublicBundle:Template:singleForm.html.twig")
+     */
+    public function registerAction(Request $request) {
+        $flash = $request->getSession()->getFlashBag();
+
+        $user = new User();
+
+        $form = $this->createFormBuilder($user)
+            ->add('username', 'text', array(
+                'label' => 'Username:',
+                'constraints' => new Assert\NotBlank()
+                )
+            )
+            ->add('password', 'repeated', array(
+                    'type' => 'password',
+                    'invalid_message' => 'The password fields must match.',
+                    'first_options' => array('label' => 'Password:'),
+                    'second_options' => array('label' => 'Repeat:')
+                )
+            )
+            ->add('email', 'text', array(
+                'label' => 'Email:',
+                'constraints' => new Assert\Email()
+                )
+            )
+            ->add('register', 'submit')
+            ->getForm();
+
+        if ($request->getMethod() === "POST") {
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                $db = new Database($this, 'BioUserBundle:User');
+                $factory = $this->get('security.encoder_factory');
+                $encoder = $factory->getEncoder($user);
+                $pwd = $encoder->encodePassword($user->getPassword(), $user->getSalt());
+                $user->setPassword($pwd);
+                $user->setRoles(array('ROLE_USER'));
+
+                $db->add($user);
+                $db->close();
+                $flash->set('success', 'Registered account.');
+                return $this->redirect($this->generateUrl('login'));
+            } else {
+                $flash->set('failure', 'Invalid form.');
+            }
+        } else {
+            // $flash->set('failure', 'An instructor will have to approve this account. Don\'t bother signing up if you are a student or don\'t have permission.');
+        }
+
+        return array('form' => $form->createView(), 'title' => 'Register Account');
     }
 
     /**

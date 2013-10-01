@@ -56,7 +56,7 @@ class Question
     private $tags;
 
     public function __construct() {
-        $this->points = 3;
+        $this->points = 2;
         $this->tags = array();
     }
 
