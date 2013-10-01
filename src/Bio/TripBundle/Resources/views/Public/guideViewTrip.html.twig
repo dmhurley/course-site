@@ -39,11 +39,32 @@
 				</td>
 			</tr>
 			<tr>
+				<td>Students</td>
+				<td>
+					<table>
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Email</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for student in trip.students %}
+								<tr>
+									<td>{{student.fName|capitalize}} {{student.lName|capitalize}}</td>
+									<td><a href="{{student.email}}">{{student.email}}</a></td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</td>
+			</tr>
+			<tr>
 				<td>
 					{% spaceless %}
 						<a href="mailto:?bcc={% for student in trip.students %}{{student.email}},{% endfor %}">
 					{% endspaceless %}
-					email all
+					Email All
 					</a>
 				</td>
 				<td>

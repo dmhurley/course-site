@@ -93,6 +93,17 @@ class AdminController extends Controller
             )
             ->add('maxTrips', 'integer', array('label' => "Max Trips:"))
             ->add('evalDue', 'integer',  array('label' => "Days Until Late:"))
+            ->add('notifications', 'checkbox', array(
+                'label' => 'Notifications:',
+                'required' => false
+                )
+            )
+            ->add('start', 'datetime', array(
+                'label' => 'Start:',
+                'widget' => 'single_text',
+                'attr' => array('class' => 'datetime')
+                )
+            )
             ->add('instructions', 'textarea', array(
                 'label' => 'Trip Instructions',
                 'attr' => array(
@@ -102,7 +113,7 @@ class AdminController extends Controller
                 )
             )
             ->add('guidePass', 'password', array(
-                'label' => 'Tour Guide Password:',
+                'label' => 'Leader Password:',
                 'always_empty' => false,
                 'attr' => array('value' => $global->getGuidePass())
                 )

@@ -90,6 +90,23 @@ class TripGlobal
     private $evalQuestions;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="notifications", type="boolean")
+     * @Assert\Type(type="boolean")
+     */
+    private $notifications;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="start", type="datetime")
+     * @Assert\DateTime()
+     * @Assert\NotBlank()
+     */
+    private $start;
+
+    /**
      * Get id
      *
      * @return integer 
@@ -353,5 +370,51 @@ class TripGlobal
     public function getInstructions()
     {
         return $this->instructions;
+    }
+    
+     /**
+     * Set notifications
+     *
+     * @param boolean $notifications
+     * @return ClickerGlobal
+     */
+    public function setNotifications($notifications)
+    {
+        $this->notifications = $notifications;
+    
+        return $this;
+    }
+
+    /**
+     * Get notifications
+     *
+     * @return boolean 
+     */
+    public function getNotifications()
+    {
+        return $this->notifications;
+    }
+
+    /**
+     * Set start
+     *
+     * @param \DateTime $start
+     * @return ClickerGlobal
+     */
+    public function setStart($start)
+    {
+        $this->start = $start;
+    
+        return $this;
+    }
+
+    /**
+     * Get start
+     *
+     * @return \DateTime 
+     */
+    public function getStart()
+    {
+        return $this->start;
     }
 }
