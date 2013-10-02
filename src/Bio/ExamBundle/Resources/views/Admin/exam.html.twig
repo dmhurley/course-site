@@ -2,7 +2,7 @@
 
 {% block head %}
 	{{ parent() }}
-	{% javascripts 'bundles/bioexam/js/Loader.js' output="js/*.js" %}
+	{% javascripts 'bundles/bioexam/js/Loader.js' 'bundles/bioexam/js/Parser.js' output="js/*.js" %}
 		<script src="{{asset_url}}"></script>
 	{% endjavascripts %}
 
@@ -43,6 +43,10 @@
 		'bundle': 'exam',
 		'entity': 'exam',
 		'table': document.querySelector('table'),
-		'columns': ['title', 'section', 'tDate', 'tStart', 'questions', '<a href="">preview</a>']
+		'buttons': ['preview', 'edit', 'delete'],
+		'preview': function(button, self) {
+			window.open('{{url("preview")}}?id=#{id}&type=exam', '_blank');
+		},
+		'columns': ['title', 'section', 'tDate', 'tStart', 'questions']
 	}); </script>
 {% endblock %}

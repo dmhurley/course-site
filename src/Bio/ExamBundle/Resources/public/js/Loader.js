@@ -2,6 +2,7 @@ function Loader(settings) {
 /********* PUBLIC VARIABLES *********/
 	this.settings = {};
 	this.buttons = {};
+	this.parser = null;
 
 
 /********** PUBLIC FUNCTION **********/
@@ -9,21 +10,28 @@ function Loader(settings) {
 		ajax = new XMLHttpRequest();
 		console.log(url);
 		ajax.open('POST', url, true);
+
 		ajax.onload = onload;
+
+		ajax.onerror = ajax.onabort = (function(self) {
+			return function() {
+				self.failure('Error.');
+			}
+		})(this);
+
 		ajax.send(post);
 	}
 
 	this.success = function(message) {
-
+		console.log(message);
 	}
 
 	this.failure = function(message) {
-
+		console.log(message);
 	}
 /************* PRIVATE FUNCTION ***************/
 
 	this._addRow = function(data) {
-		console.log(data);
 		row = this.settings.table.querySelector('tbody').insertRow();
 
 		for (var i = this.settings.buttons.length - 1; button = this.settings.buttons[i]; i--) {
@@ -31,7 +39,7 @@ function Loader(settings) {
 			cell.classList.add('link');
 			cell.classList.add(button);
 			cell.innerHTML = button;
-			cell.setAttribute('data-id', data.id)
+			cell.id = data.id;
 			cell.addEventListener('click', (function(b, bn, s) {
 						return function() {
 							s._callFunction(bn, b, s);
@@ -40,7 +48,7 @@ function Loader(settings) {
 			}
 
 		for(var i = this.settings.columns.length - 1; header = this.settings.columns[i]; i--) {
-			row.insertCell().innerHTML = data[header]?data[header]:header
+			row.insertCell().innerHTML = data[header] !== undefined?data[header]:header
 		}
 	}
 
@@ -51,7 +59,6 @@ function Loader(settings) {
 			   this.settings.entity + '/' + action + (id?('/' + id):'');
 
 		console.log('generated ' + url);
-		// return 'http://localhost/~nick/course-site/web/app_dev.php/';
 		return url;
 	}
 
@@ -60,7 +67,8 @@ function Loader(settings) {
 	this._callFunction = function(fn, arg1, arg2) {
 		console.log('calling ' + fn + '...');
 		if (this.settings[fn] instanceof Function) {
-			return this.settings[fn](arg1, arg2);
+
+			return eval("(" + this.parser.parse(this.settings[fn].toString(), arg1) + ")")(arg1, arg2);
 		} else {
 			throw fn + " function not defined in settings!";
 		}
@@ -86,7 +94,7 @@ function Loader(settings) {
 			'table': null,
 			'delete': function(button, self) {
 				a = button;
-				var url = self._generateUrl('delete', button.attributes['data-id'].value);
+				var url = self._generateUrl('delete', button.id);
 				self.sendRequest(url, null, function() {
 					button.parentNode.parentNode.removeChild(button.parentNode);
 				});
@@ -100,11 +108,17 @@ function Loader(settings) {
 		for (key in defaults) {
 			this.settings[key] = settings[key]?settings[key]:defaults[key];
 		}
+		for (key in settings) {
+			if (this.settings[key] === undefined) {
+				this.settings[key] = settings[key];
+			}
+		}
 		console.log("Settings set...");
 	}
 
 	// finds each defined button in a table and adds a corresponding function to the onclick event
 	this._registerButtons = function() {
+		// not actually used....
 		for(index in this.settings.buttons ) {
 			var buttonName = this.settings.buttons[index];
 			this.buttons[buttonName] = document.querySelectorAll('td.link.'+buttonName);
@@ -141,6 +155,7 @@ function Loader(settings) {
 		this._setSettings(settings);
 		this._registerButtons();
 		this._getExisting();
+		this.parser = new Parser('#{', '}');
 	}
 	this._init(settings);
 }
