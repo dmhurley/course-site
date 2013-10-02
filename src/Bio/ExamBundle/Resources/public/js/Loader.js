@@ -22,6 +22,16 @@ function Loader(settings) {
 		ajax.send(post);
 	}
 
+	this.postForm = function(url, form, onload) {
+		data = new FormData(form);
+		this.sendRequest(url, form, (function(self, form) {
+			return function(event) {
+				self._handleErrors(form, event);
+				onload(event);
+			}
+		})(this, form));
+	}
+
 	this.success = function(message) {
 		console.log(message);
 	}
@@ -30,6 +40,9 @@ function Loader(settings) {
 		console.log(message);
 	}
 /************* PRIVATE FUNCTION ***************/
+	this._handleErrors = function(form, event) {
+		console.log("handled errors...");
+	}	
 
 	this._addRow = function(data) {
 		row = this.settings.table.querySelector('tbody').insertRow();
@@ -117,23 +130,21 @@ function Loader(settings) {
 	}
 
 	// finds each defined button in a table and adds a corresponding function to the onclick event
-	this._registerButtons = function() {
-		// not actually used....
-		for(index in this.settings.buttons ) {
-			var buttonName = this.settings.buttons[index];
-			this.buttons[buttonName] = document.querySelectorAll('td.link.'+buttonName);
-			for (var i = 0; button = this.buttons[buttonName][i]; i++) {
-				button.addEventListener('click', (function(b, bn, s) {
-					return function() {
-						s._callFunction(bn, b, s);
-					}
-				})(button, buttonName, this));
-			}
+	this._registerForms = function() {
+		var forms = document.querySelectorAll('form');
+		for (var i = 0; form = forms[i]; i++) {
+			form.addEventListener('submit', (function(self) {
+				return function(event) {
+					event.preventDefault();
+					self.postForm(this.action, this, function(event) {console.log("SUCCESS")});
+				}
+			})(this));
 		}
-		console.log("Buttons registered...");
+		console.log('Registered forms...');
 	}
 
 	this._getExisting = function(n) {
+		console.log("Retrieving existing rows...");
 		this.sendRequest(this._generateUrl('get') , n, (function(self) {
 			return function() {
 				console.log(this.responseText);
@@ -142,20 +153,20 @@ function Loader(settings) {
 					for (var i = 0; row = data.data[i]; i++) {
 						self._addRow(row)
 					}
+					console.log("Displayed existing results...");
 				} else {
 					self.failure(data.message);
 				}
 			}
 		})(this));
-		console.log("Retrieving existing rows...")
 	}
 
 	// sets it all up
 	this._init = function(settings) {
-		this._setSettings(settings);
-		this._registerButtons();
-		this._getExisting();
 		this.parser = new Parser('#{', '}');
+		this._setSettings(settings);
+		this._registerForms();
+		this._getExisting();
 	}
 	this._init(settings);
 }
