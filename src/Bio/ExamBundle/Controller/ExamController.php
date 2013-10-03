@@ -37,14 +37,35 @@ class ExamController extends Controller
     /**
      * Creates a new Exam entity.
      *
-     * @Route("/", name="exam_exam_create")
-     * @Method("POST")
-     * @Template("BioExamBundle:Exam:new.html.twig")
+     * @Route("/create", name="exam_exam_create")
+     * @Template("BioExamBundle:Exam:index.json.twig")
      */
     public function createAction(Request $request)
-    {
+    {   
         $entity = new Exam();
-        $form = $this->createCreateForm($entity);
+        $form = $this->get('form.factory')->createNamedBuilder('form', 'form', $entity)
+            ->add('title', 'text', array('label'=>'Exam Name:'))
+            ->add('section', 'text', array(
+                'label'=>'Section:',
+                'required' => false,
+                'empty_data' => '',
+                'attr' => array(
+                    'pattern' => '(\A\Z)|(^[A-Z][A-Z0-9]?$)',
+                    'title' => 'One or two letter capitalized section name.'
+                    )
+                )
+            )
+            ->add('tDate', 'date',        array('label' => 'Test Date:'))
+            ->add('tStart', 'time',       array('label'=>'Test Start:'))
+            ->add('tEnd', 'time',         array('label'=>'Test End:'))
+            ->add('tDuration', 'integer', array('label'=>'Test Length (m):'))
+            ->add('gDate', 'date',        array('label' => 'Grading Date:'))
+            ->add('gStart', 'time',       array('label'=>'Grading Start:'))
+            ->add('gEnd', 'time',         array('label'=>'Grading End:'))
+            ->add('gDuration', 'integer', array('label'=>'Grade Length (m):'))
+            ->add('add', 'submit')
+            ->getForm();
+
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -52,13 +73,14 @@ class ExamController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('exam_exam_show', array('id' => $entity->getId())));
+            return array(
+                'entities' => array($entity),
+            );
+        } else {
         }
 
-        return array(
-            'entity' => $entity,
-            'form'   => $form->createView(),
-        );
+        return array('entities' => []);
+        
     }
 
     /**

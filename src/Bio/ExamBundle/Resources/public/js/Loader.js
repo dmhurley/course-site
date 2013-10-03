@@ -8,7 +8,7 @@ function Loader(settings) {
 /********** PUBLIC FUNCTION **********/
 	this.sendRequest = function(url, post, onload) {
 		ajax = new XMLHttpRequest();
-		console.log(url);
+		console.log("sending request to: " + url);
 		ajax.open('POST', url, true);
 
 		ajax.onload = onload;
@@ -24,12 +24,11 @@ function Loader(settings) {
 
 	this.postForm = function(url, form, onload) {
 		data = new FormData(form);
-		this.sendRequest(url, form, (function(self, form) {
-			return function(event) {
-				self._handleErrors(form, event);
-				onload(event);
+		this.sendRequest(url, data, (function(self, form, fn) {
+			return function() {
+				fn(this);
 			}
-		})(this, form));
+		})(this, form, onload));
 	}
 
 	this.success = function(message) {
@@ -45,56 +44,46 @@ function Loader(settings) {
 	}	
 
 	this._addRow = function(data) {
-		row = this.settings.table.querySelector('tbody').insertRow();
+		var row = this.settings.table.querySelector('tbody').insertRow();
 
-		for (var i = this.settings.buttons.length - 1; button = this.settings.buttons[i]; i--) {
-			var cell = row.insertCell();
-			cell.classList.add('link');
-			cell.classList.add(button);
-			cell.innerHTML = button;
-			cell.id = data.id;
-			cell.addEventListener('click', (function(b, bn, s) {
-						return function() {
-							s._callFunction(bn, b, s);
-						}
-					})(cell, button, this));
+		var keys = Object.keys(this.settings.buttons);
+		for (key in keys) {
+			settings = this.settings.buttons[keys[key]];
+			if (!settings.unique) {
+				var cell = row.insertCell();
+				cell.classList.add('link');
+				cell.classList.add(keys[key]);
+				cell.innerHTML = keys[key];
+				cell.id = data.id;
+				cell.addEventListener(settings.event?settings.event:'click', (function(button, self, fn) {
+					return function(event) {
+						eval("("+self.parser.parse(fn.toString(), cell)+")")(event, button, self);
+					}
+				})(cell, this, settings.fn));
 			}
+		}
 
 		for(var i = this.settings.columns.length - 1; header = this.settings.columns[i]; i--) {
 			row.insertCell().innerHTML = data[header] !== undefined?data[header]:header
 		}
 	}
 
-	this._generateUrl = function(action, id) {
-		console.log(id);
+	this.generateUrl = function(action, id) {
 		var url = this.settings.url + 
 			   this.settings.bundle + '/' + 
 			   this.settings.entity + '/' + action + (id?('/' + id):'');
-
-		console.log('generated ' + url);
 		return url;
-	}
-
-	// calls a function found in the settings matching fn
-	// calls fn and passes two arguments arg1 and arg2
-	this._callFunction = function(fn, arg1, arg2) {
-		console.log('calling ' + fn + '...');
-		if (this.settings[fn] instanceof Function) {
-
-			return eval("(" + this.parser.parse(this.settings[fn].toString(), arg1) + ")")(arg1, arg2);
-		} else {
-			throw fn + " function not defined in settings!";
-		}
 	}
 
 	// sets the settings by overwriting any defaults with the user defined
 	// throws an error if required settings aren't set
 	this._setSettings = function(settings) {
 		if (!settings ||
+			!settings.url ||
 			!settings.bundle ||
 			!settings.entity ||
 			!settings.table ||
-			!settings.columns ) {
+			!settings.buttons ) {
 			throw "Required settings not set.";
 		}
 
@@ -103,18 +92,8 @@ function Loader(settings) {
 			'space': 'bio',
 			'bundle': '',
 			'entity': '',
-			'buttons': ['delete', 'edit'],
+			'buttons': {},
 			'table': null,
-			'delete': function(button, self) {
-				a = button;
-				var url = self._generateUrl('delete', button.id);
-				self.sendRequest(url, null, function() {
-					button.parentNode.parentNode.removeChild(button.parentNode);
-				});
-			},
-			'edit': function() {
-				console.log('editing');
-			},
 			'columns': []
 		};
 
@@ -130,24 +109,27 @@ function Loader(settings) {
 	}
 
 	// finds each defined button in a table and adds a corresponding function to the onclick event
-	this._registerForms = function() {
-		var forms = document.querySelectorAll('form');
-		for (var i = 0; form = forms[i]; i++) {
-			form.addEventListener('submit', (function(self) {
-				return function(event) {
-					event.preventDefault();
-					self.postForm(this.action, this, function(event) {console.log("SUCCESS")});
-				}
-			})(this));
+	this._registerUniques = function() {
+		var keys = Object.keys(this.settings.buttons);
+
+		for (key in keys) {
+			var settings = this.settings.buttons[keys[key]];
+			if (settings.unique) {
+				var unique = document.querySelector(settings.selector);
+				unique.addEventListener(settings.event?settings.event:'click', (function(button, self, fn) {
+					return function(event) {
+						eval("("+self.parser.parse(fn.toString(), button)+")")(event, button, self);
+					}
+				})(unique, this, settings.fn));
+			}
 		}
-		console.log('Registered forms...');
+		console.log("Registered uniques...")
 	}
 
 	this._getExisting = function(n) {
 		console.log("Retrieving existing rows...");
-		this.sendRequest(this._generateUrl('get') , n, (function(self) {
+		this.sendRequest(this.generateUrl('get') , n, (function(self) {
 			return function() {
-				console.log(this.responseText);
 				var data = JSON.parse(this.responseText);
 				if (data.success) {
 					for (var i = 0; row = data.data[i]; i++) {
@@ -165,7 +147,7 @@ function Loader(settings) {
 	this._init = function(settings) {
 		this.parser = new Parser('#{', '}');
 		this._setSettings(settings);
-		this._registerForms();
+		this._registerUniques();
 		this._getExisting();
 	}
 	this._init(settings);

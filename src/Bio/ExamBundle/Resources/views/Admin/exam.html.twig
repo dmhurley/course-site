@@ -14,10 +14,10 @@
 		<h4>Add Exam</h4>
 		{{ form(form) }}
 	</div>
-	<div style="float:left; width:58%">
+	{#<div style="float:left; width:58%">
 		<h4>Global Settings</h4>
 		{{ form(globalForm) }}
-	</div>
+	</div>#}
 	<table>
 		<thead>
 			<tr>
@@ -43,9 +43,44 @@
 		'bundle': 'exam',
 		'entity': 'exam',
 		'table': document.querySelector('table'),
-		'buttons': ['preview', 'edit', 'delete'],
-		'preview': function(button, self) {
-			window.open('{{url("preview")}}?id=#{id}&type=exam', '_blank');
+		'buttons': {
+			'preview': {
+				'unique': false,
+				'selector': '.button.preview',
+				'fn': function(event, button, scope) {
+					window.open('{{url("preview")}}?id=#{id}&type=exam', '_blank')
+				}
+			},
+			'edit': {
+				'unique': false,
+				'selector': '.button.edit',
+				'fn': function(event, button, scope) {
+					console.log('editing', event);
+				}
+			},
+			'delete': {
+				'unique': false,
+				'selector': '.button.delete',
+				'fn': function(event, button, scope) {
+					var url = scope.generateUrl('delete', button.id);
+					scope.sendRequest(url, null, function(){
+						button.parentNode.parentNode.removeChild(button.parentNode);
+					});
+				}
+			},
+			'add': {
+				'unique': true,
+				'selector': 'form',
+				'event': 'submit',
+				'fn': function(event, button, scope) {
+					event.preventDefault();
+					var url = scope.generateUrl('create')
+					scope.postForm(url, button, function(self) {
+						scope._addRow(JSON.parse(self.responseText).data[0]);
+						button.reset();
+					});
+				}
+			}
 		},
 		'columns': ['title', 'section', 'tDate', 'tStart', 'questions']
 	}); </script>

@@ -37,6 +37,7 @@ class AdminController extends Controller
         $flash = $request->getSession()->getFlashBag();
         $exam = new Exam();
     	$form = $this->get('form.factory')->createNamedBuilder('form', 'form', $exam)
+            ->setAction($this->generateUrl('exam_exam_create'))
     		->add('title', 'text', array('label'=>'Exam Name:'))
             ->add('section', 'text', array(
                 'label'=>'Section:',
