@@ -470,6 +470,50 @@ class AdminController extends Controller
     }
 
     /**
+     * @Route("/download", name="all_trip_download")b
+     */
+    public function allDownloadAction(Request $request) {
+        $responseText = ["Name\tEmail\tTrip"];
+
+        $query = $this->getDoctrine()->getManager()->createQuery('
+                SELECT s.fName as fName, s.lName as lName, s.email as email, t.title as trip
+                FROM BioStudentBundle:Student s
+                LEFT JOIN BioTripBundle:Trip t
+                WITH s MEMBER OF t.students
+                ORDER BY s.fName ASC, s.lName ASC, t.title ASC
+            ');
+
+        $results = $query->getResult();
+
+
+
+        foreach($results as $result) {
+            if ($result['trip'] != null) {
+                $responseText[] = ($result['fName']." ".$result['lName']."\t".$result['email']."\t".$result['trip']);
+            }
+        }
+        foreach($results as $result) {
+            if ($result['trip'] == null) {
+                $responseText[] = ($result['fName']." ".$result['lName']."\t".$result['email']."\t".$result['trip']);
+            }
+        }
+
+        $response = $this->render('BioPublicBundle:Template:blank.html.twig', array(
+            'text' => implode("\n", $responseText)
+            )
+        );
+        $response->headers->set(
+            "Content-Type", 'application/plaintext'
+            );
+
+        $response->headers->set(
+            'Content-Disposition', ('attachment; filename="trip_list.txt"')
+            );
+        return $response;
+
+    }
+
+    /**
      * @Route("/evals/download/{id}", name="trip_download")
      */
     public function downloadAction(Request $request, Trip $trip = null) {
@@ -488,7 +532,7 @@ class AdminController extends Controller
                 }
             }
 
-             $response = $this->render('BioExamBundle:Admin:download.html.twig', array(
+            $response = $this->render('BioPublicBundle:Template:blank.html.twig', array(
                 'text' => implode("\n", $responseText)
                 )
             );
