@@ -1,11 +1,21 @@
 function Loader(settings) {
-/********* PUBLIC VARIABLES *********/
+/********* VARIABLES *********/
 	this.settings = {};
 	this.buttons = {};
 	this.parser = null;
+	this.loader = null;
 
 
-/********** PUBLIC FUNCTION **********/
+/********** PUBLIC FUNCTIONS **********/
+	
+	/**
+	 * @param url the url to send the request to
+	 * @param post the optional post data
+	 * @callback onload
+	 * 		@this the ajax response
+	 *		@event the event
+	 * calls this.failure('Error.') on error or abort
+	 */
 	this.sendRequest = function(url, post, onload) {
 		ajax = new XMLHttpRequest();
 		console.log("sending request to: " + url);
@@ -22,6 +32,11 @@ function Loader(settings) {
 		ajax.send(post);
 	}
 
+	/* @param url the url to send the request to
+	 * @param form the form object to be sent
+	 * @callback onload
+	 *		@param the ajax response
+	 */
 	this.postForm = function(url, form, onload) {
 		data = new FormData(form);
 		this.sendRequest(url, data, (function(self, form, fn) {
@@ -31,6 +46,18 @@ function Loader(settings) {
 		})(this, form, onload));
 	}
 
+	/*
+	 * generates a url in the format url/bundle/entity/action(/id)
+	 * @param action
+	 * @param id optional variable
+	 */
+	this.generateUrl = function(action, id) {
+		var url = this.settings.url + 
+			   this.settings.bundle + '/' + 
+			   this.settings.entity + '/' + action + (id?('/' + id):'');
+		return url;
+	}
+
 	this.success = function(message) {
 		console.log(message);
 	}
@@ -38,7 +65,15 @@ function Loader(settings) {
 	this.failure = function(message) {
 		console.log(message);
 	}
-/************* PRIVATE FUNCTION ***************/
+
+	this.wait = function(timeout) {
+		
+	}
+
+	this.ready = function() {
+		
+	}
+/************* PRIVATE FUNCTIONS ***************/
 	this._handleErrors = function(form, event) {
 		console.log("handled errors...");
 	}	
@@ -49,18 +84,16 @@ function Loader(settings) {
 		var keys = Object.keys(this.settings.buttons);
 		for (key in keys) {
 			settings = this.settings.buttons[keys[key]];
-			if (!settings.unique) {
-				var cell = row.insertCell();
-				cell.classList.add('link');
-				cell.classList.add(keys[key]);
-				cell.innerHTML = keys[key];
-				cell.id = data.id;
-				cell.addEventListener(settings.event?settings.event:'click', (function(button, self, fn) {
-					return function(event) {
-						eval("("+self.parser.parse(fn.toString(), cell)+")")(event, button, self);
-					}
-				})(cell, this, settings.fn));
-			}
+			var cell = row.insertCell();
+			cell.classList.add('link');
+			cell.classList.add(keys[key]);
+			cell.innerHTML = keys[key];
+			cell.id = data.id;
+			cell.addEventListener(settings.event?settings.event:'click', (function(button, self, fn) {
+				return function(event) {
+					eval("("+self.parser.parse(fn.toString(), cell)+")")(event, button, self);
+				}
+			})(cell, this, settings.fn));
 		}
 
 		for(var i = this.settings.columns.length - 1; header = this.settings.columns[i]; i--) {
@@ -68,22 +101,16 @@ function Loader(settings) {
 		}
 	}
 
-	this.generateUrl = function(action, id) {
-		var url = this.settings.url + 
-			   this.settings.bundle + '/' + 
-			   this.settings.entity + '/' + action + (id?('/' + id):'');
-		return url;
-	}
-
 	// sets the settings by overwriting any defaults with the user defined
 	// throws an error if required settings aren't set
 	this._setSettings = function(settings) {
-		if (!settings ||
+		if (
+			!settings ||
 			!settings.url ||
 			!settings.bundle ||
 			!settings.entity ||
-			!settings.table ||
-			!settings.buttons ) {
+			!settings.table 
+		){
 			throw "Required settings not set.";
 		}
 
@@ -109,19 +136,17 @@ function Loader(settings) {
 	}
 
 	// finds each defined button in a table and adds a corresponding function to the onclick event
-	this._registerUniques = function() {
-		var keys = Object.keys(this.settings.buttons);
+	this._registerListeners = function() {
+		var keys = Object.keys(this.settings.listeners);
 
 		for (key in keys) {
-			var settings = this.settings.buttons[keys[key]];
-			if (settings.unique) {
-				var unique = document.querySelector(settings.selector);
-				unique.addEventListener(settings.event?settings.event:'click', (function(button, self, fn) {
-					return function(event) {
-						eval("("+self.parser.parse(fn.toString(), button)+")")(event, button, self);
-					}
-				})(unique, this, settings.fn));
-			}
+			var settings = this.settings.listeners[keys[key]];
+			var listener = document.querySelector(settings.selector);
+			listener.addEventListener(settings.event?settings.event:'click', (function(button, self, fn) {
+				return function(event) {
+					eval("("+self.parser.parse(fn.toString(), button)+")")(event, button, self);
+				}
+			})(listener, this, settings.fn));
 		}
 		console.log("Registered uniques...")
 	}
@@ -136,6 +161,7 @@ function Loader(settings) {
 						self._addRow(row)
 					}
 					console.log("Displayed existing results...");
+					self.ready();
 				} else {
 					self.failure(data.message);
 				}
@@ -145,10 +171,11 @@ function Loader(settings) {
 
 	// sets it all up
 	this._init = function(settings) {
+		this.wait();
 		this.parser = new Parser('#{', '}');
 		this._setSettings(settings);
-		this._registerUniques();
-		this._getExisting();
+		this._registerListeners();
+		this._getExisting(); // calls self.ready()
 	}
 	this._init(settings);
 }
