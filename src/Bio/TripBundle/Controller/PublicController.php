@@ -416,9 +416,9 @@ class PublicController extends Controller
                 ->setTo('celese@uw.edu')
                 ->setFrom($this->container->getParameter('mailer_dev_address'))
                 ->setBody(
-                        $student->getFName().' '.$student->getLName().($joining?' joined ': ' dropped ').'the trip: <i>'.$trip->getTitle().'</i> ('.
+                        $student->getFName().' '.$student->getLName().($joining?' joined ': ' dropped ').'the trip: <i>'.$trip->getTitle().' ('.
                         $trip->getStart()->format('Y-m-d H:i').' - '.$trip->getEnd()->format('Y-m-d H:i').
-                        ') on '.(new \DateTime())->format('Y-m-d H:i').'.'
+                        ')</i>  on '.(new \DateTime())->format('Y-m-d H:i').'.'
                     )
                 ->setContentType('text/html');
 
