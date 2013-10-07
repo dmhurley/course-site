@@ -57,33 +57,36 @@ class PublicController extends Controller
 		// get all exams where the grading period hasn't ended.
 			$exams = $this->getNextExam($student);
 			foreach($exams as $e) {
-				$t = $db->findOne(array('student' => $student, 'exam' => $exam));
-				if ( 
-					(!$t || $t->getStatus() < 4) && 
-					new \DateTime($e->getTDate()->format('Y-m-d ').
-					 	$e->getTEnd()->format('H:i:s')
-					) < new \DateTime()) {
-					// not started/or submitted yet
-					// too late to start/finish exam
-					$message = "It is too late to take ".$e->getTitle().".";
-				} else if (
-					(!$t || $t->getStatus() < 6) &&
-					new \DateTime($e->getGDate()->format('Y-m-d ').
-						$e->getGEnd()->format('H:i:s')
-					) < new \DateTime()) {
-					// not finished grading / or not started
-					// to late to start/finish grading
+				$t = $db->findOne(array('student' => $student, 'exam' => $e));
+				// have they already started?
+				if ($t) {
 
-					$message = "It is too late to grade ".$e->getTitle().".";
-					// do nothing? //impossible to get to???
-				} else if (!$t) {
-					// never took this exam
-					// fine to start?
+					if ($t->getStatus() < 4 &&
+						new \DateTime(
+							$e->getTDate()->format('Y-m-d ').
+					 		$e->getTEnd()->format('H:i:s')
+						) < new \DateTime()
+					) {
+						$message = "It is too late to take ".$e->getTitle().".";
+					} else if (
+						$t->getStatus() < 6 &&
+						new \DateTime(
+							$e->getGDate()->format('Y-m-d ').
+							$e->getGEnd()->format('H:i:s')
+						) < new \DateTime()
+					) {
+						$message = "It is too late to grade ".$e->getTitle().".";
+					} else if ($t->getStatus() === 6) {
+						$message = "You have already finished ".$e->getTitle().".";
+					} else {
+						$exam = $e;
+						break;
+					}
+
+
+				} else {
 					$exam = $e;
 					break;
-				} else if ($t->getStatus() === 6) {
-					// finished
-					// find next exam
 				}
 			}
 
