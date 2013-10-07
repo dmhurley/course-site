@@ -25,6 +25,7 @@ function Loader(settings) {
 
 		ajax.onerror = ajax.onabort = (function(self) {
 			return function() {
+				// console.log(this);
 				self.failure('Error.');
 			}
 		})(this);
@@ -98,8 +99,11 @@ function Loader(settings) {
 			})(cell, this, settings.fn));
 		}
 
-		for(var i = this.settings.columns.length - 1; header = this.settings.columns[i]; i--) {
-			row.insertCell().innerHTML = data[header] !== undefined?data[header]:header
+		var keys = Object.keys(this.settings.columns).reverse();
+		console.log(keys);
+		for (key in keys) {
+			var fn = this.settings.columns[keys[key]];
+			row.insertCell().innerHTML = data[keys[key]] === undefined? keys[key]: fn?fn(data[keys[key]]):data[keys[key]];
 		}
 	}
 

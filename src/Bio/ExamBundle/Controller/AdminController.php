@@ -41,7 +41,7 @@ class AdminController extends Controller
                 array(
                     'action' => $this->generateUrl('create_entity', array(
                         'bundle' => 'exam',
-                        'entity' => 'exam'
+                        'entityName' => 'exam'
                         )
                     )
                 )

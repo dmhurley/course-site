@@ -87,10 +87,18 @@
 				}
 			}
 		],
-		'columns': ['title', 'section', 'tDate', 'tStart', 'questions'],
-		'loader': {
-			'selector': '#ajaxy',
-			'on_class': 'show'
+		'columns': {
+			'title': null,
+			'section': function(value) {
+				return value.toUpperCase();
+			},
+			'tDate': function(value) {
+				return (new Date(value)).toLocaleDateString();
+			},
+			'tStart': function(value) {
+				return (new Date(value)).toLocaleTimeString();
+			},
+			'questions': null
 		}
 	}); </script>
 {% endblock %}

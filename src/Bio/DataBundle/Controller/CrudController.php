@@ -11,7 +11,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 /**
  * Crud controller.
  *
- * @Route("/crud/{bundle}/{entity}")
+ * @Route("/crud/{bundle}/{entityName}")
  */
 class CrudController extends Controller
 {
@@ -22,9 +22,9 @@ class CrudController extends Controller
      * @Route("/all.json", name="get_entities")
      * @Template("BioDataBundle:Crud:all.json.twig")
      */
-    public function allAction(Request $request, $bundle, $entity)
+    public function allAction(Request $request, $bundle, $entityName)
     {   
-        $repo = $this->getRepository($bundle, $entity);
+        $repo = $this->getRepository($bundle, $entityName);
         $entities = $repo->findAll();
         return array(
             'entities' => $entities,
@@ -36,32 +36,21 @@ class CrudController extends Controller
      * @Route("/create.json", name="create_entity")
      * @Template("BioDataBundle:Crud:all.json.twig")
      */
-    public function createAction(Request $request, $bundle, $entity)
+    public function createAction(Request $request, $bundle, $entityName)
     {   
-        $type = 'Bio\\'.ucfirst($bundle).'Bundle\Entity\\'.ucfirst($entity);
-
-        $object = new $type;
-        $form = $this->createForm($this->getFormType($bundle, $entity), $object,
-                array(
-                    'action' => $this->generateUrl('create_entity', array(
-                        'bundle' => 'exam',
-                        'entity' => 'exam'
-                        )
-                    )
-                )
-            )
+        $entity = $this->createEntity($bundle, $entityName);
+        $form = $this->createForm($this->createFormType($bundle, $entityName), $entity)
             ->add('add', 'submit');
 
         $form->handleRequest($request);
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->persist($object);
+            $em->persist($entity);
             $em->flush();
 
             return array(
-                'entities' => array($object),
-                'message' => 'YAY'
+                'entities' => array($entity)
             );
         }
         return array('error' => json_encode($form->getErrors()));        
@@ -73,9 +62,9 @@ class CrudController extends Controller
      * @Route("/get/{id}.json", name="get_entity")
      * @Template("BioDataBundle:Crud:all.json.twig")
      */
-    public function getAction(Request $request, $bundle, $entity, $id)
+    public function getAction(Request $request, $bundle, $entityName, $id)
     {
-        $entity = $this->getEntity($bundle, $entity, $id);
+        $entity = $this->getEntity($bundle, $entityName, $id);
 
         if (!$entity) {
             return array('error' => 'Entity not found.');
@@ -92,17 +81,18 @@ class CrudController extends Controller
      * @Route("/{id}.json", name="exam_exam_update")
      * @Template("BioExamBundle:Exam:edit.html.twig")
      */
-    public function editAction(Request $request, $bundle, $entity, $id)
+    public function editAction(Request $request, $bundle, $entityName, $id)
     {
         $em = $this->getDoctrine()->getManager();
-        $entity = $this->getRepository($bundle, $entity, $id);
+        $entity = $this->getEntity($bundle, $entityName, $id);
 
-        // $editForm->handleRequest($request);
+        $form = $this->createForm($this->createFormType($bundle, $entityName), $entity)
+            ->add('save', 'submit');
 
-        if (/*$editForm->isValid()*/false) {
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
             $em->flush();
-
-            return $this->redirect($this->generateUrl('exam_exam_edit', array('id' => $id)));
         }
 
         return array(
@@ -115,10 +105,10 @@ class CrudController extends Controller
      * @Route("/delete/{id}.json", name="delete_entity")
      * @Template("BioExamBundle:Exam:response.json.twig")
      */
-    public function deleteAction(Request $request, $bundle, $entity, $id)
+    public function deleteAction(Request $request, $bundle, $entityName, $id)
     {
         $em = $this->getDoctrine()->getManager();
-        $entity = $this->getEntity($bundle, $entity, $id);
+        $entity = $this->getEntity($bundle, $entityName, $id);
 
         if (!$entity) {
             return array('error' => 'Entity not found.');
@@ -130,18 +120,23 @@ class CrudController extends Controller
         return array();
     }
 
-    private function getRepository($bundle, $entity) {
+    private function getRepository($bundle, $entityName) {
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('Bio'.ucfirst($bundle).'Bundle:'.ucfirst($entity));
+        $repo = $em->getRepository('Bio'.ucfirst($bundle).'Bundle:'.ucfirst($entityName));
         return $repo;
     }
 
-    private function getEntity($bundle, $entity, $id) {
-        return $this->getRepository($bundle, $entity)->find($id);
+    private function getEntity($bundle, $entityName, $id) {
+        return $this->getRepository($bundle, $entityName)->find($id);
     }
 
-    private function getFormType($bundle, $entity) {
-        $formType = 'Bio\\'.ucfirst($bundle).'Bundle\Form\\'.ucfirst($entity).'Type';
+    private function createFormType($bundle, $entityName) {
+        $formType = 'Bio\\'.ucfirst($bundle).'Bundle\Form\\'.ucfirst($entityName).'Type';
         return new $formType;
+    }
+
+    private function createEntity($bundle, $entityName) {
+        $type = 'Bio\\'.ucfirst($bundle).'Bundle\Entity\\'.ucfirst($entityName);
+        return new $type;
     }
 }
