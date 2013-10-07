@@ -13,6 +13,7 @@ use Bio\DataBundle\Exception\BioException;
 use Bio\ExamBundle\Entity\Exam;
 use Bio\ExamBundle\Entity\Question;
 use Bio\ExamBundle\Entity\ExamGlobal;
+use Bio\ExamBundle\Form\ExamType;
 
 /**
  * @Route("/admin/exam")
@@ -36,29 +37,16 @@ class AdminController extends Controller
     {
         $flash = $request->getSession()->getFlashBag();
         $exam = new Exam();
-    	$form = $this->get('form.factory')->createNamedBuilder('form', 'form', $exam)
-            ->setAction($this->generateUrl('exam_exam_create'))
-    		->add('title', 'text', array('label'=>'Exam Name:'))
-            ->add('section', 'text', array(
-                'label'=>'Section:',
-                'required' => false,
-                'empty_data' => '',
-                'attr' => array(
-                    'pattern' => '(\A\Z)|(^[A-Z][A-Z0-9]?$)',
-                    'title' => 'One or two letter capitalized section name.'
+    	$form = $this->createForm(new ExamType(), $exam, 
+                array(
+                    'action' => $this->generateUrl('create_entity', array(
+                        'bundle' => 'exam',
+                        'entity' => 'exam'
+                        )
                     )
                 )
             )
-    		->add('tDate', 'date',        array('label' => 'Test Date:'))
-    		->add('tStart', 'time',       array('label'=>'Test Start:'))
-    		->add('tEnd', 'time',         array('label'=>'Test End:'))
-    		->add('tDuration', 'integer', array('label'=>'Test Length (m):'))
-            ->add('gDate', 'date',        array('label' => 'Grading Date:'))
-            ->add('gStart', 'time',       array('label'=>'Grading Start:'))
-            ->add('gEnd', 'time',         array('label'=>'Grading End:'))
-            ->add('gDuration', 'integer', array('label'=>'Grade Length (m):'))
-   			->add('add', 'submit')
-   			->getForm();
+   			->add('add', 'submit');
 
         $db = new Database($this, 'BioExamBundle:ExamGlobal');
         $global = $db->findOne(array());

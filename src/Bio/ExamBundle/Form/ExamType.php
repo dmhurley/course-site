@@ -52,6 +52,6 @@ class ExamType extends AbstractType
      */
     public function getName()
     {
-        return 'bio_exambundle_exam';
+        return 'form';
     }
 }

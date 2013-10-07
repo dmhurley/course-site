@@ -74,8 +74,15 @@
 				'fn': function(event, object, self) {
 					event.preventDefault();
 					self.postForm(null, object, function(ajax) {
-						self._addRow(JSON.parse(ajax.responseText).data[0]);
-						object.reset();
+						console.log(ajax.responseText);
+						var data = JSON.parse(ajax.responseText);
+						if (data.success) {
+							self._addRow(JSON.parse(ajax.responseText).data[0]);
+							object.reset();
+							self.success('Exam created.');
+						} else {
+							self.failure(data.message);
+						}
 					});
 				}
 			}

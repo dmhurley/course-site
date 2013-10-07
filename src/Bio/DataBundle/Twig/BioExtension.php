@@ -36,6 +36,10 @@ class BioExtension extends \Twig_Extension {
 			return '"'.$value.'"';
 		}
 
+		if ($value instanceof \Doctrine\ORM\PersistentCollection) {
+			return count($value);
+		}
+
 		throw new \Exception();
 	}
 

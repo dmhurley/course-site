@@ -34,38 +34,55 @@ class CrudController extends Controller
      * CREATE a new entity.
      *
      * @Route("/create.json", name="create_entity")
-     * @Template("BioExamBundle:Exam:index.json.twig")
+     * @Template("BioDataBundle:Crud:all.json.twig")
      */
     public function createAction(Request $request, $bundle, $entity)
     {   
+        $type = 'Bio\\'.ucfirst($bundle).'Bundle\Entity\\'.ucfirst($entity);
+
+        $object = new $type;
+        $form = $this->createForm($this->getFormType($bundle, $entity), $object,
+                array(
+                    'action' => $this->generateUrl('create_entity', array(
+                        'bundle' => 'exam',
+                        'entity' => 'exam'
+                        )
+                    )
+                )
+            )
+            ->add('add', 'submit');
+
+        $form->handleRequest($request);
+
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->persist($entity);
+            $em->persist($object);
             $em->flush();
 
             return array(
-                'entities' => array($entity),
+                'entities' => array($object),
+                'message' => 'YAY'
             );
-        } else {
-
         }
-
-        return array('entities' => []);
-        
+        return array('error' => json_encode($form->getErrors()));        
     }
 
     /**
      * GET an entity.
      *
      * @Route("/get/{id}.json", name="get_entity")
-     * @Template()
+     * @Template("BioDataBundle:Crud:all.json.twig")
      */
     public function getAction(Request $request, $bundle, $entity, $id)
     {
         $entity = $this->getEntity($bundle, $entity, $id);
 
+        if (!$entity) {
+            return array('error' => 'Entity not found.');
+        }
+
         return array(
-            'entity' => $entity
+            'entities' => [$entity]
         );
     }
 
@@ -104,7 +121,7 @@ class CrudController extends Controller
         $entity = $this->getEntity($bundle, $entity, $id);
 
         if (!$entity) {
-            return array('error' => 'Unable to find entity.');
+            return array('error' => 'Entity not found.');
         }
 
         $em->remove($entity);
@@ -121,5 +138,10 @@ class CrudController extends Controller
 
     private function getEntity($bundle, $entity, $id) {
         return $this->getRepository($bundle, $entity)->find($id);
+    }
+
+    private function getFormType($bundle, $entity) {
+        $formType = 'Bio\\'.ucfirst($bundle).'Bundle\Form\\'.ucfirst($entity).'Type';
+        return new $formType;
     }
 }
