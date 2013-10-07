@@ -5,6 +5,7 @@ body { background-color: #3f3f3f; }  					/* side filler */
 .login > a, .login .menu { background-color: #331b6f; }	/* login button/dropdown */
 .success { background-color: rgba(0, 120, 0, .95); }	/* error/success */
 .failure { background-color: rgba(120, 0, 0, .95); }
+.loading { background-color: rgba(50, 50, 50, .95);}
 
 /******** TEXT COLORS ********/
 #course { color: rgb(245, 245, 245); } 					/* course name in header */
@@ -16,7 +17,7 @@ body { background-color: #3f3f3f; }  					/* side filler */
 #header, #footer { color: #f3f1c6; }					/* header and footer (unused) */
 .branch a { color: #d0c0aa; } 							/* sidebar parent */
 .leaf a { color: rgb(108, 99, 87); } 					/*  sidebar child */
-.success, .failure { color:rgb(200,200,200); }			/* error/success message */
+.success, .failure, .loading { color:rgb(200,200,200); }/* error/success message */
 
 /******** IMAGES ********/
 #logo {													/* left most */
@@ -80,20 +81,36 @@ body { background-color: #3f3f3f; }  					/* side filler */
 	padding:0px;
 }
 
-.success, .failure {
-	display: block;
+.notification {
+	display:block;
 	width: 100%;
 	padding: 15px;
 	padding-top: 30px;
 	font-size: 15pt;
 	text-align: center;
 	position: fixed;
-	top: -15px;
+	top: -100px;
 	left: 0px;
 	z-index:10;
-	cursor:n-resize;
 	-webkit-user-select:none;
 	-user-select:none;
+	-webkit-transition: top .25s, background-color .5s;
+
+}
+
+.notification.shown {
+	top: -15px;
+}
+
+.loading.shown:before {
+	content: '';
+	background-color:rgba(0, 0, 0, .3);
+	width:100%;
+	position: fixed;
+	top:0px;
+	bottom: 0px;
+	left: 0px;
+	z-index: 1;
 }
 
 body {

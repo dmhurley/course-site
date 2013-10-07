@@ -60,9 +60,12 @@
 			'delete': {
 				'selector': '.button.delete',
 				'fn': function(event, button, self) {
+					self.wait();
 					var url = self.generateUrl('delete', button.id);
 					self.sendRequest(url, null, function(){
 						button.parentNode.parentNode.removeChild(button.parentNode);
+						self.ready();
+						self.success('Deleted exam.');
 					});
 				}
 			}
@@ -72,15 +75,17 @@
 				'selector': 'form',
 				'event': 'submit', // defaults to click
 				'fn': function(event, object, self) {
+					self.wait();
 					event.preventDefault();
 					self.postForm(null, object, function(ajax) {
-						console.log(ajax.responseText);
 						var data = JSON.parse(ajax.responseText);
 						if (data.success) {
 							self._addRow(JSON.parse(ajax.responseText).data[0]);
 							object.reset();
+							self.ready();
 							self.success('Exam created.');
 						} else {
+							self.ready();
 							self.failure(data.message);
 						}
 					});
@@ -99,6 +104,7 @@
 				return (new Date(value)).toLocaleTimeString();
 			},
 			'questions': null
-		}
+		},
+		'loader': document.querySelector('div.notification')
 	}); </script>
 {% endblock %}

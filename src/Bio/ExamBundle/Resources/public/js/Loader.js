@@ -3,8 +3,6 @@ function Loader(settings) {
 	this.settings = {};
 	this.buttons = {};
 	this.parser = null;
-	this.loader = null;
-
 
 /********** PUBLIC FUNCTIONS **********/
 	
@@ -61,20 +59,49 @@ function Loader(settings) {
 		return url;
 	}
 
+	this.show = function() {
+		this.settings.loader.classList.add('shown');
+	}
+
+	this.hide = function() {
+		this.settings.loader.classList.remove('shown');
+	}
+
 	this.success = function(message) {
-		console.log(message);
+		this.settings.loader.classList.remove('failure');
+		this.settings.loader.classList.add('success');
+		this.settings.loader.innerHTML = message;
+		this.show();
+
+		timeout = window.setTimeout((function(self) {
+			return function() {
+				self.hide();
+			}
+		})(this), 5000);
 	}
 
 	this.failure = function(message) {
-		console.log(message);
+		this.settings.loader.classList.remove('success');
+		this.settings.loader.classList.add('failure');
+		this.settings.loader.innerHTML = message;
+		this.show();
+
+		timeout = window.setTimeout((function(self) {
+			return function() {
+				self.hide();
+			}
+		})(this), 5000);
 	}
 
 	this.wait = function(timeout) {
-		
+		this.settings.loader.classList.add('loading');
+		this.settings.loader.innerHTML = "Loading...";
+		this.show();
 	}
 
 	this.ready = function() {
-		
+		this.hide();
+		this.settings.loader.classList.remove('loading');
 	}
 /************* PRIVATE FUNCTIONS ***************/
 	this._handleErrors = function(form, event) {
@@ -170,6 +197,7 @@ function Loader(settings) {
 					}
 					console.log("Displayed existing results...");
 					self.ready();
+					self.success('Finished loading.');
 				} else {
 					self.failure(data.message);
 				}
@@ -179,9 +207,9 @@ function Loader(settings) {
 
 	// sets it all up
 	this._init = function(settings) {
+		this._setSettings(settings);
 		this.wait();
 		this.parser = new Parser('#{', '}');
-		this._setSettings(settings);
 		this._registerListeners();
 		this._getExisting(); // calls self.ready()
 	}
