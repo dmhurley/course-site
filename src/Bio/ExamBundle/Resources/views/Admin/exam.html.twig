@@ -45,27 +45,31 @@
 		'table': document.querySelector('table'),
 		'buttons': {
 			'preview': {
-				'selector': '.button.preview',
 				'event': 'click', //optional
 				'fn': function(event, button, self) {
-					window.open(self.parser.parse('{{url("preview")}}?id=#{id}&type=exam', button), '_blank')
+					window.open(self.parser.parse('{{url("preview")}}?id=#{id}&type=exam', button.parentNode), '_blank')
 				}
 			},
 			'edit': {
-				'selector': '.button.edit',
 				'fn': function(event, button, self) {
-					console.log('editing', event);
+					var url = self.generateUrl('get', button.parentNode.id);
 				}
 			},
 			'delete': {
-				'selector': '.button.delete',
 				'fn': function(event, button, self) {
 					self.wait();
-					var url = self.generateUrl('delete', button.id);
-					self.sendRequest(url, null, function(){
-						button.parentNode.parentNode.removeChild(button.parentNode);
-						self.ready();
-						self.success('Deleted exam.');
+					var url = self.generateUrl('delete', button.parentNode.id);
+					self.sendRequest(url, null, function() {
+						console.log(this);
+						var data = JSON.parse(this.responseText);
+						if (data.success) {
+							button.parentNode.parentNode.removeChild(button.parentNode);
+							self.ready();
+							self.success('Deleted exam.');
+						} else {
+							self.ready();
+							self.failure(data.message);
+						}
 					});
 				}
 			}
@@ -78,9 +82,10 @@
 					self.wait();
 					event.preventDefault();
 					self.postForm(null, object, function(ajax) {
+						console.log(ajax);
 						var data = JSON.parse(ajax.responseText);
 						if (data.success) {
-							self._addRow(JSON.parse(ajax.responseText).data[0]);
+							self._addRow(data.data[0]);
 							object.reset();
 							self.ready();
 							self.success('Exam created.');

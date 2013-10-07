@@ -38,8 +38,11 @@ function Loader(settings) {
 	 */
 	this.postForm = function(url, form, onload) {
 		data = new FormData(form);
+		this._clearErrors(form);
 		this.sendRequest(url?url:form.action, data, (function(self, form, fn) {
 			return function() {
+				a = this;
+				self._handleErrors(form, this);
 				fn(this);
 			}
 		})(this, form, onload));
@@ -104,12 +107,32 @@ function Loader(settings) {
 		this.settings.loader.classList.remove('loading');
 	}
 /************* PRIVATE FUNCTIONS ***************/
-	this._handleErrors = function(form, event) {
-		console.log("handled errors...");
+	this._handleErrors = function(form, ajax) {
+		var data = JSON.parse(ajax.responseText);
+		if (!data.success && data.errors) {
+			for (field in data.errors) {
+				var input = document.querySelector('#form_'+field+'');
+				if (input.tagName !== 'div') {
+					input = input.parentElement;
+				}
+				input.setAttribute('data-tip', data.errors[field][0]);
+				input.classList.add('error');
+				input.classList.add('row_error');
+			}
+		}
+	}
+	this._clearErrors = function(form) {
+		var errored = form.querySelectorAll('.error.row_error');
+		for (var i = 0; element = errored[i]; i++) {
+			element.classList.remove('error');
+			element.classList.remove('form_error');
+			element.setAttribute('data-tip', null);
+		}
 	}	
 
 	this._addRow = function(data) {
 		var row = this.settings.table.querySelector('tbody').insertRow();
+		row.id = data.id;
 
 		var keys = Object.keys(this.settings.buttons).reverse();
 		for (key in keys) {
@@ -118,7 +141,6 @@ function Loader(settings) {
 			cell.classList.add('link');
 			cell.classList.add(keys[key]);
 			cell.innerHTML = keys[key];
-			cell.id = data.id;
 			cell.addEventListener(settings.event?settings.event:'click', (function(button, self, fn) {
 				return function(event) {
 					fn(event, button, self);
@@ -183,7 +205,7 @@ function Loader(settings) {
 				})(listener, this, settings.fn));
 			}
 		}
-		console.log("Registered uniques...")
+		console.log("Registered listeners...")
 	}
 
 	this._getExisting = function(n) {

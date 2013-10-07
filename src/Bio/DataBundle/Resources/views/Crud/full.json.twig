@@ -1,0 +1,15 @@
+{% extends 'BioDataBundle:Crud:all.json.twig' %}
+
+{% block errors %}
+	{ {% if form is defined %}
+	{% for child in form if child.errors|length > 0%}
+		{% if loop.index > 1 %},{% endif %}
+		"{{child.name}}": [
+			{% for error in child.errors %}
+			{% if loop.index > 1 %},{% endif %}
+			"{{error.message}}"
+			{% endfor %}
+		]
+	{% endfor %}
+	{% endif %} }
+{% endblock %}

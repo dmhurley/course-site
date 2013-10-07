@@ -34,7 +34,7 @@ class CrudController extends Controller
      * CREATE a new entity.
      *
      * @Route("/create.json", name="create_entity")
-     * @Template("BioDataBundle:Crud:all.json.twig")
+     * @Template("BioDataBundle:Crud:full.json.twig")
      */
     public function createAction(Request $request, $bundle, $entityName)
     {   
@@ -53,7 +53,7 @@ class CrudController extends Controller
                 'entities' => array($entity)
             );
         }
-        return array('error' => json_encode($form->getErrors()));        
+        return array('form' => $form, 'error' => 'Invalid form.');        
     }
 
     /**
@@ -103,7 +103,7 @@ class CrudController extends Controller
      * DELETE an entity.
      *
      * @Route("/delete/{id}.json", name="delete_entity")
-     * @Template("BioExamBundle:Exam:response.json.twig")
+     * @Template("BioDataBundle:Crud:response.json.twig")
      */
     public function deleteAction(Request $request, $bundle, $entityName, $id)
     {
@@ -117,7 +117,7 @@ class CrudController extends Controller
         $em->remove($entity);
         $em->flush();
 
-        return array();
+        return array('entities' => [$entity]);
     }
 
     private function getRepository($bundle, $entityName) {
