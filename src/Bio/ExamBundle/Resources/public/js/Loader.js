@@ -39,7 +39,7 @@ function Loader(settings) {
 	 */
 	this.postForm = function(url, form, onload) {
 		data = new FormData(form);
-		this.sendRequest(url, data, (function(self, form, fn) {
+		this.sendRequest(url?url:form.action, data, (function(self, form, fn) {
 			return function() {
 				fn(this);
 			}
@@ -54,7 +54,9 @@ function Loader(settings) {
 	this.generateUrl = function(action, id) {
 		var url = this.settings.url + 
 			   this.settings.bundle + '/' + 
-			   this.settings.entity + '/' + action + (id?('/' + id):'');
+			   this.settings.entity + '/' + 
+			   action + (id?('/' + id):'')+
+			   '.json' ;
 		return url;
 	}
 
@@ -81,7 +83,7 @@ function Loader(settings) {
 	this._addRow = function(data) {
 		var row = this.settings.table.querySelector('tbody').insertRow();
 
-		var keys = Object.keys(this.settings.buttons);
+		var keys = Object.keys(this.settings.buttons).reverse();
 		for (key in keys) {
 			settings = this.settings.buttons[keys[key]];
 			var cell = row.insertCell();
@@ -91,7 +93,7 @@ function Loader(settings) {
 			cell.id = data.id;
 			cell.addEventListener(settings.event?settings.event:'click', (function(button, self, fn) {
 				return function(event) {
-					eval("("+self.parser.parse(fn.toString(), cell)+")")(event, button, self);
+					fn(event, button, self);
 				}
 			})(cell, this, settings.fn));
 		}
@@ -141,19 +143,21 @@ function Loader(settings) {
 
 		for (key in keys) {
 			var settings = this.settings.listeners[keys[key]];
-			var listener = document.querySelector(settings.selector);
-			listener.addEventListener(settings.event?settings.event:'click', (function(button, self, fn) {
-				return function(event) {
-					eval("("+self.parser.parse(fn.toString(), button)+")")(event, button, self);
-				}
-			})(listener, this, settings.fn));
+			var listeners = document.querySelectorAll(settings.selector);
+			for(var i = 0; listener = listeners[i]; i++) {
+				listener.addEventListener(settings.event?settings.event:'click', (function(button, self, fn) {
+					return function(event) {
+						fn(event, button, self);
+					}
+				})(listener, this, settings.fn));
+			}
 		}
 		console.log("Registered uniques...")
 	}
 
 	this._getExisting = function(n) {
 		console.log("Retrieving existing rows...");
-		this.sendRequest(this.generateUrl('get') , n, (function(self) {
+		this.sendRequest(this.generateUrl('all') , n, (function(self) {
 			return function() {
 				var data = JSON.parse(this.responseText);
 				if (data.success) {

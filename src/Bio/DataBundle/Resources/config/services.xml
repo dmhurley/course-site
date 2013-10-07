@@ -16,6 +16,10 @@
                 <argument type="string">%secret.token%</argument>
             </call>
         </service>
+
+        <service id="bio_data.twig.bio_extension" class="Bio\DataBundle\Twig\BioExtension">
+            <tag name="twig.extension" />
+        </service>
     </services>
     
 </container>

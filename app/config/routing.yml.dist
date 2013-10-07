@@ -10,3 +10,7 @@ bio_folder:
     resource: "@BioFolderBundle/Controller/"
     type:     annotation
     prefix:   /
+bio_data:
+    resource: "@BioDataBundle/Controller/"
+    type:     annotation
+    prefix:   /

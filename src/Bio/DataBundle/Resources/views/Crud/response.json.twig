@@ -1,0 +1,5 @@
+{
+	"success":{% if error is defined %}false{% else %}true{% endif %},
+	"message":"{% if error is defined %}{{error}}{% elseif message is defined %}{{message}}{% endif %}",
+	"data":{% block data %}[]{% endblock %}
+}

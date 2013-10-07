@@ -10,7 +10,6 @@
 
 
 {% block content %}
-	<!-- <div id="ajaxy" style="position:fixed;width: 100%;height: 1000px;top: 0px;left: 0px;z-index: 100000;background-color: rgba(0,0,0,.5);"></div> -->
 	<div style="float:left; width:42%;">
 		<h4>Add Exam</h4>
 		{{ form(form) }}
@@ -40,7 +39,7 @@
 
 {% block java %}
 	<script>var loader = new Loader({
-		'url': '{{ url('main_page')}}',
+		'url': '{{ url('main_page')}}crud/',
 		'bundle': 'exam',
 		'entity': 'exam',
 		'table': document.querySelector('table'),
@@ -48,21 +47,21 @@
 			'preview': {
 				'selector': '.button.preview',
 				'event': 'click', //optional
-				'fn': function(event, button, scope) {
-					window.open('{{url("preview")}}?id=#{id}&type=exam', '_blank')
+				'fn': function(event, button, self) {
+					window.open(self.parser.parse('{{url("preview")}}?id=#{id}&type=exam', button), '_blank')
 				}
 			},
 			'edit': {
 				'selector': '.button.edit',
-				'fn': function(event, button, scope) {
+				'fn': function(event, button, self) {
 					console.log('editing', event);
 				}
 			},
 			'delete': {
 				'selector': '.button.delete',
-				'fn': function(event, button, scope) {
-					var url = scope.generateUrl('delete', button.id);
-					scope.sendRequest(url, null, function(){
+				'fn': function(event, button, self) {
+					var url = self.generateUrl('delete', button.id);
+					self.sendRequest(url, null, function(){
 						button.parentNode.parentNode.removeChild(button.parentNode);
 					});
 				}
@@ -72,11 +71,10 @@
 			{
 				'selector': 'form',
 				'event': 'submit', // defaults to click
-				'fn': function(event, object, scope) {
+				'fn': function(event, object, self) {
 					event.preventDefault();
-					var url = scope.generateUrl('create')
-					scope.postForm(url, object, function(ajax) {
-						scope._addRow(JSON.parse(ajax.responseText).data[0]);
+					self.postForm(null, object, function(ajax) {
+						self._addRow(JSON.parse(ajax.responseText).data[0]);
 						object.reset();
 					});
 				}
