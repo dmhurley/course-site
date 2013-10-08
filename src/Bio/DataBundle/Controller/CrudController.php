@@ -53,7 +53,10 @@ class CrudController extends Controller
                 'entities' => array($entity)
             );
         }
-        return array('form' => $form, 'error' => 'Invalid form.');        
+        return array(
+            'form' => $form,
+            'error' => 'Invalid form.'
+            );        
     }
 
     /**
@@ -78,8 +81,8 @@ class CrudController extends Controller
     /**
      * EDIT an existing entity.
      *
-     * @Route("/{id}.json", name="exam_exam_update")
-     * @Template("BioExamBundle:Exam:edit.html.twig")
+     * @Route("/edit/{id}.json", name="edit_entity")
+     * @Template("BioDataBundle:Crud:full.json.twig")
      */
     public function editAction(Request $request, $bundle, $entityName, $id)
     {
@@ -87,17 +90,21 @@ class CrudController extends Controller
         $entity = $this->getEntity($bundle, $entityName, $id);
 
         $form = $this->createForm($this->createFormType($bundle, $entityName), $entity)
-            ->add('save', 'submit');
+            ->add('add', 'submit');
 
         $form->handleRequest($request);
 
         if ($form->isValid()) {
             $em->flush();
+            return array (
+                'entities' => [$entity]
+            );
+        } else {
+            return array(
+                'error' => 'Invalid form.',
+                'form' => $form
+            );
         }
-
-        return array(
-            'entity' => $entity,
-        );
     }
     /**
      * DELETE an entity.

@@ -41,7 +41,6 @@ function Loader(settings) {
 		this._clearErrors(form);
 		this.sendRequest(url?url:form.action, data, (function(self, form, fn) {
 			return function() {
-				a = this;
 				self._handleErrors(form, this);
 				fn(this);
 			}
@@ -62,36 +61,42 @@ function Loader(settings) {
 		return url;
 	}
 
-	this.show = function() {
+	this.showForm = function() {
+		this.settings.form_layer.classList.add('shown');
+		this.settings.form_layer.querySelector('input').select();
+	}
+
+	this.hideForm = function() {
+		this.settings.form_layer.classList.remove('shown');
+	}
+
+	this.showNotification = function() {
 		this.settings.loader.classList.add('shown');
 	}
-
-	this.hide = function() {
+	this.hideNotification = function() {
 		this.settings.loader.classList.remove('shown');
 	}
-
 	this.success = function(message) {
 		this.settings.loader.classList.remove('failure');
 		this.settings.loader.classList.add('success');
 		this.settings.loader.innerHTML = message;
-		this.show();
+		this.showNotification();
 
 		timeout = window.setTimeout((function(self) {
 			return function() {
-				self.hide();
+				self.hideNotification();
 			}
 		})(this), 5000);
 	}
-
 	this.failure = function(message) {
 		this.settings.loader.classList.remove('success');
 		this.settings.loader.classList.add('failure');
 		this.settings.loader.innerHTML = message;
-		this.show();
+		this.showNotification();
 
 		timeout = window.setTimeout((function(self) {
 			return function() {
-				self.hide();
+				self.hideNotification();
 			}
 		})(this), 5000);
 	}
@@ -99,12 +104,21 @@ function Loader(settings) {
 	this.wait = function(timeout) {
 		this.settings.loader.classList.add('loading');
 		this.settings.loader.innerHTML = "Loading...";
-		this.show();
+		this.showNotification();
 	}
 
 	this.ready = function() {
-		this.hide();
+		this.hideNotification();
 		this.settings.loader.classList.remove('loading');
+	}
+
+	this.fillForm = function(data) {
+		for (key in data) {
+			var input = document.querySelector('#form_'+key);
+			if (input) {
+				input.value = data[key];
+			}
+		}
 	}
 /************* PRIVATE FUNCTIONS ***************/
 	this._handleErrors = function(form, ajax) {
@@ -133,27 +147,25 @@ function Loader(settings) {
 	this._addRow = function(data) {
 		var row = this.settings.table.querySelector('tbody').insertRow();
 		row.id = data.id;
+		for (button in this.settings.columns) {
+			var fn = this.settings.columns[button];
+			console.log(button, data);
+			row.insertCell(-1).innerHTML = data[button] === undefined? button: fn?fn(data[button]):data[button];
+		}
 
-		var keys = Object.keys(this.settings.buttons).reverse();
-		for (key in keys) {
-			settings = this.settings.buttons[keys[key]];
-			var cell = row.insertCell();
+		for (button in this.settings.buttons) {
+			settings = this.settings.buttons[button];
+			var cell = row.insertCell(-1);
 			cell.classList.add('link');
-			cell.classList.add(keys[key]);
-			cell.innerHTML = keys[key];
-			cell.addEventListener(settings.event?settings.event:'click', (function(button, self, fn) {
+			cell.classList.add(button);
+			cell.innerHTML = button;
+			cell.addEventListener(settings.event?settings.event:'click', (function(cell, self, fn) {
 				return function(event) {
-					fn(event, button, self);
+					fn(event, cell, self);
 				}
 			})(cell, this, settings.fn));
 		}
 
-		var keys = Object.keys(this.settings.columns).reverse();
-		console.log(keys);
-		for (key in keys) {
-			var fn = this.settings.columns[keys[key]];
-			row.insertCell().innerHTML = data[keys[key]] === undefined? keys[key]: fn?fn(data[keys[key]]):data[keys[key]];
-		}
 	}
 
 	// sets the settings by overwriting any defaults with the user defined

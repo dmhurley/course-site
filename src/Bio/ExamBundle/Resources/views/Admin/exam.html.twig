@@ -10,9 +10,11 @@
 
 
 {% block content %}
-	<div style="float:left; width:42%;">
-		<h4>Add Exam</h4>
-		{{ form(form) }}
+	<div class="form_layer">
+		<div class="form_container">
+			<h3 class="form_title">Add Exam</h3>
+			{{ form(form) }}
+		</div>
 	</div>
 	{#<div style="float:left; width:58%">
 		<h4>Global Settings</h4>
@@ -34,6 +36,11 @@
 		<tbody>
 			
 		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan=8 class="link add lonely">add exam</td>
+			</tr>
+		</tfoot>
 	</table>
 {% endblock %}
 
@@ -43,7 +50,7 @@
 		'bundle': 'exam',
 		'entity': 'exam',
 		'table': document.querySelector('table'),
-		'buttons': {
+		'buttons': { // added to each column (left to right order)
 			'preview': {
 				'event': 'click', //optional
 				'fn': function(event, button, self) {
@@ -52,7 +59,23 @@
 			},
 			'edit': {
 				'fn': function(event, button, self) {
+					self.wait();
+					var form = self.settings.form_layer.querySelector('form');
+					form.reset();
+					form.action = self.generateUrl('edit', button.parentNode.id);
+					form.classList.add('edit');
+
 					var url = self.generateUrl('get', button.parentNode.id);
+					self.sendRequest(url, null, function() {
+						var data = JSON.parse(this.responseText);
+						if (data.success) {
+							self.fillForm(data.data[0]);
+							self.ready();
+							self.showForm();
+						} else {
+							self.failure(data.message);
+						}
+					});
 				}
 			},
 			'delete': {
@@ -80,20 +103,48 @@
 				'event': 'submit', // defaults to click
 				'fn': function(event, object, self) {
 					self.wait();
+					self.hideForm();
 					event.preventDefault();
 					self.postForm(null, object, function(ajax) {
 						console.log(ajax);
 						var data = JSON.parse(ajax.responseText);
 						if (data.success) {
-							self._addRow(data.data[0]);
-							object.reset();
-							self.ready();
-							self.success('Exam created.');
+							if (object.classList.contains('edit')) {
+								console.log('edited', data);
+								var row = document.getElementById(data.data[0].id)
+								row.parentNode.removeChild(row);
+								self._addRow(data.data[0]);
+								self.ready();
+								self.success('Exam edited.');
+							} else {
+								self._addRow(data.data[0]);
+								object.reset();
+								self.ready();
+								self.success('Exam created.');
+							}
 						} else {
 							self.ready();
 							self.failure(data.message);
+							self.showForm();
 						}
 					});
+				}
+			},
+			{
+				'selector': '.link.add',
+				'fn': function(event, object, self) {
+					self.settings.form_layer.querySelector('form').action = self.generateUrl('create');
+					var form = self.settings.form_layer.querySelector('form');
+					form.classList.remove('edit');
+					form.reset();
+					self.showForm();
+				}
+			},
+			{
+				'selector': '.form_layer',
+				'fn': function(event, object, self) {
+					if (event.target === object)
+					self.hideForm();
 				}
 			}
 		],
@@ -110,6 +161,7 @@
 			},
 			'questions': null
 		},
-		'loader': document.querySelector('div.notification')
+		'loader': document.querySelector('div.notification'),
+		'form_layer': document.querySelector('.form_layer')
 	}); </script>
 {% endblock %}

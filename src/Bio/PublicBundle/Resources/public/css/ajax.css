@@ -1,0 +1,38 @@
+.form_layer {
+	position: fixed;
+	display:none;
+	top: 0px;
+	bottom: 0px;
+	left: 0px;
+	width: 100%;
+	background-color: rgba(0,0,0, .3);
+	cursor: pointer;
+}
+
+.form_layer.shown {
+	display: block;
+}
+
+.form_container {
+	min-width: 300px;
+	max-width: 350px;
+	margin: 100px auto 100px auto;
+	padding: 50px;
+	border-radius: 25px;
+	background-color: white;
+	cursor: default;
+}
+
+.form_title {
+	text-align: center;
+	margin-top: -20px;
+	margin-bottom: 20px;
+}
+
+.link.add {
+	text-align: center !important;
+}
+
+.lonely {
+	text-align: center;
+}
