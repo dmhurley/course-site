@@ -59,38 +59,24 @@
 			},
 			'edit': {
 				'fn': function(event, button, self) {
-					self.wait();
-					var form = self.settings.form_layer.querySelector('form');
-					form.reset();
-					form.action = self.generateUrl('edit', button.parentNode.id);
-					form.classList.add('edit');
-
-					var url = self.generateUrl('get', button.parentNode.id);
-					self.sendRequest(url, null, function() {
-						var data = JSON.parse(this.responseText);
-						if (data.success) {
-							self.fillForm(data.data[0]);
-							self.ready();
-							self.showForm();
-						} else {
-							self.failure(data.message);
-						}
-					});
+					self.forms.switch('edit');
+					self.forms.form.data.form.setAttribute('data-id', button.parentNode.id);
+					self.forms.open();
 				}
 			},
 			'delete': {
 				'fn': function(event, button, self) {
-					self.wait();
+					self.notifications.wait();
 					var url = self.generateUrl('delete', button.parentNode.id);
 					self.sendRequest(url, null, function() {
 						var data = JSON.parse(this.responseText);
 						if (data.success) {
 							button.parentNode.parentNode.removeChild(button.parentNode);
-							self.ready();
-							self.success('Deleted exam.');
+							self.notifications.ready();
+							self.notifications.success('Deleted exam.');
 						} else {
-							self.ready();
-							self.failure(data.message);
+							self.notifications.ready();
+							self.notifications.failure(data.message);
 						}
 					});
 				}
@@ -98,50 +84,17 @@
 		},
 		'listeners': [
 			{
-				'selector': 'form',
-				'event': 'submit', // defaults to click
-				'fn': function(event, object, self) {
-					self.wait();
-					self.hideForm();
-					event.preventDefault();
-					self.postForm(null, object, function(ajax) {
-						var data = JSON.parse(ajax.responseText);
-						if (data.success) {
-							if (object.classList.contains('edit')) {
-								var row = document.getElementById(data.data[0].id)
-								row.parentNode.removeChild(row);
-								self._addRow(data.data[0]);
-								self.ready();
-								self.success('Exam edited.');
-							} else {
-								self._addRow(data.data[0]);
-								object.reset();
-								self.ready();
-								self.success('Exam created.');
-							}
-						} else {
-							self.ready();
-							self.failure(data.message);
-							self.showForm();
-						}
-					});
-				}
-			},
-			{
 				'selector': '.link.add',
 				'fn': function(event, object, self) {
-					self.settings.form_layer.querySelector('form').action = self.generateUrl('create');
-					var form = self.settings.form_layer.querySelector('form');
-					form.classList.remove('edit');
-					form.reset();
-					self.showForm();
+					self.forms.switch('add');
+					self.forms.open();
 				}
 			},
 			{
 				'selector': '.form_layer',
 				'fn': function(event, object, self) {
 					if (event.target === object)
-					self.hideForm();
+					self.forms.close();
 				}
 			}
 		],
@@ -159,6 +112,70 @@
 			'questions': null
 		},
 		'loader': document.querySelector('div.notification'),
-		'form_layer': document.querySelector('.form_layer')
+		'form': {
+			'container': document.querySelector('.form_layer'),
+			'form': document.querySelector('.form_container form'),
+			'settings': {
+				'add': {
+					'before': function(form, container, self) {
+						form.action = self.generateUrl('create');
+						form.classList.add('add');
+						form.reset();
+						container.classList.add('shown');
+					},
+					'onsubmit': function(event, form, self) {
+						event.preventDefault();
+						self.notifications.wait();
+						self.forms.form.data.container.classList.remove('shown');
+						self.postForm(null, form, function(ajax) {
+							var data = JSON.parse(ajax.responseText);
+							if (data.success) {
+								self.addRow(data.data[0]);
+								self.notifications.success('Exam created.');
+								self.forms.close();
+							} else {
+								self.notifications.failure(data.message);
+								self.forms.form.data.container.classList.add('shown');
+							}
+							self.notifications.ready();
+						});
+					},
+					'after': function(form, container, self) {
+						container.classList.remove('shown');
+						form.action = "";
+						form.classList.remove('add');
+					}
+				},
+				'edit': {
+					'before': function(form, container, self) {
+						form.classList.add('edit');
+						form.reset();
+
+						self.notifications.wait();
+						a = form;
+						form.action = self.generateUrl('edit', form.getAttribute('data-id'));
+						self.sendRequest(self.generateUrl('get', form.getAttribute('data-id')), null, (function(self, container) {
+							return function() {
+								var data = JSON.parse(this.responseText);
+								if (data.success) {
+									self.fillForm(data.data[0]);
+									self.notifications.ready();
+									container.classList.add('shown');
+								}
+							}
+						})(self, container));
+					},
+					'onsubmit': function(event, form, self) {
+						event.preventDefault();
+
+					},
+					'after': function(form, container, self) {
+						container.classList.remove('shown');
+						form.classList.remove('edit');
+						form.setAttribute('data-id', null);
+					}
+				},
+			}
+		}
 	}); </script>
 {% endblock %}
