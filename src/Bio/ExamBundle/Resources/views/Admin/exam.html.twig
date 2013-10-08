@@ -83,7 +83,6 @@
 					self.wait();
 					var url = self.generateUrl('delete', button.parentNode.id);
 					self.sendRequest(url, null, function() {
-						console.log(this);
 						var data = JSON.parse(this.responseText);
 						if (data.success) {
 							button.parentNode.parentNode.removeChild(button.parentNode);
@@ -106,11 +105,9 @@
 					self.hideForm();
 					event.preventDefault();
 					self.postForm(null, object, function(ajax) {
-						console.log(ajax);
 						var data = JSON.parse(ajax.responseText);
 						if (data.success) {
 							if (object.classList.contains('edit')) {
-								console.log('edited', data);
 								var row = document.getElementById(data.data[0].id)
 								row.parentNode.removeChild(row);
 								self._addRow(data.data[0]);

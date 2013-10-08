@@ -18,12 +18,15 @@ function Loader(settings) {
 		ajax = new XMLHttpRequest();
 		console.log("sending request to: " + url);
 		ajax.open('POST', url, true);
-
+		ajax.timeout = 10000;
 		ajax.onload = onload;
-
+		ajax.ontimeout = (function(self) {
+			return function() {
+				self.failure('Operation timed out.');
+			}
+		})(this);
 		ajax.onerror = ajax.onabort = (function(self) {
 			return function() {
-				// console.log(this);
 				self.failure('Error.');
 			}
 		})(this);
@@ -149,7 +152,6 @@ function Loader(settings) {
 		row.id = data.id;
 		for (button in this.settings.columns) {
 			var fn = this.settings.columns[button];
-			console.log(button, data);
 			row.insertCell(-1).innerHTML = data[button] === undefined? button: fn?fn(data[button]):data[button];
 		}
 
