@@ -1,15 +1,24 @@
 {% extends 'BioDataBundle:Crud:all.json.twig' %}
 
-{% block errors %}
-	{ {% if form is defined %}
-	{% for child in form if child.errors|length > 0%}
-		{% if loop.index > 1 %},{% endif %}
-		"{{child.name}}": [
-			{% for error in child.errors %}
+{% macro view(f) %}
+	{% for child in f %}{% if loop.index > 1 %}, {% endif %}{
+		"id": "{{child.vars.id}}",
+		"errors": [{%if child.vars.errors is defined%}{% for error in child.vars.errors %}
 			{% if loop.index > 1 %},{% endif %}
 			"{{error.message}}"
-			{% endfor %}
-		]
-	{% endfor %}
-	{% endif %} }
+		{% endfor %}{% endif %}],
+		{% if child.count > 1 %}
+		"children": [{{_self.view(child)}}]
+		{% else %}
+		"value": "{{child.vars.value}}"
+		{% endif %}
+	}{% endfor %}
+{% endmacro %}
+
+{% import _self as a %}
+
+{% block form %}
+	[{% if form is defined %}
+		{{a.view(form)}}
+	{% endif %}]
 {% endblock %}

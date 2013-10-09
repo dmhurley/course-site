@@ -4,6 +4,87 @@ function Loader(settings) {
 	this.buttons = {};
 	this.parser = null;
 
+/********** UTILITIES **************/
+	this.notifications = {
+		'self': null,
+		'show': function() {
+			this.self.settings.loader.classList.add('shown');
+		},
+		'hide': function() {
+			this.self.settings.loader.classList.remove('shown');
+		},
+		'success': function(message) {
+			this.self.settings.loader.classList.remove('failure');
+			this.self.settings.loader.classList.add('success');
+			this.self.settings.loader.innerHTML = message?message:'Success.';
+			this.self.notifications.show();
+
+			_timeout = window.setTimeout((function(self) {
+				return function() {
+					self.hide();
+				}
+			})(this), 5000);
+		},
+		'failure': function(message) {
+			this.self.settings.loader.classList.remove('success');
+			this.self.settings.loader.classList.add('failure');
+			this.self.settings.loader.innerHTML = message?message:'Error.';
+			this.self.notifications.show();
+
+			_timeout = window.setTimeout((function(self) {
+				return function() {
+					self.hide();
+				}
+			})(this), 5000);
+		},
+		'wait': function() {
+			this.self.settings.loader.classList.add('loading');
+			this.self.settings.loader.innerHTML = "Loading...";
+			if ('_timeout' in window) {
+				window.clearTimeout(_timeout);
+			}
+			this.show();
+		},
+		'ready': function() {
+			this.hide();
+			this.self.settings.loader.classList.remove('loading');
+		}
+	}
+
+	this.forms = {
+		'self': null,
+		'form': {
+			'type': null,
+			'data': null
+		},
+		'switch': function(type) {
+			if (this.form.data !== null) {
+				this.close();
+			} else if (this.self.settings.form.settings[type]) {
+				this.form.type = type;
+				this.form.data = this.self.settings.form;
+			} else {
+				throw "Form type is not set in settings.";
+			}
+		},
+		'open': function() {
+			if (this.form.data === null) {
+				throw "You must switch to a form first.";
+			}
+			this.form.data.settings[this.form.type].before(this.form.data.form, this.form.data.container, this.self);
+			this.form.data.form.onsubmit = (function(form, container, self) {
+				return function(event) {
+					self.forms.form.data.settings[self.forms.form.type].onsubmit(event, form, container, self);
+				}
+			})(this.form.data.form, this.form.data.container, this.self);
+		},
+		'close': function() {
+			this.form.data.settings[this.form.type].after(this.form.data.form, this.form.data.container, this.self);
+			this.form.type = this.form.data = null;
+
+		}
+	}
+
 /********** PUBLIC FUNCTIONS **********/
 	
 	/**
@@ -44,7 +125,10 @@ function Loader(settings) {
 		this._clearErrors(form);
 		this.sendRequest(url?url:form.action, data, (function(self, form, fn) {
 			return function() {
-				self._handleErrors(form, this);
+				var obj = JSON.parse(this.responseText);
+				if (obj.form !== undefined) {
+					self._handleForm(obj.form);
+				}
 				fn(this);
 			}
 		})(this, form, onload));
@@ -62,83 +146,6 @@ function Loader(settings) {
 			   action + (id?('/' + id):'')+
 			   '.json' ;
 		return url;
-	}
-
-	this.notifications = {
-		'self': null,
-		'show': function() {
-			this.self.settings.loader.classList.add('shown');
-		},
-		'hide': function() {
-			this.self.settings.loader.classList.remove('shown');
-		},
-		'success': function(message) {
-			this.self.settings.loader.classList.remove('failure');
-			this.self.settings.loader.classList.add('success');
-			this.self.settings.loader.innerHTML = message?message:'Success.';
-			this.self.notifications.show();
-
-			timeout = window.setTimeout((function(self) {
-				return function() {
-					self.hide();
-				}
-			})(this), 5000);
-		},
-		'failure': function(message) {
-			this.self.settings.loader.classList.remove('success');
-			this.self.settings.loader.classList.add('failure');
-			this.self.settings.loader.innerHTML = message?message:'Error.';
-			this.self.notifications.show();
-
-			timeout = window.setTimeout((function(self) {
-				return function() {
-					self.hide();
-				}
-			})(this), 5000);
-		},
-		'wait': function() {
-			this.self.settings.loader.classList.add('loading');
-			this.self.settings.loader.innerHTML = "Loading...";
-			this.show();
-		},
-		'ready': function() {
-			this.hide();
-			this.self.settings.loader.classList.remove('loading');
-		}
-	}
-
-	this.forms = {
-		'self': null,
-		'form': {
-			'type': null,
-			'data': null
-		},
-		'switch': function(type) {
-			if (this.form.data !== null) {
-				this.close();
-			} else if (this.self.settings.form.settings[type]) {
-				this.form.type = type;
-				this.form.data = this.self.settings.form;
-			} else {
-				throw "Form type is not set in settings.";
-			}
-		},
-		'open': function() {
-			if (this.form.data === null) {
-				throw "You must switch to a form first.";
-			}
-			this.form.data.settings[this.form.type].before(this.form.data.form, this.form.data.container, this.self);
-			this.form.data.form.onsubmit = (function(form, self) {
-				return function(event) {
-					self.forms.form.data.settings[self.forms.form.type].onsubmit(event, form, self);
-				}
-			})(this.form.data.form, this.self);
-		},
-		'close': function() {
-			this.form.data.settings[this.form.type].after(this.form.data.form, this.form.data.container, this.self);
-			this.form.type = this.form.data = null;
-
-		}
 	}
 
 	this.addRow = function(data) {
@@ -163,30 +170,27 @@ function Loader(settings) {
 		}
 
 	}
-
-	this.fillForm = function(data) {
-		for (key in data) {
-			var input = document.querySelector('#form_'+key);
-			if (input) {
-				input.value = data[key];
-			}
-		}
-	}
 /************* PRIVATE FUNCTIONS ***************/
-	this._handleErrors = function(form, ajax) {
-		var data = JSON.parse(ajax.responseText);
-		if (!data.success && data.errors) {
-			for (field in data.errors) {
-				var input = document.querySelector('#form_'+field+'');
-				if (input.tagName !== 'div') {
-					input = input.parentElement;
+
+	this._handleForm = function(data) {
+		for (var i = 0; field = data[i]; i++) {
+			var element = document.getElementById(field.id);
+			if (element) {
+				if (field.errors.length > 0) {
+					element.parentNode.setAttribute('data-tip', field.errors[0]);
+					element.parentNode.classList.add('error');
+					element.parentNode.classList.add('row_error');
 				}
-				input.setAttribute('data-tip', data.errors[field][0]);
-				input.classList.add('error');
-				input.classList.add('row_error');
+
+				if (field.children !== undefined) {
+					this._handleForm(field.children);
+				} else {
+					element.value = field.value;
+				}
 			}
 		}
 	}
+
 	this._clearErrors = function(form) {
 		var errored = form.querySelectorAll('.error.row_error');
 		for (var i = 0; element = errored[i]; i++) {

@@ -54,7 +54,7 @@ class CrudController extends Controller
             );
         }
         return array(
-            'form' => $form,
+            'form' => $form->createView(),
             'error' => 'Invalid form.'
             );        
     }
@@ -63,18 +63,21 @@ class CrudController extends Controller
      * GET an entity.
      *
      * @Route("/get/{id}.json", name="get_entity")
-     * @Template("BioDataBundle:Crud:all.json.twig")
+     * @Template("BioDataBundle:Crud:full.json.twig")
      */
     public function getAction(Request $request, $bundle, $entityName, $id)
     {
         $entity = $this->getEntity($bundle, $entityName, $id);
+
+        $form = $this->createForm($this->createFormType($bundle, $entityName), $entity);
 
         if (!$entity) {
             return array('error' => 'Entity not found.');
         }
 
         return array(
-            'entities' => [$entity]
+            'entities' => [$entity],
+            'form' => $form->createView()
         );
     }
 
@@ -97,12 +100,12 @@ class CrudController extends Controller
         if ($form->isValid()) {
             $em->flush();
             return array (
-                'entities' => [$entity]
+                'entities' => [$entity],
             );
         } else {
             return array(
                 'error' => 'Invalid form.',
-                'form' => $form
+                'form' => $form->createView()
             );
         }
     }
