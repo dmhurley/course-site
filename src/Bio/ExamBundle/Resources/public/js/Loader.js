@@ -1,9 +1,6 @@
 function Loader(settings) {
 /********* VARIABLES *********/
 	this.settings = {};
-	this.buttons = {};
-	this.parser = null;
-
 /********** UTILITIES **************/
 	this.notifications = {
 		'self': null,
@@ -71,6 +68,8 @@ function Loader(settings) {
 			if (this.form.data === null) {
 				throw "You must switch to a form first.";
 			}
+			this.form.data.form.reset();
+			this._clearErrors(this.form.data.form);
 			this.form.data.settings[this.form.type].before(this.form.data.form, this.form.data.container, this.self);
 			this.form.data.form.onsubmit = (function(form, container, self) {
 				return function(event) {
@@ -84,6 +83,8 @@ function Loader(settings) {
 
 		}
 	}
+
+	this.parser = null;
 
 /********** PUBLIC FUNCTIONS **********/
 	
@@ -196,7 +197,7 @@ function Loader(settings) {
 		for (var i = 0; element = errored[i]; i++) {
 			element.classList.remove('error');
 			element.classList.remove('form_error');
-			element.setAttribute('data-tip', null);
+			element.removeAttribute('data-tip');
 		}
 	}
 

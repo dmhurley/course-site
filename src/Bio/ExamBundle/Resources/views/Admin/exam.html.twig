@@ -103,13 +103,15 @@
 			'section': function(value) {
 				return value.toUpperCase();
 			},
-			'tDate': function(value) {
-				return (new Date(value)).toLocaleDateString();
+			't_date': function(value) {
+				return (new Date(value*1000)).toLocaleDateString();
 			},
-			'tStart': function(value) {
-				return (new Date(value)).toLocaleTimeString();
+			't_start': function(value) {
+				return (new Date(value*1000)).toLocaleTimeString();
 			},
-			'questions': null
+			'questions': function(value) {
+				return value.length;
+			}
 		},
 		'loader': document.querySelector('div.notification'),
 		'form': {
@@ -120,7 +122,6 @@
 					'before': function(form, container, self) {
 						form.action = self.generateUrl('create');
 						form.classList.add('add');
-						form.reset();
 						container.classList.add('shown');
 					},
 					'onsubmit': function(event, form, container, self) {
@@ -150,7 +151,6 @@
 					'before': function(form, container, self) {
 						form.classList.add('edit');
 						form.action = self.generateUrl('edit', form.getAttribute('data-id'));
-						form.reset();
 
 						self.notifications.wait();
 						self.sendRequest(self.generateUrl('get', form.getAttribute('data-id')), null, (function(self, container) {
@@ -191,7 +191,7 @@
 						container.classList.remove('shown');
 						form.classList.remove('edit');
 						form.action = "";
-						form.setAttribute('data-id', null);
+						form.removeAttribute('data-id');
 					}
 				},
 			}

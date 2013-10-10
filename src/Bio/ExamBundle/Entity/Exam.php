@@ -5,6 +5,7 @@ namespace Bio\ExamBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\ExecutionContextInterface;
+use JMS\Serializer\Annotation as Serial;
 
 /**
  * Exam
@@ -49,6 +50,7 @@ class Exam
      *
      * @ORM\Column(name="tdate", type="date")
      * @Assert\Date()
+     * @Serial\Type("DateTime<'U'>")
      */
     private $tDate;
 
@@ -57,6 +59,7 @@ class Exam
      *
      * @ORM\Column(name="tstart", type="time")
      * @Assert\Time()
+     * @Serial\Type("DateTime<'U'>")
      */
     private $tStart;
 
@@ -65,6 +68,7 @@ class Exam
      *
      * @ORM\Column(name="tend", type="time")
      * @Assert\Time()
+     * @Serial\Type("DateTime<'U'>")
      */
     private $tEnd;
 
@@ -82,6 +86,7 @@ class Exam
      *
      * @ORM\Column(name="gdate", type="date")
      * @Assert\Date()
+     * @Serial\Type("DateTime<'U'>")
      */
     private $gDate;
 
@@ -90,6 +95,7 @@ class Exam
      *
      * @ORM\Column(name="gstart", type="time")
      * @Assert\Time()
+     * @Serial\Type("DateTime<'U'>")
      */
     private $gStart;
 
@@ -98,6 +104,7 @@ class Exam
      *
      * @ORM\Column(name="gend", type="time")
      * @Assert\Time()
+     * @Serial\Type("DateTime<'U'>")
      */
     private $gEnd;
 
@@ -115,6 +122,7 @@ class Exam
      * @ORM\JoinTable(name="exam_questions",
      *      joinColumns={@ORM\JoinColumn(name="test_id", referencedColumnName="id", onDelete="CASCADE")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="question_id", referencedColumnName="id", onDelete="CASCADE")})
+     * @Serial\MaxDepth(1)
      */
     private $questions;
 

@@ -3,6 +3,13 @@
 namespace Bio\DataBundle\Twig;
 
 class BioExtension extends \Twig_Extension {
+
+	private $container;
+
+	public function __construct($container) {
+		$this->container = $container;
+	}
+
 	public function getFilters() {
 		return array(
 			new \Twig_SimpleFilter('jsonify', array($this, 'jsonifyFilter'))
@@ -10,37 +17,8 @@ class BioExtension extends \Twig_Extension {
 	}
 
 	public function jsonifyFilter($object) {
-		$class = get_class($object);
-		$array = (array)$object;
-		$builder = [];
-		foreach($array as $key => $value) {
-			$key = substr($key, strlen($class) + 2);
-
-			try {
-				$builder[] ='"'.$key.'":'.$this->transformValue($value);
-			} catch (\Exception $e) {}
-		} 
-		return "{\n".implode(",\n", $builder)."}\n";
-	}
-
-	private function transformValue($value) {
-		if ($value instanceof \DateTime) {
-			return '"'.$value->format('Y-m-d H:i:s').'"';
-		}
-
-		if (is_numeric($value)) {
-			return $value;
-		}
-
-		if (is_string($value)) {
-			return '"'.$value.'"';
-		}
-
-		if ($value instanceof \Doctrine\ORM\PersistentCollection) {
-			return count($value);
-		}
-
-		throw new \Exception();
+		$serializer = $this->container->get('jms_serializer');
+		return $serializer->serialize($object, 'json');
 	}
 
 	public function getName() {

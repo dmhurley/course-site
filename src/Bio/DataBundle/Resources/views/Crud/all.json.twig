@@ -1,9 +1,4 @@
 {% extends 'BioDataBundle:Crud:response.json.twig' %}
 {% block data %}
-[{% if entities is defined %}
-{% for entity in entities %}
-{% if loop.index > 1 %},{% endif %}
-	{{entity|jsonify|raw}}
-{% endfor %}
-{% endif %}]
+{{entities|jsonify|raw}}
 {% endblock %}
