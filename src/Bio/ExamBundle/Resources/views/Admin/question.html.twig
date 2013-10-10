@@ -6,38 +6,189 @@
 			<link rel="stylesheet" href="{{ asset_url }}" />
 		{% endstylesheets %}
 
-		{% javascripts 'bundles/biopublic/js/DragDrop.js' output="js/*.js" %}
+		{% javascripts 'bundles/biopublic/js/DragDrop.js'
+					   'bundles/bioexam/js/Loader.js'
+					   'bundles/bioexam/js/Parser.js' output="js/*.js" %}
 		<script src="{{asset_url}}"></script>
 	{% endjavascripts %}
 {% endblock %}
 
 {% block content %}
-	{{ form(form) }}
+	<div class="form_layer">
+		<div class="form_container">
+			<h3 class="form_title">Add Question</h3>
+			{{ form(form) }}
+		</div>
+	</div>
 
 	<table>
-		<tr>
-			<th>Question</th>
-			<th>Id</th>
-			<th>Points</th>
-			<th>Preview</th>
-			<th>Edit</th>
-			<th>Delete</th>
-		</tr>
-		{% for question in questions %}
+		<thead>
 			<tr>
-				<td>{{question.question|striptags|replace({'&nbsp;': ''})}}</td>
-				<td>{{question.id}}</td>
-				<td>{{question.points}} pts</td>
-				<td><a href="{{ path('preview') }}?id={{question.id}}&type=question">preview</a></td>
-				<td><a href="{{ path('edit_question', {'id':question.id}) }}">edit</a></td>
-				<td><a href="{{ path('delete_question', {'id':question.id}) }}">delete</a></td>
+				<th>Question</th>
+				<th>Id</th>
+				<th>Points</th>
+				<th>Preview</th>
+				<th>Edit</th>
+				<th>Delete</th>
 			</tr>
-		{% else %}
-			<tr><td colspan=5 style="text-align:center;">no questions</td></tr>
-		{% endfor %}
+		<thead>
+		<tbody>
+
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan=6 class="link add lonely">add question</td>
+			</tr>
+		</tfoot>
 	</table>
 {% endblock %}
 
 {% block java %}
 	{{ tinymce_init() }}
+
+	<script>var loader = new Loader({
+		'url': '{{ url('main_page')}}crud/',
+		'bundle': 'exam',
+		'entity': 'question',
+		'table': document.querySelector('table'),
+		'buttons': { // added to each column (left to right order)
+			'preview': {
+				'event': 'click', //optional
+				'fn': function(event, button, self) {
+					window.open(self.parser.parse('{{url("preview")}}?id=#{id}&type=question', button.parentNode), '_blank')
+				}
+			},
+			'edit': {
+				'fn': function(event, button, self) {
+					self.forms.switch('edit');
+					self.forms.form.data.form.setAttribute('data-id', button.parentNode.id);
+					self.forms.open();
+				}
+			},
+			'delete': {
+				'fn': function(event, button, self) {
+					self.notifications.wait();
+					var url = self.generateUrl('delete', button.parentNode.id);
+					self.sendRequest(url, null, function() {
+						var data = JSON.parse(this.responseText);
+						if (data.success) {
+							button.parentNode.parentNode.removeChild(button.parentNode);
+							self.notifications.ready();
+							self.notifications.success('Deleted question.');
+						} else {
+							self.notifications.ready();
+							self.notifications.failure(data.message);
+						}
+					});
+				}
+			}
+		},
+		'listeners': [
+			{
+				'selector': '.link.add',
+				'fn': function(event, object, self) {
+					self.forms.switch('add');
+					self.forms.open();
+				}
+			},
+			{
+				'selector': '.form_layer',
+				'fn': function(event, object, self) {
+					if (event.target === object)
+					self.forms.close();
+				}
+			}
+		],
+		'columns': {
+			'question': function(value, cell) {
+				return value.replace(/(<([^>]+)>)/ig,"");
+			},
+			'id': null,
+			'points': null
+		},
+		'loader': document.querySelector('div.notification'),
+		'form': {
+			'container': document.querySelector('.form_layer'),
+			'form': document.querySelector('.form_container form'),
+			'settings': {
+				'add': {
+					'before': function(form, container, self) {
+						form.action = self.generateUrl('create');
+						form.classList.add('add');
+						container.classList.add('shown');
+					},
+					'onsubmit': function(event, form, container, self) {
+						event.preventDefault();
+						self.notifications.wait();
+						container.classList.remove('shown');
+						self.postForm(null, form, function(ajax) {
+							var data = JSON.parse(ajax.responseText);
+							self.notifications.ready();
+							if (data.success) {
+								self.addRow(data.data[0]);
+								self.notifications.success('Question created.');
+								self.forms.close();
+							} else {
+								self.notifications.failure(data.message);
+								container.classList.add('shown');
+							}
+						});
+					},
+					'after': function(form, container, self) {
+						container.classList.remove('shown');
+						form.action = "";
+						form.classList.remove('add');
+					}
+				},
+				'edit': {
+					'before': function(form, container, self) {
+						form.classList.add('edit');
+						form.action = self.generateUrl('edit', form.getAttribute('data-id'));
+
+						self.notifications.wait();
+						self.sendRequest(self.generateUrl('get', form.getAttribute('data-id')), null, (function(self, container) {
+							return function() {
+								var data = JSON.parse(this.responseText);
+								self.notifications.ready();
+								if (data.success) {
+									self._handleForm(data.form);
+									container.classList.add('shown');
+								} else {
+									self.notification.failure(data.message);
+									self.forms.close();
+								}
+							}
+						})(self, container));
+					},
+					'onsubmit': function(event, form, container, self) {
+						event.preventDefault();
+						self.notifications.wait();
+						container.classList.remove('shown');
+						self.postForm(null, form, function(ajax) {
+							var data = JSON.parse(ajax.responseText);
+							self.notifications.ready();
+							if (data.success) {
+								var row = document.getElementById(form.getAttribute('data-id'));
+								row.parentNode.removeChild(row);
+								self.addRow(data.data[0]);
+								self.notifications.success('Exam edited.');
+								self.forms.close();
+							} else {
+								self.notifications.failure(data.message);
+								container.classList.add('shown');
+							}
+						});
+
+					},
+					'after': function(form, container, self) {
+						container.classList.remove('shown');
+						form.classList.remove('edit');
+						form.action = "";
+						form.removeAttribute('data-id');
+					}
+				},
+			}
+		}
+	}); </script>
+
 {% endblock %}

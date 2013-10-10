@@ -13,7 +13,9 @@ use Bio\DataBundle\Exception\BioException;
 use Bio\ExamBundle\Entity\Exam;
 use Bio\ExamBundle\Entity\Question;
 use Bio\ExamBundle\Entity\ExamGlobal;
+
 use Bio\ExamBundle\Form\ExamType;
+use Bio\ExamBundle\Form\QuestionType;
 
 /**
  * @Route("/admin/exam")
@@ -46,7 +48,7 @@ class AdminController extends Controller
                     )
                 )
             )
-   			->add('add', 'submit');
+   			->add('submit', 'submit');
 
         $db = new Database($this, 'BioExamBundle:ExamGlobal');
         $global = $db->findOne(array());
@@ -56,39 +58,39 @@ class AdminController extends Controller
             ->add('set', 'submit')
             ->getForm();
 
-   		if ($request->getMethod() === "POST") {
-            $isValid = true;
+   		// if ($request->getMethod() === "POST") {
+     //        $isValid = true;
 
-            if ($request->request->has('form')) {
-       			$form->handleRequest($request);
+     //        if ($request->request->has('form')) {
+     //   			$form->handleRequest($request);
                 
-       			if ($form->isValid()) {
-       				$db->add($exam);
-       			} else {
-                    $isValid = false;
-                }
-            }
+     //   			if ($form->isValid()) {
+     //   				$db->add($exam);
+     //   			} else {
+     //                $isValid = false;
+     //            }
+     //        }
 
-            if ($request->request->has('global')) {
-                $globalForm->handleRequest($request);
+     //        if ($request->request->has('global')) {
+     //            $globalForm->handleRequest($request);
 
-                if (!$globalForm->isValid()) {
-                     $isValid = false;
-                }
-            }
+     //            if (!$globalForm->isValid()) {
+     //                 $isValid = false;
+     //            }
+     //        }
 
-            if ($isValid) {
-                try {
-                    $db->close();
-                    $flash->set('success', 'Saved change.');
-                    return $this->redirect($this->generateUrl('manage_exams'));
-                } catch (BioException $e) {
-                    $flash->set('failure', 'Unable to save change.');
-                }
-            } else {
-                $flash->set('failure', 'Invalid form.');
-            }
-   		}
+     //        if ($isValid) {
+     //            try {
+     //                $db->close();
+     //                $flash->set('success', 'Saved change.');
+     //                return $this->redirect($this->generateUrl('manage_exams'));
+     //            } catch (BioException $e) {
+     //                $flash->set('failure', 'Unable to save change.');
+     //            }
+     //        } else {
+     //            $flash->set('failure', 'Invalid form.');
+     //        }
+   		// }
 
         $db = new Database($this, 'BioExamBundle:Exam');
    		$exams = $db->find(array(), array('tDate' => 'ASC'), false);
@@ -102,151 +104,28 @@ class AdminController extends Controller
     }
 
     /**
-     * @Route("/delete/{id}", name="delete_exam")
-     */
-    public function deleteAction(Request $request, Exam $exam = null) {
-        $flash = $request->getSession()->getFlashBag();
-
-		if ($exam) {
-            $db = new Database($this, 'BioExamBundle:Exam');
-			$db->delete($exam);
-			$db->close();
-			$flash->set('success', 'Exam deleted.');
-		} else {
-			$flash->set('failure', 'Could not find that exam.');
-		}
-
-    	if ($request->headers->get('referer')){
-    		return $this->redirect($request->headers->get('referer'));
-    	} else {
-    		return $this->redirect($this->generateUrl('manage_exams'));
-    	}
-    }
-
-    /**
-     * @Route("/edit/{id}", name="edit_exam")
-     * @Template()
-     */
-    public function editAction(Request $request, Exam $exam = null) {
-        $flash = $request->getSession()->getFlashBag();
-        if (!$exam) {
-            $flash->set('failure', 'Unable to find that exam.');
-            return $this->redirect($this->generateUrl('manage_exams'));
-        }
-
-		$form = $this->createFormBuilder($exam)
-			->add('title', 'text', array('label'=>'Exam Name:'))
-            ->add('section', 'text', array('label'=>'Section:',
-                'required' => false,
-                'empty_data' => '',
-                'attr' => array(
-                    'pattern' => '(\A\Z)|(^[A-Z][A-Z0-9]?$)',
-                    'title' => 'One or two letter capitalized section name.'
-                    )
-                )
-            )
-    		->add('tDate', 'date',        array('label' => 'Date:'))
-    		->add('tStart', 'time',       array('label'=>'Start Time:'))
-    		->add('tEnd', 'time',         array('label'=>'End Time:'))
-    		->add('tDuration', 'integer', array('label'=>'Duration (m):'))
-            ->add('gDate', 'date',        array('label' => 'Grading Date:'))
-            ->add('gStart', 'time',       array('label'=>'Grading Start:'))
-            ->add('gEnd', 'time',         array('label'=>'Grading End:'))
-            ->add('gDuration', 'integer', array('label'=>'Grade Length (m):'))
-    		->add('questions', 'entity', array(
-                'class' => 'BioExamBundle:Question',
-                'property'=>'formattedQuestion',
-                'multiple' => true,
-                'expanded'=> true
-                )
-            )
-    		->add('id', 'hidden')
-   			->add('save', 'submit')
-   			->getForm();
-
-    	if ($request->getMethod() === "POST") {
-	   		$form->handleRequest($request);
-
-	   		if ($form->isValid()) {
-                    $db = new Database($this, 'BioExamBundle:Exam');
- 
-                    try {
-	   				    $db->close();
-                        $flash->set('success', 'Exam edited.');
-                    } catch (BioException $e) {
-                        $flash->set('failure', 'Unable to save changes.');
-                    }
-	   				return $this->redirect($this->generateUrl('manage_exams'));
-	   		} else {
-                $flash->set('failure', 'Invalid form.');
-            }
-    	}
-
-    	return array('form' => $form->createView(), 'title' => 'Edit Exam');
-    }
-
-    /**
      * @Route("/questions/manage", name="manage_questions")
      * @Template()
      */
     public function questionAction(Request $request) {
         $flash = $request->getSession()->getFlashBag();
     	$q = new Question();
-    	$form = $this->createFormBuilder($q)
-    		->add('question', 'textarea', array(
-                'label' => 'Question:',
-                'attr' => array(
-                    'class' => 'tinymce',
-                    'data-theme' => 'bio'
+        $form = $this->createForm(new QuestionType(), $q, 
+                array(
+                    'action' => $this->generateUrl('create_entity', array(
+                        'bundle' => 'exam',
+                        'entityName' => 'question'
+                        )
                     )
                 )
             )
-    		->add('answer', 'textarea', array(
-                'label' => 'Answer/Rubric:',
-                'attr' => array(
-                    'class' => 'tinymce',
-                    'data-theme' => 'bio'
-                    )
-                )
-            )
-    		->add('points', 'integer', array('label' => 'Points:'))
-            ->add('tags', 'text',      array('label' => 'Tags:',
-                'mapped' => false,
-                'required' => false,
-                'attr' => array(
-                    'pattern' => '[a-z\s]+',
-                    'title' => 'Lower case tags seperated by spaces. a-z only.'
-                    )
-                )
-            )
-    		->add('add', 'submit')
-    		->getForm();
+            ->add('submit', 'submit');
 
     	$db = new Database($this, 'BioExamBundle:Question');
-
-    	if ($request->getMethod() === "POST") {
-
-    		$form->handleRequest($request);
-
-    		if ($form->isValid()) {
-                $q->setTags(explode(" ", $form->get('tags')->getData()));
-    			$db->add($q);
-                try {
-                    $db->close();
-                    $flash->set('success', 'Added question.');
-                    return $this->redirect($this->generateUrl('manage_questions'));
-                } catch (BioException $e) {
-                    $flash->set('failure', 'Unable to add question.');
-                }
-    		} else {
-                $flash->set('failure', 'Invalid form.');
-            }
-    	}
 
     	$questions = $db->find(array(), array(), false);
     	return array(
             'form' => $form->createView(),
-            'questions' => $questions,
             'title' => 'Questions'
             );
     }

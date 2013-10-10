@@ -10,7 +10,7 @@
 		{% if child.count > 1 %}
 		"children": [{{_self.view(child)}}]
 		{% else %}
-		"value": "{{child.vars.value}}"
+		"value": {{child.vars.value|json_encode|raw}}
 		{% endif %}
 	}{% endfor %}
 {% endmacro %}

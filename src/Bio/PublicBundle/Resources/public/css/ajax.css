@@ -7,6 +7,7 @@
 	width: 100%;
 	background-color: rgba(0,0,0, .3);
 	cursor: pointer;
+	text-align:center;
 }
 
 .form_layer.shown {
@@ -14,13 +15,15 @@
 }
 
 .form_container {
-	min-width: 300px;
-	max-width: 350px;
-	margin: 100px auto 100px auto;
+	margin: 50px auto auto auto;
 	padding: 50px;
 	border-radius: 25px;
 	background-color: white;
 	cursor: default;
+	text-align:left;
+	display: inline-block;
+	overflow:scroll;
+	max-height: 60%;
 }
 
 .form_title {

@@ -40,7 +40,7 @@ class CrudController extends Controller
     {   
         $entity = $this->createEntity($bundle, $entityName);
         $form = $this->createForm($this->createFormType($bundle, $entityName), $entity)
-            ->add('add', 'submit');
+            ->add('submit', 'submit');
 
         $form->handleRequest($request);
 
@@ -93,7 +93,7 @@ class CrudController extends Controller
         $entity = $this->getEntity($bundle, $entityName, $id);
 
         $form = $this->createForm($this->createFormType($bundle, $entityName), $entity)
-            ->add('add', 'submit');
+            ->add('submit', 'submit');
 
         $form->handleRequest($request);
 

@@ -192,7 +192,14 @@ function Loader(settings) {
 				if (field.children !== undefined) {
 					this._handleForm(field.children);
 				} else {
-					element.value = field.value;
+					if ('tinyMCE' in window && element.classList.contains('tinymce')) {
+						var box = tinyMCE.get(field.id);
+						console.log(field.id);
+						if (box) {
+							box.setContent(field.value, {format: 'raw'});
+						}
+						element.value = field.value;
+					}
 				}
 			}
 		}
