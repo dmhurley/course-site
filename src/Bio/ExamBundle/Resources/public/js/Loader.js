@@ -69,7 +69,7 @@ function Loader(settings) {
 				throw "You must switch to a form first.";
 			}
 			this.form.data.form.reset();
-			this._clearErrors(this.form.data.form);
+			this.self._clearErrors(this.form.data.form);
 			this.form.data.settings[this.form.type].before(this.form.data.form, this.form.data.container, this.self);
 			this.form.data.form.onsubmit = (function(form, container, self) {
 				return function(event) {
@@ -154,7 +154,13 @@ function Loader(settings) {
 		row.id = data.id;
 		for (button in this.settings.columns) {
 			var fn = this.settings.columns[button];
-			row.insertCell(-1).innerHTML = data[button] === undefined? button: fn?fn(data[button]):data[button];
+			var cell = row.insertCell(-1);
+			var value = data[button] === undefined? button: fn?fn(data[button], cell):data[button];
+			if (value === false) {
+				cell.parentNode.removeChild(cell);
+			} else {
+				cell.innerHTML = value;
+			}
 		}
 
 		for (button in this.settings.buttons) {

@@ -3,6 +3,7 @@
 namespace Bio\ExamBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serial;
 
 /**
  * Grade
@@ -45,12 +46,14 @@ class Grade
     /**
      * @ORM\ManyToOne(targetEntity="Answer", inversedBy="points")
      * @ORM\JoinColumn(name="answer_id", referencedColumnName="id", onDelete="CASCADE")
+     * @Serial\MaxDepth(1)
      */
     private $answer;
 
     /**
      * @ORM\ManyToOne(targetEntity="TestTaker")
      * @ORM\JoinColumn(name="grader_id", referencedColumnName="id", onDelete="CASCADE")
+     * @Serial\MaxDepth(1)
      **/
     private $grader;
 

@@ -5,6 +5,8 @@ namespace Bio\UserBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation as Serial;
+
 
 /**
  * @ORM\Entity
@@ -25,6 +27,7 @@ abstract class AbstractUserStudent implements UserInterface
 	 * @var string
 	 *
 	 * @ORM\Column(name="salt", type="string")
+     * @Serial\Exclude
 	 */
 	protected $salt;
 

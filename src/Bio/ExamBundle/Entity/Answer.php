@@ -4,6 +4,7 @@ namespace Bio\ExamBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation as Serial;
 
 /**
  * Answer
@@ -32,18 +33,21 @@ class Answer
 
     /**
      * @ORM\OneToMany(targetEntity="Grade", mappedBy="answer", cascade={"remove"})
+     * @Serial\MaxDepth(2)
      */
     private $points;
 
     /**
      * @ORM\ManyToOne(targetEntity="TestTaker", inversedBy="answers")
      * @ORM\JoinColumn(name="answer_id", referencedColumnName="id", onDelete="CASCADE")
+     * @Serial\MaxDepth(2)
      */
     private $testTaker;
 
     /**
      * @ORM\ManyToOne(targetEntity="Question")
      * @ORM\JoinColumn(name="questionID", referencedColumnName="id", onDelete="CASCADE")
+     * @Serial\MaxDepth(1)
      **/
     private $question;
 

@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Bio\UserBundle\Entity\AbstractUserStudent;
 use Bio\InfoBundle\Entity\Section;
+use JMS\Serializer\Annotation as Serial;
 
 
 /**
@@ -39,6 +40,7 @@ class User extends AbstractUserStudent
      * @var string
      *
      * @ORM\Column(name="password", type="string", length=255)
+     * @Serial\Exclude
      */
     private $password;
 

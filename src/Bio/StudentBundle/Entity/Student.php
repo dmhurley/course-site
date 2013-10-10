@@ -6,6 +6,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Bio\UserBundle\Entity\AbstractUserStudent;
+use JMS\Serializer\Annotation as Serial;
+
 
 
 /**
@@ -62,6 +64,7 @@ class Student extends AbstractUserStudent
      * @var string
      *
      * @ORM\Column(name="password", type="string")
+     * @Serial\Exclude
      */
     protected $password;
 

@@ -3,6 +3,8 @@
 namespace Bio\ExamBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serial;
+
 
 /**
  * TestTaker
@@ -48,6 +50,7 @@ class TestTaker
      *      joinColumns={@ORM\JoinColumn(name="you_id", referencedColumnName="id", onDelete="CASCADE")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="target_id", referencedColumnName="id", onDelete="CASCADE")}
      * )
+     * @Serial\MaxDepth(1)
      */
     private $graded;
 
@@ -63,6 +66,7 @@ class TestTaker
     /**
      * @ORM\ManyToOne(targetEntity="TestTaker")
      * @ORM\JoinColumn(name="target_id", referencedColumnName="id", onDelete="CASCADE")
+     * @Serial\Exclude
      */
     private $grading;
 
@@ -72,23 +76,27 @@ class TestTaker
      *      joinColumns={@ORM\JoinColumn(name="you_id", referencedColumnName="id", onDelete="CASCADE")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="target_id", referencedColumnName="id", onDelete="CASCADE")}
      * )
+     * @Serial\MaxDepth(3)
      */
     private $gradedBy;
 
     /**
      * @ORM\ManyToOne(targetEntity="\Bio\UserBundle\Entity\AbstractUserStudent")
      * @ORM\JoinColumn(name="studentID", referencedColumnName="id", onDelete="CASCADE")
+     * @Serial\MaxDepth(2)
      **/
     private $student;
 
     /**
      * @ORM\ManyToOne(targetEntity="Exam")
      * @ORM\JoinColumn(name="examID", referencedColumnName="id", onDelete="CASCADE")
+     * @Serial\MaxDepth(2)
      **/
     private $exam;
 
     /**
      * @ORM\OneToMany(targetEntity="Answer", mappedBy="testTaker", cascade={"remove"})
+     * @Serial\MaxDepth(3)
      */
     private $answers;
 

@@ -2,6 +2,8 @@
 
 namespace Bio\DataBundle\Twig;
 
+use JMS\Serializer\SerializationContext;
+
 class BioExtension extends \Twig_Extension {
 
 	private $container;
@@ -18,7 +20,7 @@ class BioExtension extends \Twig_Extension {
 
 	public function jsonifyFilter($object) {
 		$serializer = $this->container->get('jms_serializer');
-		return $serializer->serialize($object, 'json');
+		return $serializer->serialize($object, 'json', SerializationContext::create()->enableMaxDepthChecks());
 	}
 
 	public function getName() {

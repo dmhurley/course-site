@@ -100,16 +100,16 @@
 		],
 		'columns': {
 			'title': null,
-			'section': function(value) {
+			'section': function(value, cell) {
 				return value.toUpperCase();
 			},
-			't_date': function(value) {
+			't_date': function(value, cell) {
 				return (new Date(value*1000)).toLocaleDateString();
 			},
-			't_start': function(value) {
+			't_start': function(value, cell) {
 				return (new Date(value*1000)).toLocaleTimeString();
 			},
-			'questions': function(value) {
+			'questions': function(value, cell) {
 				return value.length;
 			}
 		},
