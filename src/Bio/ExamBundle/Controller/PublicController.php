@@ -45,7 +45,7 @@ class PublicController extends Controller {
 	}
 
 	/**
-	 * @Route("/", name="exam_take")
+	 * @Route("/", name="exam_entrance")
 	 * @Template()
 	 */
 	public function takeAction(Request $request) {
@@ -153,7 +153,7 @@ class PublicController extends Controller {
 				}
 				$this->getDoctrine()->getManager()->flush();
 				$flash->set('success', 'Exam started.');
-				return $this->redirect($this->generateUrl('exam_take'));
+				return $this->redirect($this->generateUrl('exam_entrance'));
 			}
 			$flash->set('failure', 'Exam has not started yet.');
 		}
@@ -192,7 +192,7 @@ class PublicController extends Controller {
 				$this->getDoctrine()->getManager()->flush();
 				$flash->set('success', 'Answers submitted.');
 
-				return $this->redirect($this->generateUrl('exam_take'));
+				return $this->redirect($this->generateUrl('exam_entrance'));
 			} else if (!$form->get('save')->isClicked()) {
 				$flash->set('failure', 'Invalid answer(s).');
 			}
@@ -236,7 +236,7 @@ class PublicController extends Controller {
 					->setContentType('text/html');
 				$this->get('mailer')->send($message);
 			}
-			return $this->redirect($this->generateUrl('exam_take'));
+			return $this->redirect($this->generateUrl('exam_entrance'));
 
 
 		} else if (new \DateTime($exam->getGDate()->format('Y-m-d').$exam->getGStart()->format('H:i:s')) >
@@ -267,9 +267,11 @@ class PublicController extends Controller {
 				FROM BioExamBundle:Grade g
 				INNER JOIN BioExamBundle:Answer a
 				WITH g.answer = a
-				WHERE a.testTaker = :taker
+				WHERE a.testTaker = :target
+				AND g.grader = :taker
 			')
-			->setParameter('taker', $target);
+			->setParameter('target', $target)
+			->setParameter('taker', $taker);
 
 		$grades = ['grades' => $query->getResult()];
 
@@ -290,7 +292,7 @@ class PublicController extends Controller {
 					->setTimestamp('graded_'+$target->getStudent()->getUsername(), new \DateTime());
 				$em->flush();
 				$flash->set('success', 'Test graded.');
-				return $this->redirect($this->generateUrl('exam_take'));
+				return $this->redirect($this->generateUrl('exam_entrance'));
 			} else {
 				$flash->set('failure', 'Invalid form.');
 			}
@@ -317,7 +319,7 @@ class PublicController extends Controller {
 			return array('success' => true);
 		}
 
-		$force = $request->request->has('please');
+		$force = $request->query->has('please');
 
 		$em = $this->getDoctrine()->getManager();
 		$query = $em->createQuery('
