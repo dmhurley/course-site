@@ -172,7 +172,7 @@ class ExamController extends Controller {
 				$flash->set('success', 'Answers submitted.');
 
 				return $this->redirect($this->generateUrl('exam_take'));
-			} else {
+			} else if (!$form->get('save')->isClicked()) {
 				$flash->set('failure', 'Invalid answer(s).');
 			}
 		}
@@ -218,8 +218,8 @@ class ExamController extends Controller {
 			return $this->redirect($this->generateUrl('exam_take'));
 
 
-		} else if (new \DateTime($exam->getGDate()->format('Y-m-d').$exam->getGStart()->format('H:i:s') >
-			new \DateTime(/**/))) {
+		} else if (new \DateTime($exam->getGDate()->format('Y-m-d').$exam->getGStart()->format('H:i:s')) >
+			new \DateTime(/**/)) {
 			$flash->set('failure', 
 					'Grading starts at '.
 					$exam->getGStart()->format('m/d'). ' at '.

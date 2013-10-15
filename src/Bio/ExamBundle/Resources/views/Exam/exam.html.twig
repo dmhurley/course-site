@@ -5,8 +5,8 @@
 
 		{% for answer in form.answers.children %}
 			<div class="question tableStyle">
-				<h2 style="float:left;">Question {{loop.index}}</h2>
-				<h2 style="float:right;">{{answer.data.question.points}} points</h2>
+				<h1 style="float:left;margin-top:18px;">Question {{loop.index}}</h1>
+				<h2 style="float:right;">{{answer.vars.data.question.points}} points</h2>
 				<div class="q">
 					{{answer.vars.data.question.question|raw}}
 				</div>

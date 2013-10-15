@@ -143,6 +143,7 @@ class TestTaker
 
     public function setTimestamp($key, $value) {
         $this->timecard[$key] = $value;
+        return $this;
     }
 
     public function getTimestamp($key) {
