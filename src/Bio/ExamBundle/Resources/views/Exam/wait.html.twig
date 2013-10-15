@@ -14,17 +14,20 @@
 				{% endimage %}
 			</div>
 		</div>
-		{% if taker.grading != null or taker.graded|length != 0 %}
-			{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':exam.gDuration, 'end':date(exam.gDate|date('Y-m-d ') ~ exam.gEnd|date('H:i:s'))|date('U'), 'start':taker.timecard[5]|date('U')} only %}
+		{% if taker.gradedNum > 0 %}
+			{% include 'BioExamBundle:Exam:timer.html.twig' with {'duration':exam.gDuration, 'end':date(exam.gDate|date('Y-m-d ') ~ exam.gEnd|date('H:i:s'))|date('U'), 'start':taker.timecard['submitted']|date('U')} only %}
 		{% endif %}
 {% endblock %}
 
 {% block java %}
 	<script>
-	function Checker() {
-		this.check = function() {
+	function Checker(endtime) {
+		this.endtime = new Date(new Date().getTime() + 5*60000);
+		this.interval = null;
+
+		this.check = function(force) {
 			var ajax = new XMLHttpRequest();
-			ajax.open('POST', '{{ url("check") }}', true);
+			ajax.open('POST', '{{ url("check") }}'+(force?'?please':''), true);
 			ajax.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 			self = this;
 			ajax.onload = function() {
@@ -39,14 +42,16 @@
 			};
 			ajax.send("a={{taker.id}}");
 		}
-		this.interval = setInterval(
-				(function(self) {
-					return function() {
-						self.check();
-					}
-				})(this), 30000);
-		this.check();
+
+		setTimeout((function(self) {
+			return function() {
+				self.check(false);
+				self.interval = setInterval(function() {
+					self.check(self.endtime < new Date());
+				}, 60000);
+			}
+		})(this), Math.random()*10000);
 	}
-	new Checker();
+	checker = new Checker({{taker.timecard['submitted']|date('U')}});
 	</script>
 {% endblock %}

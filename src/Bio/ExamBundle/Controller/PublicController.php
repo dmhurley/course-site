@@ -55,38 +55,43 @@ class PublicController extends Controller
 
 
 		// get all exams where the grading period hasn't ended.
-			$exams = $this->getNextExam($student);
-			foreach($exams as $e) {
-				$t = $db->findOne(array('student' => $student, 'exam' => $e));
-				// have they already started?
-				if ($t) {
+			if ($session->has('examID')) {
+				$exam = (new Database($this, 'BioExamBundle:Exam'))->findOne(array('id' => $session->get('examID')));
+			}
+			if (!$exam) {
+				$exams = $this->getNextExam($student);
+				foreach($exams as $e) {
+					$t = $db->findOne(array('student' => $student, 'exam' => $e));
+					// have they already started?
+					if ($t) {
 
-					if ($t->getStatus() < 4 &&
-						new \DateTime(
-							$e->getTDate()->format('Y-m-d ').
-					 		$e->getTEnd()->format('H:i:s')
-						) < new \DateTime()
-					) {
-						$message = "It is too late to take ".$e->getTitle().".";
-					} else if (
-						$t->getStatus() < 6 &&
-						new \DateTime(
-							$e->getGDate()->format('Y-m-d ').
-							$e->getGEnd()->format('H:i:s')
-						) < new \DateTime()
-					) {
-						$message = "It is too late to grade ".$e->getTitle().".";
-					} else if ($t->getStatus() === 6) {
-						$message = "You have already finished ".$e->getTitle().".";
+						if ($t->getStatus() < 4 &&
+							new \DateTime(
+								$e->getTDate()->format('Y-m-d ').
+						 		$e->getTEnd()->format('H:i:s')
+							) < new \DateTime()
+						) {
+							$message = "It is too late to take ".$e->getTitle().".";
+						} else if (
+							$t->getStatus() < 6 &&
+							new \DateTime(
+								$e->getGDate()->format('Y-m-d ').
+								$e->getGEnd()->format('H:i:s')
+							) < new \DateTime()
+						) {
+							$message = "It is too late to grade ".$e->getTitle().".";
+						} else if ($t->getStatus() === 6) {
+							$message = "You have already finished ".$e->getTitle().".";
+						} else {
+							$exam = $e;
+							break;
+						}
+
+
 					} else {
 						$exam = $e;
 						break;
 					}
-
-
-				} else {
-					$exam = $e;
-					break;
 				}
 			}
 
@@ -382,8 +387,6 @@ class PublicController extends Controller
 	/**
 	 * Recieves a post request containing student_id, exam_id. Attempts to find someone for user to grade
 	 *
-	 * @Route("/check.json", name="check")
-	 * @Template("BioExamBundle:Public:check.json.twig")
 	 */
 	public function checkAction(Request $request) {
 		if ($request->request->has('a')) {
@@ -422,6 +425,11 @@ class PublicController extends Controller
 				ORDER BY c
 			');
 
+		$max = $em->createQuery('
+				SELECT t.grade as grade
+				FROM BioExamBundle:ExamGlobal
+			')->getSingleResult();
+
 		$query->setParameter('exam', $you->getExam());
 		$query->setParameter('id', $you->getId());
 
@@ -433,7 +441,9 @@ class PublicController extends Controller
 
 		$target = null;
 		for ($i = 0; $i < count($targets); $i++) {
-			if (!$you->getGraded()->contains($targets[$i][0]) ) {
+			if (!$you->getGraded()->contains($targets[$i][0] && // has not been graded before
+				count($target->getGradedBy() < $max )) // has not been graded twice
+				) {
 				$target = $targets[$i][0];
 				break;
 			}
@@ -442,7 +452,42 @@ class PublicController extends Controller
 		if ($target === null) {
 			throw new BioException("No other tests.");
 		}
-		return $target;
+	}
+
+	/**
+	 * @Route("/test", name="test")
+	 * @Template("BioPublicBundle:Template:blank.html.twig")
+	 */
+	public function testAction(Request $request) {
+		$em = $this->getDoctrine()->getManager();
+
+		$exam = $em->createQuery(
+				'SELECT t
+				FROM BioExamBundle:TestTaker t
+				WHERE t.id = 7'
+			)->getSingleResult();
+
+		$query = $em->createQuery(
+				'SELECT t
+				FROM BioExamBundle:TestTaker t
+				WHERE t.exam = :exam'
+			)->setParameter('exam', $exam);
+		$results = $query->getResult();
+
+		$array = [0 => [], 1 => [], 2 => [], 3 => [], 4 => [], 5 => [], 6 => [], 7 => []];
+		foreach($results as $taker) {
+			if (isset($taker->getTimecard()[6])) {
+				$array[count($taker->getGradedBy())][] = ($taker->getTimecard()[4]->format('H:i:s')) . ' - ' . date_diff($taker->getTimecard()[5], $taker->getTimecard()[6])->format('%i:%s');
+			}
+		}
+		foreach($array as &$ar) {
+			sort($ar);
+		}
+		echo '<pre>';
+		print_r($array);
+		echo '</pre>';
+
+		return array('text' => '');
 	}
 
 	private function getNextExam($student) {

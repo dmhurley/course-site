@@ -37,8 +37,8 @@
 	clear:both;
 }
 
-.score table, .score td, .score th {
-	border: none;
+.score.error select {
+	background: rgba(200, 50, 50, .5);
 }
 
 .q {

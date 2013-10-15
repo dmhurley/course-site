@@ -1,0 +1,36 @@
+{% extends 'BioExamBundle:Public:main.html.twig' %}
+
+{% block content %}
+	{{form_start(form)}}
+
+		{% for answer in form.answers.children %}
+			<div class="question tableStyle">
+				<h2 style="float:left;">Question {{loop.index}}</h2>
+				<h2 style="float:right;">{{answer.data.question.points}} points</h2>
+				<div class="q">
+					{{answer.vars.data.question.question|raw}}
+				</div>
+
+				<div class="line"></div>
+
+				<h2>Answer</h2>
+				{% if answer.children['answer'].vars.errors|length > 0 %}
+				<div data-tip="{{answer.children['answer'].vars.errors[0].message}}" class="a error row_error">
+				{% else %}
+				<div class="a">
+				{% endif %}
+					{{form_widget(answer.children['answer'])}}
+				</div>
+			</div>
+		{% endfor %}
+
+		<div id="submit">
+			{{form_widget(form.save)}}
+			{{form_widget(form.submit)}}
+		</div>
+	{{form_end(form)}}
+
+	{% if taker is defined %}
+		{% include 'BioExamBundle:Exam:timer.html.twig' with {'duration':taker.exam.tDuration, 'end':date(taker.exam.tDate|date('Y-m-d') ~' '~ taker.exam.tEnd|date('H:i:s'))|date('U'), 'start':taker.getTimestamp('started')|date('U')} only %}
+	{% endif %}
+{% endblock %}

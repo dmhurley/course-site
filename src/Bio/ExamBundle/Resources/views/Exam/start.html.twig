@@ -53,7 +53,7 @@
 
 	<ul>
 		{% for taker in takers if taker.exam != exam and date(taker.exam.gDate|date('Y-m-d') ~ ' ' ~ taker.exam.gEnd|date('H:i:s')) < date() %}
-			{% if taker.gradedBy|length == 0 %}
+			{#{% if taker.gradedBy|length == 0 %}
 				<li><a href="{{path('review_exam', {'id':taker.exam.id}) }}">{{taker.exam.title}}</a> - (ungraded)
 			{% else %}
 				{% set outOf = 0%}
@@ -73,7 +73,7 @@
 				{% endfor %}
 
 				<li><a href="{{path('review_exam', {'id':taker.exam.id}) }}">{{taker.exam.title}}</a> - ({{totalMean}}/{{outOf}})</li>
-			{% endif %}
+			{% endif %}#}
 		{% endfor %}
 	</ul>
 {% endblock %}
