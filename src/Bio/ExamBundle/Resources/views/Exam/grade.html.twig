@@ -46,9 +46,11 @@
 			</div>
 		{% endfor %}
 
+		{% block submit %}
 		<div id="submit">
 			{{form_widget(form.submit)}}
 		</div>
+		{% endblock %}
 	{{form_end(form)}}
 
 	{% block timer %}

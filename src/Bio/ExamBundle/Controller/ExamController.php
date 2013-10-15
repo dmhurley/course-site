@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
+use Bio\ExamBundle\Entity\Exam;
 use Bio\ExamBundle\Entity\TestTaker;
 use Bio\ExamBundle\Entity\Answer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -22,6 +23,26 @@ use Bio\ExamBundle\Type\GradeType;
  * @Route("/exam")
  */
 class ExamController extends Controller {
+
+	/**
+	 * @Route("/review/{id}", name="review_exam")
+	 * @Template()
+	 */
+	public function reviewAction(Request $request,Exam $exam) {
+		$student = $this->get('security.context')->getToken()->getUser();
+
+		$db = new Database($this, 'BioExamBundle:TestTaker');
+		$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
+
+		if ($taker && $student) {
+			return array(
+				'taker' => $taker,
+				'title' => $taker->getExam()->getTitle().' Review'
+				);
+		} else {
+			$request->getSession()->getFlashBag()->set('failure', 'Could not find entry.');
+		}
+	}
 
 	/**
 	 * @Route("/take", name="exam_take")
@@ -198,7 +219,7 @@ class ExamController extends Controller {
 
 			$this->getDoctrine()->getManager()->flush();
 
-			$flash->set('success', 'Finished exam. Confirmation code: "'.$code.'".');
+			$flash->set('success', 'Finished exam. Confirmation code: '.$code);
 			$flash->set('banner_stay', true);
 
 			if ($taker->getStudent()->getEmail() !== '') {

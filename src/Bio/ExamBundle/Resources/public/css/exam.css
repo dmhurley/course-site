@@ -16,19 +16,19 @@
 	padding: 5px 20px;
 }
 
-.question ul, .question ol{
+.question .q ul, .question .q ol{
 	padding-left: 15px;
 }
 
-.question table {
+.question .q table {
 	margin: 5px;
 }
 
-.question table, .question td, .question th {
+.question .q table, .question .q td, .question .q th {
 	border: 1px solid black;
 }
 
-.question img {
+.question .q img {
 	margin: 10px !important;
 }
 

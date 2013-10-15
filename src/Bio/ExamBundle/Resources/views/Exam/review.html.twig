@@ -1,0 +1,50 @@
+{% extends 'BioExamBundle:Public:main.html.twig' %}
+
+{% block content %}
+		{% for answer in taker.answers %}
+			<div class="question tableStyle">
+				<h1 style="float:left;margin-top:18px;">Question {{loop.index}}</h1>
+				<h2 style="float:right;">{{answer.question.points}} points</h2>
+
+				<div class="q">
+					{{answer.question.question|raw}}
+				</div>
+
+				<div class="line"></div>
+
+				<h2>Rubric</h2>
+				<div class="q">
+					{{answer.question.answer|raw}}
+				</div>
+
+				<div class="line"></div>
+
+				<h2>Answer</h2>
+				<div class="a">
+					<textarea disabled="disabled">{{answer.answer}}</textarea>
+				</div>
+
+				<div class="line"></div>
+
+				<h2>Grades</h2>
+				<div class="tableStyle">
+					<table style="border:inherit;">
+						<thead>
+							<tr>
+								<th>Points</th>
+								<th>Comment</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for grade in answer.grades %}
+								<tr>
+									<td>{{grade.points}}/{{grade.answer.question.points}} points</td>
+									<td>{{grade.comment}}</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		{% endfor %}
+{% endblock %}

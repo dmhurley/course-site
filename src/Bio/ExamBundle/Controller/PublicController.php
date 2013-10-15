@@ -22,23 +22,6 @@ use Bio\ExamBundle\Entity\Grade;
 class PublicController extends Controller
 {	
 	/**
-	 * @Route("/review/{id}", name="review_exam")
-	 * @Template()
-	 */
-	public function reviewAction(Request $request,Exam $exam) {
-		$student = $this->get('security.context')->getToken()->getUser();
-
-		$db = new Database($this, 'BioExamBundle:TestTaker');
-		$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
-
-		if ($taker && $student) {
-			return array('taker' => $taker);
-		} else {
-			$request->getSession()->getFlashBag()->set('failure', 'Could not find entry.');
-		}
-	}
-
-	/**
 	 * @route("", name="exam_entrance")
 	 */
 	public function indexAction(Request $request) {
