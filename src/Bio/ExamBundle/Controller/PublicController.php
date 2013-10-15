@@ -11,507 +11,352 @@ use Symfony\Component\HttpFoundation\Request;
 use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 use Bio\ExamBundle\Entity\Exam;
-use Bio\ExamBundle\Entity\Question;
 use Bio\ExamBundle\Entity\TestTaker;
 use Bio\ExamBundle\Entity\Answer;
+use Symfony\Component\Validator\Constraints as Assert;
 use Bio\ExamBundle\Entity\Grade;
+
+use Bio\ExamBundle\Type\AnswerType;
+use Bio\ExamBundle\Type\GradeType;
 
 /**
  * @Route("/exam")
  */
-class PublicController extends Controller
-{	
+class PublicController extends Controller {
+
 	/**
-	 * @route("", name="exam_entrance")
+	 * @Route("/review/{id}", name="review_exam")
+	 * @Template()
 	 */
-	public function indexAction(Request $request) {
-		$session = $request->getSession();
-		$flash = $session->getFlashBag();
+	public function reviewAction(Request $request,Exam $exam) {
+		$student = $this->get('security.context')->getToken()->getUser();
 
-		$a = $this->get('security.context');
-       	$student = $a->getToken()->getUser();
-
-		$exam = null;
-		$taker = null;
-		$message = null;
 		$db = new Database($this, 'BioExamBundle:TestTaker');
+		$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
 
-
-		// get all exams where the grading period hasn't ended.
-			if ($session->has('examID')) {
-				$exam = (new Database($this, 'BioExamBundle:Exam'))->findOne(array('id' => $session->get('examID')));
-			}
-			if (!$exam) {
-				$exams = $this->getNextExam($student);
-				foreach($exams as $e) {
-					$t = $db->findOne(array('student' => $student, 'exam' => $e));
-					// have they already started?
-					if ($t) {
-
-						if ($t->getStatus() < 4 &&
-							new \DateTime(
-								$e->getTDate()->format('Y-m-d ').
-						 		$e->getTEnd()->format('H:i:s')
-							) < new \DateTime()
-						) {
-							$message = "It is too late to take ".$e->getTitle().".";
-						} else if (
-							$t->getStatus() < 6 &&
-							new \DateTime(
-								$e->getGDate()->format('Y-m-d ').
-								$e->getGEnd()->format('H:i:s')
-							) < new \DateTime()
-						) {
-							$message = "It is too late to grade ".$e->getTitle().".";
-						} else if ($t->getStatus() === 6) {
-							$message = "You have already finished ".$e->getTitle().".";
-						} else {
-							$exam = $e;
-							break;
-						}
-
-
-					} else {
-						$exam = $e;
-						break;
-					}
-				}
-			}
-
-		if ($exam) {
-			if (new \DateTime($e->getTDate()->format('Y-m-d ').$e->getTStart()->format('H:i:s')) < new \DateTime()) {
-				// get the appropriate test taker for the student/exam combo
-				$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
-
-				if (!$taker) {
-					$taker = new TestTaker();
-					$taker->setStatus(1)
-						->setStudent($student)
-						->setExam($exam);
-
-					$db->add($taker);	
-					$db->close();
-				}
-			}
-		}
-
-		if (!$taker || $taker->getStatus() === 1 || $taker->getStatus() === 6) {
-			return $this->startAction($request, $exam, $taker, $student, $message, $flash, $db, $exams);
+		if ($taker && $student) {
+			return array(
+				'taker' => $taker,
+				'title' => $taker->getExam()->getTitle().' Review'
+				);
 		} else {
-			if ($taker->getStatus() === 2) {
-				return $this->examAction($request, $exam, $taker, $flash, $db);
-			}
-
-			// skips status code 3
-
-			if ($taker->getStatus() === 4) {
-				
-				return $this->waitAction($request, $exam, $taker, $flash, $db);
-			}
-
-			if ($taker->getStatus() === 5) {
-				return $this->gradeAction($request, $exam, $taker, $flash, $db);
-			}
+			$request->getSession()->getFlashBag()->set('failure', 'Could not find entry.');
 		}
 	}
 
 	/**
-	 * Counts down to test start, then makes start button available
-	 * 
-	 * status 1
+	 * @Route("/", name="exam_take")
+	 * @Template()
 	 */
-	private function startAction(Request $request, $exam, $taker, $student, $message, $flash, $db, $exams) {
-		// create form
+	public function takeAction(Request $request) {
+		$session = $request->getSession();
+		$flash = $session->getFlashBag();
+
+		$student = $this->get('security.context')->getToken()->getUser();
+
+		$exam = null;
+		$taker = null;
+
+		$exams = $this->getNextExams($student->getSection()->getName());
+		list($exam, $taker, $message) = $this->findExam($exams, $student);
+
+		if (!$taker || ($taker->getStatus() === 1 || $taker->getStatus() === 6)) {
+			return $this->startAction($request, $exam, $taker, $message, $student, $flash, $exams);
+		} else if ($taker->getStatus() === 2) {
+			return $this->examAction($request, $exam, $taker, $flash);
+		} else if ($taker->getStatus() === 3) {
+			return $this->waitAction($request, $exam, $taker, $flash);
+		} else if ($taker->getStatus() === 4) {
+			return $this->gradeAction($request, $exam, $taker, $flash);
+		} else {
+			$flash->set('failure', 'Error.');
+			return $this->redirect($this->generateUrl('main_page'));
+		}
+	}
+	private function getNextExams($section) {
+		$em = $this->getDoctrine()->getManager();
+
+		$queryString = '
+			SELECT e
+			FROM BioExamBundle:Exam e
+			WHERE (e.gDate > :date
+				OR (e.gDate = :date AND
+					e.gEnd >= :time))
+			AND (:section LIKE CONCAT(e.section, '."'%'".') OR 
+				e.section IS NULL)
+			ORDER BY e.tDate ASC, e.tStart ASC
+		';
+
+		return $em->createQuery($queryString)
+			->setParameter('date', new \DateTime(), \Doctrine\DBAL\Types\Type::DATE)
+			->setParameter('time', new \DateTime(), \Doctrine\DBAL\Types\Type::TIME)
+			->setParameter('section', $section)
+			->getResult();
+	}
+	private function findExam($exams, $student) {
+		$db = new Database($this, 'BioExamBundle:TestTaker');
+		$message = null;
+		foreach($exams as $exam) {
+			$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
+			if (!$taker) {					// if student hasn't started, create taker
+				$taker = new TestTaker();
+				$taker->setStudent($student)
+					->setExam($exam);
+				$db->add($taker);
+				$db->close();
+
+				return array($exam, $taker, null);
+			} else {						// if student has started
+				if ($taker->getStatus() === 6) {
+					continue;
+					$message = 'You have already finished '.$exam->getTitle().'.';
+				} else if (
+					$taker->getStatus() < 4 && 
+					new \DateTime(
+							$exam->getTDate()->format('Y-m-d').
+							$exam->getTEnd()->format('H:i:s')
+						) < new \DateTime()
+				) {
+					$message = "It is too late to take ".$e->getTitle().".";
+				} else if ( 
+					$taker->getStatus() < 6 &&
+					new \DateTime(
+							$exam->getGDate()->format('Y-m-d').
+							$exam->getGEnd()->format('H:i:s')
+						) < new \DateTime()
+				) {
+					$message = "It is too late to grade ".$e->getTitle().".";
+				} else {
+					return array($exam, $taker, $message);
+				}
+			}
+		}
+		return array(null, null, 'No more tests currently scheduled.');
+	}
+
+	private function startAction(Request $request, $exam, $taker, $message, $student, $flash, $exams) {
 		$form = $this->createFormBuilder()
 			->add('start', 'submit')
 			->getForm();
 
-		// if they pressed submit
 		if ($request->getMethod() === "POST") {
-			if (!$taker || $taker->getStatus() !== 1) {
-				return $this->redirect($this->generateUrl('exam_entrance'));
-			}
-
-			// if the exam has started
-			if ($exam->getTStart() <= new \DateTime()) {
+			if ($taker && $exam->getTStart() <= new \DateTime()) {
 				$taker->setStatus(2);
-
+				$taker->setTimestamp('started', new \DateTime());
 				foreach($exam->getQuestions() as $question) {
 					$answer = new Answer();
-					$answer->setQuestion($question)	
+					$answer->setQuestion($question)
 						->setTestTaker($taker)
 						->setAnswer("");
 					$taker->addAnswer($answer);
-					$db->add($answer);
+					$this->getDoctrine()->getManager()->persist($answer);
 				}
-
-				$db->close();
-
+				$this->getDoctrine()->getManager()->flush();
 				$flash->set('success', 'Exam started.');
-				return $this->redirect($this->generateUrl('exam_entrance'));
-			} else {
-				// INSPECT ELEMENT CHEATERS GO HERE!
-				$flash->set('failure', 'Exam has not started yet.');
+				return $this->redirect($this->generateUrl('exam_take'));
 			}
+			$flash->set('failure', 'Exam has not started yet.');
 		}
-		$db = new Database($this, 'BioExamBundle:ExamGlobal');
-		$global = $db->findOne(array());
-		$db = new Database($this, 'BioExamBundle:TestTaker');
-		$takers = $db->find(array('student' => $student), array(), false);
+
+		$global = (new Database($this, 'BioExamBundle:ExamGlobal'))->findOne(array());
+		$takers = (new Database($this, 'BioExamBundle:TestTaker'))->find(array('student' => $student), array(), false);
 		return $this->render('BioExamBundle:Public:start.html.twig', array(
-			'form' => $form->createView(),
-			'global'=> $global,
-			'exam' => $exam,
-			'message' => $message,
-			'takers' => $takers,
-			'exams' => $exams,
-			'title' => 'Begin Test'
-			)
-		);
+				'form' => $form->createView(),
+				'global' => $global,
+				'exam' => $exam,
+				'message' => $message,
+				'takers' => $takers,
+				'exams' => $exams,
+				'title' => 'Begin Test'
+			));
 	}
 
-	/**
-	 * Allows user to take exam and submit answers
-	 * status 2
-	 *
-	 * @Template()
-	 */
-	private function examAction(Request $request, $exam, $taker, $flash, $db) {
-		// if they submitted the exam
+	private function examAction(Request $request, $exam, $taker, $flash) {
+		$form = $this->createFormBuilder($taker)
+				->add('answers', 'collection', array(
+						'type' => new AnswerType(),
+					)
+				)
+				->add('save', 'submit')
+				->add('submit', 'submit')
+				->getForm();
+
 		if ($request->getMethod() === "POST") {
+			$form->handleRequest($request);
+			$flash->set('success', 'Answers saved.');
+			$this->getDoctrine()->getManager()->flush();
 
-			$areErrors = false;
-			$validator = $this->get('validator');
+			if ($form->isValid() && $form->get('submit')->isClicked()) {
+				$taker->setStatus(3)
+					->setTimestamp('submitted', new \DateTime());
+				$this->getDoctrine()->getManager()->flush();
+				$flash->set('success', 'Answers submitted.');
 
-			if (count($request->request->keys()) !== count($exam->getQuestions()) + 1){
-				$flash->set('failure', 'Error.');
-			} else {
-
-				foreach($request->request->keys() as $key) {
-					if ($key === 'save' || $key === 'submit') {
-						continue;
-					}
-					$answer = $this->findObjectByFieldValue($key, $taker->getAnswers(), 'id');
-					if ($answer) {
-						$answer->setAnswer($request->request->get($key));
-					} else {
-						$flash->set('failure', 'Invalid IDs.');
-						$areErrors = true;
-						break;
-					}
-
-					$errors = $validator->validate($answer);
-					if (count($errors) > 0 && $request->request->has('submit')) {
-						$flash->set('failure', 'Invalid form.');
-						$areErrors = true;
-						$answer->errors = $errors;
-					}
-				}
-
-				try {
-					if (!$areErrors && $request->request->has('submit')) {
-						$taker->setStatus(4);
-						$db->close();
-						$flash->set('success', 'Answers submitted.');
-						return $this->redirect($this->generateUrl('exam_entrance'));
-					} else {
-						if ($request->request->has('save')) {
-							$flash->set('success', 'Answers saved.');
-						}
-						$db->close();
-					}
-				} catch (BioException $e) {
-					$flash->set('failure', 'Could not save progress.');
-				}
+				return $this->redirect($this->generateUrl('exam_take'));
+			} else if (!$form->get('save')->isClicked()) {
+				$flash->set('failure', 'Invalid answer(s).');
 			}
 		}
 		return $this->render('BioExamBundle:Public:exam.html.twig', array(
-			'taker' => $taker,
-			'title' => $exam->getTitle()
-			)
-		);
+				'form' => $form->createView(),
+				'taker' => $taker,
+				'title' => $exam->getTitle()
+			));
 	}
 
-	/**
-	 * User waits here until they have someone to grade
-	 *
-	 * status 4
-	 */
-	private function waitAction(Request $request, $exam, $taker, $flash, $db) {
-		$db = new Database($this, 'BioExamBundle:ExamGlobal');
-		$global = $db->findOne(array());
-		if ($taker->getNumGraded() >= $global->getGrade()) {
-			$code = $exam->getId().':'.$taker->getId().':'.$taker->getStudent()->getSid();
-			$code = base64_encode($code);
-			$taker->setStatus(6);
-			$db->close();
-			$flash->set('success', "Finished exam.");
+	private function waitAction(Request $request, $exam, $taker, $flash) {
+		$global = (new Database($this, 'BioExamBundle:ExamGlobal'))->findOne(array());
 
+		if ($taker->getGradedNum() >= $global->getGrade() && count($taker->getAssigned() === 0)) {
+			$code = base64_encode(
+						$exam->getId().':'.
+						$taker->getId().':'.
+						$taker->getStudent()->getSid()
+					);
+			$taker->setStatus(6)
+				->setTimestamp('finished', new \DateTime())
+				->setTimestamp('code', $code);
 
-			// email confirmation code
-			$db = new Database($this, 'BioInfoBundle:Info');
-            $info = $db->findOne(array());
+			$this->getDoctrine()->getManager()->flush();
 
-            if ($taker->getStudent()->getEmail() === '') {
-            	$flash->set('success', "Finished exam. Confirmation code: '".$code."'.");
-            } else {
+			$flash->set('success', 'Finished exam. Confirmation code: '.$code);
+			$flash->set('banner_stay', true);
+
+			if ($taker->getStudent()->getEmail() !== '') {
+				$info = (new Database($this, 'BioInfoBundle:Info'))->findOne(array());
+
 				$message = \Swift_Message::newInstance()
 					->setSubject($taker->getExam()->getTitle().' confirmation')
 					->setFrom($info->getEmail())
 					->setTo($taker->getStudent()->getEmail())
-					->setBody($this->renderView('BioExamBundle:Public:email.html.twig', 
-							array('code' => $code, 'taker' => $taker)
+					->setBody($this->renderView('BioExamBundle:Public:email.html.twig',
+						array('code' => $code, 'taker' => $taker)
 						)
 					)
 					->setContentType('text/html');
 				$this->get('mailer')->send($message);
 			}
+			return $this->redirect($this->generateUrl('exam_take'));
 
 
-			return $this->redirect($this->generateUrl('exam_entrance'));
-		}
-
-		$now = new \DateTime();
-		$gradeStart = new \DateTime($exam->getGDate()->format("Y-m-d")." ".$exam->getGStart()->format("H:i:s"));
-		if ($now < $gradeStart) {
-			$flash->set('failure', 'Grading starts at '.$gradeStart->format('m/d').' at '. $gradeStart->format('h:i a').'.');
-		} else
-
-		// if the pressed submit
-		if ($request->getMethod() === "POST") {
-
-			$target = null;
-			try {
-				$target = $this->match($taker);
-			} catch (BioException $e) {
-			}
-
-			// if there actually was a match
-			if ($target !== null) {
-				$grade = new Grade();
-
-				$taker->setStatus(5)
-					->setGrading($target);
-				$target->addGradedBy($taker);
-
-				foreach($target->getAnswers() as $answer) {
-					$grade = new Grade();
-					$grade->setGrader($taker)
-						->setAnswer($answer);
-					$answer->addPoint($grade);
-					$db->add($grade);
-				}
-
-				$db->close();
-
-				return $this->redirect($this->generateUrl('exam_entrance'));
-			}
+		} else if (new \DateTime($exam->getGDate()->format('Y-m-d').$exam->getGStart()->format('H:i:s')) >
+			new \DateTime(/**/)) {
+			$flash->set('failure', 
+					'Grading starts at '.
+					$exam->getGStart()->format('m/d'). ' at '.
+					$exam->getGDate()->format('h:i a')
+				);
 		}
 
 		return $this->render('BioExamBundle:Public:wait.html.twig', array(
-			'taker' => $taker,
-			'exam' => $exam,
-			'global' => $global,
-			'title' => 'Finding Test'
+				'taker' => $taker,
+				'exam' => $exam,
+				'global' => $global,
+				'title' => 'Finding tests to grade..'
 			));
 	}
 
-	/**
-	 * User grades another users' test, status is incremented up/down depending on tests graded
-	 *
-	 * status 5
-	 */
-	private function gradeAction(Request $request, $exam, $taker, $flash, $db) {
+	private function gradeAction(Request $request, $exam, $taker, $flash) {
+		$assigned = $taker->getAssigned()->toArray();
+		reset($assigned);
+		$target = current($assigned);
+
+		$em = $this->getDoctrine()->getManager();
+		$query = $em->createQuery('
+				SELECT g
+				FROM BioExamBundle:Grade g
+				INNER JOIN BioExamBundle:Answer a
+				WITH g.answer = a
+				WHERE a.testTaker = :taker
+			')
+			->setParameter('taker', $target);
+
+		$grades = ['grades' => $query->getResult()];
+
+
+		$form = $this->createFormBuilder($grades)
+			->add('grades', 'collection', array(
+					'type' => new GradeType()
+				)
+			)
+			->add('submit', 'submit')
+			->getForm();
+
 		if ($request->getMethod() === "POST") {
-			if (count($request->request->keys()) !== count($exam->getQuestions())) {
-				$flash->set('failure', 'Answer all the questions.');
+			$form->handleRequest($request);
+			if ($form->isValid()) {
+				$taker->graded($target)
+					->setStatus(3)
+					->setTimestamp('graded_'+$target->getStudent()->getUsername(), new \DateTime());
+				$em->flush();
+				$flash->set('success', 'Test graded.');
+				return $this->redirect($this->generateUrl('exam_take'));
 			} else {
-				$targetAnswers = $taker->getGrading()->getAnswers();
-				foreach($request->request->keys() as $key) { // keys are answer ids
-					$answer = $this->findObjectByFieldValue($key, $targetAnswers, 'id');
-					if (
-						$answer && 
-						$answer->getQuestion()->getPoints() >= (int)$request->request->get($key) && 
-						(int)$request->request->get($key) >= 0
-					){
-						$answer->grade($taker, (int) $request->request->get($key));
-					} else {
-						$flash->set('failure', "Invalid form.");
-						return $this->render('BioExamBundle:Public:grade.html.twig', array(
-							'taker' => $taker->getGrading(),
-							'start' => $taker->getTimecard()[5],
-							'title' => 'Grade Exam'
-							)
-						);
-					}
-				}
-				$taker->addGraded($taker->getGrading())
-					->setGrading(null);
-
-				$db = new Database($this, 'BioExamBundle:ExamGlobal');
-				$global = $db->findOne(array());
-
-				$flash->set('success', 'Test graded. '.($global->getGrade()-count($taker->getGraded()).' left.'));
-				$taker->setStatus(4);
-
-				$db->close();
-				return $this->redirect($this->generateUrl('exam_entrance'));
+				$flash->set('failure', 'Invalid form.');
 			}
 		}
 
 		return $this->render('BioExamBundle:Public:grade.html.twig', array(
-			'taker' => $taker->getGrading(),
-			'start' => $taker->getTimecard()[5],
-			'title' => 'Grade Exam'
+				'form' => $form->createView(),
+				'taker' => $taker,
+				'start' => $taker->getTimestamp('submitted'),
+				'title' => 'Grade Exam'
 			)
 		);
 	}
 
 	/**
-	 * Recieves a post request containing student_id, exam_id. Attempts to find someone for user to grade
-	 *
+	 * @Route("/check.json", name="check")
+	 * @Template("BioExamBundle:Public:check.json.twig")
 	 */
 	public function checkAction(Request $request) {
-		if ($request->request->has('a')) {
-			$id = $request->request->get('a');
-
-			$db = new Database($this, 'BioExamBundle:TestTaker');
-			$you = $db->findOne(array('id' => $id));
-
-			if (!$you) {
-				return array('success' => false, 'message' => 'Invalid Id.');
-			}
-
-			try {
-				return array('success' => true, 'message' => $this->match($you)->getStudent()->getSid());
-			} catch (BioException $e) {
-				return array('success' => false, 'message' => $e->getMessage());
-			}
+		$you = (new Database($this, 'BioExamBundle:TestTaker'))->findOne(array('id' => $request->request->get('a')));
+		$global = (new Database($this, 'BioExamBundle:ExamGlobal'))->findOne(array());
+		$haveGraded = array_merge($you->getAssigned()->toArray(), $you->getGraded()->toArray());
+		if ($you->getGradedNum() >= $global->getGrade()) {
+			return array('success' => true);
 		}
-		return array('success' => false, 'message' => 'Invalid post request.');
-	}
 
-	private function match($you) {
-		if ($you->getGrading() ) {
-			return $you->getGrading();
-		}
+		$force = $request->request->has('please');
 
 		$em = $this->getDoctrine()->getManager();
 		$query = $em->createQuery('
-				SELECT t, COUNT(g) as c
-				FROM BioExamBundle:TestTaker t 
-				LEFT JOIN t.gradedBy g 
+				SELECT t
+				FROM BioExamBundle:TestTaker t
 				WHERE t.exam = :exam
 				AND t.id <> :id
-				AND t.status >= 4
-				GROUP BY t.id
-				ORDER BY c
-			');
+				AND t.status >= 3
+				AND t.gradedByNum < :max
+			')
+			->setParameter('exam', $you->getExam())
+			->setParameter('id', $you->getId())
+			->setParameter('max', $force?99999:$global->getGrade())
+		;
 
-		$max = $em->createQuery('
-				SELECT t.grade as grade
-				FROM BioExamBundle:ExamGlobal
-			')->getSingleResult();
-
-		$query->setParameter('exam', $you->getExam());
-		$query->setParameter('id', $you->getId());
-
-		$targets = $query->getResult();
-
-		if (count($targets) === 0) {
-			throw new BioException("No other exams.");
-		}
-
-		$target = null;
-		for ($i = 0; $i < count($targets); $i++) {
-			if (!$you->getGraded()->contains($targets[$i][0] && // has not been graded before
-				count($target->getGradedBy() < $max )) // has not been graded twice
-				) {
-				$target = $targets[$i][0];
-				break;
-			}
-		}
-
-		if ($target === null) {
-			throw new BioException("No other tests.");
-		}
-	}
-
-	/**
-	 * @Route("/test", name="test")
-	 * @Template("BioPublicBundle:Template:blank.html.twig")
-	 */
-	public function testAction(Request $request) {
-		$em = $this->getDoctrine()->getManager();
-
-		$exam = $em->createQuery(
-				'SELECT t
-				FROM BioExamBundle:TestTaker t
-				WHERE t.id = 7'
-			)->getSingleResult();
-
-		$query = $em->createQuery(
-				'SELECT t
-				FROM BioExamBundle:TestTaker t
-				WHERE t.exam = :exam'
-			)->setParameter('exam', $exam);
 		$results = $query->getResult();
-
-		$array = [0 => [], 1 => [], 2 => [], 3 => [], 4 => [], 5 => [], 6 => [], 7 => []];
-		foreach($results as $taker) {
-			if (isset($taker->getTimecard()[6])) {
-				$array[count($taker->getGradedBy())][] = ($taker->getTimecard()[4]->format('H:i:s')) . ' - ' . date_diff($taker->getTimecard()[5], $taker->getTimecard()[6])->format('%i:%s');
+		if (count($results) > 0) {
+			$target = $results[rand(0, count($results) - 1)];
+			if (in_array($target, $haveGraded)) {
+				return array('success' => false, 'message' => 'Duplicate found. Trying again.');
 			}
+			$target->addIsGrading($you);
+			$em->flush(); // save changes riiight away
+			$you->addAssigned($target)
+				->setStatus(4)
+				->setTimestamp('matched', new \DateTime());
+
+			foreach($target->getAnswers() as $answer) {
+				$grade = new Grade();
+				$grade->setPoints(null)
+					->setComment("")
+					->setGrader($you)
+					->setAnswer($answer);
+				$em->persist($grade);
+			}
+			$em->flush();
+			return array('success' => true);
+		} else {
+			return array('success' => false, 'message' => 'No tests available.');
 		}
-		foreach($array as &$ar) {
-			sort($ar);
-		}
-		echo '<pre>';
-		print_r($array);
-		echo '</pre>';
-
-		return array('text' => '');
-	}
-
-	private function getNextExam($student) {
-		$em = $this->getDoctrine()->getManager();
-
-		$query = $em->createQueryBuilder()->select('p')
-			->from('BioExamBundle:Exam', 'p')
-			->where('p.gDate > :date
-					 OR (p.gDate = :date 
-					 	 AND p.gEnd >= :time)'
-				)
-			->andWhere("(:section LIKE CONCAT(p.section, '%') OR p.section IS NULL)")
-			->andWhere(
-				':student NOT IN 
-					(SELECT s 
-					FROM BioExamBundle:TestTaker t
-					JOIN t.student s
-					WHERE t.status = 6
-					AND t.exam = p)
-				'
-			)
-			->addOrderBy('p.tDate', 'ASC')
-			->addOrderBy('p.tStart', 'ASC')
-			->setParameter('date', new \DateTime(), \Doctrine\DBAL\Types\Type::DATE)
-			->setParameter('time', new \DateTime(), \Doctrine\DBAL\Types\Type::TIME)
-			->setParameter('section', $student->getSection()->getName())
-			->setParameter('student', $student)
-			->getQuery();
-		$result = $query->getResult();
-
-		return $result;
-	}
-
-	private function findObjectByFieldValue($needle, $haystack, $field) {
-		$getter = 'get'.ucFirst($field);
-
-		foreach ($haystack as $straw) {
-			if (call_user_func_array(array($straw, $getter), array()) === $needle) {
-				return $straw;
-			} 
-		}
-		return null;
 	}
 }

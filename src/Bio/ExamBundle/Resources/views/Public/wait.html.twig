@@ -15,7 +15,7 @@
 			</div>
 		</div>
 		{% if taker.gradedNum > 0 %}
-			{% include 'BioExamBundle:Exam:timer.html.twig' with {'duration':exam.gDuration, 'end':date(exam.gDate|date('Y-m-d ') ~ exam.gEnd|date('H:i:s'))|date('U'), 'start':taker.timecard['submitted']|date('U')} only %}
+			{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':exam.gDuration, 'end':date(exam.gDate|date('Y-m-d ') ~ exam.gEnd|date('H:i:s'))|date('U'), 'start':taker.timecard['submitted']|date('U')} only %}
 		{% endif %}
 {% endblock %}
 
