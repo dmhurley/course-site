@@ -60,7 +60,7 @@ class PublicController extends Controller {
 		$exams = $this->getNextExams($student->getSection()->getName());
 		list($exam, $taker, $message) = $this->findExam($exams, $student);
 
-		if (!$taker || ($taker->getStatus() === 1 || $taker->getStatus() === 6)) {
+		if (!$taker || ($taker->getStatus() === 1 || $taker->getStatus() === 5)) {
 			return $this->startAction($request, $exam, $taker, $message, $student, $flash, $exams);
 		} else if ($taker->getStatus() === 2) {
 			return $this->examAction($request, $exam, $taker, $flash);
@@ -85,7 +85,7 @@ class PublicController extends Controller {
 			AND (:section LIKE CONCAT(e.section, '."'%'".') OR 
 				e.section IS NULL)
 			ORDER BY e.tDate ASC, e.tStart ASC
-		';
+		'; // TODO make sure that the section matching is not backwards /works
 
 		return $em->createQuery($queryString)
 			->setParameter('date', new \DateTime(), \Doctrine\DBAL\Types\Type::DATE)
@@ -93,6 +93,8 @@ class PublicController extends Controller {
 			->setParameter('section', $section)
 			->getResult();
 	}
+	
+	
 	private function findExam($exams, $student) {
 		$db = new Database($this, 'BioExamBundle:TestTaker');
 		$message = null;
@@ -107,25 +109,16 @@ class PublicController extends Controller {
 
 				return array($exam, $taker, null);
 			} else {						// if student has started
-				if ($taker->getStatus() === 6) {
-					continue;
+				if ($taker->getStatus() === 5) { // if they've finished, move on to next
 					$message = 'You have already finished '.$exam->getTitle().'.';
-				} else if (
-					$taker->getStatus() < 4 && 
+				} else if (     // they haven't finished 
+					$taker->getStatus() < 3 && 
 					new \DateTime(
 							$exam->getTDate()->format('Y-m-d').
 							$exam->getTEnd()->format('H:i:s')
-						) < new \DateTime()
+						) < new \DateTime('-1 minute')
 				) {
-					$message = "It is too late to take ".$e->getTitle().".";
-				} else if ( 
-					$taker->getStatus() < 6 &&
-					new \DateTime(
-							$exam->getGDate()->format('Y-m-d').
-							$exam->getGEnd()->format('H:i:s')
-						) < new \DateTime()
-				) {
-					$message = "It is too late to grade ".$e->getTitle().".";
+					$message = "It is too late to take ".$exam->getTitle().".";
 				} else {
 					return array($exam, $taker, $message);
 				}
@@ -207,13 +200,13 @@ class PublicController extends Controller {
 	private function waitAction(Request $request, $exam, $taker, $flash) {
 		$global = (new Database($this, 'BioExamBundle:ExamGlobal'))->findOne(array());
 
-		if ($taker->getGradedNum() >= $global->getGrade() && count($taker->getAssigned() === 0)) {
+		if ($taker->getGradedNum() >= $global->getGrade() && count($taker->getAssigned()) === 0) {
 			$code = base64_encode(
 						$exam->getId().':'.
 						$taker->getId().':'.
 						$taker->getStudent()->getSid()
 					);
-			$taker->setStatus(6)
+			$taker->setStatus(5)
 				->setTimestamp('finished', new \DateTime())
 				->setTimestamp('code', $code);
 
@@ -246,6 +239,14 @@ class PublicController extends Controller {
 					$exam->getGStart()->format('m/d'). ' at '.
 					$exam->getGDate()->format('h:i a')
 				);
+		}
+
+		if ($request->getMethod() === "POST" && count($taker->getAssigned()) > 0) {
+			$taker->setStatus(4)
+				->setTimestamp('grading', new \DateTime());
+			$this->getDoctrine()->getManager()->flush();
+
+			return $this->redirect($this->generateUrl('exam_entrance'));
 		}
 
 		return $this->render('BioExamBundle:Public:wait.html.twig', array(
@@ -315,7 +316,7 @@ class PublicController extends Controller {
 		$you = (new Database($this, 'BioExamBundle:TestTaker'))->findOne(array('id' => $request->request->get('a')));
 		$global = (new Database($this, 'BioExamBundle:ExamGlobal'))->findOne(array());
 		$haveGraded = array_merge($you->getAssigned()->toArray(), $you->getGraded()->toArray());
-		if ($you->getGradedNum() >= $global->getGrade()) {
+		if ($you->getGradedNum() >= $global->getGrade() || count($you->getAssigned()) > 0 ) {
 			return array('success' => true);
 		}
 
@@ -344,7 +345,6 @@ class PublicController extends Controller {
 			$target->addIsGrading($you);
 			$em->flush(); // save changes riiight away
 			$you->addAssigned($target)
-				->setStatus(4)
 				->setTimestamp('matched', new \DateTime());
 
 			foreach($target->getAnswers() as $answer) {

@@ -32,7 +32,10 @@
 	{% endif %}
 
 	{% if exam != null %}
-		<p>Once you begin this {{exam.title}} you will have {{exam.tDuration}} minutes or until {{exam.tEnd|date('h:i a')}} to complete it. Grading will begin 
+
+		<p>You can begin {{exam.title}} <b><span id="time"></span></b>.</p>
+
+		<p>Once you begin you will have {{exam.tDuration}} minutes or until {{exam.tEnd|date('h:i a')}} to complete it. Grading will begin 
 		{% if date(exam.tDate|date('Y-m-d')~' '~exam.tStart|date('H:i:s')) >= date(exam.gDate|date('Y-m-d')~' '~exam.gStart|date('H:i:s')) %}
 			after you finish the test
 		{% else %}
@@ -40,7 +43,6 @@
 		{% endif %} 
 		and lasts for {{exam.gDuration}} minutes or until {{exam.gEnd|date('h:i a')}}.</p>
 
-	<p>You can begin {{exam.title}} <b><span id="time"></span></b>.</p>
 	<div id="hidden" style="display:none;">
 		{{ form(form) }}
 	</div>
@@ -71,7 +73,7 @@
 					{% set totalMean = totalMean + questionTotal/answer.grades|length %}
 				{% endfor %}
 
-				<li><a href="{{path('review_exam', {'id':taker.exam.id}) }}">{{taker.exam.title}}</a> - ({{totalMean}}/{{outOf}})</li>
+				<li><a href="{{path('review_exam', {'id':taker.exam.id}) }}">{{taker.exam.title}}</a> - ({{totalMean|number_format(2, '.', ',')}}/{{outOf|number_format(2)}})</li>
 			{% endif %}
 		{% endfor %}
 	</ul>

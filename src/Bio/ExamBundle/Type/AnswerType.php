@@ -20,7 +20,7 @@ class AnswerType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Bio\ExamBundle\Entity\Answer',
+            'data_class' => 'Bio\ExamBundle\Entity\Answer'
         ));
     }
 
