@@ -102,7 +102,10 @@ class TestTaker
         $this->graded = new \Doctrine\Common\Collections\ArrayCollection();
         $this->isGrading = new \Doctrine\Common\Collections\ArrayCollection();
         $this->gradedBy = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->timecard = ['created' => new \DateTime()];
+        $this->timecard = [[
+                            'event' => 'created',
+                            'time' => new \DateTime()
+                            ]];
         $this->status = 1;
         $this->gradedNum = 0;
         $this->gradedByNum = 0;
@@ -141,13 +144,18 @@ class TestTaker
         return $this->status;
     }
 
-    public function setTimestamp($key, $value) {
-        $this->timecard[$key] = $value;
-        return $this;
+    public function setTimestamp($value) {
+        $this->timecard[] = $value;
     }
 
-    public function getTimestamp($key) {
-        return $this->timecard[$key];
+    public function getTimestamp($name, $field = 'name') {
+        $returner = [];
+        foreach($this->timecard as $event) {
+            if (isset($event[$field]) && $event[$field] === $name) {
+                $returner[] = $event;
+            }
+        }
+        return $returner;
     }
 
     /**

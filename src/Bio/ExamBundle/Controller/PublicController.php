@@ -135,7 +135,10 @@ class PublicController extends Controller {
 		if ($request->getMethod() === "POST") {
 			if ($taker && $exam->getTStart() <= new \DateTime()) {
 				$taker->setStatus(2);
-				$taker->setTimestamp('started', new \DateTime());
+				$taker->setTimestamp([
+						'name' => 'started',
+						'time' => new \DateTime()
+					]);
 				foreach($exam->getQuestions() as $question) {
 					$answer = new Answer();
 					$answer->setQuestion($question)
@@ -181,7 +184,10 @@ class PublicController extends Controller {
 
 			if ($form->isValid() && $form->get('submit')->isClicked()) {
 				$taker->setStatus(3)
-					->setTimestamp('submitted', new \DateTime());
+					->setTimestamp([
+							'name' => 'submitted',
+							'time' => new \DateTime()
+						]);
 				$this->getDoctrine()->getManager()->flush();
 				$flash->set('success', 'Answers submitted.');
 
@@ -207,12 +213,16 @@ class PublicController extends Controller {
 						$taker->getStudent()->getSid()
 					);
 			$taker->setStatus(5)
-				->setTimestamp('finished', new \DateTime())
-				->setTimestamp('code', $code);
+				->setTimestamp([
+						'name' => 'finished',
+						'time' => new \DateTime(),
+						'code' => $code
+					]);
 
 			$this->getDoctrine()->getManager()->flush();
 
-			$flash->set('success', 'Finished exam. Confirmation code: '.$code);
+			$flash->set('success', 'Finished exam. Confirmation code: 
+				<span style="cursor:text;-webkit-user-select:initial;user-select:initial;">'.$code.'</span>');
 			$flash->set('banner_stay', true);
 
 			if ($taker->getStudent()->getEmail() !== '') {
@@ -242,8 +252,14 @@ class PublicController extends Controller {
 		}
 
 		if ($request->getMethod() === "POST" && count($taker->getAssigned()) > 0) {
+			$assigned = $taker->getAssigned()->toArray();
+			reset($assigned);
 			$taker->setStatus(4)
-				->setTimestamp('grading', new \DateTime());
+				->setTimestamp([
+						'name' => 'grading',
+						'time' => new \DateTime(),
+						'who' => current($assigned)->getStudent()->getUsername()
+					]);
 			$this->getDoctrine()->getManager()->flush();
 
 			return $this->redirect($this->generateUrl('exam_entrance'));
@@ -290,7 +306,11 @@ class PublicController extends Controller {
 			if ($form->isValid()) {
 				$taker->graded($target)
 					->setStatus(3)
-					->setTimestamp('graded_'+$target->getStudent()->getUsername(), new \DateTime());
+					->setTimestamp([
+							'name' => 'graded',
+							'time' => new \DateTime(),
+							'who' => $target->getStudent()->getUsername()
+						]);
 				$em->flush();
 				$flash->set('success', 'Test graded.');
 				return $this->redirect($this->generateUrl('exam_entrance'));
@@ -302,7 +322,7 @@ class PublicController extends Controller {
 		return $this->render('BioExamBundle:Public:grade.html.twig', array(
 				'form' => $form->createView(),
 				'taker' => $taker,
-				'start' => $taker->getTimestamp('submitted'),
+				'start' => $taker->getTimestamp('grading')[0]['time'],
 				'title' => 'Grade Exam'
 			)
 		);
@@ -345,7 +365,11 @@ class PublicController extends Controller {
 			$target->addIsGrading($you);
 			$em->flush(); // save changes riiight away
 			$you->addAssigned($target)
-				->setTimestamp('matched', new \DateTime());
+				->setTimestamp([
+						'name' => 'matched',
+						'time' => new \DateTime(),
+						'who' => $target->getStudent()->getUsername()
+					]);
 
 			foreach($target->getAnswers() as $answer) {
 				$grade = new Grade();

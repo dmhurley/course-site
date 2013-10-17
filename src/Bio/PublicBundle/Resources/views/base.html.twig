@@ -27,11 +27,11 @@
 	<body>
 		{% if app.session.flashbag.has('failure') %}
 			<div class="failure {% if app.session.flashbag.has('banner_stay') %}{% do app.session.flashbag.get('banner_stay') %}{% else %}bounceOutUp animated" onClick="this.style.display='none';{% endif %}">
-				{{ app.session.flashbag.get('failure')[0] }}
+				{{ app.session.flashbag.get('failure')[0]|raw }}
 			</div>
 		{% elseif app.session.flashbag.has('success') %}
 			<div class="success {% if app.session.flashbag.has('banner_stay') %}{% do app.session.flashbag.get('banner_stay') %}{% else %}bounceOutUp animated" onClick="this.style.display='none';{% endif %}">
-				{{ app.session.flashbag.get('success')[0] }}
+				{{ app.session.flashbag.get('success')[0]|raw }}
 			</div>
 		{% endif %}
 		<div id="container">

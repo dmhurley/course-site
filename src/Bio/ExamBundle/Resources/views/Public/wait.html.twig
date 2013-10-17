@@ -17,7 +17,7 @@
 			</div>
 		</div>
 		{% if taker.gradedNum > 0 %}
-			{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':exam.gDuration, 'end':date(exam.gDate|date('Y-m-d ') ~ exam.gEnd|date('H:i:s'))|date('U'), 'start':taker.timecard['submitted']|date('U')} only %}
+			{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':exam.gDuration, 'end':date(exam.gDate|date('Y-m-d ') ~ exam.gEnd|date('H:i:s'))|date('U'), 'start':taker.getTimestamp('grading')[0]['time']|date('U')} only %}
 		{% endif %}
 {% endblock %}
 
@@ -54,6 +54,6 @@
 			}
 		})(this), Math.random()*10000);
 	}
-	checker = new Checker({{taker.timecard['submitted']|date('U')}});
+	checker = new Checker({{taker.getTimestamp('submitted')[0]['time']|date('U')}});
 	</script>
 {% endblock %}
