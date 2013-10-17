@@ -412,7 +412,7 @@ class PublicController extends Controller
 
         if ($global->getNotifications() && $global->getStart() < new \DateTime()) {
             $message = \Swift_Message::newInstance()
-                ->setSubject('[TRIP] '.$student->getFName().' '.$student->getLName().' dropped '.$trip->getTitle())
+                ->setSubject('[TRIP] '.$student->getFName().' '.$student->getLName().($joining?' joined ':' dropped ').$trip->getTitle())
                 ->setTo('celese@uw.edu')
                 ->setFrom($this->container->getParameter('mailer_dev_address'))
                 ->setBody(

@@ -22,7 +22,7 @@ use Bio\ExamBundle\Type\GradeType;
 /**
  * @Route("/exam")
  */
-class PublicController extends Controller {
+class ExamController extends Controller {
 
 	/**
 	 * @Route("/review/{id}", name="review_exam")
@@ -40,19 +40,12 @@ class PublicController extends Controller {
 				'title' => $taker->getExam()->getTitle().' Review'
 				);
 		} else {
-			return array(
-				'exam' => $exam,
-				'title' => $exam->getTitle().' Review'
-			);
+			$request->getSession()->getFlashBag()->set('failure', 'Could not find entry.');
 		}
 	}
 
-	public function lookAction(Request $request, Exam $exam) {
-		
-	}
-
 	/**
-	 * @Route("/", name="exam_entrance")
+	 * @Route("/take", name="exam_take")
 	 * @Template()
 	 */
 	public function takeAction(Request $request) {
@@ -67,7 +60,7 @@ class PublicController extends Controller {
 		$exams = $this->getNextExams($student->getSection()->getName());
 		list($exam, $taker, $message) = $this->findExam($exams, $student);
 
-		if (!$taker || ($taker->getStatus() === 1 || $taker->getStatus() === 5)) {
+		if (!$taker || ($taker->getStatus() === 1 || $taker->getStatus() === 6)) {
 			return $this->startAction($request, $exam, $taker, $message, $student, $flash, $exams);
 		} else if ($taker->getStatus() === 2) {
 			return $this->examAction($request, $exam, $taker, $flash);
@@ -92,7 +85,7 @@ class PublicController extends Controller {
 			AND (:section LIKE CONCAT(e.section, '."'%'".') OR 
 				e.section IS NULL)
 			ORDER BY e.tDate ASC, e.tStart ASC
-		'; // TODO make sure that the section matching is not backwards /works
+		';
 
 		return $em->createQuery($queryString)
 			->setParameter('date', new \DateTime(), \Doctrine\DBAL\Types\Type::DATE)
@@ -100,8 +93,6 @@ class PublicController extends Controller {
 			->setParameter('section', $section)
 			->getResult();
 	}
-	
-	
 	private function findExam($exams, $student) {
 		$db = new Database($this, 'BioExamBundle:TestTaker');
 		$message = null;
@@ -116,16 +107,25 @@ class PublicController extends Controller {
 
 				return array($exam, $taker, null);
 			} else {						// if student has started
-				if ($taker->getStatus() === 5) { // if they've finished, move on to next
+				if ($taker->getStatus() === 6) {
+					continue;
 					$message = 'You have already finished '.$exam->getTitle().'.';
-				} else if (     // they haven't finished 
-					$taker->getStatus() < 3 && 
+				} else if (
+					$taker->getStatus() < 4 && 
 					new \DateTime(
 							$exam->getTDate()->format('Y-m-d').
 							$exam->getTEnd()->format('H:i:s')
-						) < new \DateTime('-1 minute')
+						) < new \DateTime()
 				) {
-					$message = "It is too late to take ".$exam->getTitle().".";
+					$message = "It is too late to take ".$e->getTitle().".";
+				} else if ( 
+					$taker->getStatus() < 6 &&
+					new \DateTime(
+							$exam->getGDate()->format('Y-m-d').
+							$exam->getGEnd()->format('H:i:s')
+						) < new \DateTime()
+				) {
+					$message = "It is too late to grade ".$e->getTitle().".";
 				} else {
 					return array($exam, $taker, $message);
 				}
@@ -142,10 +142,7 @@ class PublicController extends Controller {
 		if ($request->getMethod() === "POST") {
 			if ($taker && $exam->getTStart() <= new \DateTime()) {
 				$taker->setStatus(2);
-				$taker->setTimestamp([
-						'name' => 'started',
-						'time' => new \DateTime()
-					]);
+				$taker->setTimestamp('started', new \DateTime());
 				foreach($exam->getQuestions() as $question) {
 					$answer = new Answer();
 					$answer->setQuestion($question)
@@ -156,38 +153,19 @@ class PublicController extends Controller {
 				}
 				$this->getDoctrine()->getManager()->flush();
 				$flash->set('success', 'Exam started.');
-				return $this->redirect($this->generateUrl('exam_entrance'));
+				return $this->redirect($this->generateUrl('exam_take'));
 			}
 			$flash->set('failure', 'Exam has not started yet.');
 		}
 
 		$global = (new Database($this, 'BioExamBundle:ExamGlobal'))->findOne(array());
 		$takers = (new Database($this, 'BioExamBundle:TestTaker'))->find(array('student' => $student), array(), false);
-
-		$em = $this->getDoctrine()->getManager();
-		$query = $em->createQuery('
-				SELECT e
-				FROM BioExamBundle:Exam e
-				LEFT JOIN BioExamBundle:TestTaker t
-				WITH t.exam = e
-				WHERE (e.tDate < :date
-						OR (e.tDate = :date
-						AND e.tStart < :time))
-				AND (:section LIKE CONCAT(e.section, '."'%'".') OR 
-				e.section IS NULL)
-				AND t.id IS NULL
-			')
-			->setParameter('date', new \DateTime(), \Doctrine\DBAL\Types\Type::DATE)
-			->setParameter('time', new \DateTime(), \Doctrine\DBAL\Types\Type::TIME)
-			->setParameter('section', $this->get('security.context')->getToken()->getUser()->getSection()->getName());
-
-		return $this->render('BioExamBundle:Public:start.html.twig', array(
+		return $this->render('BioExamBundle:Exam:start.html.twig', array(
 				'form' => $form->createView(),
 				'global' => $global,
 				'exam' => $exam,
 				'message' => $message,
 				'takers' => $takers,
-				'past_exams' => $query->getResult(),
 				'exams' => $exams,
 				'title' => 'Begin Test'
 			));
@@ -210,19 +188,16 @@ class PublicController extends Controller {
 
 			if ($form->isValid() && $form->get('submit')->isClicked()) {
 				$taker->setStatus(3)
-					->setTimestamp([
-							'name' => 'submitted',
-							'time' => new \DateTime()
-						]);
+					->setTimestamp('submitted', new \DateTime());
 				$this->getDoctrine()->getManager()->flush();
 				$flash->set('success', 'Answers submitted.');
 
-				return $this->redirect($this->generateUrl('exam_entrance'));
+				return $this->redirect($this->generateUrl('exam_take'));
 			} else if (!$form->get('save')->isClicked()) {
 				$flash->set('failure', 'Invalid answer(s).');
 			}
 		}
-		return $this->render('BioExamBundle:Public:exam.html.twig', array(
+		return $this->render('BioExamBundle:Exam:exam.html.twig', array(
 				'form' => $form->createView(),
 				'taker' => $taker,
 				'title' => $exam->getTitle()
@@ -232,23 +207,19 @@ class PublicController extends Controller {
 	private function waitAction(Request $request, $exam, $taker, $flash) {
 		$global = (new Database($this, 'BioExamBundle:ExamGlobal'))->findOne(array());
 
-		if ($taker->getGradedNum() >= $global->getGrade() && count($taker->getAssigned()) === 0) {
+		if ($taker->getGradedNum() >= $global->getGrade() && count($taker->getAssigned() === 0)) {
 			$code = base64_encode(
 						$exam->getId().':'.
 						$taker->getId().':'.
 						$taker->getStudent()->getSid()
 					);
-			$taker->setStatus(5)
-				->setTimestamp([
-						'name' => 'finished',
-						'time' => new \DateTime(),
-						'code' => $code
-					]);
+			$taker->setStatus(6)
+				->setTimestamp('finished', new \DateTime())
+				->setTimestamp('code', $code);
 
 			$this->getDoctrine()->getManager()->flush();
 
-			$flash->set('success', 'Finished exam. Confirmation code: 
-				<span style="cursor:text;-webkit-user-select:initial;user-select:initial;">'.$code.'</span>');
+			$flash->set('success', 'Finished exam. Confirmation code: '.$code);
 			$flash->set('banner_stay', true);
 
 			if ($taker->getStudent()->getEmail() !== '') {
@@ -258,14 +229,14 @@ class PublicController extends Controller {
 					->setSubject($taker->getExam()->getTitle().' confirmation')
 					->setFrom($info->getEmail())
 					->setTo($taker->getStudent()->getEmail())
-					->setBody($this->renderView('BioExamBundle:Public:email.html.twig',
+					->setBody($this->renderView('BioExamBundle:Exam:email.html.twig',
 						array('code' => $code, 'taker' => $taker)
 						)
 					)
 					->setContentType('text/html');
 				$this->get('mailer')->send($message);
 			}
-			return $this->redirect($this->generateUrl('exam_entrance'));
+			return $this->redirect($this->generateUrl('exam_take'));
 
 
 		} else if (new \DateTime($exam->getGDate()->format('Y-m-d').$exam->getGStart()->format('H:i:s')) >
@@ -277,21 +248,7 @@ class PublicController extends Controller {
 				);
 		}
 
-		if ($request->getMethod() === "POST" && count($taker->getAssigned()) > 0) {
-			$assigned = $taker->getAssigned()->toArray();
-			reset($assigned);
-			$taker->setStatus(4)
-				->setTimestamp([
-						'name' => 'grading',
-						'time' => new \DateTime(),
-						'who' => current($assigned)->getStudent()->getUsername()
-					]);
-			$this->getDoctrine()->getManager()->flush();
-
-			return $this->redirect($this->generateUrl('exam_entrance'));
-		}
-
-		return $this->render('BioExamBundle:Public:wait.html.twig', array(
+		return $this->render('BioExamBundle:Exam:wait.html.twig', array(
 				'taker' => $taker,
 				'exam' => $exam,
 				'global' => $global,
@@ -310,11 +267,9 @@ class PublicController extends Controller {
 				FROM BioExamBundle:Grade g
 				INNER JOIN BioExamBundle:Answer a
 				WITH g.answer = a
-				WHERE a.testTaker = :target
-				AND g.grader = :taker
+				WHERE a.testTaker = :taker
 			')
-			->setParameter('target', $target)
-			->setParameter('taker', $taker);
+			->setParameter('taker', $target);
 
 		$grades = ['grades' => $query->getResult()];
 
@@ -332,23 +287,19 @@ class PublicController extends Controller {
 			if ($form->isValid()) {
 				$taker->graded($target)
 					->setStatus(3)
-					->setTimestamp([
-							'name' => 'graded',
-							'time' => new \DateTime(),
-							'who' => $target->getStudent()->getUsername()
-						]);
+					->setTimestamp('graded_'+$target->getStudent()->getUsername(), new \DateTime());
 				$em->flush();
 				$flash->set('success', 'Test graded.');
-				return $this->redirect($this->generateUrl('exam_entrance'));
+				return $this->redirect($this->generateUrl('exam_take'));
 			} else {
 				$flash->set('failure', 'Invalid form.');
 			}
 		}
 
-		return $this->render('BioExamBundle:Public:grade.html.twig', array(
+		return $this->render('BioExamBundle:Exam:grade.html.twig', array(
 				'form' => $form->createView(),
 				'taker' => $taker,
-				'start' => $taker->getTimestamp('grading')[0]['time'],
+				'start' => $taker->getTimestamp('submitted'),
 				'title' => 'Grade Exam'
 			)
 		);
@@ -356,17 +307,17 @@ class PublicController extends Controller {
 
 	/**
 	 * @Route("/check.json", name="check")
-	 * @Template("BioExamBundle:Public:check.json.twig")
+	 * @Template("BioExamBundle:Exam:check.json.twig")
 	 */
 	public function checkAction(Request $request) {
 		$you = (new Database($this, 'BioExamBundle:TestTaker'))->findOne(array('id' => $request->request->get('a')));
 		$global = (new Database($this, 'BioExamBundle:ExamGlobal'))->findOne(array());
 		$haveGraded = array_merge($you->getAssigned()->toArray(), $you->getGraded()->toArray());
-		if ($you->getGradedNum() >= $global->getGrade() || count($you->getAssigned()) > 0 ) {
+		if ($you->getGradedNum() >= $global->getGrade()) {
 			return array('success' => true);
 		}
 
-		$force = $request->query->has('please');
+		$force = $request->request->has('please');
 
 		$em = $this->getDoctrine()->getManager();
 		$query = $em->createQuery('
@@ -391,11 +342,8 @@ class PublicController extends Controller {
 			$target->addIsGrading($you);
 			$em->flush(); // save changes riiight away
 			$you->addAssigned($target)
-				->setTimestamp([
-						'name' => 'matched',
-						'time' => new \DateTime(),
-						'who' => $target->getStudent()->getUsername()
-					]);
+				->setStatus(4)
+				->setTimestamp('matched', new \DateTime());
 
 			foreach($target->getAnswers() as $answer) {
 				$grade = new Grade();

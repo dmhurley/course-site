@@ -3,6 +3,8 @@
 {% block content %}
 		<p>Your answers have been submitted for grading. Stay on this page to be assigned a practice test to grade. Press the grade button once it appears to begin grading a peer's test, you must grade a total of {{global.grade}} tests in {{exam.gDuration}} minutes or by {{exam.gEnd|date('h:i a')}} to finish. Give each response a numeric score, with 0 being the lowest score possible, base your grade off the rubric given below their answer. You will not get any points if you do not grade {{global.grade}} test(s).</p>
 
+		<p>You must grade {{global.grade - taker.gradedNum + taker.assigned|length }} more test(s) before you are done.</p>
+
 		<div id="submit">
 			<form id="button" method="POST" action="" style="display:none">
 				<button>Grade</button>
@@ -14,17 +16,20 @@
 				{% endimage %}
 			</div>
 		</div>
-		{% if taker.grading != null or taker.graded|length != 0 %}
-			{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':exam.gDuration, 'end':date(exam.gDate|date('Y-m-d ') ~ exam.gEnd|date('H:i:s'))|date('U'), 'start':taker.timecard[5]|date('U')} only %}
+		{% if taker.gradedNum > 0 %}
+			{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':exam.gDuration, 'end':date(exam.gDate|date('Y-m-d ') ~ exam.gEnd|date('H:i:s'))|date('U'), 'start':taker.getTimestamp('grading')[0]['time']|date('U')} only %}
 		{% endif %}
 {% endblock %}
 
 {% block java %}
 	<script>
-	function Checker() {
-		this.check = function() {
+	function Checker(endtime) {
+		this.endtime = new Date(new Date().getTime() + 5*60000);
+		this.interval = null;
+
+		this.check = function(force) {
 			var ajax = new XMLHttpRequest();
-			ajax.open('POST', '{{ url("check") }}', true);
+			ajax.open('POST', '{{ url("check") }}'+(force?'?please':''), true);
 			ajax.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 			self = this;
 			ajax.onload = function() {
@@ -39,14 +44,16 @@
 			};
 			ajax.send("a={{taker.id}}");
 		}
-		this.interval = setInterval(
-				(function(self) {
-					return function() {
-						self.check();
-					}
-				})(this), 30000);
-		this.check();
+
+		setTimeout((function(self) {
+			return function() {
+				self.check(false);
+				self.interval = setInterval(function() {
+					self.check(self.endtime < new Date());
+				}, 60000);
+			}
+		})(this), Math.random()*10000);
 	}
-	new Checker();
+	checker = new Checker({{taker.getTimestamp('submitted')[0]['time']|date('U')}});
 	</script>
 {% endblock %}
