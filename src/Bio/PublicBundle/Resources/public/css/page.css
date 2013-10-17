@@ -90,7 +90,7 @@ body { background-color: #3f3f3f; }  					/* side filler */
 	position: fixed;
 	top: -15px;
 	left: 0px;
-	z-index:10;
+	z-index:10000;
 	cursor:n-resize;
 	-webkit-user-select:none;
 	-user-select:none;
@@ -243,7 +243,7 @@ body {
 		text-transform: uppercase;
 		font: 11px "Trebuchet MS" !important;
 		letter-spacing: 1px;
-		z-index: 10000
+		z-index: 5;
 	}
 
 		.login > a {
