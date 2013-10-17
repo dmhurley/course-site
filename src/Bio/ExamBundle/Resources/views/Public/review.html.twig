@@ -1,24 +1,70 @@
-{% extends 'BioExamBundle:Public:grade.html.twig' %}
+{% extends 'BioExamBundle:Public:main.html.twig' %}
 
-{% block score %}
-	{% if answer.points|length > 0 %}
-		<table style="margin:2px;float:right;">
-			<tr>
-				<th>Points</th>
-			</tr>
-			<tr>
-				<td>
-					<select multiple="multiple" disabled="disabled" style="width:50px;">
-						{% for point in answer.points %}
-							<option>{{point.points}}</option>
-						{% endfor %}
-					</select>
-				</td>
-			</tr>
-		</table>
+{% block content %}
+	{% if taker is defined %}
+		{% for answer in taker.answers %}
+			<div class="question tableStyle">
+				<h1 style="float:left;margin-top:18px;">Question {{loop.index}}</h1>
+				<h2 style="float:right;">{{answer.question.points}} points</h2>
+
+				<div class="q">
+					{{answer.question.question|raw}}
+				</div>
+
+				<div class="line"></div>
+
+				<h2>Rubric</h2>
+				<div class="q">
+					{{answer.question.answer|raw}}
+				</div>
+
+				<div class="line"></div>
+
+				<h2>Answer</h2>
+				<div class="a">
+					<textarea disabled="disabled">{{answer.answer}}</textarea>
+				</div>
+
+				<div class="line"></div>
+
+				<h2>Grades</h2>
+				<div class="tableStyle">
+					<table style="border:inherit;">
+						<thead>
+							<tr>
+								<th>Points</th>
+								<th>Comment</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for grade in answer.grades %}
+								<tr>
+									<td>{{grade.points}}/{{grade.answer.question.points}} points</td>
+									<td>{{grade.comment}}</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		{% endfor %}
+	{% else %}
+		{% for question in exam.questions %}
+			<div class="question tableStyle">
+				<h1 style="float:left;margin-top:18px;">Question {{loop.index}}</h1>
+				<h2 style="float:right;">{{question.points}} points</h2>
+
+				<div class="q">
+					{{question.question|raw}}
+				</div>
+
+				<div class="line"></div>
+
+				<h2>Answer</h2>
+				<div class="q">
+					{{question.answer|raw}}
+				</div>
+			</div>
+		{% endfor %}
 	{% endif %}
 {% endblock %}
-
-{# don't render timer or submit button #}
-{% block timer %}{% endblock %}
-{% block submit %}{% endblock %}
