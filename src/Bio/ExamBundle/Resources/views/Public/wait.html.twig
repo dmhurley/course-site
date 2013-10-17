@@ -1,7 +1,7 @@
 {% extends 'BioExamBundle:Public:main.html.twig' %}
 
 {% block content %}
-		<p>Your answers have been submitted for grading. Stay on this page to be assigned a practice test to grade. Press the grade button once it appears to begin grading a peer's test, you must grade a total of {{global.grade}} tests in {{exam.gDuration}} minutes or by {{exam.gEnd|date('h:i a')}} to finish. Give each response a numeric score, with 0 being the lowest score possible, base your grade off the rubric given below their answer. You will not get any points if you do not grade {{global.grade}} test(s).</p>
+		<p>Your answers have been submitted for grading. Stay on this page to be assigned a practice test to grade. Press the grade button once it appears to begin grading a peer's test, you must grade a total of {{global.grade}} tests in {{exam.gDuration}} minutes or by {{exam.gEnd|date('h:i a')}} to finish. Give each response a numeric score, with 0 being the lowest score possible, base your grade off the rubric given. You will not get any points if you do not grade {{global.grade}} test(s). This page checks to see if there is an available test every 30 seconds, so make sure to leave this page open and please be patient.</p>
 
 		<p>You must grade {{global.grade - taker.gradedNum + taker.assigned|length }} more test(s) before you are done.</p>
 
@@ -23,37 +23,41 @@
 
 {% block java %}
 	<script>
-	function Checker(endtime) {
-		this.endtime = new Date(new Date().getTime() + 5*60000);
-		this.interval = null;
+	(function() {
+		function Checker(endtime) {
+			this.endtime = new Date(new Date().getTime() + 5*60000);
+			this.interval = null;
 
-		this.check = function(force) {
-			var ajax = new XMLHttpRequest();
-			ajax.open('POST', '{{ url("check") }}'+(force?'?please':''), true);
-			ajax.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-			self = this;
-			ajax.onload = function() {
-				var response = JSON.parse(this.responseText);
-				if (!response.success) {
+			this.check = function(force) {
+				var ajax = new XMLHttpRequest();
+				ajax.open('POST', '{{ url("check") }}'+(force?'?please':''), true);
+				ajax.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+				self = this;
+				ajax.onload = function() {
+					var response = JSON.parse(this.responseText);
+					if (!response.success) {
 
-				} else {
-					clearInterval(self.interval);
-					document.getElementById('loadMessage').style.display="none";
-					document.getElementById('button').style.display = "block";
-				}
-			};
-			ajax.send("a={{taker.id}}");
-		}
-
-		setTimeout((function(self) {
-			return function() {
-				self.check(false);
-				self.interval = setInterval(function() {
-					self.check(self.endtime < new Date());
-				}, 60000);
+					} else {
+						clearInterval(self.interval);
+						document.getElementById('loadMessage').style.display="none";
+						document.getElementById('button').style.display = "block";
+					}
+				};
+				ajax.send("a={{taker.id}}");
 			}
-		})(this), Math.random()*10000);
-	}
-	checker = new Checker({{taker.getTimestamp('submitted')[0]['time']|date('U')}});
+
+			setTimeout((function(self) {
+				return function() {
+					self.check(false);
+					self.interval = setInterval(function() {
+						self.check(self.endtime < new Date());
+					}, 30000);
+				}
+			})(this), Math.random()*15000);
+		}
+		document.addEventListener('load', function() {
+			new Checker({{taker.getTimestamp('submitted')[0]['time']|date('U')}});
+		});
+	})();
 	</script>
 {% endblock %}

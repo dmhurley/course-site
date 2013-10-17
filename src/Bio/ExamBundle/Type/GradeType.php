@@ -17,7 +17,6 @@ class GradeType extends AbstractType
         $builder
             ->add('comment', 'textarea', array(
                 'constraints' => array(
-                        new Assert\NotNull(),
                         new Assert\NotBlank()
                     )
                 )

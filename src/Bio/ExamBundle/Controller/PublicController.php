@@ -47,10 +47,6 @@ class PublicController extends Controller {
 		}
 	}
 
-	public function lookAction(Request $request, Exam $exam) {
-		
-	}
-
 	/**
 	 * @Route("/", name="exam_entrance")
 	 * @Template()
@@ -176,6 +172,7 @@ class PublicController extends Controller {
 				AND (:section LIKE CONCAT(e.section, '."'%'".') OR 
 				e.section IS NULL)
 				AND t.id IS NULL
+				ORDER BY e.tDate ASC, e.tStart ASC
 			')
 			->setParameter('date', new \DateTime(), \Doctrine\DBAL\Types\Type::DATE)
 			->setParameter('time', new \DateTime(), \Doctrine\DBAL\Types\Type::TIME)

@@ -89,6 +89,7 @@
 {% block java %}
 	{% if exam != null %}
 		<script>
+		(function() {
 			function Pinger(time) {
 				this.date = new Date(time*1000);
 				this.updatePage = function() {
@@ -137,8 +138,10 @@
 
 				return string;
 			}
-
-			new Pinger("{{ date(exam.tDate|date('Y-m-d ')~exam.tStart|date('H:i:s'))|date('U') }}");
+			document.addEventListener('load', function() {
+				Pinger("{{ date(exam.tDate|date('Y-m-d ')~exam.tStart|date('H:i:s'))|date('U') }}");
+			});
+		})()
 		</script>
 	{% endif %}
 {% endblock %}
