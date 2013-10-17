@@ -44,7 +44,12 @@ class Grade
     private $points;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Answer", inversedBy="points")
+     * @ORM\Column(name="comment", type="text")
+     */
+    private $comment;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Answer", inversedBy="grades")
      * @ORM\JoinColumn(name="answer_id", referencedColumnName="id", onDelete="CASCADE")
      * @Serial\MaxDepth(1)
      */
@@ -185,5 +190,28 @@ class Grade
     public function getGrader()
     {
         return $this->grader;
+    }
+
+    /**
+     * Set comment
+     *
+     * @param string $comment
+     * @return Grade
+     */
+    public function setComment($comment)
+    {
+        $this->comment = $comment;
+    
+        return $this;
+    }
+
+    /**
+     * Get comment
+     *
+     * @return string 
+     */
+    public function getComment()
+    {
+        return $this->comment;
     }
 }

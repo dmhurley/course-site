@@ -1,41 +1,58 @@
 {% extends 'BioExamBundle:Public:main.html.twig' %}
 
 {% block content %}
-	<form method="POST">
-		{% for answer in taker.answers %}
+
+	{{form_start(form)}}
+		{% for grade in form.grades.children %}
 			<div class="question tableStyle">
-				<h2 style="float:left;">Question {{loop.index}}</h2> <h2 style="float:right;">{{answer.question.points}} points</h2>
+				<h1 style="float:left;margin-top:18px;">Question {{loop.index}}</h1>
+				<h2 style="float:right;">{{grade.vars.data.answer.question.points}} points</h2>
+
 				<div class="q">
-					{{ answer.question.question|raw }}
+					{{grade.vars.data.answer.question.question|raw}}
 				</div>
+
 				<div class="line"></div>
+
+				<h2>Rubric</h2>
+				<div class="q">
+					{{grade.vars.data.answer.question.answer|raw}}
+				</div>
+
+				<div class="line"></div>
+
 				<h2>Answer</h2>
 				<div class="a review">
+					{% if grade.children['points'].vars.errors|length > 0 %}
+					<div class="score error">
+					{% else %}
 					<div class="score">
-						{% block score %}
-							<select required="required" name="{{answer.id}}">
-								<option selected="selected" disabled="disabled">-</option>
-								 {% for i in 0..answer.question.points %}
-								 	<option val={{i}}>{{i}}</option>
-								 {% endfor %}
-							</select>
-						{% endblock %}
+					{% endif %}
+						{{form_widget(grade.children['points'])}}
 					</div>
-					<textarea disabled="disabled" style="width:84%;">{{ answer.answer }}</textarea>
+					<textarea disabled="disabled" style="width:84%">{{grade.vars.data.answer.answer}}</textarea>
 				</div>
+
 				<div class="line"></div>
-				<h2>Rubric</h2>
+
+				<h2>Comments</h2>
+				{% if grade.children['comment'].vars.errors|length > 0 %}
+				<div data-tip="{{grade.children['comment'].vars.errors[0].message}}" class="a error row_error">
+				{% else %}
 				<div class="a">
-					{{answer.question.answer|raw}}
+				{% endif %}
+					{{form_widget(grade.children['comment'])}}
 				</div>
 			</div>
 		{% endfor %}
+
 		{% block submit %}
-			<div id="submit" >
-				<button type="submit" />Submit</button>
-			</div>
+		<div id="submit">
+			{{form_widget(form.submit)}}
+		</div>
 		{% endblock %}
-	</form>
+	{{form_end(form)}}
+
 	{% block timer %}
 		{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':taker.exam.gDuration, 'end':date(taker.exam.gDate|date('Y-m-d') ~' '~ taker.exam.gEnd|date('H:i:s'))|date('U'), 'start':start|date('U')} only %}
 	{% endblock %}

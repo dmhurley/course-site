@@ -216,36 +216,11 @@ function Loader(settings) {
 
 	// sets the settings by overwriting any defaults with the user defined
 	// throws an error if required settings aren't set
-	this._setSettings = function(settings) {
-		if (
-			!settings ||
-			!settings.url ||
-			!settings.bundle ||
-			!settings.entity ||
-			!settings.table 
-		){
-			throw "Required settings not set.";
-		}
-
-		var defaults = {
-			'url': '',		// base crud url
-			'space': 'bio', // for something..
-			'bundle': '', // eg: exam
-			'entity': '', // eg: question
-			'buttons': {}, // buttons added to end of row
-			'table': null, // allows for multiple tables
-			'columns': []  // defines rows to output and any transformers needed..
-		};
-
-		for (key in defaults) {
-			this.settings[key] = settings[key]?settings[key]:defaults[key];
-		}
+	this._setSettings = function(settings, defaults) {
 		for (key in settings) {
-			if (this.settings[key] === undefined) {
-				this.settings[key] = settings[key];
-			}
+			defaults[key] = settings[key];
 		}
-		console.log("Settings set...");
+		return defaults;
 	}
 
 	// finds each defined button in a table and adds a corresponding function to the onclick event
@@ -287,7 +262,13 @@ function Loader(settings) {
 
 	// sets it all up
 	this._init = function(settings) {
-		this._setSettings(settings);
+		this.settings = this._setSettings(settings, {
+			'url': '',		// base crud url
+			'space': 'bio', // for something..
+			'bundle': '', // eg: exam
+			'entity': '', // eg: question
+		});
+
 		this.notifications.self = this.forms.self = this;
 		this.notifications.wait();
 		this.parser = new Parser('#{', '}');

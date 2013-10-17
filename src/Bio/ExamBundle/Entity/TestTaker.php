@@ -34,51 +34,9 @@ class TestTaker
      * @var array
      *
      * @ORM\Column(name="timecard", type="array")
+     * @Serial\Exclude()
      */
     private $timecard;
-
-    /**
-     * @var array
-     *
-     * @ORM\Column(name="vars", type="array")
-     */
-    private $vars;
-
-    /** 
-     * @ORM\ManyToMany(targetEntity="TestTaker")
-     * @ORM\JoinTable(name="graded",
-     *      joinColumns={@ORM\JoinColumn(name="you_id", referencedColumnName="id", onDelete="CASCADE")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="target_id", referencedColumnName="id", onDelete="CASCADE")}
-     * )
-     * @Serial\MaxDepth(1)
-     */
-    private $graded;
-
-    // necessary in case someone gets dropped and are removed from the graded column
-    // records that at least this user graded someone even though there's no 
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="numGraded", type="integer")
-     */
-    private $numGraded;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="TestTaker")
-     * @ORM\JoinColumn(name="target_id", referencedColumnName="id", onDelete="CASCADE")
-     * @Serial\Exclude
-     */
-    private $grading;
-
-    /** 
-     * @ORM\ManyToMany(targetEntity="TestTaker")
-     * @ORM\JoinTable(name="graded_by",
-     *      joinColumns={@ORM\JoinColumn(name="you_id", referencedColumnName="id", onDelete="CASCADE")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="target_id", referencedColumnName="id", onDelete="CASCADE")}
-     * )
-     * @Serial\MaxDepth(3)
-     */
-    private $gradedBy;
 
     /**
      * @ORM\ManyToOne(targetEntity="\Bio\UserBundle\Entity\AbstractUserStudent")
@@ -86,6 +44,7 @@ class TestTaker
      * @Serial\MaxDepth(2)
      **/
     private $student;
+
 
     /**
      * @ORM\ManyToOne(targetEntity="Exam")
@@ -96,10 +55,73 @@ class TestTaker
 
     /**
      * @ORM\OneToMany(targetEntity="Answer", mappedBy="testTaker", cascade={"remove"})
-     * @Serial\MaxDepth(3)
+     * @Serial\MaxDepth(1)
      */
     private $answers;
 
+/*************** ASSIGNMENT VARIABLES *************/
+    
+    /**
+     * @ORM\ManyToMany(targetEntity="TestTaker", inversedBy="isGrading")
+     * @ORM\JoinTable(name="assigned",
+     *      joinColumns={@ORM\JoinColumn(name="your_id", referencedColumnName="id", onDelete="CASCADE")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="their_id", referencedColumnName="id", onDelete="CASCADE")}
+     *  )
+     * @Serial\Exclude()
+     */
+    private $assigned;  // who you're assigned to grade
+
+    /**
+     * @ORM\ManyToMany(targetEntity="TestTaker", inversedBy="gradedBy")
+     * @ORM\JoinTable(name="graded",
+     *      joinColumns={@ORM\JoinColumn(name="your_id", referencedColumnName="id", onDelete="CASCADE")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="their_id", referencedColumnName="id", onDelete="CASCADE")}
+     *  )
+     * @Serial\Exclude()
+     */
+    private $graded;    // who you have graded
+
+    /**
+     * @ORM\ManyToMany(targetEntity="TestTaker", mappedBy="assigned")
+     * @Serial\Exclude()
+     */
+    private $isGrading; // who is assigned to grade you
+
+    /**
+     * @ORM\ManyToMany(targetEntity="TestTaker", mappedBy="graded")
+     * @Serial\Exclude()
+     */
+    private $gradedBy;  // who has graded you
+
+    /**
+     * @ORM\Column(name="gradedNum", type="integer")
+     */
+    private $gradedNum; // number you have/are grading
+
+    /**
+     * @ORM\Column(name="gradedByNum", type="integer")
+     */
+    private $gradedByNum;// number who are/have graded you
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->answers = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->assigned = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->graded = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->isGrading = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->gradedBy = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->timecard = [[
+                            'event' => 'created',
+                            'time' => new \DateTime()
+                            ]];
+        $this->status = 1;
+        $this->gradedNum = 0;
+        $this->gradedByNum = 0;
+    }
+    
     /**
      * Get id
      *
@@ -119,10 +141,6 @@ class TestTaker
     public function setStatus($status)
     {
         $this->status = $status;
-        
-        if (!isset($this->timecard[$status])) {
-            $this->timecard[$status] = new \DateTime();
-        }
     
         return $this;
     }
@@ -137,17 +155,18 @@ class TestTaker
         return $this->status;
     }
 
-    /**
-     * Set timecard
-     *
-     * @param array $timecard
-     * @return TestTaker
-     */
-    public function setTimecard($timecard)
-    {
-        $this->timecard = $timecard;
-    
-        return $this;
+    public function setTimestamp($value) {
+        $this->timecard[] = $value;
+    }
+
+    public function getTimestamp($name, $field = 'name') {
+        $returner = [];
+        foreach($this->timecard as $event) {
+            if (isset($event[$field]) && $event[$field] === $name) {
+                $returner[] = $event;
+            }
+        }
+        return $returner;
     }
 
     /**
@@ -161,80 +180,26 @@ class TestTaker
     }
 
     /**
-     * Set vars
+     * Set student
      *
-     * @param array $vars
+     * @param \Bio\UserBundle\Entity\AbstractUserStudent $student
      * @return TestTaker
      */
-    public function setVars($vars)
+    public function setStudent(\Bio\UserBundle\Entity\AbstractUserStudent $student = null)
     {
-        $this->vars = $vars;
-    
-        return $this;
-    }
-
-    public function setVar($key, $value) {
-        $this->vars[$key] = $value;
-
-        return $this;
-    }
-
-    /**
-     * Get vars
-     *
-     * @return array 
-     */
-    public function getVars()
-    {
-        return $this->vars;
-    }
-
-    public function getVar($key) {
-        return $this->vars[$key];
-    }
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->graded = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->gradedBy = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->answers = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->numGraded = 0;
-    }
-    
-    /**
-     * Add gradedBy
-     *
-     * @param \Bio\ExamBundle\Entity\TestTaker $gradedBy
-     * @return TestTaker
-     */
-    public function addGradedBy(\Bio\ExamBundle\Entity\TestTaker $gradedBy)
-    {
-        $this->gradedBy[] = $gradedBy;
+        $this->student = $student;
     
         return $this;
     }
 
     /**
-     * Remove gradedBy
+     * Get student
      *
-     * @param \Bio\ExamBundle\Entity\TestTaker $gradedBy
+     * @return \Bio\UserBundle\Entity\AbstractUserStudent 
      */
-    public function removeGradedBy(\Bio\ExamBundle\Entity\TestTaker $gradedBy)
+    public function getStudent()
     {
-        $this->gradedBy->removeElement($gradedBy);
-    }
-
-    /**
-     * Get gradedBy
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getGradedBy()
-    {
-        return $this->gradedBy;
+        return $this->student;
     }
 
     /**
@@ -293,13 +258,97 @@ class TestTaker
         return $this->answers;
     }
 
-    public function getAnswer(\Bio\ExamBundle\Entity\Question $question) {
-        foreach ($this->answers as $answer) {
-            if ($answer->getQuestion() === $question) {
-                return $answer;
-            }
-        }
-        return null;
+    /**
+     * Set timecard
+     *
+     * @param array $timecard
+     * @return TestTaker
+     */
+    public function setTimecard($timecard)
+    {
+        $this->timecard = $timecard;
+    
+        return $this;
+    }
+
+    /**
+     * Set gradedNum
+     *
+     * @param integer $gradedNum
+     * @return TestTaker
+     */
+    public function setGradedNum($gradedNum)
+    {
+        $this->gradedNum = $gradedNum;
+    
+        return $this;
+    }
+
+    /**
+     * Get gradedNum
+     *
+     * @return integer 
+     */
+    public function getGradedNum()
+    {
+        return $this->gradedNum;
+    }
+
+    /**
+     * Set gradedByNum
+     *
+     * @param integer $gradedByNum
+     * @return TestTaker
+     */
+    public function setGradedByNum($gradedByNum)
+    {
+        $this->gradedByNum = $gradedByNum;
+    
+        return $this;
+    }
+
+    /**
+     * Get gradedByNum
+     *
+     * @return integer 
+     */
+    public function getGradedByNum()
+    {
+        return $this->gradedByNum;
+    }
+
+    /**
+     * Add assigned
+     *
+     * @param \Bio\ExamBundle\Entity\TestTaker $assigned
+     * @return TestTaker
+     */
+    public function addAssigned(\Bio\ExamBundle\Entity\TestTaker $assigned)
+    {
+        $this->assigned[] = $assigned;
+        $this->gradedNum++;
+    
+        return $this;
+    }
+
+    /**
+     * Remove assigned
+     *
+     * @param \Bio\ExamBundle\Entity\TestTaker $assigned
+     */
+    public function removeAssigned(\Bio\ExamBundle\Entity\TestTaker $assigned)
+    {
+        $this->assigned->removeElement($assigned);
+    }
+
+    /**
+     * Get assigned
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getAssigned()
+    {
+        return $this->assigned;
     }
 
     /**
@@ -311,7 +360,6 @@ class TestTaker
     public function addGraded(\Bio\ExamBundle\Entity\TestTaker $graded)
     {
         $this->graded[] = $graded;
-        $this->numGraded++;
     
         return $this;
     }
@@ -337,65 +385,78 @@ class TestTaker
     }
 
     /**
-     * Set grading
+     * Add isGrading
      *
-     * @param \Bio\ExamBundle\Entity\TestTaker $grading
+     * @param \Bio\ExamBundle\Entity\TestTaker $isGrading
      * @return TestTaker
      */
-    public function setGrading(\Bio\ExamBundle\Entity\TestTaker $grading = null)
+    public function addIsGrading(\Bio\ExamBundle\Entity\TestTaker $isGrading)
     {
-        $this->grading = $grading;
+        $this->isGrading[] = $isGrading;
+        $this->gradedByNum++;
     
         return $this;
     }
 
     /**
-     * Get grading
+     * Remove isGrading
      *
-     * @return \Bio\ExamBundle\Entity\TestTaker 
+     * @param \Bio\ExamBundle\Entity\TestTaker $isGrading
      */
-    public function getGrading()
+    public function removeIsGrading(\Bio\ExamBundle\Entity\TestTaker $isGrading)
     {
-        return $this->grading;
-    }
-
-    public function getNumGraded() {
-        return $this->numGraded;
+        $this->isGrading->removeElement($isGrading);
     }
 
     /**
-     * Set numGraded
+     * Get isGrading
      *
-     * @param integer $numGraded
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getIsGrading()
+    {
+        return $this->isGrading;
+    }
+
+    /**
+     * Add gradedBy
+     *
+     * @param \Bio\ExamBundle\Entity\TestTaker $gradedBy
      * @return TestTaker
      */
-    public function setNumGraded($numGraded)
+    public function addGradedBy(\Bio\ExamBundle\Entity\TestTaker $gradedBy)
     {
-        $this->numGraded = $numGraded;
+        $this->gradedBy[] = $gradedBy;
     
         return $this;
     }
 
     /**
-     * Set student
+     * Remove gradedBy
      *
-     * @param \Bio\UserBundle\Entity\AbstractUserStudent $student
-     * @return TestTaker
+     * @param \Bio\ExamBundle\Entity\TestTaker $gradedBy
      */
-    public function setStudent(\Bio\UserBundle\Entity\AbstractUserStudent $student = null)
+    public function removeGradedBy(\Bio\ExamBundle\Entity\TestTaker $gradedBy)
     {
-        $this->student = $student;
-    
-        return $this;
+        $this->gradedBy->removeElement($gradedBy);
     }
 
     /**
-     * Get student
+     * Get gradedBy
      *
-     * @return \Bio\UserBundle\Entity\AbstractUserStudent 
+     * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getStudent()
+    public function getGradedBy()
     {
-        return $this->student;
+        return $this->gradedBy;
+    }
+
+    // called when someone is graded
+    public function graded(\Bio\ExamBundle\Entity\TestTaker $graded) {
+        $this->addGraded($graded);
+        $this->removeAssigned($graded);
+        $graded->addGradedBy($this);
+        $graded->removeIsGrading($this);
+        return $this;
     }
 }

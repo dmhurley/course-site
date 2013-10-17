@@ -5,6 +5,8 @@
         route: manage_trips
     "Manage Evaluations":
         route: trip_evals
+    "Download Signup List":
+        route: all_trip_download
     "Field Trips":
         route: trip_entrance
     "My Trips":

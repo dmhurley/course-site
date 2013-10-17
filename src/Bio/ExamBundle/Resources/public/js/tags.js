@@ -1,4 +1,4 @@
-window.onload = function() {
+window.addEventListener('load', function() {
 	questions = document.getElementsByClassName('question');
 	input = document.getElementById("tag");
 
@@ -23,4 +23,4 @@ window.onload = function() {
 			}
 		}
 	});
-}
+});

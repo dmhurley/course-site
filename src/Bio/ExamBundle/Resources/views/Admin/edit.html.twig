@@ -15,7 +15,7 @@
 
 	{{ form_start(form) }}
 		<div class="questioncontainer">
-			<input type="text" id="tag">
+			<input type="text" id="tag" onKeydown="if(event.keyCode === 13)event.preventDefault();">
 			<label>Search:</label>
 			<div id="scroller" class="tableStyle">
 				<table>

@@ -1,36 +1,37 @@
 {% extends 'BioExamBundle:Public:main.html.twig' %}
 
 {% block content %}
-	<form method="POST">
-		{% for answer in taker.answers %}
+	{{form_start(form)}}
+
+		{% for answer in form.answers.children %}
 			<div class="question tableStyle">
-				<!-- QUESTION -->
-				<h2 style="float:left;">Question {{loop.index}}</h2> <h2 style="float:right;">{{answer.question.points}} points</h2>
+				<h1 style="float:left;margin-top:18px;">Question {{loop.index}}</h1>
+				<h2 style="float:right;">{{answer.vars.data.question.points}} points</h2>
 				<div class="q">
-					{{ answer.question.question|raw }}
+					{{answer.vars.data.question.question|raw}}
 				</div>
+
 				<div class="line"></div>
 
-				<!-- ANSWER -->
 				<h2>Answer</h2>
-				{% if answer.errors is defined %}
-				<div data-tip="{{(answer.errors|first).message}}" class="a error row_error">
+				{% if answer.children['answer'].vars.errors|length > 0 %}
+				<div data-tip="{{answer.children['answer'].vars.errors[0].message}}" class="a error row_error">
 				{% else %}
 				<div class="a">
 				{% endif %}
-					
-
-					{# cant have any extra spaces between textareas #}
-					<textarea name="{{answer.id}}">{{ answer.answer }}</textarea>
+					{{form_widget(answer.children['answer'])}}
 				</div>
-
 			</div>
 		{% endfor %}
-		<div id="submit" >
-			<button type="submit" name="save">Save</button><button type="submit" name="submit" />Submit</button>
+
+		<div id="submit">
+			{{form_widget(form.save)}}
+			<span style="padding:15px;"></span>
+			{{form_widget(form.submit)}}
 		</div>
-	</form>
+	{{form_end(form)}}
+
 	{% if taker is defined %}
-		{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':taker.exam.tDuration, 'end':date(taker.exam.tDate|date('Y-m-d') ~' '~ taker.exam.tEnd|date('H:i:s'))|date('U'), 'start':taker.timecard[2]|date('U')} only %}
+		{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':taker.exam.tDuration, 'end':date(taker.exam.tDate|date('Y-m-d') ~' '~ taker.exam.tEnd|date('H:i:s'))|date('U'), 'start':taker.getTimestamp('started')[0]['time']|date('U')} only %}
 	{% endif %}
 {% endblock %}

@@ -1,4 +1,4 @@
-{% if date(trip.start) < date() %}
+{% if date(trip.start) < date() or (trip.students|length >= trip.max and cur == '') %}
 	{% set passed = 'passed' %}
 {% else %}
 	{% set passed = '' %}

@@ -1,87 +1,50 @@
-{% extends 'BioPublicBundle::main.html.twig' %}
-
-{% block head %}
-	{{ parent() }}
-	{% javascripts 'bundles/bioexam/js/Loader.js' 'bundles/bioexam/js/Parser.js' output="js/*.js" %}
-		<script src="{{asset_url}}"></script>
-	{% endjavascripts %}
-
-{% endblock %}
-
-
-{% block content %}
-	<div class="form_layer">
-		<div class="form_container">
-			<h3 class="form_title">Add Exam</h3>
-			{{ form(form) }}
-		</div>
-	</div>
-	{#<div style="float:left; width:58%">
-		<h4>Global Settings</h4>
-		{{ form(globalForm) }}
-	</div>#}
-	<table>
-		<thead>
-			<tr>
-				<th>Name</th>
-				<th>Section</th>
-				<th>Date</th>
-				<th>Start</th>
-				<th>Questions</th>
-				<th>Preview</th>
-				<th>Edit</th>
-				<th>Delete</th>
-			</tr>
-		</thead>
-		<tbody>
-			
-		</tbody>
-		<tfoot>
-			<tr>
-				<td colspan=8 class="link add lonely">add exam</td>
-			</tr>
-		</tfoot>
-	</table>
-{% endblock %}
-
-{% block java %}
-	<script>
-	var loader = new Loader({
+{% macro template(options) %}
+var loasder = new Loader({
 		'url': '{{ url('main_page')}}crud/',
-		'bundle': 'exam',
-		'entity': 'exam',
-		'table': document.querySelector('table'),
-		'buttons': { // added to each column (left to right order)
-			'preview': {
-				'event': 'click', //optional
-				'fn': function(event, button, self) {
-					window.open(self.parser.parse('{{url("preview")}}?id=#{id}&type=exam', button.parentNode), '_blank')
+		'bundle': '{{options.bundle}}',
+		'entity': '{{options.entity}}',
+		'table': document.querySelector('{{options.tableSelector|default('table')}}'),
+		'buttons': {
+			{% if options.edit|default(true) != 'none' %}
+				{{options.edit|default("
+				'edit': {
+					'fn': function(event, button, self) {
+						self.forms.switch('edit');
+						self.forms.form.data.form.setAttribute('data-id', button.parentNode.id);
+						self.forms.open();
+					}
+				}")|raw}}
+			{% endif %}
+			{% if options.edit|default(true) != 'none' and (options.delete|default(true) != 'none' or options.otherButtons) %},{% endif %}
+
+			{% if options.delete|default(true) != 'none' %}
+				{{options.delete|default("'delete': {
+					'fn': function(event, button, self) {
+						self.notifications.wait();
+						var url = self.generateUrl('delete', button.parentNode.id);
+						self.sendRequest(url, null, function() {
+							var data = JSON.parse(this.responseText);
+							if (data.success) {
+								button.parentNode.parentNode.removeChild(button.parentNode);
+								self.notifications.ready();
+								self.notifications.success('Deleted {{option.entity}}.');
+							} else {
+								self.notifications.ready();
+								self.notifications.failure(data.message);
+							}
+						});
+					}
+				}")|raw}}
+			{% endif %}
+
+			{% if options.delete|default(true) != 'none' and options.otherButtons %},{% endif %}
+			
+			{% for button in options.otherButtons %}
+				{% if loop.index > 1 %},{% endif %}
+				'{{button.name|raw}}': {
+					'fn': {{button.fn|raw}}
 				}
-			},
-			'edit': {
-				'fn': function(event, button, self) {
-					self.forms.switch('edit');
-					self.forms.form.data.form.setAttribute('data-id', button.parentNode.id);
-					self.forms.open();
-				}
-			},
-			'delete': {
-				'fn': function(event, button, self) {
-					self.notifications.wait();
-					var url = self.generateUrl('delete', button.parentNode.id);
-					self.sendRequest(url, null, function() {
-						var data = JSON.parse(this.responseText);
-						if (data.success) {
-							button.parentNode.parentNode.removeChild(button.parentNode);
-							self.notifications.ready();
-							self.notifications.success('Deleted exam.');
-						} else {
-							self.notifications.ready();
-							self.notifications.failure(data.message);
-						}
-					});
-				}
-			}
+			{% endfor %}
 		},
 		'listeners': [
 			{
@@ -197,5 +160,5 @@
 				},
 			}
 		}
-	}); </script>
-{% endblock %}
+	});
+{% endmacro %}

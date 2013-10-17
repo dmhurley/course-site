@@ -27,7 +27,6 @@ class Answer
      * @var string
      *
      * @ORM\Column(name="answer", type="text")
-     * @Assert\NotBlank()
      */
     private $answer;
 
@@ -35,7 +34,7 @@ class Answer
      * @ORM\OneToMany(targetEntity="Grade", mappedBy="answer", cascade={"remove"})
      * @Serial\MaxDepth(2)
      */
-    private $points;
+    private $grades;
 
     /**
      * @ORM\ManyToOne(targetEntity="TestTaker", inversedBy="answers")
@@ -139,9 +138,9 @@ class Answer
      *
      * @param \Bio\ExamBundle\Entity\Grade $points
      */
-    public function removePoint(\Bio\ExamBundle\Entity\Grade $points)
+    public function removeGrade(\Bio\ExamBundle\Entity\Grade $grade)
     {
-        $this->points->removeElement($points);
+        $this->grades->removeElement($grade);
     }
 
     /**
@@ -150,9 +149,9 @@ class Answer
      * @param \Bio\ExamBundle\Entity\Grade $points
      * @return Answer
      */
-    public function addPoint(\Bio\ExamBundle\Entity\Grade $points)
+    public function addGrade(\Bio\ExamBundle\Entity\Grade $grade)
     {
-        $this->points[] = $points;
+        $this->grades[] = $grade;
     
         return $this;
     }
@@ -162,26 +161,8 @@ class Answer
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getPoints()
+    public function getGrades()
     {
-        return $this->points;
-    }
-
-    public function grade($grader, $point) {
-        foreach($this->points as $grade) {
-            if ($grade->getGrader() === $grader) {
-                $grade->setPoints($point);
-                break;
-            }
-        }
-    }
-
-    public function isGraded() {
-        foreach($this->points as $grade) {
-            if ($grade->getPoints() !== null) {
-                return true;
-            }
-        }
-        return false;
+        return $this->grades;
     }
 }

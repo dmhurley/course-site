@@ -120,6 +120,8 @@ class PublicController extends Controller
             } else {
     			$trip->addStudent($student);
 				$db->close();
+
+                $this->sendCeleseNotification($student, $trip, true);
 				$flash->set('success', 'Joined trip.');
     		}
     	}
@@ -128,6 +130,7 @@ class PublicController extends Controller
 
     /**
      * @Route("/leave/{id}", name="leave_trip")
+     * @Template("BioTripBundle:Public:confirmation.html.twig")
      */
     public function leaveAction(Request $request, Trip $trip = null) {
         $flash = $request->getSession()->getFlashBag();
@@ -141,12 +144,28 @@ class PublicController extends Controller
         } else if ($global->getOpening() > new \DateTime() || $global->getClosing() < new \DateTime()) {
             // flash filled by test action
         }  else {
+
+            // if is get request and 24 hours left
+            if ($trip->getStart() < new \DateTime('+1 day') && $request->getMethod() === 'GET') {
+                $form = $this->createFormBuilder()
+                    ->add('Leave Trip', 'submit')
+                    ->getForm();
+
+                return array('form' => $form->createView(), 'title' => 'Leave Trip');
+            }
+
+
     		$student = $this->get('security.context')->getToken()->getUser();
             // TODO make sure trip hasn't passed!!!!!!
     		$trip->removeStudent($student);
             try {
               $db = new Database($this, 'BioTripBundle:Trip');  
     		  $db->close();
+
+              // send emails
+              $this->sendCeleseNotification($student, $trip, false);
+              $this->sendStudentEmail($student, $trip);
+
     		  $flash->set('success', 'Left trip.');
             } catch (BioException $e) {
                 $flash->set('failure', 'Error.');
@@ -379,6 +398,32 @@ class PublicController extends Controller
             } 
         }
         return null;
+    }
+
+    private function sendStudentEmail($student, $trip) {
+        if ($trip->getStart() < new \DateTime('+1 day')) {
+            // send email
+        }
+    }
+
+    private function sendCeleseNotification($student, $trip, $joining) {
+        $db = new Database($this, 'BioTripBundle:TripGlobal');
+        $global = $db->findOne(array());
+
+        if ($global->getNotifications() && $global->getStart() < new \DateTime()) {
+            $message = \Swift_Message::newInstance()
+                ->setSubject('[TRIP] '.$student->getFName().' '.$student->getLName().($joining?' joined ':' dropped ').$trip->getTitle())
+                ->setTo('celese@uw.edu')
+                ->setFrom($this->container->getParameter('mailer_dev_address'))
+                ->setBody(
+                        $student->getFName().' '.$student->getLName().($joining?' joined ': ' dropped ').'the trip: <i>'.$trip->getTitle().' ('.
+                        $trip->getStart()->format('Y-m-d H:i').' - '.$trip->getEnd()->format('Y-m-d H:i').
+                        ')</i>  on '.(new \DateTime())->format('Y-m-d H:i').'.'
+                    )
+                ->setContentType('text/html');
+
+            $this->get('mailer')->send($message);
+        }
     }
 
 }

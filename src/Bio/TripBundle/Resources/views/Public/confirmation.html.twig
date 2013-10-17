@@ -1,0 +1,9 @@
+{% extends 'BioPublicBundle::main.html.twig' %}
+
+{% block content %}
+	<p>Are you sure you want to leave this trip? Leaving a trip within 24 hours of it's start results in loss of 10 points.<br />
+	Press the <i>Leave Trip</i> button to confirm.</p>
+
+	{{form(form)}}
+
+{% endblock %}

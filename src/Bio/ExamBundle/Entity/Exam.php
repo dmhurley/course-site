@@ -122,7 +122,6 @@ class Exam
      * @ORM\JoinTable(name="exam_questions",
      *      joinColumns={@ORM\JoinColumn(name="test_id", referencedColumnName="id", onDelete="CASCADE")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="question_id", referencedColumnName="id", onDelete="CASCADE")})
-     * @Serial\MaxDepth(1)
      */
     private $questions;
 

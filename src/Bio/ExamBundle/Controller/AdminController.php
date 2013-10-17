@@ -54,6 +54,11 @@ class AdminController extends Controller
         $global = $db->findOne(array());
         $globalForm = $this->get('form.factory')->createNamedBuilder('global', 'form', $global)
             ->add('grade', 'integer', array('label' => "Tests To Grade:"))
+            ->add('comments', 'checkbox', array(
+                'label' => 'Force Comments',
+                'required' => false
+                )
+            )
             ->add('rules', 'textarea', array('label' => "Test Rules:"))
             ->add('set', 'submit')
             ->getForm();
@@ -291,7 +296,8 @@ class AdminController extends Controller
             "Grade Time (s)\t".    // what?
             "Answer\t".            // didn't have to submit
             "Score\t".             // didn't have to be graded
-            "Total Mean"
+            "Total Mean".
+            "Comment"
         ];
 
         /******* DATA *******/
@@ -302,12 +308,12 @@ class AdminController extends Controller
             $name = $taker->getStudent()->getLName().", ".$taker->getStudent()->getFName();
             $studentID = $taker->getStudent()->getSid();
             $section = $taker->getStudent()->getSection()->getName();
-            $didGrade = $taker->getNumGraded() >= $global->getGrade()?"Yes":$taker->getNumGraded();
+            $didGrade = $taker->getGradedNum() >= $global->getGrade()?"Yes":$taker->getGradedNum();
 
-            if ($taker->getStatus() >= 4) {
-                $timeElapsedSeconds = $taker->getTimecard()[4]->getTimestamp() - $taker->getTimecard()[2]->getTimestamp();
+            if ($taker->getStatus() >= 3) {
+                $timeElapsedSeconds = $taker->getTimestamp('submitted')[0]['time']->getTimestamp() - $taker->getTimestamp('started')[0]['time']->getTimestamp();
                 $timeElapsedMinutes = $timeElapsedSeconds/60;
-                $timeEntered = $taker->getTimecard()[4]->format("m-d-Y H:i:s");
+                $timeEntered = $taker->getTimestamp('submitted')[0]['time']->format("m-d-Y H:i:s");
             } else {
                 $timeElapsedSeconds = "";
                 $timeElapsedMinutes = "";
@@ -318,7 +324,7 @@ class AdminController extends Controller
             /**** END TAKER DATA ****/
 
             // if the person never submitted their test, return now with lots of things blank
-            if ($answerCount === 0 || $taker->getStatus() < 4) {
+            if ($taker->getStatus() < 3) {
                 $responseText[] = $this->echoArray(
                     array(
                         $examID,                    // exam id
@@ -339,7 +345,8 @@ class AdminController extends Controller
                         '',                         // grade time
                         '',                         // answer
                         0,                          // score
-                        0                           // total mean score
+                        0,                          // total mean score
+                        ''                          // comment
                     )
                 );
             } else {
@@ -352,7 +359,7 @@ class AdminController extends Controller
                     /**** END ANSWER DATA ****/
 
                     // if the person finished their test but was never graded
-                    if (!$answer->isGraded()) {
+                    if (count($taker->getGradedBy()) === 0) {
                         $responseText[] = $this->echoArray(
                             array(
                                 $examID,                    // exam id
@@ -372,8 +379,9 @@ class AdminController extends Controller
                                 $answerCount,               // answer count
                                 '',                         // grade time
                                 $answerText,                // answer
-                                "",                          // score
-                                'NOT GRADED'                // total mean score
+                                "",                         // score
+                                'NOT GRADED',               // total mean score
+                                ''                          // comment
                             )
                         );
                     } else {
@@ -383,7 +391,7 @@ class AdminController extends Controller
                         foreach($taker->getAnswers() as $a) {
                             $average = 0;
                             $realGraders = 0;
-                            foreach($a->getPoints() as $g) {
+                            foreach($a->getGrades() as $g) {
                                 if ($g->getPoints() !== null) {
                                     $average += $g->getPoints();
                                     $realGraders++;
@@ -393,7 +401,7 @@ class AdminController extends Controller
                         }
                         /**** END POINTS DATA ****/
 
-                        foreach($answer->getPoints() as $grade) { // status >= 4
+                        foreach($answer->getGrades() as $grade) { // status >= 4
 
                             /**** GRADE DATA ****/
                             $graderID = $grade->getGrader()->getStudent()->getSid();
@@ -406,6 +414,8 @@ class AdminController extends Controller
                                 $timeScoredMinutes = "";
                                 $gradeTime = "";
                             }
+
+                            $comment = $grade->getComment();
 
                             if ($grade->getPoints() !== null) {
                                 $points = $grade->getPoints();
@@ -434,7 +444,8 @@ class AdminController extends Controller
                                     $gradeTime,                 // grade time
                                     $answerText,                // answer
                                     $points,                    // score
-                                    $totalMean                  // total mean score
+                                    $totalMean,                 // total mean score
+                                    $comment                    // comment
                                 )
                             );
                         }
