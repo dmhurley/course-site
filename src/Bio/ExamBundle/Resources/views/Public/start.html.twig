@@ -138,8 +138,8 @@
 
 				return string;
 			}
-			document.addEventListener('load', function() {
-				Pinger("{{ date(exam.tDate|date('Y-m-d ')~exam.tStart|date('H:i:s'))|date('U') }}");
+			window.addEventListener('load', function() {
+				new Pinger("{{ date(exam.tDate|date('Y-m-d ')~exam.tStart|date('H:i:s'))|date('U') }}");
 			});
 		})()
 		</script>

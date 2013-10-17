@@ -55,7 +55,7 @@
 				}
 			})(this), Math.random()*15000);
 		}
-		document.addEventListener('load', function() {
+		window.addEventListener('load', function() {
 			new Checker({{taker.getTimestamp('submitted')[0]['time']|date('U')}});
 		});
 	})();
