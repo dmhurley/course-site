@@ -11,14 +11,21 @@ use Symfony\Component\Form\FormEvent;
 
 
 class GradeType extends AbstractType
-{      
+{   
+    private $comments;
+
+    public function __construct($comments) {
+        $this->comments = $comments;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
-    {
+    {  
         $builder
             ->add('comment', 'textarea', array(
-                'constraints' => array(
+                'constraints' => ($this->comments?array(
                         new Assert\NotBlank()
-                    )
+                    ):[]),
+                'required' => $this->comments
                 )
             )
             ->addEventListener(

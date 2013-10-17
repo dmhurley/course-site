@@ -63,6 +63,11 @@ class AdminController extends Controller
         $global = $db->findOne(array());
         $globalForm = $this->get('form.factory')->createNamedBuilder('global', 'form', $global)
             ->add('grade', 'integer', array('label' => "Tests To Grade:"))
+            ->add('comments', 'checkbox', array(
+                'label' => 'Force Comments',
+                'required' => false
+                )
+            )
             ->add('rules', 'textarea', array('label' => "Test Rules:"))
             ->add('set', 'submit')
             ->getForm();

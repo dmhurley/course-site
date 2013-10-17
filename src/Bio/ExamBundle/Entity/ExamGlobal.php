@@ -29,6 +29,13 @@ class ExamGlobal
      */
     private $grade;
 
+    /** 
+     * @var boolean
+     * 
+     * @ORM\Column(name="comments", type="boolean")
+     */
+    private $comments;
+
     /**
      * @var string
      *
@@ -68,6 +75,16 @@ class ExamGlobal
     public function getGrade()
     {
         return $this->grade;
+    }
+
+    public function setComments($comments) {
+        $this->comments = $comments;
+
+        return $this;
+    }
+
+    public function getComments() {
+        return $this->comments;
     }
 
     /**

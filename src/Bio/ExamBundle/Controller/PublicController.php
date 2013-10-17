@@ -315,10 +315,10 @@ class PublicController extends Controller {
 
 		$grades = ['grades' => $query->getResult()];
 
-
+		$comments = (new Database($this, 'BioExamBundle:ExamGlobal'))->findOne(array())->getComments();
 		$form = $this->createFormBuilder($grades)
 			->add('grades', 'collection', array(
-					'type' => new GradeType()
+					'type' => new GradeType($comments)
 				)
 			)
 			->add('submit', 'submit')
