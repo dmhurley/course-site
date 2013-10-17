@@ -1,6 +1,7 @@
 {% extends 'BioExamBundle:Public:main.html.twig' %}
 
 {% block content %}
+	{% if taker is defined %}
 		{% for answer in taker.answers %}
 			<div class="question tableStyle">
 				<h1 style="float:left;margin-top:18px;">Question {{loop.index}}</h1>
@@ -47,4 +48,23 @@
 				</div>
 			</div>
 		{% endfor %}
+	{% else %}
+		{% for question in exam.questions %}
+			<div class="question tableStyle">
+				<h1 style="float:left;margin-top:18px;">Question {{loop.index}}</h1>
+				<h2 style="float:right;">{{question.points}} points</h2>
+
+				<div class="q">
+					{{question.question|raw}}
+				</div>
+
+				<div class="line"></div>
+
+				<h2>Answer</h2>
+				<div class="q">
+					{{question.answer|raw}}
+				</div>
+			</div>
+		{% endfor %}
+	{% endif %}
 {% endblock %}

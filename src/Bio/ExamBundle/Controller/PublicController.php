@@ -40,8 +40,15 @@ class PublicController extends Controller {
 				'title' => $taker->getExam()->getTitle().' Review'
 				);
 		} else {
-			$request->getSession()->getFlashBag()->set('failure', 'Could not find entry.');
+			return array(
+				'exam' => $exam,
+				'title' => $exam->getTitle().' Review'
+			);
 		}
+	}
+
+	public function lookAction(Request $request, Exam $exam) {
+		
 	}
 
 	/**
@@ -156,12 +163,31 @@ class PublicController extends Controller {
 
 		$global = (new Database($this, 'BioExamBundle:ExamGlobal'))->findOne(array());
 		$takers = (new Database($this, 'BioExamBundle:TestTaker'))->find(array('student' => $student), array(), false);
+
+		$em = $this->getDoctrine()->getManager();
+		$query = $em->createQuery('
+				SELECT e
+				FROM BioExamBundle:Exam e
+				LEFT JOIN BioExamBundle:TestTaker t
+				WITH t.exam = e
+				WHERE (e.tDate < :date
+						OR (e.tDate = :date
+						AND e.tStart < :time))
+				AND (:section LIKE CONCAT(e.section, '."'%'".') OR 
+				e.section IS NULL)
+				AND t.id IS NULL
+			')
+			->setParameter('date', new \DateTime(), \Doctrine\DBAL\Types\Type::DATE)
+			->setParameter('time', new \DateTime(), \Doctrine\DBAL\Types\Type::TIME)
+			->setParameter('section', $this->get('security.context')->getToken()->getUser()->getSection()->getName());
+
 		return $this->render('BioExamBundle:Public:start.html.twig', array(
 				'form' => $form->createView(),
 				'global' => $global,
 				'exam' => $exam,
 				'message' => $message,
 				'takers' => $takers,
+				'past_exams' => $query->getResult(),
 				'exams' => $exams,
 				'title' => 'Begin Test'
 			));
