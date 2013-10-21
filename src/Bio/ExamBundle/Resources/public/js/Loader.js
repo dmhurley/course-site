@@ -101,12 +101,12 @@ function Loader(settings) {
 			console.log(row);
 			for(i = 0; i < this.rows.length; i++) {
 				neighbor = this.rows[i];
-				if (neighbor.children[1].innerHTML >= row.children[1].innerHTML) {
+				if (this.self.settings.table.sortFn(neighbor, row)) {
 					break;
 				}
 			}
 			this.rows.splice(i, 0, row);
-			this.self.settings.table.querySelector('tbody').insertBefore(row, this.self.settings.table.querySelector('tbody').children.item(i));
+			this.self.settings.table.element.querySelector('tbody').insertBefore(row, this.self.settings.table.element.querySelector('tbody').children.item(i));
 		},
 		'remove': function(row) {
 			var index = this.rows.indexOf(row);
@@ -318,7 +318,12 @@ function Loader(settings) {
 		'url': '',
 		'bundle': '',
 		'entity': '',
-		'table': document.querySelector('table'),
+		'table': {
+			'element': document.querySelector('table'),
+			'sortFn': function(rowA,rowB) {
+				return rowB.innerHTML < rowA.innerHTML;
+			}
+		},
 		'buttons': {
 			'edit': {
 				'fn': function(event, button, self) {
