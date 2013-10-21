@@ -435,6 +435,9 @@ class AdminController extends Controller
         /******* DATA *******/
         $examID = $exam->getId();
         foreach ($takers as $taker) {   // status >= 1
+            if ($taker->getStatus() === 1) {
+                continue;
+            }
 
             /**** TAKER DATA ****/
             $name = $taker->getStudent()->getLName().", ".$taker->getStudent()->getFName();
@@ -547,7 +550,7 @@ class AdminController extends Controller
                                 $gradeTime = "";
                             }
 
-                            $comment = $grade->getComment();
+                            $comment = str_replace(array("\n", "\t", "\r\n", "\n\r", "\r"), ' ', $grade->getComment());
 
                             if ($grade->getPoints() !== null) {
                                 $points = $grade->getPoints();
@@ -584,6 +587,32 @@ class AdminController extends Controller
                     }
                 }
             }
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $results = $em->createQuery('
+                SELECT s
+                FROM BioStudentBundle:Student s
+                LEFT JOIN BioExamBundle:TestTaker t
+                WITH t.student = s
+                INNER JOIN BioInfoBundle:Section e
+                WITH s.section = e
+                WHERE (t IS NULL OR
+                    t.status = 1)
+                AND (e.name LIKE CONCAT(:section, '."'%'".') OR 
+                    :section IS NULL)
+            ')
+            ->setParameter('section', $exam->getSection())
+            ->getResult();
+
+        foreach($results as $result) {
+            $responseText[] = $this->echoArray(
+                array(
+                    $result->getSid(),
+                    $result->getFName().' '.$result->getLName(),
+                    $result->getSection()->getName()
+                )
+            );
         }
 
         $response = $this->render('BioPublicBundle:Template:blank.html.twig', array(
