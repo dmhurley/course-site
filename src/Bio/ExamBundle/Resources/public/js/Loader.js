@@ -91,6 +91,36 @@ function Loader(settings) {
 	this.rows = {
 		'self': null,
 		'rows': [],
+		'create': function(data) {
+			var row = document.createElement('tr');
+			row.data = data;
+			row.id = data.id;
+			for(button in this.self.settings.columns) {
+				var fn = this.self.settings.columns[button];
+				var cell = row.insertCell(-1);
+				var value = data[button] === undefined?fn?fn(null, cell):button: fn?fn(data[button], cell):data[button];
+				if (value === undefined) {
+					cell.parentNode.removeChild(cell);
+				} else {
+					cell.innerHTML = value;
+				}
+			}
+
+			for (button in this.self.settings.buttons) {
+				settings = this.self.settings.buttons[button];
+				var cell = row.insertCell(-1);
+				cell.classList.add('link');
+				cell.classList.add(button);
+				cell.innerHTML = button;
+				cell.addEventListener(settings.event?settings.event:'click', (function(cell, self, fn) {
+					return function(event) {
+						fn(event, cell, self);
+					}
+				})(cell, this.self, settings.fn));
+			}
+
+			this.add(row);
+		},
 		'replace': function(oldRow, newRow) {
 			this.remove(oldRow);
 			this.add(newRow);
@@ -101,7 +131,7 @@ function Loader(settings) {
 			console.log(row);
 			for(i = 0; i < this.rows.length; i++) {
 				neighbor = this.rows[i];
-				if (this.self.settings.table.sortFn(neighbor, row)) {
+				if (this.self.settings.table.sortFn(neighbor.data, row.data)) {
 					break;
 				}
 			}
@@ -180,35 +210,6 @@ function Loader(settings) {
 		return url;
 	}
 
-	this.addRow = function(data) {
-		var row = document.createElement('tr');
-		row.id = data.id;
-		for (button in this.settings.columns) {
-			var fn = this.settings.columns[button];
-			var cell = row.insertCell(-1);
-			var value = data[button] === undefined? button: fn?fn(data[button], cell):data[button];
-			if (value === false) {
-				cell.parentNode.removeChild(cell);
-			} else {
-				cell.innerHTML = value;
-			}
-		}
-
-		for (button in this.settings.buttons) {
-			settings = this.settings.buttons[button];
-			var cell = row.insertCell(-1);
-			cell.classList.add('link');
-			cell.classList.add(button);
-			cell.innerHTML = button;
-			cell.addEventListener(settings.event?settings.event:'click', (function(cell, self, fn) {
-				return function(event) {
-					fn(event, cell, self);
-				}
-			})(cell, this, settings.fn));
-		}
-
-		this.rows.add(row);
-	}
 /************* PRIVATE FUNCTIONS ***************/
 
 	this._handleForm = function(data) {
@@ -287,7 +288,7 @@ function Loader(settings) {
 				var data = JSON.parse(this.responseText);
 				if (data.success) {
 					for (var i = 0; row = data.data[i]; i++) {
-						self.addRow(row)
+						self.rows.create(row)
 					}
 					console.log("Displayed existing results...");
 					self.notifications.ready();
@@ -320,8 +321,8 @@ function Loader(settings) {
 		'entity': '',
 		'table': {
 			'element': document.querySelector('table'),
-			'sortFn': function(rowA,rowB) {
-				return rowB.innerHTML < rowA.innerHTML;
+			'sortFn': function(dataA,dataB) {
+				return false;
 			}
 		},
 		'buttons': {
@@ -385,7 +386,7 @@ function Loader(settings) {
 							var data = JSON.parse(ajax.responseText);
 							self.notifications.ready();
 							if (data.success) {
-								self.addRow(data.data[0]);
+								self.rows.create(data.data[0]);
 								self.notifications.success('Created ' +self.settings.entity+'.');
 								self.forms.close();
 							} else {
@@ -430,7 +431,7 @@ function Loader(settings) {
 							if (data.success) {
 								var row = document.getElementById(form.getAttribute('data-id'));
 								self.rows.remove(row);
-								self.addRow(data.data[0]);
+								self.rows.create(data.data[0]);
 								self.notifications.success('Edited '+self.settings.entity+'.');
 								self.forms.close();
 							} else {

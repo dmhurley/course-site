@@ -50,6 +50,11 @@
 		'url': '{{ url('main_page')}}crud/',
 		'bundle': 'exam',
 		'entity': 'question',
+		'table': {
+			'sortFn': function(dataA, dataB) {
+				return parseInt(dataA.id) > parseInt(dataB.id);
+			}
+		},
 		'buttons': { // added to each column (left to right order)
 			'preview': {
 				'event': 'click', //optional

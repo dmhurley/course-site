@@ -50,6 +50,11 @@
 		'url': '{{ url('main_page')}}crud/',
 		'bundle': 'exam',
 		'entity': 'exam',
+		'table' : {
+			'sortFn': function(dataA, dataB) {
+				return dataA.t_date > dataB.t_date;
+			}
+		},
 		'buttons': { // added to each column (left to right order)
 			'preview': {
 				'event': 'click', //optional
@@ -61,7 +66,7 @@
 		'columns': {
 			'title': null,
 			'section': function(value, cell) {
-				return value.toUpperCase();
+				return value?value.toUpperCase():'-';
 			},
 			't_date': function(value, cell) {
 				return (new Date(value*1000)).toLocaleDateString();
