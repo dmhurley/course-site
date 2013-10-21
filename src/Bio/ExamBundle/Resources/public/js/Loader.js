@@ -88,6 +88,35 @@ function Loader(settings) {
 
 	this.parser = null;
 
+	this.rows = {
+		'self': null,
+		'rows': [],
+		'replace': function(oldRow, newRow) {
+			this.remove(oldRow);
+			this.add(newRow);
+		},
+		'add': function(row) {
+			var i;
+			var neighbor;
+			console.log(row);
+			for(i = 0; i < this.rows.length; i++) {
+				neighbor = this.rows[i];
+				if (neighbor.children[1].innerHTML >= row.children[1].innerHTML) {
+					break;
+				}
+			}
+			this.rows.splice(i, 0, row);
+			this.self.settings.table.querySelector('tbody').insertBefore(row, this.self.settings.table.querySelector('tbody').children.item(i));
+		},
+		'remove': function(row) {
+			var index = this.rows.indexOf(row);
+			if (index > -1) {
+				this.rows.splice(index, 1)
+			}
+			row.parentNode.removeChild(row);
+		}
+	}
+
 /********** PUBLIC FUNCTIONS **********/
 	
 	/**
@@ -152,7 +181,7 @@ function Loader(settings) {
 	}
 
 	this.addRow = function(data) {
-		var row = this.settings.table.querySelector('tbody').insertRow();
+		var row = document.createElement('tr');
 		row.id = data.id;
 		for (button in this.settings.columns) {
 			var fn = this.settings.columns[button];
@@ -178,6 +207,7 @@ function Loader(settings) {
 			})(cell, this, settings.fn));
 		}
 
+		this.rows.add(row);
 	}
 /************* PRIVATE FUNCTIONS ***************/
 
@@ -304,7 +334,7 @@ function Loader(settings) {
 					self.sendRequest(url, null, function() {
 						var data = JSON.parse(this.responseText);
 						if (data.success) {
-							button.parentNode.parentNode.removeChild(button.parentNode);
+							self.rows.remove(button.parentNode);
 							self.notifications.ready();
 							self.notifications.success('Deleted ' + self.settings.entity + '.');
 						} else {
@@ -394,7 +424,7 @@ function Loader(settings) {
 							self.notifications.ready();
 							if (data.success) {
 								var row = document.getElementById(form.getAttribute('data-id'));
-								row.parentNode.removeChild(row);
+								self.rows.remove(row);
 								self.addRow(data.data[0]);
 								self.notifications.success('Edited '+self.settings.entity+'.');
 								self.forms.close();
