@@ -24,6 +24,7 @@
 	display: inline-block;
 	overflow:scroll;
 	max-height: 60%;
+	min-width: 350px;
 }
 
 .form_title {
@@ -38,4 +39,8 @@
 
 .lonely {
 	text-align: center;
+}
+
+.noscroll {
+	overflow:hidden;
 }

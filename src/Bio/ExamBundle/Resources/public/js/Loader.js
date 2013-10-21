@@ -68,6 +68,7 @@ function Loader(settings) {
 			if (this.form.data === null) {
 				throw "You must switch to a form first.";
 			}
+			document.body.classList.add('noscroll');
 			this.form.data.form.reset();
 			this.self._clearErrors(this.form.data.form);
 			this.form.data.settings[this.form.type].before(this.form.data.form, this.form.data.container, this.self);
@@ -78,6 +79,7 @@ function Loader(settings) {
 			})(this.form.data.form, this.form.data.container, this.self);
 		},
 		'close': function() {
+			document.body.classList.remove('noscroll');
 			this.form.data.settings[this.form.type].after(this.form.data.form, this.form.data.container, this.self);
 			this.form.type = this.form.data = null;
 
@@ -198,6 +200,7 @@ function Loader(settings) {
 						if (box) {
 							box.setContent(field.value, {format: 'raw'});
 						}
+					} else {
 						element.value = field.value;
 					}
 				}
@@ -218,7 +221,13 @@ function Loader(settings) {
 	// throws an error if required settings aren't set
 	this._setSettings = function(settings, defaults) {
 		for (key in settings) {
-			defaults[key] = settings[key];
+			if (defaults[key] && settings[key] === undefined) {
+				delete defaults[key];
+			} else if (settings[key].constructor === Object && defaults[key]) {
+				defaults[key] = this._setSettings(settings[key], defaults[key]);
+			} else {
+				defaults[key] = settings[key];
+			}
 		}
 		return defaults;
 	}
@@ -262,18 +271,150 @@ function Loader(settings) {
 
 	// sets it all up
 	this._init = function(settings) {
-		this.settings = this._setSettings(settings, {
-			'url': '',		// base crud url
-			'space': 'bio', // for something..
-			'bundle': '', // eg: exam
-			'entity': '', // eg: question
-		});
+		this.settings = this._setSettings(settings, this.defaults);
 
-		this.notifications.self = this.forms.self = this;
+		this.notifications.self = this.forms.self = this.rows.self = this;
+
 		this.notifications.wait();
 		this.parser = new Parser('#{', '}');
 		this._registerListeners();
 		this._getExisting(); // calls self.ready()
 	}
+
+/*******************************************************************************************************
+											DEFAULTS
+*******************************************************************************************************/
+	this.defaults = {
+		'url': '',
+		'bundle': '',
+		'entity': '',
+		'table': document.querySelector('table'),
+		'buttons': {
+			'edit': {
+				'fn': function(event, button, self) {
+					self.forms.switch('edit');
+					self.forms.form.data.form.setAttribute('data-id', button.parentNode.id);
+					self.forms.open();
+				}
+			},
+			'delete': {
+				'fn': function(event, button, self) {
+					self.notifications.wait();
+					var url = self.generateUrl('delete', button.parentNode.id);
+					self.sendRequest(url, null, function() {
+						var data = JSON.parse(this.responseText);
+						if (data.success) {
+							button.parentNode.parentNode.removeChild(button.parentNode);
+							self.notifications.ready();
+							self.notifications.success('Deleted ' + self.settings.entity + '.');
+						} else {
+							self.notifications.ready();
+							self.notifications.failure(data.message);
+						}
+					});
+				}
+			}
+		},
+		'listeners': [
+			{
+				'selector': '.link.add',
+				'fn': function(event, object, self) {
+					self.forms.switch('add');
+					self.forms.open();
+				}
+			},
+			{
+				'selector': '.form_layer',
+				'fn': function(event, object, self) {
+					if (event.target === object)
+					self.forms.close();
+				}
+			}
+		],
+		'loader': document.querySelector('div.notification'),
+		'form': {
+			'container': document.querySelector('.form_layer'),
+			'form': document.querySelector('.form_container form'),
+			'settings': {
+				'add': {
+					'before': function(form, container, self) {
+						form.action = self.generateUrl('create');
+						form.classList.add('add');
+						container.classList.add('shown');
+					},
+					'onsubmit': function(event, form, container, self) {
+						event.preventDefault();
+						self.notifications.wait();
+						container.classList.remove('shown');
+						self.postForm(null, form, function(ajax) {
+							var data = JSON.parse(ajax.responseText);
+							self.notifications.ready();
+							if (data.success) {
+								self.addRow(data.data[0]);
+								self.notifications.success('Created ' +self.settings.entity+'.');
+								self.forms.close();
+							} else {
+								self.notifications.failure(data.message);
+								container.classList.add('shown');
+							}
+						});
+					},
+					'after': function(form, container, self) {
+						container.classList.remove('shown');
+						form.action = "";
+						form.classList.remove('add');
+					}
+				},
+				'edit': {
+					'before': function(form, container, self) {
+						form.classList.add('edit');
+						form.action = self.generateUrl('edit', form.getAttribute('data-id'));
+
+						self.notifications.wait();
+						self.sendRequest(self.generateUrl('get', form.getAttribute('data-id')), null, (function(self, container) {
+							return function() {
+								var data = JSON.parse(this.responseText);
+								self.notifications.ready();
+								if (data.success) {
+									self._handleForm(data.form);
+									container.classList.add('shown');
+								} else {
+									self.notification.failure(data.message);
+									self.forms.close();
+								}
+							}
+						})(self, container));
+					},
+					'onsubmit': function(event, form, container, self) {
+						event.preventDefault();
+						self.notifications.wait();
+						container.classList.remove('shown');
+						self.postForm(null, form, function(ajax) {
+							var data = JSON.parse(ajax.responseText);
+							self.notifications.ready();
+							if (data.success) {
+								var row = document.getElementById(form.getAttribute('data-id'));
+								row.parentNode.removeChild(row);
+								self.addRow(data.data[0]);
+								self.notifications.success('Edited '+self.settings.entity+'.');
+								self.forms.close();
+							} else {
+								self.notifications.failure(data.message);
+								container.classList.add('shown');
+							}
+						});
+
+					},
+					'after': function(form, container, self) {
+						container.classList.remove('shown');
+						form.classList.remove('edit');
+						form.action = "";
+						form.removeAttribute('data-id');
+					}
+				}
+			}
+		}
+	}
+
 	this._init(settings);
 }

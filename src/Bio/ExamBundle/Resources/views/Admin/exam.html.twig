@@ -50,55 +50,14 @@
 		'url': '{{ url('main_page')}}crud/',
 		'bundle': 'exam',
 		'entity': 'exam',
-		'table': document.querySelector('table'),
 		'buttons': { // added to each column (left to right order)
 			'preview': {
 				'event': 'click', //optional
 				'fn': function(event, button, self) {
 					window.open(self.parser.parse('{{url("preview")}}?id=#{id}&type=exam', button.parentNode), '_blank')
 				}
-			},
-			'edit': {
-				'fn': function(event, button, self) {
-					self.forms.switch('edit');
-					self.forms.form.data.form.setAttribute('data-id', button.parentNode.id);
-					self.forms.open();
-				}
-			},
-			'delete': {
-				'fn': function(event, button, self) {
-					self.notifications.wait();
-					var url = self.generateUrl('delete', button.parentNode.id);
-					self.sendRequest(url, null, function() {
-						var data = JSON.parse(this.responseText);
-						if (data.success) {
-							button.parentNode.parentNode.removeChild(button.parentNode);
-							self.notifications.ready();
-							self.notifications.success('Deleted exam.');
-						} else {
-							self.notifications.ready();
-							self.notifications.failure(data.message);
-						}
-					});
-				}
 			}
 		},
-		'listeners': [
-			{
-				'selector': '.link.add',
-				'fn': function(event, object, self) {
-					self.forms.switch('add');
-					self.forms.open();
-				}
-			},
-			{
-				'selector': '.form_layer',
-				'fn': function(event, object, self) {
-					if (event.target === object)
-					self.forms.close();
-				}
-			}
-		],
 		'columns': {
 			'title': null,
 			'section': function(value, cell) {
@@ -112,89 +71,6 @@
 			},
 			'questions': function(value, cell) {
 				return value.length;
-			}
-		},
-		'loader': document.querySelector('div.notification'),
-		'form': {
-			'container': document.querySelector('.form_layer'),
-			'form': document.querySelector('.form_container form'),
-			'settings': {
-				'add': {
-					'before': function(form, container, self) {
-						form.action = self.generateUrl('create');
-						form.classList.add('add');
-						container.classList.add('shown');
-					},
-					'onsubmit': function(event, form, container, self) {
-						event.preventDefault();
-						self.notifications.wait();
-						container.classList.remove('shown');
-						self.postForm(null, form, function(ajax) {
-							var data = JSON.parse(ajax.responseText);
-							self.notifications.ready();
-							if (data.success) {
-								self.addRow(data.data[0]);
-								self.notifications.success('Exam created.');
-								self.forms.close();
-							} else {
-								self.notifications.failure(data.message);
-								container.classList.add('shown');
-							}
-						});
-					},
-					'after': function(form, container, self) {
-						container.classList.remove('shown');
-						form.action = "";
-						form.classList.remove('add');
-					}
-				},
-				'edit': {
-					'before': function(form, container, self) {
-						form.classList.add('edit');
-						form.action = self.generateUrl('edit', form.getAttribute('data-id'));
-
-						self.notifications.wait();
-						self.sendRequest(self.generateUrl('get', form.getAttribute('data-id')), null, (function(self, container) {
-							return function() {
-								var data = JSON.parse(this.responseText);
-								self.notifications.ready();
-								if (data.success) {
-									self._handleForm(data.form);
-									container.classList.add('shown');
-								} else {
-									self.notification.failure(data.message);
-									self.forms.close();
-								}
-							}
-						})(self, container));
-					},
-					'onsubmit': function(event, form, container, self) {
-						event.preventDefault();
-						self.notifications.wait();
-						container.classList.remove('shown');
-						self.postForm(null, form, function(ajax) {
-							var data = JSON.parse(ajax.responseText);
-							self.notifications.ready();
-							if (data.success) {
-								var row = document.getElementById(form.getAttribute('data-id'));
-								row.parentNode.removeChild(row);
-								self.addRow(data.data[0]);
-								self.notifications.success('Exam edited.');
-								self.forms.close();
-							} else {
-								self.notifications.failure(data.message);
-								container.classList.add('shown');
-							}
-						});
-
-					},
-					'after': function(form, container, self) {
-						container.classList.remove('shown');
-						form.classList.remove('edit');
-						form.action = "";
-						form.removeAttribute('data-id');
-					}
-				},
 			}
 		}
 	}); </script>

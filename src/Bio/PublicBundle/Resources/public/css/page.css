@@ -92,7 +92,7 @@ body { background-color: #3f3f3f; }  					/* side filler */
 	top: -100px;
 	left: 0px;
 	z-index:10000;
-	cursor:n-resize;
+	cursor:default;
 	-webkit-user-select:none;
 	-user-select:none;
 	-webkit-transition: top .25s, background-color .5s;
