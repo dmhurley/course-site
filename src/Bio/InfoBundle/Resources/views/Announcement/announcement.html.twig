@@ -52,7 +52,7 @@
 		'entity': 'announcement',
 		'table' : {
 			'sortFn': function(dataA, dataB) {
-				return false;
+				return dataA.timestamp > dataB.timestamp;
 			}
 		},
 		'columns': {

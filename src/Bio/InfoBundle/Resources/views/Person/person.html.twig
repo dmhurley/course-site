@@ -1,30 +1,80 @@
 {% extends 'BioPublicBundle::main.html.twig' %}
 
+{% block head %}
+	{{parent()}}
+	{% javascripts 'bundles/bioexam/js/Loader.js' 'bundles/bioexam/js/Parser.js' output="js/*.js" %}
+			<script src="{{asset_url}}"></script>
+	{% endjavascripts %}
+{% endblock %}
+
 {% block content %}
-	{{ form(form) }}
+	<div class="form_layer">
+		<div class="form_container">
+			<div class="form_scroller">
+				{{ form(form) }}
+			</div>
+			<div class="form_exit"></div>
+		</div>
+	</div>
 
 	<table>
-		<tr>
-			<th>First - Last</th>
-			<th>Email</th>
-			<th>Building</th>
-			<th>Room</th>
-			<th>Title</th>
-			<th>Edit</th>
-			<th>Delete</th>
-		</tr>
-		{% for person in persons %}
+		<thead>
 			<tr>
-				<td>{{ person.fullName }}</td>
-				<td>{{person.email}}</td>
-				<td><a href="http://www.washington.edu/maps/?{{person.bldg|split("	")[0]}}">{{person.bldg|default('</a>no building<a>')|raw}}</a></td>
-				<td>{{person.room|default('no room')}}</td>
-				<td>{{person.title|title}}</td>
-				<td><a href="{{ path('edit', {'entityName' : 'person', 'id' : person.id}) }}">edit</a></td>
-				<td><a href="{{ path('delete', {'entityName' : 'person', 'id' : person.id}) }}">delete</a></td>
+				<th>First - Last</th>
+				<th>Email</th>
+				<th>Building</th>
+				<th>Room</th>
+				<th>Title</th>
+				<th>Edit</th>
+				<th>Delete</th>
 			</tr>
-		{% else %}
-			<tr><td colspan=7 style="text-align:center">no people</td></tr>
-		{% endfor %}
+		</thead>
+		<tbody>
+
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan=7 class="link add lonely">add person</td>
+			</tr>
+		</tfoot>
 	</table>
+{% endblock %}
+
+{% block java %}
+	<script>
+	var loader = new Loader({
+		'url': '{{ url('main_page')}}crud/',
+		'bundle': 'info',
+		'entity': 'person',
+		'table' : {
+			'sortFn': function(dataA, dataB) {
+				return dataA.f_name > dataB.f_name;
+			}
+		},
+		'columns': {
+			'f_name': null,
+			'l_name': function(value, cell) {
+				cell.previousSibling.innerHTML = cell.previousSibling.innerHTML + ' ' + value;
+				return undefined;
+			},
+			'email': function(value, cell) {
+				return '<a href="mailto:'+value+'">'+ value + '</a>';
+			},
+			'bldg': function(value, cell) {
+				if (value) {
+					return value;
+				} else {
+					return '-';
+				}
+			},
+			'room': function(value, cell) {
+				if (value) {
+					return value;
+				} else {
+					return '-';
+				}
+			},
+			'title': null
+		}
+	}); </script>
 {% endblock %}
