@@ -14,17 +14,33 @@
 	display: block;
 }
 
+.form_container:after {
+	content: 'Add Exam';
+	display: block;
+	position: absolute;
+	top: -40px;
+	background: white;
+	z-index: -1;
+	padding: 10px;
+	border-radius: 25px 25px 0px 0px;
+	font-size: 15pt;
+}
+
 .form_container {
-	margin: 50px auto auto auto;
-	padding: 50px;
-	border-radius: 25px;
+	margin: 100px auto auto auto;
+	border-radius: 0px 25px 0px 25px;
 	background-color: white;
 	cursor: default;
 	text-align:left;
 	display: inline-block;
-	overflow:scroll;
-	max-height: 60%;
+	max-height: 400px;
 	min-width: 350px;
+	position:relative;
+}
+
+.form_scroller {
+	max-height: 400px;
+	overflow-y: scroll;
 }
 
 .form_title {

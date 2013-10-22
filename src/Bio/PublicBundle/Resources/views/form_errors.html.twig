@@ -1,13 +1,65 @@
 {% block form_row %}
 {% spaceless %}
 	{% if errors %}
-   		<div data-tip="{{(errors|first).message}}" class="error row_error">
+   		<div title="{{label}}" data-tip="{{(errors|first).message}}" class="error row_error">
     {% else %}
-    	<div>
+    	<div title="{{label}}">
     {% endif %}
-        {{ form_label(form) }}
        {#} {{ form_errors(form) }} {#}
+    	{% if form.vars.compound or form.vars.choices|default(false) %}
+    		{{form_label(form)}}
+    	{% endif %}
         {{ form_widget(form) }}
     </div>
 {% endspaceless %}
 {% endblock form_row %}
+
+{% block form_widget_simple %}
+{% spaceless %}
+    {% set type = type|default('text') %}
+    <input placeholder="{{label}}" type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+{% endspaceless %}
+{% endblock form_widget_simple %}
+
+{% block datetime_widget %}
+{% spaceless %}
+    {% if widget == 'single_text' %}
+        {{ block('form_widget_simple') }}
+    {% else %}
+        <div {{ block('widget_container_attributes') }} data-type="datetime">
+            {{ form_widget(form.date) }}
+            at
+            {{ form_widget(form.time) }}
+        </div>
+    {% endif %}
+{% endspaceless %}
+{% endblock datetime_widget %}
+
+{% block date_widget %}
+{% spaceless %}
+    {% if widget == 'single_text' %}
+        {{ block('form_widget_simple') }}
+    {% else %}
+        <div {{ block('widget_container_attributes') }} data-type="date">
+            {{ date_pattern|replace({
+                '{{ year }}':  form_widget(form.year),
+                '{{ month }}': form_widget(form.month),
+                '{{ day }}':   form_widget(form.day)~', ',
+            })|raw }}
+        </div>
+    {% endif %}
+{% endspaceless %}
+{% endblock date_widget %}
+
+{% block time_widget %}
+{% spaceless %}
+    {% if widget == 'single_text' %}
+        {{ block('form_widget_simple') }}
+    {% else %}
+        {% set vars = widget == 'text' ? { 'attr': { 'size': 1 }} : {} %}
+        <div {{ block('widget_container_attributes') }} data-type="time">
+            {{ form_widget(form.hour, vars) }}{% if with_minutes %}:{{ form_widget(form.minute, vars) }}{% endif %}{% if with_seconds %}:{{ form_widget(form.second, vars) }}{% endif %}
+        </div>
+    {% endif %}
+{% endspaceless %}
+{% endblock time_widget %}

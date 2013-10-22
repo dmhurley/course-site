@@ -16,16 +16,17 @@
 {% block content %}
 	<div class="form_layer">
 		<div class="form_container">
-			<h3 class="form_title">Add Question</h3>
-			{{ form(form) }}
+			<div class="form_scroller">
+				{{ form(form) }}
+			</div>
 		</div>
 	</div>
 
 	<table>
 		<thead>
 			<tr>
-				<th>Question</th>
 				<th>Id</th>
+				<th>Question</th>
 				<th>Points</th>
 				<th>Preview</th>
 				<th>Edit</th>
@@ -64,10 +65,14 @@
 			}
 		},
 		'columns': {
-			'question': function(value, cell) {
-				return value.replace(/(<([^>]+)>)/ig,"");
+			'id': function(value, cell) {
+				return "#"+value;
 			},
-			'id': null,
+			'question': function(value, cell) {
+				value = value.replace(/(<([^>]+)>)/ig,"");
+				cell.title = value;
+				return value.slice(0, 100) + (value.length > 100?'...':'');
+			},
 			'points': null
 		}
 	}); </script>
