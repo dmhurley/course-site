@@ -27,7 +27,17 @@
 
 
 
-
+form textarea {
+	margin: 0px;
+	outline: none;
+	border: none;
+	width: 90%;
+	border-radius: 5px;
+	resize: vertical;
+	display: block;
+	margin-right: auto;
+	margin-left: auto;
+}
 
 
 div[data-type=editor] {

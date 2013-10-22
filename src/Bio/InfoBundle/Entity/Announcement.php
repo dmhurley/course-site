@@ -7,6 +7,7 @@ use Bio\InfoBundle\Entity\Base;
 use Symfony\Component\Form\FormBuilder;
 
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation as Serial;
 
 /**
  * Announcement
@@ -21,6 +22,7 @@ class Announcement extends Base
      *
      * @ORM\Column(name="timestamp", type="datetime")
      * @Assert\DateTime()
+     * @Serial\Type("DateTime<'U'>")
      */
     private $timestamp;
 
@@ -29,6 +31,7 @@ class Announcement extends Base
      *
      * @ORM\Column(name="expiration", type="datetime")
      * @Assert\DateTime()
+     * @Serial\Type("DateTime<'U'>")
      */
     private $expiration;
 
@@ -109,23 +112,17 @@ class Announcement extends Base
         return $this->text;
     }
 
-    public function addToForm(FormBuilder $builder) {
-        $builder
-            ->add('timestamp', 'datetime', array(
-                'attr' => array('class' => 'datetime'),
-                'label' => 'Start Time:'
-                )
-            )
-            ->add('expiration', 'datetime', array(
-                'attr' => array('class' => 'datetime'),
-                'label' => 'End Time:'
-                )
-            )
-            ->add('text', 'textarea', array('label' => 'Announcement:'));
-        return $builder;
-    }
-
-    public function findSelf($db, $options = array(), $orderBy = array('expiration' => 'DESC')){
-        return $db->find($options, $orderBy, false);
+    /**
+     * @Serial\VirtualProperty
+     * @Serial\SerializedName("status")
+     */
+    public function getStatus() {
+        if ($this->getExpiration() <= new \DateTime() ) {
+            return "expired";
+        } else if ($this->getTimestamp() > new \DateTime()) {
+            return "hidden";
+        } else {
+            return "showing";
+        }
     }
 }

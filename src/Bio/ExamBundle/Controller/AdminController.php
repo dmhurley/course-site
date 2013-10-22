@@ -63,47 +63,9 @@ class AdminController extends Controller
             ->add('set', 'submit')
             ->getForm();
 
-   		// if ($request->getMethod() === "POST") {
-     //        $isValid = true;
-
-     //        if ($request->request->has('form')) {
-     //   			$form->handleRequest($request);
-                
-     //   			if ($form->isValid()) {
-     //   				$db->add($exam);
-     //   			} else {
-     //                $isValid = false;
-     //            }
-     //        }
-
-     //        if ($request->request->has('global')) {
-     //            $globalForm->handleRequest($request);
-
-     //            if (!$globalForm->isValid()) {
-     //                 $isValid = false;
-     //            }
-     //        }
-
-     //        if ($isValid) {
-     //            try {
-     //                $db->close();
-     //                $flash->set('success', 'Saved change.');
-     //                return $this->redirect($this->generateUrl('manage_exams'));
-     //            } catch (BioException $e) {
-     //                $flash->set('failure', 'Unable to save change.');
-     //            }
-     //        } else {
-     //            $flash->set('failure', 'Invalid form.');
-     //        }
-   		// }
-
-        $db = new Database($this, 'BioExamBundle:Exam');
-   		$exams = $db->find(array(), array('tDate' => 'ASC'), false);
-
     	return array(
             'form' => $form->createView(),
             'globalForm' => $globalForm->createView(),
-            'exams' => $exams,
             'title' => 'Manage Exams'
             );
     }
@@ -133,99 +95,6 @@ class AdminController extends Controller
             'form' => $form->createView(),
             'title' => 'Questions'
             );
-    }
-
-    /**
-     * @Route("/questions/delete/{id}", name="delete_question")
-     */
-    public function deleteQuestionAction(Request $request, Question $q = null) {
-        $flash = $request->getSession()->getFlashBag();
-		if ($q) {
-            $em = $this->getDoctrine()->getManager();
-            $qb = $em->createQueryBuilder();
-            $expr = $qb->expr();
-
-            $query = $qb->select('e')
-                ->from('BioExamBundle:Exam', 'e')
-                ->where(':q MEMBER OF e.questions')
-                ->setParameter('q', $q)
-                ->getQuery();
-            $result = $query->getResult();
-
-            if (count($result) > 0) {
-                $flash->set('failure', 'That question is used in an Exam.');
-            } else {
-                $db = new Database($this, 'BioExamBundle:Question');
-    			$db->delete($q);
-    			$db->close();
-    			$flash->set('success', 'Question deleted.');
-            }
-		} else {
-			$flash->set('failure', 'Could not find that question.');
-		}
-
-    	if ($request->headers->get('referer')){
-    		return $this->redirect($request->headers->get('referer'));
-    	} else {
-    		return $this->redirect($this->generateUrl('manage_questions'));
-    	}
-    }
-
-    /**
-     * @Route("/questions/edit/{id}", name="edit_question")
-     * @Template()
-     */
-    public function editQuestionAction(Request $request, Question $q = null) {
-        $flash = $request->getSession()->getFlashBag();
-		$form = $this->createFormBuilder($q)
-			->add('question', 'textarea', array(
-                'attr' => array(
-                    'class' => 'tinymce',
-                    'data-theme' => 'bio'
-                    )
-                )
-            )
-    		->add('answer', 'textarea', array(
-                'attr' => array(
-                    'class' => 'tinymce',
-                    'data-theme' => 'bio'
-                    )
-                )
-            )
-    		->add('points', 'integer')
-            ->add('tags', 'text', array(
-                'label' => 'Tags:',
-                'data' => implode(' ', $q->getTags()),
-                'mapped' => false,
-                'required' => false,
-                'attr' => array(
-                    'pattern' => '[a-z\s]+',
-                    'title' => 'Lower case tags seperated by spaces. a-z only.'
-                    )
-                )
-            )
-    		->add('id', 'hidden')
-   			->add('save', 'submit')
-   			->getForm();
-
-    	if ($request->getMethod() === "POST") {
-	   		$form->handleRequest($request);
-	   		if ($form->isValid()) {
-                $db = new Database($this, 'BioExamBundle:Question');
-                try {
-                    $q->setTags(explode(" ", $form->get('tags')->getData()));
-   				    $db->close();
-                    $flash->set('success', 'Question edited.');
-                } catch (BioException $e) {
-                    $flash->set('failure', 'Unable to save changes.');
-                }
-   				return $this->redirect($this->generateUrl('manage_questions'));
-	   		} else {
-                $flash->set('failure', 'Invalid form.');
-            }
-    	}
-
-    	return array('form' => $form->createView(), 'title' => 'Edit Questions');
     }
 
     /**

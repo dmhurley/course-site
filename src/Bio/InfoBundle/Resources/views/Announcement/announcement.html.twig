@@ -5,68 +5,68 @@
 	{% stylesheets 'bundles/bioinfo/css/form_extension.css' filter="cssrewrite" output="css/*.css" %}
 		<link rel="stylesheet" href="{{ asset_url }}" />
 	{% endstylesheets %}
+
+	{% javascripts 'bundles/bioexam/js/Loader.js' 'bundles/bioexam/js/Parser.js' output="js/*.js" %}
+		<script src="{{asset_url}}"></script>
+	{% endjavascripts %}
 {% endblock %}
 
 {% block content %}
-	{{ form(form) }}
-
-	{% set expired = [] %}
-	{% set shown = [] %}
-	{% set hidden = [] %}
-
-	{% for ann in announcements %}
-		{% if date() > date(ann.expiration) %}
-			{% set expired = expired|merge([ann]) %}
-		{% elseif date() < date(ann.timestamp) %}
-			{% set hidden = hidden|merge([ann]) %}
-		{% else %}
-			{% set shown = shown|merge([ann]) %}
-		{% endif %}
-	{% endfor %}
+	<div class="form_layer">
+		<div class="form_container">
+			<div class="form_scroller">
+				{{ form(form) }}
+			</div>
+			<div class="form_exit"></div>
+		</div>
+	</div>
 
 	<table>
-		<tr>
-			<th>Status</th>
-			<th>Text</th>
-			<th>Timestamp</th>
-			<th>Expiration</th>
-			<th>Edit</th>
-			<th>Delete</th>
-		</tr>
+		<thead>
+			<tr>
+				<th>Status</th>
+				<th>Text</th>
+				<th>Timestamp</th>
+				<th>Expiration</th>
+				<th>Edit</th>
+				<th>Delete</th>
+			</tr>
+		</thead>
 
-		{% for ann in hidden %}
-			<tr class="hidden">
-				<td>Hidden</td>
-				<td>{{ann.text}}</td>
-				<td>{{ann.timestamp|date('m/d/Y h:i a')}}</td>
-				<td>{{ann.expiration|date('m/d/Y h:i a')}}</td>
-				<td><a href="{{ path('edit', {'entityName' : 'announcement', 'id' : ann.id}) }}">edit</a></td>
-				<td><a href="{{ path('delete', {'entityName' : 'announcement', 'id' : ann.id}) }}">delete</a></td>
-			</tr>
-		{% endfor %}
-		{% for ann in shown %}
-		<tr class="showing">
-				<td>Showing</td>
-				<td>{{ann.text}}</td>
-				<td>{{ann.timestamp|date('m/d/Y h:i a')}}</td>
-				<td>{{ann.expiration|date('m/d/Y h:i a')}}</td>
-				<td><a href="{{ path('edit', {'entityName' : 'announcement', 'id' : ann.id}) }}">edit</a></td>
-				<td><a href="{{ path('delete', {'entityName' : 'announcement', 'id' : ann.id}) }}">delete</a></td>
-			</tr>
-		{% endfor %}
-		{% for ann in expired %}
-		<tr class="expired">
-				<td>Expired</td>
-				<td>{{ann.text}}</td>
-				<td>{{ann.timestamp|date('m/d/Y h:i a')}}</td>
-				<td>{{ann.expiration|date('m/d/Y h:i a')}}</td>
-				<td><a href="{{ path('edit', {'entityName' : 'announcement', 'id' : ann.id}) }}">edit</a></td>
-				<td><a href="{{ path('delete', {'entityName' : 'announcement', 'id' : ann.id}) }}">delete</a></td>
-			</tr>
-		{% endfor %}
+		<tbody>
 
-		{% if announcements|length == 0 %}
-			<tr><td colspan=6 style="text-align:center">no announcements</td></tr>
-		{% endif %}
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan=6 class="link add lonely">add announcement</td>
+			</tr>
+		</tfoot>
 	</table>
+{% endblock %}
+
+{% block java %}
+	<script>
+	var loader = new Loader({
+		'url': '{{ url('main_page')}}crud/',
+		'bundle': 'info',
+		'entity': 'announcement',
+		'table' : {
+			'sortFn': function(dataA, dataB) {
+				return false;
+			}
+		},
+		'columns': {
+			'status': function(value, cell) {
+				cell.parentNode.classList.add(value);
+				return value;
+			},
+			'text': null,
+			'timestamp': function(value, cell) {
+				return (new Date(value*1000)).toLocaleString();
+			},
+			'expiration': function(value, cell) {
+				return (new Date(value*1000)).toLocaleString();
+			}
+		}
+	}); </script>
 {% endblock %}
