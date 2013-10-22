@@ -360,7 +360,7 @@ function Loader(settings) {
 				}
 			},
 			{
-				'selector': '.form_layer',
+				'selector': '.form_layer, .form_exit',
 				'fn': function(event, object, self) {
 					if (event.target === object)
 					self.forms.close();

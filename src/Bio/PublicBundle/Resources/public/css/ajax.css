@@ -14,11 +14,24 @@
 	display: block;
 }
 
+.form_exit {
+	position: absolute;
+	background: white;
+	display: block;
+	width: 70px;
+	height: 35px;
+	border-radius: 0px 0px 25px 25px;
+	bottom: -35px;
+	right: 0px;
+	cursor: pointer;
+}
+
 .form_container:after {
 	content: 'Add Exam';
 	display: block;
 	position: absolute;
 	top: -40px;
+	left: 0px;
 	background: white;
 	z-index: -1;
 	padding: 10px;
@@ -36,10 +49,13 @@
 	max-height: 400px;
 	min-width: 350px;
 	position:relative;
+
+	padding: 0px 20px;
 }
 
 .form_scroller {
-	max-height: 400px;
+	padding: 20px 0px;
+	max-height: 360px; /* form_container max-height - (2 * vertical padding) */
 	overflow-y: scroll;
 }
 

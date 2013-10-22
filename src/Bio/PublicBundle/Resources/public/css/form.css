@@ -55,6 +55,10 @@ form div > div {
 	box-shadow: 1px 1px 15px rgba(150,150,150, .1);
 }
 
+form > div > div:last-of-type {
+	border:none;
+}
+
 form input, form div[data-type] {
 	-webkit-appearance: none;
 	outline: none;
@@ -64,6 +68,7 @@ form input, form div[data-type] {
 form select {
 	border: none;
 	-webkit-appearance: none;
+	-moz-appearance: window;
 	text-align:center;
 	margin-left: 0px;
 	margin-right: 0px;
@@ -92,6 +97,29 @@ div[data-type=datetime] div[data-type] {
 	display:inline;
 	margin-left: 2px;
 	margin-right: 2px;
+}
+
+button {
+	background:none;
+	border-radius:17px;
+	border:1px solid #dcdcdc;
+	display:block;
+	margin-left:auto;
+	margin-right:auto;
+	color:#666666;
+	font-size:15px;
+	font-weight:bold;
+	height:38px;
+	line-height:38px;
+	width:200px;
+	text-align:center;
+	outline:none;
+}
+button:hover {
+	background-color:rgba(175,175,255,.1);
+}
+button:active {
+	background-color:rgba(100,100,255,.1);
 }
 
 
