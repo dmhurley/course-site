@@ -1,52 +1,66 @@
 {% extends 'BioPublicBundle::main.html.twig' %}
 
+{% block head %}
+	{{parent()}}
+	{% javascripts 'bundles/bioexam/js/Loader.js' 'bundles/bioexam/js/Parser.js' output="js/*.js" %}
+			<script src="{{asset_url}}"></script>
+	{% endjavascripts %}
+{% endblock %}
+
 {% block content %}
-	{{ form(form) }}
+	<div class="form_layer">
+		<div class="form_container">
+			<div class="form_scroller">
+				{{ form(form) }}
+			</div>
+			<div class="form_exit"></div>
+		</div>
+	</div>
 
 	<table>
-		<tr>
-			<th>Person</th>
-			<th>Days</th>
-			<th>Start</th>
-			<th>End</th>
-			<th>Edit</th>
-			<th>Delete</th>
-		</tr>
-		{% for person in hourss %}
+		<thead>
 			<tr>
-			{% if person.hours|length != 0 %}
-				<td rowspan={{person.hours|length}}>{{person.fullName}}</td>
-				{% if (person.hours|first).byAppointment %}
-					<td colspan=3>By Appointment</td>
-				{% else %}
-					<td>{{(person.hours|first).days|title}}</td>
-					<td>{{(person.hours|first).start|date('h:i a')}}</td>
-					<td>{{(person.hours|first).end|date('h:i a')}}</td>
-				{% endif %}
-				<td><a href="{{ path('edit', {'entityName' : 'hours', 'id' : (person.hours|first).id }) }}">edit</a></td>
-				<td><a href="{{ path('delete', {'entityName' : 'hours', 'id' : (person.hours|first).id}) }}">delete</a></td>
+				<th>Person</th>
+				<th>Days</th>
+				<th>Start</th>
+				<th>End</th>
+				<th>Edit</th>
+				<th>Delete</th>
 			</tr>
-			{% for hour in person.hours %}
-				{% if not loop.first %}
-					<tr>
-						{% if hour.byAppointment %}
-							<td colspan=3>By Appointment</td>
-						{% else %}
-							<td>{{ hour.days|title }}</td>
-							<td >{{ hour.start|date('h:i') }}</td>
-							<td>{{ hour.end|date('h:i') }}</td>
-						{% endif %}
-						<td><a href="{{ path('edit', {'entityName' : 'hours', 'id' : hour.id }) }}">edit</a></td>
-						<td><a href="{{ path('delete', {'entityName' : 'hours', 'id' : hour.id}) }}?id={{ hour.id }}">delete</a></td>
-					</tr>
-				{% endif %}
-			{% endfor %}
+		</thead>
+		<tbody>
+
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan=6 class="link add lonely">add hours</td>
 			</tr>
-			{% else %}
-				<td rowspan=1>{{person.fullName}}</td>
-				<td colspan=6 style="text-align:center;">no hours</td>
-			</tr>
-			{% endif %}
-		{% endfor %}
+		</tfoot>	
 	</table>
+{% endblock %}
+
+{% block java %}
+	<script>
+	var loader = new Loader({
+		'url': '{{ url('main_page')}}crud/',
+		'bundle': 'info',
+		'entity': 'hours',
+		'table' : {
+			'sortFn': function(dataA, dataB) {
+				return dataA.person.f_name > dataB.person.f_name;
+			}
+		},
+		'columns': {
+			'person': function(value, cell) {
+				return value.f_name + ' ' + value.l_name;
+			},
+			'days': null,
+			'start': function(value, cell) {
+				return (new Date(value*1000)).toLocaleString();
+			},
+			'end': function(value, cell) {
+				return (new Date(value*1000)).toLocaleString();
+			}
+		}
+	}); </script>
 {% endblock %}

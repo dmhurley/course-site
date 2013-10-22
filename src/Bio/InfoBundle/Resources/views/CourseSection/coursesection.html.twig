@@ -1,7 +1,22 @@
 {% extends 'BioPublicBundle::main.html.twig' %}
 
+{% block head %}
+	{{parent()}}
+	{% javascripts 'bundles/bioexam/js/Loader.js' 'bundles/bioexam/js/Parser.js' output="js/*.js" %}
+			<script src="{{asset_url}}"></script>
+	{% endjavascripts %}
+{% endblock %}
+
+
 {% block content %}
-	{{ form(form) }}
+	<div class="form_layer">
+		<div class="form_container">
+			<div class="form_scroller">
+				{{ form(form) }}
+			</div>
+			<div class="form_exit"></div>
+		</div>
+	</div>
 
 	<table>
 		<thead>
@@ -14,18 +29,49 @@
 		</thead>
 
 		<tbody>
-			{% for section in coursesections %}
-				<tr>
-					<td>{{section.name}}</td>
-					<td>{{section.days|join(', ')|title}} {{section.startTime|date('h:i a')}} - {{section.endTime|date('h:i a')}}</td>
-					<td><a href="http://www.washington.edu/maps/?{{section.bldg|split("	")[0]}}">{{section.bldg|split("	")[0]}}</a> - {{section.room}}</td>
-					<td><a href="{{ path('edit', {'entityName':'courseSection', 'id':section.id}) }}">edit</a></td>
-				</tr>
-			{% else %}
-				<tr>
-					<td colspan=3 style="text-align:center">no course sections</td>
-				</tr>
-			{% endfor %}
+			
 		</tbody>
+
+		<tfoot>
+			<tr>
+				<td colspan=6 class="link add lonely">add course section</td>
+			</tr>
+		</tfoot>
 	</table>
+{% endblock %}
+
+{% block java %}
+	<script>
+	var loader = new Loader({
+		'url': '{{ url('main_page')}}crud/',
+		'bundle': 'info',
+		'entity': 'courseSection',
+		'table' : {
+			'sortFn': function(dataA, dataB) {
+				return dataA.name > dataB.name;
+			}
+		},
+		'buttons': {
+			'delete': undefined
+		},
+		'columns': {
+			'name': null,
+			'days': function(value, cell) {
+				return value.join(', ').toUpperCase() + ': ';
+			},
+			'start_time': function(value, cell) {
+				cell.previousSibling.innerHTML = cell.previousSibling.innerHTML + (new Date(value*1000)).toLocaleTimeString() + ' - ';
+				return undefined;
+			},
+			'end_time': function(value, cell) {
+				cell.previousSibling.innerHTML = cell.previousSibling.innerHTML + (new Date(value*1000)).toLocaleTimeString();
+				return undefined;
+			},
+			'bldg': null,
+			'room': function(value, cell) {
+				cell.previousSibling.innerHTML = cell.previousSibling.innerHTML + ' #' + value;
+				return undefined;
+			}
+		}
+	}); </script>
 {% endblock %}

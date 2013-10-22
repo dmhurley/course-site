@@ -7,6 +7,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Bio\InfoBundle\Entity\Base;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use JMS\Serializer\Annotation as Serial;
+
 
 /**
  * CourseSection
@@ -39,6 +41,7 @@ class CourseSection extends Base
      *
      * @ORM\Column(name="start", type="time")
      * @Assert\Time()
+     * @Serial\Type("DateTime<'U'>")
      */
     private $startTime;
 
@@ -47,6 +50,7 @@ class CourseSection extends Base
      *
      * @ORM\Column(name="end", type="time")
      * @Assert\Time()
+     * @Serial\Type("DateTime<'U'>")
      */
     private $endTime;
 
@@ -211,45 +215,5 @@ class CourseSection extends Base
     public function getName()
     {
         return $this->name;
-    }
-
-    public function addToForm(FormBuilder $builder) {
-        $array = file('bundles/bioinfo/buildings.txt', FILE_IGNORE_NEW_LINES);
-        $builder
-            ->add('name', 'text', array(
-                'label' => 'Name:',
-                'attr' => array(
-                    'pattern' => '^[A-Z]$',
-                    'title' => 'Valid capitalized course section name.'
-                    )
-                )
-            )
-            ->add('days', 'choice', array(
-                'choices' => array(
-                     'm' => 'Monday',
-                     'tu' => 'Tuesday',
-                     'w' => 'Wednsday',
-                     'th' => 'Thursday',
-                     'f' => 'Friday',
-                     'sa' => 'Saturday'
-                 ),
-                'multiple' => true,
-                'label' => 'Days:'
-                )
-            )
-            ->add('startTime', 'time', array('label' => 'Start:'))
-            ->add('endTime', 'time', array('label' => 'End:'))
-            ->add('bldg', 'choice', array(
-                'choices' => array_combine($array, $array),
-                'label' => 'Building:'
-                )
-            )
-            ->add('room', 'text', array('label' => 'Room:'));
-
-        return $builder;
-    }
-
-    public function findSelf($db, $options = array(), $orderBy = array('name' => 'ASC')) {
-        return $db->find($options, $orderBy, false);
     }
 }

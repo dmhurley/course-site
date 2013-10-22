@@ -7,6 +7,8 @@ use Bio\InfoBundle\Entity\Base;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\ExecutionContextInterface;
+use JMS\Serializer\Annotation as Serial;
+
 
 
 /**
@@ -36,6 +38,7 @@ class Hours extends Base
      *
      * @ORM\Column(name="start", type="time")
      * @Assert\Time()
+     * @Serial\Type("DateTime<'U'>")
      */
     private $start;
 
@@ -44,6 +47,7 @@ class Hours extends Base
      *
      * @ORM\Column(name="end", type="time")
      * @Assert\Time()
+     * @Serial\Type("DateTime<'U'>")
      */
     private $end;
 
@@ -175,33 +179,5 @@ class Hours extends Base
     public function getPerson()
     {
         return $this->person;
-    }
-
-    public function addToForm(FormBuilder $builder) {
-        $builder
-            ->add('person', 'entity', array(
-                'class' => 'BioInfoBundle:Person',
-                'property' => 'fullName',
-                'label' => 'Instructor:'
-                )
-            )
-            ->add('days', 'text', array(
-                'label' => 'Days:',
-                'required' => false
-                )
-            )
-            ->add('start', 'time', array('label' => 'Start Time:'))
-            ->add('end', 'time', array('label' => 'End Time:'))
-            ->add('byAppointment', 'checkbox', array(
-                'required' => false,
-                'label' => 'By Appointment?'
-                )
-            );
-
-        return $builder;
-    }
-
-    public function findSelf($db, $options = array(), $orderBy = array()){
-        return $db->find($options, $orderBy, false);
     }
 }
