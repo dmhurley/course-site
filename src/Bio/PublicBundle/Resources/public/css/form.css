@@ -30,9 +30,14 @@
 
 
 
-
-
-
+div[data-type=editor] {
+	width: 535px;
+	border: solid 1px rgba(0,0,0,.1);
+}
+div[data-type=editor] > div {
+	display:block;
+	float:none !important;
+}
 
 form input, form select, form label {
 	font-size: 12pt;
@@ -40,14 +45,14 @@ form input, form select, form label {
 }
 
 form input {
-	width: 90%;
+	width: 99%;
 	margin-left:auto;
 	margin-right:auto;
 	display:block;
 }
 
 form div > div {
-	width: 90%;
+	width: 99%;
 	border: solid 1px rgba(0,0,0,.1);
 	margin: 3px auto;
 	font-size: 12pt;
@@ -99,7 +104,7 @@ div[data-type=datetime] div[data-type] {
 	margin-right: 2px;
 }
 
-button {
+button[type=submit] {
 	background:none;
 	border-radius:17px;
 	border:1px solid #dcdcdc;
@@ -115,10 +120,10 @@ button {
 	text-align:center;
 	outline:none;
 }
-button:hover {
+button[type=submit]:hover {
 	background-color:rgba(175,175,255,.1);
 }
-button:active {
+button[type=submit]:active {
 	background-color:rgba(100,100,255,.1);
 }
 

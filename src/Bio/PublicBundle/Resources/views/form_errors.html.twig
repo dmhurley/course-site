@@ -2,6 +2,8 @@
 {% spaceless %}
 	{% if errors %}
    		<div title="{{label}}" data-tip="{{(errors|first).message}}" class="error row_error">
+   	{% elseif form.vars.attr.class|default(false) == 'tinymce' %}
+   		<div data-type="editor" title="{{label}}">
     {% else %}
     	<div title="{{label}}">
     {% endif %}

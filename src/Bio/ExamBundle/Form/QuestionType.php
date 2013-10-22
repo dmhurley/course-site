@@ -31,8 +31,8 @@ class QuestionType extends AbstractType
                     )
                 )
             )
-            ->add('points', 'integer', array('label' => 'Points:'))
-            ->add('tags', 'text',      array('label' => 'Tags:',
+            ->add('points', 'integer', array('label' => 'Points'))
+            ->add('tags', 'text',      array('label' => 'Tags',
                 'mapped' => false,
                 'required' => false,
                 'attr' => array(

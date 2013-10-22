@@ -15,9 +15,9 @@ class ExamType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('title', 'text', array('label'=>'Exam Name:'))
+            ->add('title', 'text', array('label'=>'Exam name'))
             ->add('section', 'text', array(
-                'label'=>'Section:',
+                'label'=>'Section name',
                 'required' => false,
                 'empty_data' => '',
                 'attr' => array(
@@ -29,11 +29,11 @@ class ExamType extends AbstractType
             ->add('tDate', 'date',        array('label' => 'Test Date:'))
             ->add('tStart', 'time',       array('label'=>'Test Start:'))
             ->add('tEnd', 'time',         array('label'=>'Test End:'))
-            ->add('tDuration', 'integer', array('label'=>'Test Length (m):'))
+            ->add('tDuration', 'integer', array('label'=>'Test length in minutes'))
             ->add('gDate', 'date',        array('label' => 'Grading Date:'))
             ->add('gStart', 'time',       array('label'=>'Grading Start:'))
             ->add('gEnd', 'time',         array('label'=>'Grading End:'))
-            ->add('gDuration', 'integer', array('label'=>'Grade Length (m):'))
+            ->add('gDuration', 'integer', array('label'=>'Grading length in minutes'))
         ;
     }
     
