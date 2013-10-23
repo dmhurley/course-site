@@ -5,10 +5,6 @@
 	{% stylesheets 'bundles/bioinfo/css/form_extension.css' filter="cssrewrite" output="css/*.css" %}
 		<link rel="stylesheet" href="{{ asset_url }}" />
 	{% endstylesheets %}
-
-	{% javascripts 'bundles/bioexam/js/Loader.js' 'bundles/bioexam/js/Parser.js' output="js/*.js" %}
-		<script src="{{asset_url}}"></script>
-	{% endjavascripts %}
 {% endblock %}
 
 {% block content %}

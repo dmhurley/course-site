@@ -3,3 +3,64 @@
 {% block content %}
 	{{ form(form) }}
 {% endblock %}
+
+{% block java %}
+	<script>
+	var loader = new Loader({
+		'url': '{{ url('main_page')}}crud/',
+		'bundle': 'info',
+		'entity': 'info',
+		'table' : undefined,
+		'buttons': undefined,
+		'listeners': [
+			{
+				'selector': 'body',
+				'event': 'loader-init',
+				'fn': function(event, object, self) {
+					self.sendRequest(self.generateUrl('global'), null, function() {
+						var data = JSON.parse(this.responseText);
+						console.log(data);
+						self.notifications.ready();
+						if (data.success) {
+							self.forms.switch('set');
+							self.forms.open();
+							self._handleForm(data.form);
+							self.notifications.success('Success.');
+						} else {
+							self.notifications.failure(data.message);
+						}
+					});
+
+
+				}
+			}
+		],
+		'form': {
+			'container': undefined,
+			'form': document.querySelector('form'),
+			'settings': {
+				'set': {
+					'before': function() {
+						// do nothing
+					},
+					'onsubmit': function(event, form, container, self) {
+						event.preventDefault();
+						self.notifications.wait();
+						self.postForm(null, form, function(ajax) {
+							var data = JSON.parse(ajax.responseText);
+							self.notifications.ready();
+							if (data.success) {
+								self.notifications.success('Saved settings.');
+							} else {
+								self.notifications.failure(data.message);
+							}
+						});
+					},
+					'after': function() {
+						// never will be closed
+					}
+				}
+			}
+		}
+	}); </script>
+{% endblock %}

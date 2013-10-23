@@ -110,6 +110,37 @@ class CrudController extends Controller
         }
     }
     /**
+     * GET or EDIT(post request) a global entity
+     *
+     * @Route("/global.json", name="global_entity")
+     * @Template("BioDataBundle:Crud:full.json.twig")
+     */
+    public function globalAction(Request $request, $bundle, $entityName) {
+        $em = $this->getDoctrine()->getManager();
+        $global = $this->getRepository($bundle, $entityName)->findOneBy(array());
+
+        $form = $this->createForm($this->createFormType($bundle, $entityName), $global)
+            ->add('save', 'submit');
+
+        if ($request->getMethod() === "POST") {
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                $em->flush();
+            } else {
+                return array(
+                    'form' => $form->createView(),
+                    'error' => 'Invalid form.'
+                );
+            }
+        }
+
+        return array(
+            'form' => $form->createView()
+        );
+    }
+
+
+    /**
      * DELETE an entity.
      *
      * @Route("/delete/{id}.json", name="delete_entity")

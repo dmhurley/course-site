@@ -68,7 +68,9 @@ function Loader(settings) {
 			if (this.form.data === null) {
 				throw "You must switch to a form first.";
 			}
-			document.body.classList.add('noscroll');
+			if (this.form.data.container) {
+				document.body.classList.add('noscroll');
+			}
 			this.form.data.form.reset();
 			this.self._clearErrors(this.form.data.form);
 			this.form.data.settings[this.form.type].before(this.form.data.form, this.form.data.container, this.self);
@@ -98,7 +100,6 @@ function Loader(settings) {
 			for(button in this.self.settings.columns) {
 				var fn = this.self.settings.columns[button];
 				var cell = row.insertCell(-1);
-				var value = data[button] === undefined?fn?fn(null, cell):button: fn?fn(data[button], cell):data[button];
 				var value = data[button] === undefined?fn?fn(null, cell):button: fn?fn(data[button], cell, this.self.parser):data[button];
 				if (value === undefined) {
 					cell.parentNode.removeChild(cell);
@@ -161,7 +162,7 @@ function Loader(settings) {
 	this.sendRequest = function(url, post, onload) {
 		ajax = new XMLHttpRequest();
 		console.log("sending request to: " + url);
-		ajax.open('POST', url, true);
+		ajax.open(post?'POST':'GET', url, true);
 		ajax.timeout = 10000;
 		ajax.onload = onload;
 		ajax.ontimeout = (function(self) {
@@ -253,7 +254,7 @@ function Loader(settings) {
 	// throws an error if required settings aren't set
 	this._setSettings = function(settings, defaults) {
 		for (key in settings) {
-			if (defaults[key] && settings[key] === undefined) {
+			if (defaults[key] !== undefined && settings[key] === undefined) {
 				delete defaults[key];
 			} else if (settings[key].constructor === Object && defaults[key]) {
 				defaults[key] = this._setSettings(settings[key], defaults[key]);
@@ -304,13 +305,18 @@ function Loader(settings) {
 	// sets it all up
 	this._init = function(settings) {
 		this.settings = this._setSettings(settings, this.defaults);
+		console.log('set settings...');
 
 		this.notifications.self = this.forms.self = this.rows.self = this;
 
 		this.notifications.wait();
 		this.parser = new Parser('#{', '}');
 		this._registerListeners();
-		this._getExisting(); // calls self.ready()
+
+		var event = new Event('loader-init');
+		event.initEvent('loader-init', false, true);
+		document.body.dispatchEvent(event);
+
 	}
 
 /*******************************************************************************************************
@@ -320,6 +326,7 @@ function Loader(settings) {
 		'url': '',
 		'bundle': '',
 		'entity': '',
+		'isSingleForm': false,
 		'table': {
 			'element': document.querySelector('table'),
 			'sortFn': function(dataA,dataB) {
@@ -365,6 +372,13 @@ function Loader(settings) {
 				'fn': function(event, object, self) {
 					if (event.target === object)
 					self.forms.close();
+				}
+			},
+			{
+				'selector': 'body',
+				'event': 'loader-init',
+				'fn': function(event, object, self) {
+					self._getExisting();
 				}
 			}
 		],

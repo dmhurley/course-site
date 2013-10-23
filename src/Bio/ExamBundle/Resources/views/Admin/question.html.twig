@@ -6,9 +6,7 @@
 			<link rel="stylesheet" href="{{ asset_url }}" />
 		{% endstylesheets %}
 
-		{% javascripts 'bundles/biopublic/js/DragDrop.js'
-					   'bundles/bioexam/js/Loader.js'
-					   'bundles/bioexam/js/Parser.js' output="js/*.js" %}
+		{% javascripts 'bundles/biopublic/js/DragDrop.js' output="js/*.js" %}
 		<script src="{{asset_url}}"></script>
 	{% endjavascripts %}
 {% endblock %}

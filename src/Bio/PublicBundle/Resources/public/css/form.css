@@ -59,6 +59,7 @@ form input {
 	margin-left:auto;
 	margin-right:auto;
 	display:block;
+	padding: 0px 15px;
 }
 
 form div > div {
@@ -87,6 +88,7 @@ form select {
 	text-align:center;
 	margin-left: 0px;
 	margin-right: 0px;
+	max-width: 75%;
 }
 
 form option {

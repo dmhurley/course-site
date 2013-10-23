@@ -9,6 +9,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 
 use Bio\InfoBundle\Entity\Info;
+use Bio\InfoBundle\Form\InfoType;
 use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 
@@ -33,47 +34,16 @@ class CourseController extends Controller
     public function indexAction(Request $request) {
         $flash = $request->getSession()->getFlashBag();
 
-        $db = new Database($this, 'BioInfoBundle:Info');
-		$info = $db->findOne();
-
-		if (!$info) {
-			$info = new Info();
-			$db->add($info);
-		}
-
         $array = file('bundles/bioinfo/buildings.txt', FILE_IGNORE_NEW_LINES);
-    	$form = $this->createFormBuilder($info)
-    		->add('courseNumber', 'text', array('label' => 'Course Number:'))
-    		->add('title', 'text', array('label' => 'Course Name:'))
-    		->add('qtr', 'choice', array(
-                'choices' => array(
-    					'autumn' => 'Autumn',
-    					'winter' => 'Winter',
-    					'spring' => 'Spring',
-    					'summer' => 'Summer'
-    				), 
-                'label' => 'Quarter'
+    	$form = $this->createForm(new InfoType(), null, array(
+                    'action' => $this->generateUrl('global_entity', array(
+                            'bundle' => 'info',
+                            'entityName' => 'info'
+                        )
+                    )
                 )
             )
-    		->add('year', 'integer', array('label' => 'Year:'))
-    		->add('email', 'email', array('label' => 'Email:'))
-    		->add('save', 'submit')
-    		->getForm();
-
-    	if ($request->getMethod() === "POST") {
-    		$form->handleRequest($request);
-
-    		if ($form->isValid()) {
-    			try {
-    				$db->close();
-                    $flash->set('success', 'Course information updated.');
-    			} catch (BioException $e) {
-                    $flash->set('failure', 'Unable to save changes.');
-    			}
-    		} else {
-                $flash->set('failure', 'Invalid form.');
-            }
-    	}
+    		->add('save', 'submit');
 
         return array('form' => $form->createView(), 'title' => "Edit Course Information");
     }
