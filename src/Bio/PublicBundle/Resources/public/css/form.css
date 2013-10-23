@@ -1,32 +1,3 @@
-/***** BORDER STUFF ******/ 
-
-#content > table td, .tableStyle table td, #content > table th, .tableStyle table th, .border {
-	border-bottom-style: solid;
-	border-color: #A591D9;
-	border-bottom-width: 1px;
-}
-#content > table th, .tableStyle table th {
-	border-bottom-width: 3px;
-}
-
-/******** EVERYTHING ELSE ********/
-#content table, .tableStyle table {
-	border-spacing: 0px;
-	width: 95%;
-	clear:both;
-}
-
-#content > table th, #content > table td , .tableStyle table th, .tableStyle table td{
-	padding: 7px 15px;
-	text-align: left;
-}
-
-#content > table tr:last-child td, .tableStyle table tr:last-child td {
-	border-bottom: none;
-}
-
-
-
 form textarea {
 	margin: 0px;
 	outline: none;
