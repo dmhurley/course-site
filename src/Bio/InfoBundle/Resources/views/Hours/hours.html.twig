@@ -55,11 +55,11 @@
 				return value.f_name + ' ' + value.l_name;
 			},
 			'days': null,
-			'start': function(value, cell) {
-				return (new Date(value*1000)).toLocaleString();
+			'start': function(value, cell, parser) {
+				return parser.time(new Date(value*1000));
 			},
-			'end': function(value, cell) {
-				return (new Date(value*1000)).toLocaleString();
+			'end': function(value, cell, parser) {
+				return parser.time(new Date(value*1000));
 			}
 		}
 	}); </script>

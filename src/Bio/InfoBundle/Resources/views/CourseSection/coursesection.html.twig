@@ -59,12 +59,12 @@
 			'days': function(value, cell) {
 				return value.join(', ').toUpperCase() + ': ';
 			},
-			'start_time': function(value, cell) {
-				cell.previousSibling.innerHTML = cell.previousSibling.innerHTML + (new Date(value*1000)).toLocaleTimeString() + ' - ';
+			'start_time': function(value, cell, parser) {
+				cell.previousSibling.innerHTML = cell.previousSibling.innerHTML + parser.time(new Date(value*1000)) + ' - ';
 				return undefined;
 			},
-			'end_time': function(value, cell) {
-				cell.previousSibling.innerHTML = cell.previousSibling.innerHTML + (new Date(value*1000)).toLocaleTimeString();
+			'end_time': function(value, cell, parser) {
+				cell.previousSibling.innerHTML = cell.previousSibling.innerHTML + parser.time(new Date(value*1000));
 				return undefined;
 			},
 			'bldg': null,

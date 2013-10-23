@@ -60,12 +60,15 @@
 				cell.parentNode.classList.add(value);
 				return value;
 			},
-			'text': null,
-			'timestamp': function(value, cell) {
-				return (new Date(value*1000)).toLocaleString();
+			'text': function(value, cell) {
+				cell.title = value;
+				return value.slice(0, 100) + (value.length > 100?'...':'');
 			},
-			'expiration': function(value, cell) {
-				return (new Date(value*1000)).toLocaleString();
+			'timestamp': function(value, cell, parser) {
+				return parser.datetime(new Date(value*1000));
+			},
+			'expiration': function(value, cell, parser) {
+				return parser.datetime(new Date(value*1000));
 			}
 		}
 	}); </script>

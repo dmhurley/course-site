@@ -70,11 +70,11 @@
 			'section': function(value, cell) {
 				return value?value.toUpperCase():'-';
 			},
-			't_date': function(value, cell) {
-				return (new Date(value*1000)).toLocaleDateString();
+			't_date': function(value, cell, parser) {
+				return parser.date(new Date(value*1000));
 			},
-			't_start': function(value, cell) {
-				return (new Date(value*1000)).toLocaleTimeString();
+			't_start': function(value, cell, parser) {
+				return parser.time(new Date(value*1000));
 			},
 			'questions': function(value, cell) {
 				return value.length;

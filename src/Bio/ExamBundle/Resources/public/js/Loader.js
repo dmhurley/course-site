@@ -99,6 +99,7 @@ function Loader(settings) {
 				var fn = this.self.settings.columns[button];
 				var cell = row.insertCell(-1);
 				var value = data[button] === undefined?fn?fn(null, cell):button: fn?fn(data[button], cell):data[button];
+				var value = data[button] === undefined?fn?fn(null, cell):button: fn?fn(data[button], cell, this.self.parser):data[button];
 				if (value === undefined) {
 					cell.parentNode.removeChild(cell);
 				} else {
