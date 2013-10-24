@@ -1,16 +1,12 @@
 {% block form_row %}
 {% spaceless %}
-	{% if errors %}
-   		<div title="{{label}}" data-tip="{{(errors|first).message}}" class="error row_error">
-   	{% elseif form.vars.attr.class|default(false) == 'tinymce' %}
-   		<div data-type="editor" title="{{label}}">
+    {% if form.vars.block_prefixes[2]|default('') == 'textarea' %}
+        {% set datatype = 'textarea' %}
     {% else %}
-    	<div title="{{label}}">
+        {% set datatype = form.vars.block_prefixes[1] %}
     {% endif %}
-       {#} {{ form_errors(form) }} {#}
-    	{% if form.vars.compound or form.vars.choices|default(false) %}
-    		{{form_label(form)}}
-    	{% endif %}
+    <div {% if errors %}data-tip="{{(errors|first).message}}" class="error row_error"{% endif %} data-type="{{datatype}}">
+    	{{form_label(form)}}
         {{ form_widget(form) }}
     </div>
 {% endspaceless %}
@@ -19,7 +15,7 @@
 {% block form_widget_simple %}
 {% spaceless %}
     {% set type = type|default('text') %}
-    <input placeholder="{{label}}" type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+    <input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
 {% endspaceless %}
 {% endblock form_widget_simple %}
 
@@ -28,7 +24,7 @@
     {% if widget == 'single_text' %}
         {{ block('form_widget_simple') }}
     {% else %}
-        <div {{ block('widget_container_attributes') }} data-type="datetime">
+        <div {{ block('widget_container_attributes') }}>
             {{ form_widget(form.date) }}
             at
             {{ form_widget(form.time) }}
@@ -42,7 +38,7 @@
     {% if widget == 'single_text' %}
         {{ block('form_widget_simple') }}
     {% else %}
-        <div {{ block('widget_container_attributes') }} data-type="date">
+        <div {{ block('widget_container_attributes') }}>
             {{ date_pattern|replace({
                 '{{ year }}':  form_widget(form.year),
                 '{{ month }}': form_widget(form.month),
@@ -59,7 +55,7 @@
         {{ block('form_widget_simple') }}
     {% else %}
         {% set vars = widget == 'text' ? { 'attr': { 'size': 1 }} : {} %}
-        <div {{ block('widget_container_attributes') }} data-type="time">
+        <div {{ block('widget_container_attributes') }}>
             {{ form_widget(form.hour, vars) }}{% if with_minutes %}:{{ form_widget(form.minute, vars) }}{% endif %}{% if with_seconds %}:{{ form_widget(form.second, vars) }}{% endif %}
         </div>
     {% endif %}

@@ -48,7 +48,11 @@
 		},
 		'columns': {
 			'name': null,
-			'days': function(value, cell) {
+			'days': function(v, cell) {
+				var value = [];
+				for (key in v) {
+					value[value.length] = v[key];
+				}
 				return value.join(', ').toUpperCase() + ': ';
 			},
 			'start_time': function(value, cell, parser) {

@@ -229,9 +229,12 @@ function Loader(settings) {
 				} else {
 					if ('tinyMCE' in window && element.classList.contains('tinymce')) {
 						var box = tinyMCE.get(field.id);
-						console.log(field.id);
 						if (box) {
 							box.setContent(field.value, {format: 'raw'});
+						}
+					} else if (typeof field.value === 'object') {
+						for(var i = 0, option = null; option = field.value[i]; i++) {
+							element.options.namedItem(option).selected = true;
 						}
 					} else {
 						element.value = field.value;
@@ -245,7 +248,7 @@ function Loader(settings) {
 		var errored = form.querySelectorAll('.error.row_error');
 		for (var i = 0; element = errored[i]; i++) {
 			element.classList.remove('error');
-			element.classList.remove('form_error');
+			element.classList.remove('row_error');
 			element.removeAttribute('data-tip');
 		}
 	}
