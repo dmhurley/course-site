@@ -215,6 +215,7 @@ function Loader(settings) {
 /************* PRIVATE FUNCTIONS ***************/
 
 	this._handleForm = function(data) {
+		console.log(data);
 		for (var i = 0; field = data[i]; i++) {
 			var element = document.getElementById(field.id);
 			if (element) {
@@ -233,7 +234,7 @@ function Loader(settings) {
 							box.setContent(field.value, {format: 'raw'});
 						}
 					} else if (typeof field.value === 'object') {
-						for(var i = 0, option = null; option = field.value[i]; i++) {
+						for(var j = 0, option = null; option = field.value[j]; j++) {
 							element.options.namedItem(option).selected = true;
 						}
 					} else {

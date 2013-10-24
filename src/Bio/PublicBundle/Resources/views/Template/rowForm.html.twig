@@ -1,0 +1,22 @@
+{% extends 'BioPublicBundle::main.html.twig' %}
+
+{% block head %}
+	{{parent()}}
+		{% javascripts 'bundles/bioexam/js/Loader.js' 'bundles/bioexam/js/Parser.js' output="js/*.js" %}
+			<script src="{{asset_url}}"></script>
+		{% endjavascripts %}
+{% endblock %}
+
+{% block basecontent %}
+	{% block form %}
+		<div class="form_layer">
+			<div class="form_container">
+				<div class="form_scroller">
+					{{ form(form) }}
+				</div>
+				<div class="form_exit"></div>
+			</div>
+		</div>
+	{% endblock %}
+	{{parent()}}
+{% endblock %}

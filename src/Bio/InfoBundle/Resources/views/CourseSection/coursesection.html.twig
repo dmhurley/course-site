@@ -1,15 +1,6 @@
-{% extends 'BioPublicBundle::main.html.twig' %}
+{% extends 'BioPublicBundle:Template:rowForm.html.twig' %}
 
 {% block content %}
-	<div class="form_layer">
-		<div class="form_container">
-			<div class="form_scroller">
-				{{ form(form) }}
-			</div>
-			<div class="form_exit"></div>
-		</div>
-	</div>
-
 	<table>
 		<thead>
 			<tr>
@@ -53,7 +44,7 @@
 				for (key in v) {
 					value[value.length] = v[key];
 				}
-				return value.join(', ').toUpperCase() + ': ';
+				return value.join(', ')?value.join(', ').toUpperCase() + ': ':'';
 			},
 			'start_time': function(value, cell, parser) {
 				cell.previousSibling.innerHTML = cell.previousSibling.innerHTML + parser.time(new Date(value*1000)) + ' - ';

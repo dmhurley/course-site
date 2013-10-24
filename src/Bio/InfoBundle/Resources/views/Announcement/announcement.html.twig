@@ -1,4 +1,4 @@
-{% extends 'BioPublicBundle::main.html.twig' %}
+{% extends 'BioPublicBundle:Template:rowForm.html.twig' %}
 
 {% block head %}
 	{{ parent() }}
@@ -8,15 +8,6 @@
 {% endblock %}
 
 {% block content %}
-	<div class="form_layer">
-		<div class="form_container">
-			<div class="form_scroller">
-				{{ form(form) }}
-			</div>
-			<div class="form_exit"></div>
-		</div>
-	</div>
-
 	<table>
 		<thead>
 			<tr>

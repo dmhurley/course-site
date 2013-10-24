@@ -1,30 +1,62 @@
-{% extends 'BioPublicBundle::main.html.twig' %}
+{% extends 'BioPublicBundle:Template:rowForm.html.twig' %}
 
 {% block content %}
-	{{ form(form) }}
-
 	<table>
-		<tr>
-			<th>Name</th>
-			<th>When</th>
-			<th>Start</th>
-			<th>End</th>
-			<th>Building</th>
-			<th>Room</th>
-			<th>Edit</th>
-		</tr>
-		{% for section in sections %}
+		<thead>
 			<tr>
-				<td>{{section.name|upper}}</td>
-				<td>{{section.days|join(', ')|title}}</td>
-				<td>{{section.start|date('h:i a')}}</td>
-				<td>{{section.end|date('H:i')}}</td>
-				<td><a href="http://www.washington.edu/maps/?{{section.bldg|split("	")[0]}}">{{section.bldg}}</a></td>
-				<td>{{section.room}}
-				<td><a href="{{ path('edit', {'entityName' : 'section', 'id':section.id}) }}">edit</a></td>
+				<th>Name</th>
+				<th>When</th>
+				<th>Where</th>
+				<th>Edit</th>
 			</tr>
-		{% else %}
-			<tr><td colspan=8 style="text-align:center">no sections</td></tr>
-		{% endfor %}
+			</thead>
+		<tbody>
+
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan=7 class="link add lonely">add section</td>
+			</tr>
+		</tfoot>
 	</table>
+{% endblock %}
+
+{% block java %}
+	<script>
+	var loader = new Loader({
+		'url': '{{ url('main_page')}}crud/',
+		'bundle': 'info',
+		'entity': 'section',
+		'table' : {
+			'sortFn': function(dataA, dataB) {
+				return dataA.name > dataB.name;
+			}
+		},
+		'buttons': {
+			'delete': undefined
+		},
+		'columns': {
+			'name': null,
+			'days': function(v, cell) {
+				var value = [];
+				for (key in v) {
+					value[value.length] = v[key];
+				}
+				return value.join(', ')?value.join(', ').toUpperCase() + ': ':'';
+			},
+			'start': function(value, cell, parser) {
+				cell.previousSibling.innerHTML = cell.previousSibling.innerHTML + parser.time(new Date(value*1000)) + ' - ';
+				return undefined;
+			},
+			'end': function(value, cell, parser) {
+				cell.previousSibling.innerHTML = cell.previousSibling.innerHTML + parser.time(new Date(value*1000));
+				return undefined;
+			},
+			'bldg': null,
+			'room': function(value, cell) {
+				cell.previousSibling.innerHTML = cell.previousSibling.innerHTML + ' #' + value;
+				return undefined;
+			}
+		}
+	}); </script>
 {% endblock %}
