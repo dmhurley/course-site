@@ -76,3 +76,12 @@
     {% endfor %}
 {% endspaceless %}
 {% endblock choice_widget_options %}
+
+{% block checkbox_widget %}
+{% spaceless %}
+    <div class="checkbox">
+        <input type="checkbox" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />
+        <label for="{{id}}"></label>
+    </div>
+{% endspaceless %}
+{% endblock checkbox_widget %}

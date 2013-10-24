@@ -12,12 +12,11 @@
 	margin-bottom: 25px;
 }
 
-.checker input {
-	font-size:100px;
+.checker .checkbox {
 	float:right;
-	margin: 10px 30px 10px 10px;
+	margin-right: 20px;
 }
-.checker label {
+.checker > label {
 	float:right;
 	margin: 6px 0px 6px 6px;
 }
