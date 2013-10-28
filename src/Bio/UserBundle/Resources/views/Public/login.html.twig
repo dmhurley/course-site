@@ -1,22 +1,20 @@
 {% extends 'BioPublicBundle::main.html.twig' %}
 
 {% block content %}
+	<form id="reset" action="{{ path('user_reset') }}"></form>
 	<form action="{{ path('login_check') }}" method="POST">
 		<div id="form">
-			<div>
+			<div data-type="text">
 				<label for="form_username" class="required">Username:</label>
 				<input type="text" id="form_username" name="_username" value="{{last_username}}" required="required">
 			</div>
-			<div>
+			<div data-type="text">
 				<label for="form_password" class="required">Password:</label>
 				<input type="password" id="form_password" name="_password" required="required">
 			</div>
-			<div>
-				<label style="height:1px"></label>
-				{#<a href="{{ path('register') }}">create account</a>&emsp;#} <a href="{{ path('user_reset') }}">forgot password</a>
-			</div>
-			<div>
-				<button type="submit" id="form_login" name="form[login]">Login</button>
+			<div style="text-align:center;">
+				<button style="display:inline;" form="reset" type="submit" href="{{ path('user_reset') }}">Forgot Password</button>
+				<button style="display:inline;" type="submit" id="form_login" name="form[login]">Login</button>
 			</div>
 <!-- 			<input type="hidden" name="_target_path" value="{{ url('main_admin_page') }}" />
  -->		</div>

@@ -6,6 +6,8 @@ use Symfony\Component\Form\FormBuilder;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use JMS\Serializer\Annotation as Serial;
+
 
 /**
  * @ORM\Entity
@@ -26,6 +28,7 @@ class FileBase {
 
     /**
      * @ORM\Column(name="alpha", type="string", length=2)
+     * @Serial\Exclude
      */
     protected $order;
 
@@ -40,6 +43,7 @@ class FileBase {
     /**
      * @ORM\ManyToOne(targetEntity="Folder", inversedBy="children")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", onDelete="CASCADE")
+     * @Serial\Exclude
      */
     protected $parent;
 

@@ -7,6 +7,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 use Bio\DataBundle\Exception\BioException;
 use Bio\FolderBundle\Entity\FileBase;
+use JMS\Serializer\Annotation as Serial;
+
 
 /**
  * File
@@ -37,8 +39,12 @@ class File extends FileBase
     // are not persisted!
     /**
      * @Assert\File()
+     * @Serial\Exclude
      */
     private $file;
+    /**
+     * @Serial\Exclude
+     */
     private $temp;
 
     /**

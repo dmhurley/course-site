@@ -20,7 +20,10 @@ class BioExtension extends \Twig_Extension {
 
 	public function jsonifyFilter($object) {
 		$serializer = $this->container->get('jms_serializer');
-		return $serializer->serialize($object, 'json', SerializationContext::create()->enableMaxDepthChecks());
+		return $serializer->serialize($object, 'json', SerializationContext::create()
+				->enableMaxDepthChecks()
+				->setSerializeNull(true)
+			);
 	}
 
 	public function getName() {

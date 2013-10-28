@@ -3,37 +3,129 @@
 {% block head %}
 	{{ parent() }}
 
-	{% stylesheets 'bundles/biofolder/css/folder.css' filter="cssrewrite" output="css/*.css" %}
+	{% stylesheets 'bundles/biofolder/css/folder2.css' filter="cssrewrite" output="css/*.css" %}
 		<link rel="stylesheet" href="{{ asset_url }}" />
 	{% endstylesheets %}
 
-	{% javascripts 'bundles/biopublic/js/Namer.js' %}
+	{% javascripts 'bundles/bioexam/js/Loader.js'
+				   'bundles/bioexam/js/Parser.js' %}
 		<script src="{{asset_url}}"></script>
 	{% endjavascripts %}
 {% endblock %}
 
 {% block content %}
+	<div
 
-<h2 style="margin-top:30px; margin-bottom:5px;">Front Page Content</h2>
-<ul>
-	{% include 'BioFolderBundle:Default:structure.html.twig' with {'root' : main, 'selected' : selected} %}
-</ul>
+	<div id="box">
+		<div class="header" >
 
-<h2 style="margin-top:30px; margin-bottom:5px;">Sidebar Content</h2>
-<ul>
-	{% include 'BioFolderBundle:Default:structure.html.twig' with {'root' : root, 'selected' : selected} %}
-</ul>
+		</div>
+		<div class="content">
+			
+		</div>
+		<div class="footer">
+			<button type="submit">Add Folder</button>
+			<button type="submit">Add File</button>
+			<button type="submit">Add Link</button>
+		</div>
+	</div>
+{% endblock %}
 
-<div class="f">
-<h2>Add Folder</h2>
-{{ form(folderForm) }}
-</div>
-<div class="f">
-<h2>Add File</h2>
-{{ form(fileForm) }}
-</div>
-<div class="f">
-<h2>Add Link</h2>
-{{ form(linkForm) }}
-</div>
+{% block java %}
+	<script>
+	var loader = new Loader({
+		'url': '{{ url('main_page')}}crud/',
+		'bundle': 'folder',
+		'entity': 'fileBase',
+		'table' : undefined,
+		'buttons': undefined,
+		'browser': {
+			'container': document.querySelector('#box .content'),
+			'depth': 0,
+			'addColumn': function(files, self) {
+				var browser = self.settings.browser;
+				var column;
+				browser.depth++;
+				if (browser.container.children.length < browser.depth) {
+					column = document.createElement('div');
+					column.classList.add('column');
+					column.setAttribute('data-depth', browser.depth);
+
+					column.addEventListener('click', function(event) {
+						if (this != event.target) {
+							browser.depth = this.getAttribute('data-depth');
+							for(var i = browser.depth; i < browser.container.children.length;) {
+								browser.container.removeChild(browser.container.children[i]);
+							}
+						}
+					});
+					browser.container.appendChild(column);
+				} else {
+					column = browser.container.children[browser.depth];
+				}
+
+				for(var i = 0, folder = null; folder = files[i]; i++) {
+					var row = document.createElement('div');
+					row.classList.add('row');
+					row.classList.add(folder.type);
+					row.setAttribute('data-id', folder.id);
+
+					if(folder.type === 'link') {
+						row.innerHTML = '<a href="'+folder.address+'">'+folder.name+"</a>";
+					} else if (folder.type === 'file') {
+						row.innerHTML = '<a href="' + self.parser.parse( '{{ url('download', {'id': ('#{id}'|raw)}) }}', folder)+'">'+folder.name+'</a>';
+					} else {
+						row.innerHTML = folder.name;
+						row.addEventListener('click', function(event) {
+							var selected = this.parentNode.querySelector('.selected');
+							if (selected) selected.classList.remove('selected');
+							this.classList.add('selected');
+							self.notifications.wait();
+							self.sendRequest(self.generateUrl('get', this.getAttribute('data-id')), null, function(json, self) {
+								if (json.success) {
+									browser.addColumn(json.data[0].children, self);
+								} else {
+									self.notifications.failure(json.message);
+								}
+								self.notifications.ready();
+							});
+						});
+					}
+
+					
+					column.appendChild(row);
+				}
+			}
+		},
+		'listeners': [
+			{
+				'selector': 'body',
+				'event': 'loader-init',
+				'fn': function(event, object, self) {
+					self.sendRequest(self.generateUrl('find'), 'parent=', function(json, self) {
+						self.settings.browser.addColumn(json.data, self);
+						self.notifications.ready();
+					});			
+				}
+			}
+		],
+		'form': {
+			'container': undefined,
+			'form': document.querySelector('body'),
+			'settings': {
+				'set': {
+					'before': function() {
+
+					},
+					'onsubmit': function() {
+
+					},
+					'after': function() {
+
+					}
+				}
+			}
+		}
+	});
+	</script>
 {% endblock %}

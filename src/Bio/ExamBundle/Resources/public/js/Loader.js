@@ -164,18 +164,32 @@ function Loader(settings) {
 		console.log("sending request to: " + url);
 		ajax.open(post?'POST':'GET', url, true);
 		ajax.timeout = 10000;
-		ajax.onload = onload;
+		ajax.onload = (function(self) {
+			return function(event) {
+				var json = {'success': false, 'message': 'Error.', 'data': [], 'form': []};
+				if (this.status !== 200) {
+					json.message= this.statusText;
+				} else {
+					try {
+						json = JSON.parse(this.responseText);
+					} catch (e) {};
+				}
+				onload(json, self);
+			}
+		})(this);
 		ajax.ontimeout = (function(self) {
 			return function() {
 				self.notifications.failure('Operation timed out.');
 			}
 		})(this);
-		ajax.onerror = ajax.onabort = (function(self) {
+		ajax.onerror = (function(self) {
 			return function() {
 				self.notifications.failure('Error.');
 			}
 		})(this);
-
+		if (post) {
+			ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		}
 		ajax.send(post);
 	}
 
@@ -187,15 +201,14 @@ function Loader(settings) {
 	this.postForm = function(url, form, onload) {
 		data = new FormData(form);
 		this._clearErrors(form);
-		this.sendRequest(url?url:form.action, data, (function(self, form, fn) {
-			return function() {
-				var obj = JSON.parse(this.responseText);
-				if (obj.form !== undefined) {
-					self._handleForm(obj.form);
+		this.sendRequest(url?url:form.action, data, (function(form, fn) {
+			return function(json, self) {
+				if (json.form !== undefined) {
+					self._handleForm(json.form);
 				}
-				fn(this);
+				fn(json);
 			}
-		})(this, form, onload));
+		})(form, onload));
 	}
 
 	/*
@@ -215,7 +228,6 @@ function Loader(settings) {
 /************* PRIVATE FUNCTIONS ***************/
 
 	this._handleForm = function(data) {
-		console.log(data);
 		for (var i = 0; field = data[i]; i++) {
 			var element = document.getElementById(field.id);
 			if (element) {
@@ -233,7 +245,7 @@ function Loader(settings) {
 						if (box) {
 							box.setContent(field.value, {format: 'raw'});
 						}
-					} else if (typeof field.value === 'object') {
+					} else if (typeof field.value === 'object' && field.value) {
 						for(var j = 0, option = null; option = field.value[j]; j++) {
 							element.options.namedItem(option).selected = true;
 						}
@@ -258,6 +270,8 @@ function Loader(settings) {
 	// throws an error if required settings aren't set
 	this._setSettings = function(settings, defaults) {
 		for (key in settings) {
+			console.log(key);
+			console.log(settings);
 			if (defaults[key] !== undefined && settings[key] === undefined) {
 				delete defaults[key];
 			} else if (settings[key].constructor === Object && defaults[key]) {
@@ -289,21 +303,18 @@ function Loader(settings) {
 
 	this._getExisting = function(n) {
 		console.log("Retrieving existing rows...");
-		this.sendRequest(this.generateUrl('all') , n, (function(self) {
-			return function() {
-				var data = JSON.parse(this.responseText);
-				if (data.success) {
-					for (var i = 0; row = data.data[i]; i++) {
+		this.sendRequest(this.generateUrl('all') , n, function(json, self) {
+				if (json.success) {
+					for (var i = 0; row = json.data[i]; i++) {
 						self.rows.create(row)
 					}
 					console.log("Displayed existing results...");
 					self.notifications.ready();
 					self.notifications.success('Finished loading.');
 				} else {
-					self.notifications.failure(data.message);
+					self.notifications.failure(json.message);
 				}
-			}
-		})(this));
+			});
 	}
 
 	// sets it all up
@@ -349,15 +360,14 @@ function Loader(settings) {
 				'fn': function(event, button, self) {
 					self.notifications.wait();
 					var url = self.generateUrl('delete', button.parentNode.id);
-					self.sendRequest(url, null, function() {
-						var data = JSON.parse(this.responseText);
-						if (data.success) {
+					self.sendRequest(url, null, function(json, self) {
+						if (json.success) {
 							self.rows.remove(button.parentNode);
 							self.notifications.ready();
 							self.notifications.success('Deleted ' + self.settings.entity + '.');
 						} else {
 							self.notifications.ready();
-							self.notifications.failure(data.message);
+							self.notifications.failure(json.message);
 						}
 					});
 				}
@@ -401,15 +411,14 @@ function Loader(settings) {
 						event.preventDefault();
 						self.notifications.wait();
 						container.classList.remove('shown');
-						self.postForm(null, form, function(ajax) {
-							var data = JSON.parse(ajax.responseText);
+						self.postForm(null, form, function(json) {
 							self.notifications.ready();
-							if (data.success) {
-								self.rows.create(data.data[0]);
+							if (json.success) {
+								self.rows.create(json.data[0]);
 								self.notifications.success('Created ' +self.settings.entity+'.');
 								self.forms.close();
 							} else {
-								self.notifications.failure(data.message);
+								self.notifications.failure(json.message);
 								container.classList.add('shown');
 							}
 						});
@@ -426,35 +435,33 @@ function Loader(settings) {
 						form.action = self.generateUrl('edit', form.getAttribute('data-id'));
 
 						self.notifications.wait();
-						self.sendRequest(self.generateUrl('get', form.getAttribute('data-id')), null, (function(self, container) {
-							return function() {
-								var data = JSON.parse(this.responseText);
+						self.sendRequest(self.generateUrl('get', form.getAttribute('data-id')), null, (function(container) {
+							return function(json, self) {
 								self.notifications.ready();
-								if (data.success) {
-									self._handleForm(data.form);
+								if (json.success) {
+									self._handleForm(json.form);
 									container.classList.add('shown');
 								} else {
-									self.notification.failure(data.message);
+									self.notification.failure(json.message);
 									self.forms.close();
 								}
 							}
-						})(self, container));
+						})(container));
 					},
 					'onsubmit': function(event, form, container, self) {
 						event.preventDefault();
 						self.notifications.wait();
 						container.classList.remove('shown');
-						self.postForm(null, form, function(ajax) {
-							var data = JSON.parse(ajax.responseText);
+						self.postForm(null, form, function(json) {
 							self.notifications.ready();
-							if (data.success) {
+							if (json.success) {
 								var row = document.getElementById(form.getAttribute('data-id'));
 								self.rows.remove(row);
-								self.rows.create(data.data[0]);
+								self.rows.create(json.data[0]);
 								self.notifications.success('Edited '+self.settings.entity+'.');
 								self.forms.close();
 							} else {
-								self.notifications.failure(data.message);
+								self.notifications.failure(json.message);
 								container.classList.add('shown');
 							}
 						});

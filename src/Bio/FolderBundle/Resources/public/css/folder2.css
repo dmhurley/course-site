@@ -1,0 +1,90 @@
+#box {
+	width: 639px;
+	height: 500px;
+	margin-right: auto;
+	margin-left: auto;
+	border: 1px solid gray;
+	border-radius: 17px;
+}
+
+	#box .header {
+
+	}
+
+	#box .footer {
+		position:absolute;
+		bottom: -34px;
+		width: inherit;
+		text-align: center;
+		border-top:solid 1px gray;
+		border-radius: 17px;
+		background:white;
+
+	}
+		#box .footer button {
+			display: inline;
+			margin: 15px 0;
+		}
+
+	#box .content {
+		width: 639px;
+		overflow-x:scroll;
+		overflow-y:hidden;
+		white-space: nowrap;
+		height: inherit;
+	}
+		#box .content .column {
+			width: 230px;
+			height: 100%;
+			display: inline-block;
+			border-right:solid 1px gray;
+			overflow-x: hidden;
+			overflow-y: scroll;
+		}
+			.column .row {
+				width:90%;
+				color: gray;
+				font-size: 10pt;
+				padding: 12px;
+				border-bottom:solid 1px gray;
+				white-space: nowrap;
+				cursor: pointer;
+			}
+
+			.column .row:hover {
+				background-color: rgb(240,240,255);
+			}
+
+			.column .row.folder, .column .row.file, .column .row.link {
+				padding-left: 30px;
+			}
+
+			.column .row.folder:before, .column .row.file:before, .column .row.link:before {
+				float:left;
+				content: '';
+				display:block;
+				position:relative;
+				left: -15px;
+				top: 3px;
+				height: 14px;
+				width: 14px;
+			}
+
+				.column .row.folder:before {
+					background: url(../images/folder.png);
+				}
+				.column .row.link:before {
+					background: url(../images/link.png);
+				}
+				.column .row.file:before {
+					background: url(../images/file.png);
+				}
+
+			.column .row:last-of-type {
+				margin-bottom: 80px;
+			}
+
+			.column .row.selected {
+				background-color: rgb(44, 93, 205);
+				color: white;
+			}

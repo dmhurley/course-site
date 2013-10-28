@@ -69,7 +69,7 @@ class CrudController extends Controller
     {
         $entity = $this->getEntity($bundle, $entityName, $id);
 
-        $form = $this->createForm($this->createFormType($bundle, $entityName), $entity);
+        // $form = $this->createForm($this->createFormType($bundle, $entityName), $entity);
 
         if (!$entity) {
             return array('error' => 'Entity not found.');
@@ -77,7 +77,32 @@ class CrudController extends Controller
 
         return array(
             'entities' => [$entity],
-            'form' => $form->createView()
+            // 'form' => $form->createView()
+        );
+    }
+
+    /**
+     * FIND entities with basic parameters
+     *
+     * @Route("/find.json", name="find_entity")
+     * @Template("BioDataBundle:Crud:full.json.twig")
+     */
+    public function findAction(Request $request, $bundle, $entityName) {
+        $repo = $this->getRepository($bundle, $entityName);
+        $qb = $repo->createQueryBuilder('e');
+        $index = 0;
+        foreach($request->request as $key => $value) {
+            if ($value) {
+                $qb->andWhere('e.'.$key.' = :value'.$index)
+                    ->setParameter('value'.$index, $value);
+            } else {
+                $qb->andWhere('e.'.$key.' IS NULL');
+            }
+            $index++;
+        }
+        $result = $qb->getQuery()->getResult();
+        return array(
+            'entities' => $result
         );
     }
 

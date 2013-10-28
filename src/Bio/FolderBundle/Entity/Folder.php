@@ -5,6 +5,8 @@ namespace Bio\FolderBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Bio\FolderBundle\Entity\FileBase;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation as Serial;
+
 
 /**
  * Folder
@@ -20,6 +22,7 @@ class Folder extends FileBase
     /**
      * @ORM\OneToMany(targetEntity="FileBase", mappedBy="parent", fetch="LAZY")
      * @ORM\OrderBy({"order" = "ASC", "name" = "ASC"})
+     * @Serial\MaxDepth(2)
      */
     private $children;
 
@@ -33,6 +36,7 @@ class Folder extends FileBase
     /**
      * @ORM\ManyToOne(targetEntity="\Bio\StudentBundle\Entity\Student")
      * @ORM\JoinColumn(name="studentID", referencedColumnName="id", onDelete="CASCADE")
+     * @Serial\MaxDepth(2)
      **/ 
     private $student;
 

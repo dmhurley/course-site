@@ -24,17 +24,16 @@
 				'selector': 'body',
 				'event': 'loader-init',
 				'fn': function(event, object, self) {
-					self.sendRequest(self.generateUrl('global'), null, function() {
-						var data = JSON.parse(this.responseText);
-						console.log(data);
+					self.sendRequest(self.generateUrl('global'), null, function(json, self) {
+						console.log(json);
 						self.notifications.ready();
-						if (data.success) {
+						if (json.success) {
 							self.forms.switch('set');
 							self.forms.open();
-							self._handleForm(data.form);
+							self._handleForm(json.form);
 							self.notifications.success('Success.');
 						} else {
-							self.notifications.failure(data.message);
+							self.notifications.failure(json.message);
 						}
 					});
 

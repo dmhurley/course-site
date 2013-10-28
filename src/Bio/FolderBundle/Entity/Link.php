@@ -7,6 +7,8 @@ use Bio\InfoBundle\Entity\Base;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Validator\Constraints as Assert;
 use Bio\FolderBundle\Entity\FileBase;
+use JMS\Serializer\Annotation as Serial;
+
 
 
 /**
