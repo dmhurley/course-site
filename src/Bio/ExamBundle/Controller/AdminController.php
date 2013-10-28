@@ -601,6 +601,7 @@ class AdminController extends Controller
                     t.status = 1)
                 AND (e.name LIKE CONCAT(:section, '."'%'".') OR 
                     :section IS NULL)
+                ORDER BY s.lName ASC, s.fName ASC
             ')
             ->setParameter('section', $exam->getSection())
             ->getResult();
@@ -608,8 +609,12 @@ class AdminController extends Controller
         foreach($results as $result) {
             $responseText[] = $this->echoArray(
                 array(
+                    '',
+                    '',
+                    '',
                     $result->getSid(),
-                    $result->getFName().' '.$result->getLName(),
+                    '',
+                    $result->getLName().' '.$result->getFName(),
                     $result->getSection()->getName()
                 )
             );

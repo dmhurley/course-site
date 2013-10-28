@@ -59,19 +59,21 @@
 			{% if taker.gradedBy|length == 0 %}
 				<li><a href="{{path('review_exam', {'id':taker.exam.id}) }}">{{taker.exam.title}}</a> - (ungraded)
 			{% else %}
-				{% set outOf = 0%}
+				{% set outOf = 0 %}
 				{% set totalMean = 0 %}
 
 				{% for answer in taker.answers %}
 					{% set outOf = outOf+answer.question.points %}
 
 					{% set questionTotal = 0 %}
+					{% set grades = 0 %}
 
-					{% for grade in answer.grades %}
+					{% for grade in answer.grades if grade.points != null %}
+						{% set grades = grades + 1 %}
 						{% set questionTotal = questionTotal+grade.points %}
 					{% endfor %}
 
-					{% set totalMean = totalMean + questionTotal/answer.grades|length %}
+					{% set totalMean = totalMean + questionTotal/grades %}
 				{% endfor %}
 
 				<li><a href="{{path('review_exam', {'id':taker.exam.id}) }}">{{taker.exam.title}}</a> - ({{totalMean|number_format(2, '.', ',')}}/{{outOf|number_format(2)}})</li>
