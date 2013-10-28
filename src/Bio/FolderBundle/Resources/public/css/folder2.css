@@ -1,10 +1,11 @@
 #box {
-	width: 639px;
+	width: 710px;
 	height: 500px;
 	margin-right: auto;
 	margin-left: auto;
 	border: 1px solid gray;
 	border-radius: 17px;
+	overflow:hidden;
 }
 
 	#box .header {
@@ -27,7 +28,7 @@
 		}
 
 	#box .content {
-		width: 639px;
+		width: inherit;
 		overflow-x:scroll;
 		overflow-y:hidden;
 		white-space: nowrap;
@@ -40,6 +41,11 @@
 			border-right:solid 1px gray;
 			overflow-x: hidden;
 			overflow-y: scroll;
+		}
+
+		#box .content .column:last-of-type {
+			min-width:230px;
+			width:auto;
 		}
 			.column .row {
 				width:90%;

@@ -159,7 +159,7 @@ function Loader(settings) {
 	 *		@event the event
 	 * calls this.failure('Error.') on error or abort
 	 */
-	this.sendRequest = function(url, post, onload) {
+	this.sendRequest = function(url, post, onload, isForm) {
 		ajax = new XMLHttpRequest();
 		console.log("sending request to: " + url);
 		ajax.open(post?'POST':'GET', url, true);
@@ -187,7 +187,7 @@ function Loader(settings) {
 				self.notifications.failure('Error.');
 			}
 		})(this);
-		if (post) {
+		if (post && !isForm) {
 			ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		}
 		ajax.send(post);
@@ -208,7 +208,7 @@ function Loader(settings) {
 				}
 				fn(json);
 			}
-		})(form, onload));
+		})(form, onload), true);
 	}
 
 	/*

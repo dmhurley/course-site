@@ -37,7 +37,6 @@ class AdminController extends Controller
      */
     public function examAction(Request $request)
     {
-        $flash = $request->getSession()->getFlashBag();
         $exam = new Exam();
     	$form = $this->createForm(new ExamType(), $exam, 
                 array(
