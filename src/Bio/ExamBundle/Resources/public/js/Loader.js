@@ -185,8 +185,6 @@ function Loader(settings) {
 	// throws an error if required settings aren't set
 	this._setSettings = function(settings, defaults) {
 		for (key in settings) {
-			console.log(key);
-			console.log(settings);
 			if (defaults[key] !== undefined && settings[key] === undefined) {
 				delete defaults[key];
 			} else if (settings[key].constructor === Object && defaults[key]) {

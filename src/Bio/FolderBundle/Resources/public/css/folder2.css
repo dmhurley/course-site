@@ -13,13 +13,12 @@
 	}
 
 	#box .footer {
-		position:absolute;
-		bottom: -34px;
 		width: inherit;
 		text-align: center;
 		border-top:solid 1px gray;
 		border-radius: 17px;
 		background:white;
+		height: 150px;
 
 	}
 		#box .footer button {
@@ -32,7 +31,9 @@
 		overflow-x:scroll;
 		overflow-y:hidden;
 		white-space: nowrap;
-		height: inherit;
+		height: 350px;
+		margin-bottom: 0px;
+
 	}
 		#box .content .column {
 			width: 230px;
@@ -101,7 +102,8 @@
 
 
 			.column .row:last-of-type {
-				margin-bottom: 80px;
+				margin-bottom: 10px;
+				border-bottom: none;
 			}
 
 			.column .row.selected {
@@ -115,3 +117,8 @@
 				.column .row.selected a {
 					color: white;
 				}
+
+
+.row.link, form .link  {
+	text-decoration:none;
+}

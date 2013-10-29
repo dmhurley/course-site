@@ -53,8 +53,8 @@
 			<button class="add_thing" type="submit" data-action="folder">Add Folder</button>
 			<button class="add_thing" type="submit" data-action="file">Add File</button>
 			<button class="add_thing" type="submit" data-action="link">Add Link</button>
-			<button class="" type="submit" data-action="folder">Delete</button>
-			<button class="" type="submit" data-action="file">Edit</button>
+			<button class="" type="submit" data-action="delete">Delete</button>
+			<button class="" type="submit" data-action="edit">Edit</button>
 		</div>
 	</div>
 {% endblock %}
@@ -71,6 +71,7 @@
 			'container': document.querySelector('#box .content'),
 			'depth': 0,
 			'selected': null,
+			'listers': [],
 			'addColumn': function(files, self) {
 				var browser = self.settings.browser;
 				var column;
@@ -93,56 +94,62 @@
 					column = browser.container.children[browser.depth];
 				}
 
-				for(var i = 0, folder = null; folder = files[i]; i++) {
-					var row = document.createElement('div');
-					row.classList.add('row');
-					row.classList.add(folder.type);
-					row.setAttribute('data-id', folder.id);
+				browser.listers[browser.depth - 1] = new Lister(column, function(ob1, ob2) {
+					return parseInt(ob1.getAttribute('data-id')) > parseInt(ob2.getAttribute('data-id'));
+				});
 
-					if(folder.type === 'link') {
-						row.innerHTML = '<a href="'+folder.address+'">'+folder.name+"</a>";
-					} else if (folder.type === 'file') {
-						row.innerHTML = '<a href="' + self.parser.parse( '{{ url('download', {'id': ('#{id}')})|raw }}', folder)+'">'+folder.name+'</a>';
-					} else {
-						row.innerHTML = folder.name;
-						row.addEventListener('click', function(event) {
-							self.notify.wait();
-								self.settings.browser.selected = this.getAttribute('data-id');
-
-								var _oldEntity = self.settings.entity;
-								self.settings.entity = 'folder';
-								var url = self.generateUrl('get', this.getAttribute('data-id'));
-								self.settings.entity = _oldEntity;
-
-								self.sendRequest(url, null, function(event, self) {
-								if (this.success) {
-									browser.addColumn(this.data[0].children, self);
-									self.notify.ready();
-								} else {
-									self.notify.failure(this.message);
-								}
-							})
-						});
-					}
-					row.addEventListener('click', function(event) {
-						var selected = this.parentNode.querySelector('.selected');
-						if (selected) selected.classList.remove('selected');
-						var globalSelected = document.querySelectorAll('.row.selected');
-						for (var j = 0; j < globalSelected.length; j++) {
-							globalSelected[j].classList.add('old');
-						}
-						this.classList.remove('old');
-						this.classList.add('selected');
-					});
-					if (folder.type === 'link' || folder.type === 'file') {
-						row.addEventListener('click', function(event) {
-							self.settings.browser.selected = null;
-						});
-					}
-
-					
-					column.appendChild(row);
+				for(var i = 0, folder = null; folder = files[i]; i++) {					
+					browser.listers[browser.depth - 1].add(this.createObject(folder, self, browser));
 				}
+			},
+			'createObject': function(folder, self, browser) {
+				var row = document.createElement('div');
+				row.classList.add('row');
+				row.classList.add(folder.type);
+				row.setAttribute('data-id', folder.id);
+
+				if(folder.type === 'link') {
+					row.innerHTML = '<a href="'+folder.address+'" target=_blank>'+folder.name+"</a>";
+				} else if (folder.type === 'file') {
+					row.innerHTML = '<a href="' + self.parser.parse( '{{ url('download', {'id': ('zzzz')})|replace({'zzzz': '#{id}'}) }}', folder)+'" target=_blank>'+folder.name+'</a>';
+				} else {
+					row.innerHTML = folder.name;
+					row.addEventListener('click', function(event) {
+						self.notify.wait();
+							self.settings.browser.selected = this.getAttribute('data-id');
+
+							var _oldEntity = self.settings.entity;
+							self.settings.entity = 'folder';
+							var url = self.generateUrl('get', this.getAttribute('data-id'));
+							self.settings.entity = _oldEntity;
+
+							self.sendRequest(url, null, function(event, self) {
+							if (this.success) {
+								browser.addColumn(this.data[0].children, self);
+								self.notify.ready();
+							} else {
+								self.notify.failure(this.message);
+							}
+						})
+					});
+				}
+				row.addEventListener('click', function(event) {
+					var selected = this.parentNode.querySelector('.selected');
+					if (selected) selected.classList.remove('selected');
+					var globalSelected = document.querySelectorAll('.row.selected');
+					for (var j = 0; j < globalSelected.length; j++) {
+						globalSelected[j].classList.add('old');
+					}
+					this.classList.remove('old');
+					this.classList.add('selected');
+				});
+				if (folder.type === 'link' || folder.type === 'file') {
+					row.addEventListener('click', function(event) {
+						self.settings.browser.selected = null;
+					});
+				}
+
+				return row;
 			},
 			'select': function(value) {
 				value = value || this.selected;
@@ -190,6 +197,24 @@
 						self.forms.open('add');
 					}
 				}
+			},
+			{
+				'selector': 'button[data-action=delete]',
+				'fn': function(event, object, self) {
+					var selected = document.querySelector('.selected:not(.old)');
+					if (!selected) {
+						self.notify.failure('You must select something.');
+					} else {
+						console.log(selected);
+						self.sendRequest(self.generateUrl('delete', selected.getAttribute('data-id')), null, function(event, self) {
+							if (this.success) {
+								self.settings.browser.listers[self.settings.browser.depth - 2].remove(selected);
+							} else {
+								self.notify.failure(this.message);
+							}
+						});
+					}
+				}
 			}
 		],
 		'form': {
@@ -225,6 +250,7 @@
 							if (this.success) {
 								// add folder or reload parent
 								self.notify.success(entity+' added.');
+								self.settings.browser.listers[self.settings.browser.depth - 1].add(self.settings.browser.createObject(this.data[0], self, self.settings.browser));
 								self.forms.close();
 							} else {
 								self.notify.failure(this.message);
@@ -244,17 +270,6 @@
 								input.disabled = false;
 							}
 						}
-					}
-				},
-				'delete': {
-					'before': function(form, container, self) {
-
-					},
-					'onsubmit': function(event, form, container, self) {
-
-					},
-					'after': function(form, container, self) {
-
 					}
 				},
 				'edit': {
