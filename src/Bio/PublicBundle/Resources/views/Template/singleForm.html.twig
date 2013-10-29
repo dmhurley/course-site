@@ -49,16 +49,14 @@
 					'before': function() {
 						// do nothing
 					},
-					'onsubmit': function(event, form, container, self) {
+					'onsubmit': function(event, container, self) {
 						event.preventDefault();
 						self.notify.wait();
-						self.postForm(null, form, function(ajax) {
-							var data = JSON.parse(ajax.responseText);
-							self.notify.ready();
-							if (data.success) {
+						self.postForm(null, this, function(event, self) {
+							if (this.success) {
 								self.notify.success('Saved settings.');
 							} else {
-								self.notify.failure(data.message);
+								self.notify.failure(this.message);
 							}
 						});
 					},
