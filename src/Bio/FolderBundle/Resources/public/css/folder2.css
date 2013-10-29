@@ -108,6 +108,10 @@
 				background-color: rgb(44, 93, 205);
 				color: white;
 			}
+			.column .row.selected.old {
+				background-color: rgb(202,202,202);
+				color: black;
+			}
 				.column .row.selected a {
 					color: white;
 				}

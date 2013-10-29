@@ -18,40 +18,28 @@
 .form_exit {
 	position: absolute;
 	background: white;
-	display: block;
+	/*display: block;*/
 	width: 70px;
 	height: 35px;
 	border-radius: 0px 0px 25px 25px;
 	bottom: -35px;
 	right: 0px;
 	cursor: pointer;
-}
+	display:none;
 
-.form_container:after {
-	content: 'Add Exam';
-	display: block;
-	position: absolute;
-	top: -40px;
-	left: 0px;
-	background: white;
-	z-index: -1;
-	padding: 10px;
-	border-radius: 25px 25px 0px 0px;
-	font-size: 15pt;
 }
 
 .form_container {
 	margin: 100px auto auto auto;
-	border-radius: 0px 25px 0px 25px;
+	border-radius: 17px;
 	background-color: white;
 	cursor: default;
 	text-align:left;
 	display: inline-block;
 	max-height: 400px;
-	min-width: 350px;
+	min-width: 550px;
 	position:relative;
-
-	padding: 0px 20px;
+	padding: 20px 20px;
 }
 
 .form_scroller {

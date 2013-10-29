@@ -119,8 +119,18 @@
 					row.addEventListener('click', function(event) {
 						var selected = this.parentNode.querySelector('.selected');
 						if (selected) selected.classList.remove('selected');
+						var globalSelected = document.querySelectorAll('.row.selected');
+						for (var j = 0; j < globalSelected.length; j++) {
+							globalSelected[j].classList.add('old');
+						}
+						this.classList.remove('old');
 						this.classList.add('selected');
 					});
+					if (folder.type === 'link' || folder.type === 'file') {
+						row.addEventListener('click', function(event) {
+							self.settings.browser.selected = null;
+						});
+					}
 
 					
 					column.appendChild(row);
@@ -159,23 +169,32 @@
 			{
 				'selector': '.add_thing',
 				'fn': function(event, object, self) {
-					// check to make sure somethings selected
-					self.forms.switch(object.getAttribute('data-action'));
-					self.forms.open();
+					if (self.settings.browser.selected === null) {
+						self.notifications.failure('You must select a folder.');
+					} else {
+						var entity = object.getAttribute('data-action');
+						self.forms.switch('add');
+						self.forms.form.data.form._entity = entity;
+						self.forms.form.data.form._selector = entity==='folder'?'.link, .file':entity==='link'?'.folder, .file':'.link, .folder';
+						self.forms.open();
+					}
 				}
 			}
 		],
 		'form': {
 			'settings': {
-				'folder': {
-					'before': function(form, container, self, newEntity, toHide) {
+				'add': {
+					'before': function(form, container, self) {
+						var newEntity = form._entity;
+						var toHide = form._selector;
+
 						var entity = self.settings.entity;
-						self.settings.entity = newEntity?newEntity:'folder';
+						self.settings.entity = newEntity;
 						form.action = self.generateUrl('create');
 						container.classList.add('shown');
 						self.settings.entity = entity;
 
-						var others = form.querySelectorAll(toHide?toHide:'.link, .file');
+						var others = form.querySelectorAll(toHide);
 						for (var i = 0, other = null; other = others[i]; i++) {
 							other.style.display = 'none';
 							inputs = other.querySelectorAll('input, textarea, select');
@@ -196,7 +215,7 @@
 							self.notifications.ready();
 							if (json.success) {
 								// add folder or reload parent
-								self.notifications.success('Folder added.');
+								self.notifications.success(entity+' added.');
 								self.forms.close();
 							} else {
 								self.notifications.failure(json.message);
@@ -204,7 +223,9 @@
 							}
 						});
 					},
-					'after': function(form, container, self, toShow) {
+					'after': function(form, container, self) {
+						var toShow = form._selector;
+
 						container.classList.remove('shown');
 						form.action="";
 
@@ -216,28 +237,6 @@
 								input.disabled = false;
 							}
 						}
-					}
-				},
-				'file': {
-					'before': function(form, container, self) {
-						self.settings.form.settings.folder.before(form, container, self, 'file', '.folder, .link');
-					},
-					'onsubmit': function(event, form, container, self) {
-						self.settings.form.settings.folder.onsubmit(event, form, container, self, 'file');
-					},
-					'after': function(form, container, self) {
-						self.settings.form.settings.folder.after(form, container, self, '.folder, .link');
-					}
-				},
-				'link': {
-					'before': function(form, container, self) {
-						self.settings.form.settings.folder.before(form, container, self, 'link', '.folder, .file');
-					},
-					'onsubmit': function(event, form, container, self) {
-						self.settings.form.settings.folder.onsubmit(event, form, container, self, 'link');
-					},
-					'after': function(form, container, self) {
-						self.settings.form.settings.folder.after(form, container, self, '.folder, .file');
 					}
 				}
 			}
