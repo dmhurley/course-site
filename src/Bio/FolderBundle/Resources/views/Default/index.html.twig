@@ -19,21 +19,19 @@
 			<div class="form_scroller">
 				{{ form_start(folderForm) }}
 					<div id="form">
-						<div class="folder">
-							{{form_row(folderForm.name)}}
-							{{form_row(folderForm.private)}}
-						</div>
-						<div class="file">
-							{{form_row(fileForm.name)}}
-							{{form_row(fileForm.file)}}
-						</div>
-						<div class="link">
-							{{form_row(linkForm.name)}}
-							{{form_row(linkForm.address)}}
-						</div>
-						<div style="display:none;">
-							{{ form_row(folderForm.parent) }}
-						</div>
+						{{form_row(folderForm.name)}}
+							<div class="folder">
+								{{form_row(folderForm.private)}}
+							</div>
+							<div class="file">
+								{{form_row(fileForm.file)}}
+							</div>
+							<div class="link">
+								{{form_row(linkForm.address)}}
+							</div>
+							<div style="display:none;">
+								{{ form_row(folderForm.parent) }}
+							</div>
 						{{form_row(folderForm.submit)}}
 					</div>
 				{{ form_end(folderForm) }}
@@ -107,12 +105,8 @@
 						row.innerHTML = folder.name;
 						row.addEventListener('click', function(event) {
 							self.notifications.wait();
-							var selected = this.parentNode.querySelector('.selected');
-							if (selected) selected.classList.remove('selected');
-							self.settings.browser.selected = this.getAttribute('data-id');
-							this.classList.add('selected');
-
-							self.sendRequest(self.generateUrl('get', this.getAttribute('data-id')), null, function(json, self) {
+								self.settings.browser.selected = this.getAttribute('data-id');
+								self.sendRequest(self.generateUrl('get', this.getAttribute('data-id')), null, function(json, self) {
 								if (json.success) {
 									browser.addColumn(json.data[0].children, self);
 								} else {
@@ -122,6 +116,11 @@
 							});
 						});
 					}
+					row.addEventListener('click', function(event) {
+						var selected = this.parentNode.querySelector('.selected');
+						if (selected) selected.classList.remove('selected');
+						this.classList.add('selected');
+					});
 
 					
 					column.appendChild(row);
@@ -169,13 +168,14 @@
 		'form': {
 			'settings': {
 				'folder': {
-					'before': function(form, container, self) {
+					'before': function(form, container, self, newEntity, toHide) {
 						var entity = self.settings.entity;
-						self.settings.entity = 'folder';
+						self.settings.entity = newEntity?newEntity:'folder';
 						form.action = self.generateUrl('create');
 						container.classList.add('shown');
 						self.settings.entity = entity;
-						var others = form.querySelectorAll('.link, .file');
+
+						var others = form.querySelectorAll(toHide?toHide:'.link, .file');
 						for (var i = 0, other = null; other = others[i]; i++) {
 							other.style.display = 'none';
 							inputs = other.querySelectorAll('input, textarea, select');
@@ -183,10 +183,11 @@
 								input.disabled = 'disabled';
 							}
 						}
+
 						self.settings.browser.select();
 
 					},
-					'onsubmit': function(event, form, container, self) {
+					'onsubmit': function(event, form, container, self, type) {
 						event.preventDefault();
 						self.notifications.wait();
 						container.classList.remove('shown');
@@ -203,11 +204,11 @@
 							}
 						});
 					},
-					'after': function(form, container, self) {
+					'after': function(form, container, self, toShow) {
 						container.classList.remove('shown');
 						form.action="";
 
-						var others = form.querySelectorAll('.link, .file');
+						var others = form.querySelectorAll(toShow?toShow:'.link, .file');
 						for (var i = 0, other = null; other = others[i]; i++) {
 							other.style.display = 'block';
 							inputs = other.querySelectorAll('input, textarea, select');
@@ -218,25 +219,25 @@
 					}
 				},
 				'file': {
-					'before': function() {
-
+					'before': function(form, container, self) {
+						self.settings.form.settings.folder.before(form, container, self, 'file', '.folder, .link');
 					},
-					'onsubmit': function() {
-
+					'onsubmit': function(event, form, container, self) {
+						self.settings.form.settings.folder.onsubmit(event, form, container, self, 'file');
 					},
-					'after': function() {
-
+					'after': function(form, container, self) {
+						self.settings.form.settings.folder.after(form, container, self, '.folder, .link');
 					}
 				},
 				'link': {
-					'before': function() {
-
+					'before': function(form, container, self) {
+						self.settings.form.settings.folder.before(form, container, self, 'link', '.folder, .file');
 					},
-					'onsubmit': function() {
-
+					'onsubmit': function(event, form, container, self) {
+						self.settings.form.settings.folder.onsubmit(event, form, container, self, 'link');
 					},
-					'after': function() {
-
+					'after': function(form, container, self) {
+						self.settings.form.settings.folder.after(form, container, self, '.folder, .file');
 					}
 				}
 			}
