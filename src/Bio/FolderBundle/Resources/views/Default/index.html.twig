@@ -204,9 +204,9 @@
 						}
 
 						self.settings.browser.select();
-
 					},
 					'onsubmit': function(event, form, container, self, type) {
+						var entity = form._entity;
 						event.preventDefault();
 						self.notifications.wait();
 						container.classList.remove('shown');
@@ -237,6 +237,28 @@
 								input.disabled = false;
 							}
 						}
+					}
+				},
+				'delete': {
+					'before': function(form, container, self) {
+						
+					},
+					'onsubmit': function(event, form, container, self) {
+
+					},
+					'after': function(form, container, self) {
+
+					}
+				},
+				'edit': {
+					'before': function(form, container, self) {
+
+					},
+					'onsubmit': function(event, form, container, self) {
+
+					},
+					'after': function(form, container, self) {
+
 					}
 				}
 			}

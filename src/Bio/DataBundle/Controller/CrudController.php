@@ -69,7 +69,7 @@ class CrudController extends Controller
     {
         $entity = $this->getEntity($bundle, $entityName, $id);
 
-        // $form = $this->createForm($this->createFormType($bundle, $entityName), $entity);
+        $form = $this->createForm($this->createFormType($bundle, $entityName), $entity);
 
         if (!$entity) {
             return array('error' => 'Entity not found.');
@@ -77,7 +77,7 @@ class CrudController extends Controller
 
         return array(
             'entities' => [$entity],
-            // 'form' => $form->createView()
+            'form' => $form->createView()
         );
     }
 

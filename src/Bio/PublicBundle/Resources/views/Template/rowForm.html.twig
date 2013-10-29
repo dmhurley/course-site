@@ -2,7 +2,10 @@
 
 {% block head %}
 	{{parent()}}
-		{% javascripts 'bundles/bioexam/js/Loader.js' 'bundles/bioexam/js/Parser.js' output="js/*.js" %}
+		{% javascripts 'bundles/bioexam/js/Loader.js'
+					   'bundles/bioexam/js/Parser.js'
+					   'bundles/bioexam/js/Lister.js'
+					   'bundles/bioexam/js/Notify.js' output="js/*.js" %}
 			<script src="{{asset_url}}"></script>
 		{% endjavascripts %}
 {% endblock %}

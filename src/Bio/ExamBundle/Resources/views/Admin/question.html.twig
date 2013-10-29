@@ -1,4 +1,4 @@
-{% extends 'BioPublicBundle::main.html.twig' %}
+{% extends 'BioPublicBundle:Template:rowForm.html.twig' %}
 
 {% block head %}
 	{{ parent() }}
@@ -51,15 +51,15 @@
 		'bundle': 'exam',
 		'entity': 'question',
 		'table': {
-			'sortFn': function(dataA, dataB) {
-				return parseInt(dataA.id) > parseInt(dataB.id);
+			'sortFn': function(ob1, ob2) {
+				return parseInt(ob1.data.id) < parseInt(ob2.data.id);
 			}
 		},
 		'buttons': { // added to each column (left to right order)
 			'preview': {
 				'event': 'click', //optional
-				'fn': function(event, button, self) {
-					window.open(self.parser.parse('{{url("preview")}}?id=#{id}&type=question', button.parentNode), '_blank')
+				'fn': function(event, self) {
+					window.open(self.parser.parse('{{url("preview")}}?id=#{id}&type=question', this.parentNode), '_blank')
 				}
 			}
 		},

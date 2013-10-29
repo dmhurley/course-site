@@ -31,8 +31,8 @@
 		'bundle': 'info',
 		'entity': 'person',
 		'table' : {
-			'sortFn': function(dataA, dataB) {
-				return dataA.f_name > dataB.f_name;
+			'sortFn': function(ob1, ob2) {
+				return ob1.data.f_name > ob2.data.f_name;
 			}
 		},
 		'columns': {

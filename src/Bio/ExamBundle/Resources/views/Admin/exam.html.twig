@@ -36,15 +36,15 @@
 		'bundle': 'exam',
 		'entity': 'exam',
 		'table' : {
-			'sortFn': function(dataA, dataB) {
-				return dataA.t_date > dataB.t_date;
+			'sortFn': function(ob1, ob2) {
+				return ob1.data.t_date < ob2.data.t_date;
 			}
 		},
 		'buttons': { // added to each column (left to right order)
 			'preview': {
 				'event': 'click', //optional
-				'fn': function(event, button, self) {
-					window.open(self.parser.parse('{{url("preview")}}?id=#{id}&type=exam', button.parentNode), '_blank')
+				'fn': function(event, self) {
+					window.open(self.parser.parse('{{url("preview")}}?id=#{id}&type=exam', this.parentNode), '_blank')
 				}
 			}
 		},

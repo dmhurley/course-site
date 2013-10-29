@@ -2,152 +2,59 @@ function Loader(settings) {
 /********* VARIABLES *********/
 	this.settings = {};
 /********** UTILITIES **************/
-	this.notifications = {
-		'self': null,
-		'show': function() {
-			this.self.settings.loader.classList.add('shown');
-		},
-		'hide': function() {
-			this.self.settings.loader.classList.remove('shown');
-		},
-		'success': function(message) {
-			this.self.settings.loader.classList.remove('failure');
-			this.self.settings.loader.classList.add('success');
-			this.self.settings.loader.innerHTML = message?message:'Success.';
-			this.self.notifications.show();
-
-			_timeout = window.setTimeout((function(self) {
-				return function() {
-					self.hide();
-				}
-			})(this), 5000);
-		},
-		'failure': function(message) {
-			this.self.settings.loader.classList.remove('success');
-			this.self.settings.loader.classList.add('failure');
-			this.self.settings.loader.innerHTML = message?message:'Error.';
-			this.self.notifications.show();
-
-			_timeout = window.setTimeout((function(self) {
-				return function() {
-					self.hide();
-				}
-			})(this), 5000);
-		},
-		'wait': function() {
-			this.self.settings.loader.classList.add('loading');
-			this.self.settings.loader.innerHTML = "Loading...";
-			if ('_timeout' in window) {
-				window.clearTimeout(_timeout);
-			}
-			this.show();
-		},
-		'ready': function() {
-			this.hide();
-			this.self.settings.loader.classList.remove('loading');
-		}
-	}
-
 	this.forms = {
 		'self': null,
-		'form': {
+		'data': {
+			'open': false,
 			'type': null,
-			'data': null
+			'form': null,
+			'container': null,
+			'settings': null,
 		},
-		'switch': function(type) {
-			if (this.form.data !== null) {
+
+		'open': function(type) {
+			if (this.data.open) {
 				this.close();
-			} else if (this.self.settings.form.settings[type]) {
-				this.form.type = type;
-				this.form.data = this.self.settings.form;
+			}
+			if (!this.self.settings.form.settings[type]) {
+				throw "Form type: " + type + ' not defined in settings.';
 			} else {
-				throw "Form type is not set in settings.";
+				this.data.open = true;
+				this.data.type = type;
+				this.data.form = this.self.settings.form.form;
+				this.data.container = this.self.settings.form.container;
+				this.data.settings = this.self.settings.form.settings[type];
 			}
-		},
-		'open': function() {
-			if (this.form.data === null) {
-				throw "You must switch to a form first.";
-			}
-			if (this.form.data.container) {
-				document.body.classList.add('noscroll');
-			}
-			this.form.data.form.reset();
-			this.self._clearErrors(this.form.data.form);
-			this.form.data.settings[this.form.type].before(this.form.data.form, this.form.data.container, this.self);
-			this.form.data.form.onsubmit = (function(form, container, self) {
-				return function(event) {
-					self.forms.form.data.settings[self.forms.form.type].onsubmit(event, form, container, self);
+
+			this.data.form.reset();
+			this.self._clearErrors(this.data.form);
+			this.data.settings.before.call(this.data.form, this.data.container, this.self);
+
+			if (this.data.open) {
+				if (this.data.container) {
+					document.body.classList.add('noscroll');
+					this.data.container.classList.add('shown');
 				}
-			})(this.form.data.form, this.form.data.container, this.self);
+
+				var self = this;
+				this.data.form.onsubmit = function(event) {
+					self.data.settings.onsubmit.call(self.data.form, event, container, self.self);
+				};
+			}
 		},
+
 		'close': function() {
 			document.body.classList.remove('noscroll');
-			this.form.data.settings[this.form.type].after(this.form.data.form, this.form.data.container, this.self);
-			this.form.type = this.form.data = null;
-
+			this.data.container.classList.remove('shown');
+			this.data.settings.after.call(this.data.form, this.data.container, this.self);
+			this.data.open = false;
+			this.data.type = this.data.settings = null;
 		}
 	}
 
 	this.parser = null;
-
-	this.rows = {
-		'self': null,
-		'rows': [],
-		'create': function(data) {
-			var row = document.createElement('tr');
-			row.data = data;
-			row.id = data.id;
-			for(button in this.self.settings.columns) {
-				var fn = this.self.settings.columns[button];
-				var cell = row.insertCell(-1);
-				var value = data[button] === undefined?fn?fn(null, cell):button: fn?fn(data[button], cell, this.self.parser):data[button];
-				if (value === undefined) {
-					cell.parentNode.removeChild(cell);
-				} else {
-					cell.innerHTML = value;
-				}
-			}
-
-			for (button in this.self.settings.buttons) {
-				settings = this.self.settings.buttons[button];
-				var cell = row.insertCell(-1);
-				cell.classList.add('link');
-				cell.classList.add(button);
-				cell.innerHTML = button;
-				cell.addEventListener(settings.event?settings.event:'click', (function(cell, self, fn) {
-					return function(event) {
-						fn(event, cell, self);
-					}
-				})(cell, this.self, settings.fn));
-			}
-
-			this.add(row);
-		},
-		'replace': function(oldRow, newRow) {
-			this.remove(oldRow);
-			this.add(newRow);
-		},
-		'add': function(row) {
-			var i;
-			var neighbor;
-			console.log(row);
-			for(i = 0; i < this.rows.length; i++) {
-				neighbor = this.rows[i];
-				if (this.self.settings.table.sortFn(neighbor.data, row.data)) {
-					break;
-				}
-			}
-			this.rows.splice(i, 0, row);
-			this.self.settings.table.element.querySelector('tbody').insertBefore(row, this.self.settings.table.element.querySelector('tbody').children.item(i));
-		},
-		'remove': function(row) {
-			var index = this.rows.indexOf(row);
-			if (index > -1) {
-				this.rows.splice(index, 1)
-			}
-			row.parentNode.removeChild(row);
-		}
-	}
+	this.notify = null; 
+	this.lister = null;
 
 /********** PUBLIC FUNCTIONS **********/
 	
@@ -160,12 +67,15 @@ function Loader(settings) {
 	 * calls this.failure('Error.') on error or abort
 	 */
 	this.sendRequest = function(url, post, onload, isForm) {
-		ajax = new XMLHttpRequest();
+		var self = this;
+		var ajax = new XMLHttpRequest();
+
 		console.log("sending request to: " + url);
+
 		ajax.open(post?'POST':'GET', url, true);
 		ajax.timeout = 10000;
-		ajax.onload = (function(self) {
-			return function(event) {
+
+		ajax.onload = function(event) {
 				var json = {'success': false, 'message': 'Error.', 'data': [], 'form': []};
 				if (this.status !== 200) {
 					json.message= this.statusText;
@@ -174,22 +84,20 @@ function Loader(settings) {
 						json = JSON.parse(this.responseText);
 					} catch (e) {};
 				}
-				onload(json, self);
-			}
-		})(this);
-		ajax.ontimeout = (function(self) {
-			return function() {
-				self.notifications.failure('Operation timed out.');
-			}
-		})(this);
-		ajax.onerror = (function(self) {
-			return function() {
-				self.notifications.failure('Error.');
-			}
-		})(this);
+				onload.call(json, event, self);
+			};
+
+		ajax.ontimeout = function() {
+				self.notify.failure('Operation timed out.');
+			};
+		ajax.onerror = function() {
+				self.notify.failure('Error.');
+			};
+
 		if (post && !isForm) {
 			ajax.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		}
+
 		ajax.send(post);
 	}
 
@@ -199,16 +107,19 @@ function Loader(settings) {
 	 *		@param the ajax response
 	 */
 	this.postForm = function(url, form, onload) {
-		data = new FormData(form);
+		var data = new FormData(form);
 		this._clearErrors(form);
-		this.sendRequest(url?url:form.action, data, (function(form, fn) {
-			return function(json, self) {
-				if (json.form !== undefined) {
-					self._handleForm(json.form);
+		this.sendRequest(
+			url?url:form.action,
+		 	data,
+		 	function(event, self) {
+				if (this.form !== undefined) {
+					self._handleForm(this.form);
 				}
-				fn(json);
-			}
-		})(form, onload), true);
+				onload.call(this, event, self);
+			},
+			true
+		);
 	}
 
 	/*
@@ -223,6 +134,10 @@ function Loader(settings) {
 			   action + (id?('/' + id):'')+
 			   '.json' ;
 		return url;
+	}
+
+	this.createObject = function(data) {
+		return this.settings.table.createFn.call(this, data);
 	}
 
 /************* PRIVATE FUNCTIONS ***************/
@@ -303,16 +218,15 @@ function Loader(settings) {
 
 	this._getExisting = function(n) {
 		console.log("Retrieving existing rows...");
-		this.sendRequest(this.generateUrl('all') , n, function(json, self) {
-				if (json.success) {
-					for (var i = 0; row = json.data[i]; i++) {
-						self.rows.create(row)
+		this.sendRequest(this.generateUrl('all') , n, function(event, self) {
+				if (this.success) {
+					for (var i = 0; row = this.data[i]; i++) {
+						self.lister.add(self.createObject(row));
 					}
 					console.log("Displayed existing results...");
-					self.notifications.ready();
-					self.notifications.success('Finished loading.');
+					self.notify.success('Finished loading.');
 				} else {
-					self.notifications.failure(json.message);
+					self.notify.failure(this.message);
 				}
 			});
 	}
@@ -322,10 +236,23 @@ function Loader(settings) {
 		this.settings = this._setSettings(settings, this.defaults);
 		console.log('set settings...');
 
-		this.notifications.self = this.forms.self = this.rows.self = this;
+		this.forms.self = this;
+		this.notify = new Notify(this.settings.loader);
+		this.notify.wait();
 
-		this.notifications.wait();
 		this.parser = new Parser('#{', '}');
+
+		if (this.settings.table) {
+			this.lister = new Lister(
+				this.settings.table.element.querySelector('tbody'),
+				this.settings.table.sortFn
+			);
+		}
+
+		this.forms.data.form = this.settings.form.form;
+		this.forms.data.container = this.settings.form.container;
+
+
 		this._registerListeners();
 
 		var event = new Event('loader-init');
@@ -344,30 +271,61 @@ function Loader(settings) {
 		'isSingleForm': false,
 		'table': {
 			'element': document.querySelector('table'),
+			'createFn': function(data) {
+				var self = this;
+
+				var row = document.createElement('tr');
+				row.data = data;
+				row.id = data.id;
+				for(button in self.settings.columns) {
+					var fn = self.settings.columns[button];
+					var cell = row.insertCell(-1);
+					var value = data[button] === undefined?fn?fn(null, cell):button: fn?fn(data[button], cell, self.parser):data[button];
+					if (value === undefined) {
+						cell.parentNode.removeChild(cell);
+					} else {
+						cell.innerHTML = value;
+					}
+				}
+
+				for (button in self.settings.buttons) {
+					settings = self.settings.buttons[button];
+					var cell = row.insertCell(-1);
+					cell.classList.add('link');
+					cell.classList.add(button);
+					cell.innerHTML = button;
+					cell.addEventListener(settings.event?settings.event:'click', (function(fn) {
+						return function(event) {
+							fn.call(cell, event, self);
+						}
+					})(settings.fn));
+				}
+
+				return row;
+			},
 			'sortFn': function(dataA,dataB) {
 				return false;
 			}
 		},
 		'buttons': {
 			'edit': {
-				'fn': function(event, button, self) {
-					self.forms.switch('edit');
-					self.forms.form.data.form.setAttribute('data-id', button.parentNode.id);
-					self.forms.open();
+				'fn': function(event, self) {
+					self.forms.data.form.setAttribute('data-id', this.parentNode.id);
+					self.forms.open('edit');
 				}
 			},
 			'delete': {
-				'fn': function(event, button, self) {
-					self.notifications.wait();
-					var url = self.generateUrl('delete', button.parentNode.id);
-					self.sendRequest(url, null, function(json, self) {
-						if (json.success) {
-							self.rows.remove(button.parentNode);
-							self.notifications.ready();
-							self.notifications.success('Deleted ' + self.settings.entity + '.');
+				'fn': function(event, self) {
+					self.notify.wait();
+					var url = self.generateUrl('delete', this.parentNode.id);
+
+					var button = this;
+					self.sendRequest(url, null, function(event, self) {
+						if (this.success) {
+							self.lister.remove(button.parentNode);
+							self.notify.success('Deleted ' + self.settings.entity + '.');
 						} else {
-							self.notifications.ready();
-							self.notifications.failure(json.message);
+							self.notify.failure(this.message);
 						}
 					});
 				}
@@ -377,8 +335,7 @@ function Loader(settings) {
 			{
 				'selector': '.link.add',
 				'fn': function(event, object, self) {
-					self.forms.switch('add');
-					self.forms.open();
+					self.forms.open('add');
 				}
 			},
 			{
@@ -402,76 +359,70 @@ function Loader(settings) {
 			'form': document.querySelector('.form_container form'),
 			'settings': {
 				'add': {
-					'before': function(form, container, self) {
-						form.action = self.generateUrl('create');
-						form.classList.add('add');
-						container.classList.add('shown');
+					'before': function(container, self) {
+						this.action = self.generateUrl('create');
+						this.classList.add('add');
 					},
-					'onsubmit': function(event, form, container, self) {
+					'onsubmit': function(event, container, self) {
 						event.preventDefault();
-						self.notifications.wait();
+						self.notify.wait();
 						container.classList.remove('shown');
-						self.postForm(null, form, function(json) {
-							self.notifications.ready();
-							if (json.success) {
-								self.rows.create(json.data[0]);
-								self.notifications.success('Created ' +self.settings.entity+'.');
+						self.postForm(null, this, function(event, self) {
+							if (this.success) {
+								self.lister.add(self.createObject(this.data[0]));
+								self.notify.success('Created ' +self.settings.entity+'.');
 								self.forms.close();
 							} else {
-								self.notifications.failure(json.message);
+								self.notify.failure(this.message);
 								container.classList.add('shown');
 							}
 						});
 					},
-					'after': function(form, container, self) {
-						container.classList.remove('shown');
-						form.action = "";
-						form.classList.remove('add');
+					'after': function(container, self) {
+						this.action = "";
+						this.classList.remove('add');
 					}
 				},
 				'edit': {
-					'before': function(form, container, self) {
-						form.classList.add('edit');
-						form.action = self.generateUrl('edit', form.getAttribute('data-id'));
+					'before': function(container, self) {
+						this.classList.add('edit');
+						this.action = self.generateUrl('edit', this.getAttribute('data-id'));
 
-						self.notifications.wait();
-						self.sendRequest(self.generateUrl('get', form.getAttribute('data-id')), null, (function(container) {
-							return function(json, self) {
-								self.notifications.ready();
-								if (json.success) {
-									self._handleForm(json.form);
-									container.classList.add('shown');
-								} else {
-									self.notification.failure(json.message);
-									self.forms.close();
-								}
+						self.notify.wait();
+						self.sendRequest(self.generateUrl('get', this.getAttribute('data-id')), null, function(event, self) {
+							if (this.success) {
+								self.notify.ready();
+								console.log(this);
+								self._handleForm(this.form);
+							} else {
+								self.notify.failure(this.message);
+								self.forms.close();
 							}
-						})(container));
+						});
 					},
-					'onsubmit': function(event, form, container, self) {
+					'onsubmit': function(event, container, self) {
 						event.preventDefault();
-						self.notifications.wait();
+						self.notify.wait();
 						container.classList.remove('shown');
-						self.postForm(null, form, function(json) {
-							self.notifications.ready();
-							if (json.success) {
+
+						var form = this;
+						self.postForm(null, this, function(event, self) {
+							if (this.success) {
 								var row = document.getElementById(form.getAttribute('data-id'));
-								self.rows.remove(row);
-								self.rows.create(json.data[0]);
-								self.notifications.success('Edited '+self.settings.entity+'.');
+								self.lister.replace(row, self.createObject(this.data[0]));
+								self.notify.success('Edited '+self.settings.entity+'.');
 								self.forms.close();
 							} else {
-								self.notifications.failure(json.message);
+								self.notify.failure(this.message);
 								container.classList.add('shown');
 							}
 						});
 
 					},
-					'after': function(form, container, self) {
-						container.classList.remove('shown');
-						form.classList.remove('edit');
-						form.action = "";
-						form.removeAttribute('data-id');
+					'after': function(container, self) {
+						this.classList.remove('edit');
+						this.action = "";
+						this.removeAttribute('data-id');
 					}
 				}
 			}

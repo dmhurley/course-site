@@ -43,7 +43,6 @@
 }
 
 .form_scroller {
-	padding: 20px 0px;
 	max-height: 360px; /* form_container max-height - (2 * vertical padding) */
 	overflow-y: scroll;
 }

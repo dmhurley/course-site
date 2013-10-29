@@ -28,8 +28,8 @@
 		'bundle': 'info',
 		'entity': 'section',
 		'table' : {
-			'sortFn': function(dataA, dataB) {
-				return dataA.name > dataB.name;
+			'sortFn': function(ob1, ob2) {
+				return ob1.data.name > ob2.data.name;
 			}
 		},
 		'buttons': {

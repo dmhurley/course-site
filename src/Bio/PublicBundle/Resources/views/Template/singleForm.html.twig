@@ -2,7 +2,10 @@
 
 {% block head %}
 	{{parent()}}
-		{% javascripts 'bundles/bioexam/js/Loader.js' 'bundles/bioexam/js/Parser.js' output="js/*.js" %}
+		{% javascripts 'bundles/bioexam/js/Loader.js'
+					   'bundles/bioexam/js/Parser.js'
+					   'bundles/bioexam/js/Lister.js'
+					   'bundles/bioexam/js/Notify.js' 'bundles/bioexam/js/Parser.js' output="js/*.js" %}
 			<script src="{{asset_url}}"></script>
 		{% endjavascripts %}
 {% endblock %}
@@ -24,20 +27,17 @@
 				'selector': 'body',
 				'event': 'loader-init',
 				'fn': function(event, object, self) {
-					self.sendRequest(self.generateUrl('global'), null, function(json, self) {
-						console.log(json);
-						self.notifications.ready();
-						if (json.success) {
-							self.forms.switch('set');
-							self.forms.open();
-							self._handleForm(json.form);
-							self.notifications.success('Success.');
+					self.sendRequest(self.generateUrl('global'), null, function(event, self) {
+						console.log(this);
+						self.notify.ready();
+						if (this.success) {
+							self.forms.open('set');
+							self._handleForm(this.form);
+							self.notify.success('Success.');
 						} else {
-							self.notifications.failure(json.message);
+							self.notify.failure(this.message);
 						}
 					});
-
-
 				}
 			}
 		],
@@ -51,14 +51,14 @@
 					},
 					'onsubmit': function(event, form, container, self) {
 						event.preventDefault();
-						self.notifications.wait();
+						self.notify.wait();
 						self.postForm(null, form, function(ajax) {
 							var data = JSON.parse(ajax.responseText);
-							self.notifications.ready();
+							self.notify.ready();
 							if (data.success) {
-								self.notifications.success('Saved settings.');
+								self.notify.success('Saved settings.');
 							} else {
-								self.notifications.failure(data.message);
+								self.notify.failure(data.message);
 							}
 						});
 					},

@@ -38,8 +38,8 @@
 		'bundle': 'info',
 		'entity': 'announcement',
 		'table' : {
-			'sortFn': function(dataA, dataB) {
-				return dataA.timestamp > dataB.timestamp;
+			'sortFn': function(ob1, ob2) {
+				return ob1.data.timestamp > ob2.data.timestamp;
 			}
 		},
 		'columns': {
