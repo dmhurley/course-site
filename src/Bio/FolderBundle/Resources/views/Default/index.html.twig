@@ -70,7 +70,6 @@
 		'browser': {
 			'container': document.querySelector('#box .content'),
 			'depth': 0,
-			'selected': null,
 			'listers': [],
 			'addColumn': function(files, self) {
 				var browser = self.settings.browser;
@@ -80,7 +79,6 @@
 					column = document.createElement('div');
 					column.classList.add('column');
 					column.setAttribute('data-depth', browser.depth);
-
 					column.addEventListener('click', function(event) {
 						if (this != event.target) {
 							browser.depth = this.getAttribute('data-depth');
@@ -95,7 +93,11 @@
 				}
 
 				browser.listers[browser.depth - 1] = new Lister(column, function(ob1, ob2) {
-					return parseInt(ob1.getAttribute('data-id')) > parseInt(ob2.getAttribute('data-id'));
+					if (ob1.data.type === ob2.data.type) {
+						return ob1.data.name < ob2.data.name;
+					} else {
+						return parseInt(ob1.data.order) < parseInt(ob2.data.order);
+					}
 				});
 
 				for(var i = 0, folder = null; folder = files[i]; i++) {					
@@ -116,8 +118,6 @@
 					row.innerHTML = folder.name;
 					row.addEventListener('click', function(event) {
 						self.notify.wait();
-							self.settings.browser.selected = this.getAttribute('data-id');
-
 							var _oldEntity = self.settings.entity;
 							self.settings.entity = 'folder';
 							var url = self.generateUrl('get', this.getAttribute('data-id'));
@@ -143,16 +143,13 @@
 					this.classList.remove('old');
 					this.classList.add('selected');
 				});
-				if (folder.type === 'link' || folder.type === 'file') {
-					row.addEventListener('click', function(event) {
-						self.settings.browser.selected = null;
-					});
-				}
+
+				row.data = folder;
 
 				return row;
 			},
 			'select': function(value) {
-				value = value || this.selected;
+				value = value || this.selected();
 				var select = document.querySelector('#form_parent');
 				select.value = value;
 				if (select.value !== value) {
@@ -161,6 +158,23 @@
 					select.appendChild(option);
 				}
 				select.value = value;
+			},
+			'selected': function(getObject) {
+				var selected = document.querySelectorAll('.selected');
+				if (selected.length > 0) {
+					if (getObject) {
+						return selected[selected.length - 1]
+					}
+					return selected[selected.length - 1].getAttribute('data-id');
+				} else {
+					return null;
+				}
+			},
+			'renew': function() {
+				var selected = document.querySelectorAll('.selected');
+				if (selected.length > 0) {
+					selected[selected.length - 1].classList.remove('old');
+				}
 			}
 		},
 		'listeners': [
@@ -188,7 +202,8 @@
 			{
 				'selector': '.add_thing',
 				'fn': function(event, object, self) {
-					if (self.settings.browser.selected === null) {
+					console.log(self);
+					if (!self.settings.browser.selected(true).classList.contains('folder')) {
 						self.notify.failure('You must select a folder.');
 					} else {
 						var entity = object.getAttribute('data-action');
@@ -201,14 +216,26 @@
 			{
 				'selector': 'button[data-action=delete]',
 				'fn': function(event, object, self) {
-					var selected = document.querySelector('.selected:not(.old)');
+					var browser = self.settings.browser;
+					var selected = browser.selected(true);
 					if (!selected) {
 						self.notify.failure('You must select something.');
 					} else {
-						console.log(selected);
 						self.sendRequest(self.generateUrl('delete', selected.getAttribute('data-id')), null, function(event, self) {
 							if (this.success) {
-								self.settings.browser.listers[self.settings.browser.depth - 2].remove(selected);
+								browser.listers[selected.parentElement.getAttribute('data-depth') - 1].remove(selected);
+								browser.renew();
+
+								selected = browser.selected(true);
+								if (selected) {
+									browser.depth = parseInt(selected.parentNode.getAttribute('data-depth')) + 1;
+								} else {
+									browser.depth = 1;
+								}
+								for(var i = browser.depth; i < browser.container.children.length;) {
+									browser.container.removeChild(browser.container.children[i]);
+								}
+
 							} else {
 								self.notify.failure(this.message);
 							}
