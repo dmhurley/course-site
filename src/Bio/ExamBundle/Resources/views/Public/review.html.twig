@@ -37,7 +37,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							{% for grade in answer.grades if grade.points != null %}
+							{% for grade in answer.grades if grade.points is not null %}
 								<tr>
 									<td>{{grade.points}}/{{grade.answer.question.points}} points</td>
 									<td>{{grade.comment}}</td>

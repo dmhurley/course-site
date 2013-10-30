@@ -68,12 +68,14 @@
 					{% set questionTotal = 0 %}
 					{% set grades = 0 %}
 
-					{% for grade in answer.grades if grade.points != null %}
+					{% for grade in answer.grades if grade.points is not null %}
 						{% set grades = grades + 1 %}
 						{% set questionTotal = questionTotal+grade.points %}
 					{% endfor %}
 
-					{% set totalMean = totalMean + questionTotal/grades %}
+					{% if grades != 0 %}
+						{% set totalMean = totalMean + questionTotal/grades %}
+					{% endif %}
 				{% endfor %}
 
 				<li><a href="{{path('review_exam', {'id':taker.exam.id}) }}">{{taker.exam.title}}</a> - ({{totalMean|number_format(2, '.', ',')}}/{{outOf|number_format(2)}})</li>
