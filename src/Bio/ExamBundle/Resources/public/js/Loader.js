@@ -390,7 +390,6 @@ function Loader(settings) {
 						self.sendRequest(self.generateUrl('get', this.getAttribute('data-id')), null, function(event, self) {
 							if (this.success) {
 								self.notify.ready();
-								console.log(this);
 								self._handleForm(this.form);
 							} else {
 								self.notify.failure(this.message);

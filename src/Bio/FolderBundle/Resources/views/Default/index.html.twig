@@ -202,7 +202,6 @@
 			{
 				'selector': '.add_thing',
 				'fn': function(event, object, self) {
-					console.log(self);
 					if (!self.settings.browser.selected(true).classList.contains('folder')) {
 						self.notify.failure('You must select a folder.');
 					} else {
@@ -220,6 +219,8 @@
 					var selected = browser.selected(true);
 					if (!selected) {
 						self.notify.failure('You must select something.');
+					} else if (selected.parentNode.getAttribute('data-depth') === '1') {
+						self.notify.failure('You can not delete this folder.');
 					} else {
 						self.sendRequest(self.generateUrl('delete', selected.getAttribute('data-id')), null, function(event, self) {
 							if (this.success) {
@@ -240,6 +241,24 @@
 								self.notify.failure(this.message);
 							}
 						});
+					}
+				}
+			},
+			{
+				'selector': 'button[data-action=edit]',
+				'fn': function(event, object, self) {
+					var browser = self.settings.browser;
+					var selected = browser.selected(true);
+
+					if (!selected) {
+						self.notify.failure('You must select something.');
+					} else if (selected.parentNode.getAttribute('data-depth') === '1') {
+						self.notify.failure('You can not edit this folder.');
+					} else {
+						self.forms.data.form._entity = selected.data.type;
+						self.forms.data.form._id = selected.data.id;
+						self.forms.data.form._selector = selected.data.type==='folder'?'.link, .file':selected.data.type==='link'?'.folder, .file':'.link, .folder';
+						self.forms.open('edit');
 					}
 				}
 			}
@@ -300,14 +319,66 @@
 					}
 				},
 				'edit': {
-					'before': function(form, container, self) {
+					'before': function(container, self) {
+						var newEntity = this._entity;
+						var toHide = this._selector;
 
+						var entity = self.settings.entity;
+						self.settings.entity = newEntity;
+						var url = self.generateUrl('get', this._id);
+						this.action = self.generateUrl('edit', this._id);
+						self.settings.entity = entity;
+
+						self.notify.wait();
+						self.sendRequest(url, null, function(event, self) {
+							if (this.success) {
+								self.notify.ready();
+								self._handleForm(this.form);
+							} else {
+								self.notify.failure(this.message);
+								self.forms.close();
+							}
+						});
+
+						var others = this.querySelectorAll(toHide);
+						for (var i = 0, other = null; other = others[i]; i++) {
+							other.style.display = 'none';
+							inputs = other.querySelectorAll('input, textarea, select');
+							for (var j = 0, input = null; input = inputs[j]; j++) {
+								input.disabled = 'disabled';
+							}
+						}						
 					},
-					'onsubmit': function(event, form, container, self) {
+					'onsubmit': function(event, container, self) {
+						event.preventDefault();
+						self.notify.wait();
+						container.classList.remove('shown');
 
+						var selected = self.settings.browser.selected(true);
+						var form = this;
+						self.postForm(null, this, function(event, self) {
+							if (this.success) {
+								self.settings.browser.listers[parseInt(selected.parentNode.getAttribute('data-depth') - 1)].replace(selected, self.settings.browser.createObject(this.data[0], self,self.settings.browser));
+								self.notify.success('Edited '+this.data[0].type+'.');
+								self.forms.close();
+							} else {
+								self.notify.failure(this.message);
+								container.classList.add('shown');
+							}
+						})
 					},
-					'after': function(form, container, self) {
+					'after': function(container, self) {
+						var toShow = this._selector;
+						this.action="";
 
+						var others = this.querySelectorAll(toShow?toShow:'.link, .file');
+						for (var i = 0, other = null; other = others[i]; i++) {
+							other.style.display = 'block';
+							inputs = other.querySelectorAll('input, textarea, select');
+							for (var j = 0, input = null; input = inputs[j]; j++) {
+								input.disabled = false;
+							}
+						}
 					}
 				}
 			}
