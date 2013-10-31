@@ -15,7 +15,7 @@
 	<div class="trip">
 		<h3>No trips</h3>
 		{% if message != '' %}
-			<p>{{message}}</p>
+			<p>{{message|raw}}</p>
 		{% endif %}
 	</div>
 	{% endfor %}
@@ -28,9 +28,12 @@
 
 	{% if is_granted('ROLE_STUDENT') %}
 		{{row.trip(your, 'Your Trips', 'current', 'You are not signed up for any trips.', global, false)}}
+
+	{% else %}
+		{{row.trip(your, 'Your Trips', 'current', '<a href="' ~ path("login") ~ '">Sign in</a> to see your trips.', global, false)}}
 	{% endif %}
 
-	{{row.trip(future, 'Future Trips', '', 'Check back soon for more trips', global, your|length >= global.maxTrips )}}
+	{{row.trip(future, 'Future Trips', '', 'Check back soon for more trips.', global, your|length >= global.maxTrips )}}
 
 	{{row.trip(past, 'Past Trips', '', '', global, false)}}
 
