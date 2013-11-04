@@ -180,6 +180,10 @@ class CrudController extends Controller
             return array('error' => 'Entity not found.');
         }
 
+        if ($bundle === 'folder' && $entity->getParent() === null) {
+            return array('error' => 'Folder cannot be deleted.');
+        }
+
         $em->remove($entity);
         $em->flush();
 

@@ -43,13 +43,11 @@
 	</div>
 
 	<div id="box">
-		<div class="header" >
+		<div class="content">
 
 		</div>
-		<div class="content">
-			
-		</div>
-		<div class="footer">
+		<div class="header" >
+			<div class="footer">
 			<button class="add_thing" type="submit" data-action="folder">Add Folder</button>
 			<button class="add_thing" type="submit" data-action="file">Add File</button>
 			<button class="add_thing" type="submit" data-action="link">Add Link</button>
@@ -61,328 +59,336 @@
 
 {% block java %}
 	<script>
-	var loader = new Loader({
-		'url': '{{ url('main_page')}}crud/',
-		'bundle': 'folder',
-		'entity': 'fileBase',
-		'table' : undefined,
-		'buttons': undefined,
-		'browser': {
-			'container': document.querySelector('#box .content'),
-			'depth': 0,
-			'listers': [],
-			'addColumn': function(files, self) {
-				var browser = self.settings.browser;
-				var column;
-				browser.depth++;
-				if (browser.container.children.length < browser.depth) {
-					column = document.createElement('div');
-					column.classList.add('column');
-					column.setAttribute('data-depth', browser.depth);
-					column.addEventListener('click', function(event) {
-						if (this != event.target) {
-							browser.depth = this.getAttribute('data-depth');
-							for(var i = browser.depth; i < browser.container.children.length;) {
-								browser.container.removeChild(browser.container.children[i]);
-							}
+	(function() {
+		var columnLoaders = [];
+
+		var createColumn = function(datas) {
+			var column = document.createElement('table');
+			column.classList.add('column');
+
+			var body = document.createElement('tbody');
+			column.appendChild(body);
+
+			var loader = new Loader({
+				'url': '{{ url('main_page')}}crud/',
+				'bundle': 'folder',
+				'entity': 'fileBase',
+				'listen': true,
+				'table' : {
+					'element': column,
+					'createFn': function(data){
+						var row = document.createElement('tr');
+						var self = this;
+						row.data = data;
+						row.classList.add('row');
+						row.classList.add(data.type);
+
+						row.delete = function() {
+							unSelect(this);
+							self.lister.remove(this);
 						}
-					});
-					browser.container.appendChild(column);
-				} else {
-					column = browser.container.children[browser.depth];
-				}
 
-				browser.listers[browser.depth - 1] = new Lister(column, function(ob1, ob2) {
-					if (ob1.data.type === ob2.data.type) {
-						return ob1.data.name < ob2.data.name;
-					} else {
-						return parseInt(ob1.data.order) < parseInt(ob2.data.order);
-					}
-				});
+						if(data.type === 'link') {
+			 				row.innerHTML = '<td><a href="'+data.address+'" target=_blank>'+data.name+"</a></td>";
+			 			} else if (data.type === 'file') {
+			 				row.innerHTML = '<td><a href="' + self.parser.parse( '{{ url('download', {'id': ('zzzz')})|replace({'zzzz': '#{id}'}) }}', data)+'" target=_blank>'+data.name+'</a></td>';
+			 			} else {
+			 				row.innerHTML = '<td>'+data.name+'</td>';
+			 				row.addEventListener('click', function(event) {
+			 					self.notify.wait();
+			 						var _oldEntity = self.settings.entity;
+			 						self.settings.entity = 'folder';
+			 						var url = self.generateUrl('get', data.id);
+			 						self.settings.entity = _oldEntity;
 
-				for(var i = 0, folder = null; folder = files[i]; i++) {					
-					browser.listers[browser.depth - 1].add(this.createObject(folder, self, browser));
-				}
-			},
-			'createObject': function(folder, self, browser) {
-				var row = document.createElement('div');
-				row.classList.add('row');
-				row.classList.add(folder.type);
-				row.setAttribute('data-id', folder.id);
+			 						self.sendRequest(url, null, function(event, self) {
+			 						if (this.success) {
+			 							createColumn(this.data[0].children);
+			 							self.notify.ready();
+			 						} else {
+			 							self.notify.failure(this.message);
+			 						}
+			 					})
+			 				});
+			 			}
 
-				if(folder.type === 'link') {
-					row.innerHTML = '<a href="'+folder.address+'" target=_blank>'+folder.name+"</a>";
-				} else if (folder.type === 'file') {
-					row.innerHTML = '<a href="' + self.parser.parse( '{{ url('download', {'id': ('zzzz')})|replace({'zzzz': '#{id}'}) }}', folder)+'" target=_blank>'+folder.name+'</a>';
-				} else {
-					row.innerHTML = folder.name;
-					row.addEventListener('click', function(event) {
-						self.notify.wait();
-							var _oldEntity = self.settings.entity;
-							self.settings.entity = 'folder';
-							var url = self.generateUrl('get', this.getAttribute('data-id'));
-							self.settings.entity = _oldEntity;
-
-							self.sendRequest(url, null, function(event, self) {
-							if (this.success) {
-								browser.addColumn(this.data[0].children, self);
-								self.notify.ready();
-							} else {
-								self.notify.failure(this.message);
+						row.addEventListener('click', function(event) {
+							var selected = this.parentNode.querySelector('.selected');
+							if (selected) {
+								selected.classList.remove('selected');
 							}
-						})
-					});
-				}
-				row.addEventListener('click', function(event) {
-					var selected = this.parentNode.querySelector('.selected');
-					if (selected) selected.classList.remove('selected');
-					var globalSelected = document.querySelectorAll('.row.selected');
-					for (var j = 0; j < globalSelected.length; j++) {
-						globalSelected[j].classList.add('old');
-					}
-					this.classList.remove('old');
-					this.classList.add('selected');
-				});
+							var globalSelected = document.querySelectorAll('.row.selected');
+							for (var i = 0; i < globalSelected.length; i++) {
+								globalSelected[i].classList.add('old');
+							}
+							this.classList.remove('old');
+							this.classList.add('selected');
+						});
 
-				row.data = folder;
-
-				return row;
-			},
-			'select': function(value) {
-				value = value || this.selected();
-				var select = document.querySelector('#form_parent');
-				select.value = value;
-				if (select.value !== value) {
-					var option = document.createElement('option');
-					option.name = option.value = value;
-					select.appendChild(option);
-				}
-				select.value = value;
-			},
-			'selected': function(getObject) {
-				var selected = document.querySelectorAll('.selected');
-				if (selected.length > 0) {
-					if (getObject) {
-						return selected[selected.length - 1]
-					}
-					return selected[selected.length - 1].getAttribute('data-id');
-				} else {
-					return null;
-				}
-			},
-			'renew': function() {
-				var selected = document.querySelectorAll('.selected');
-				if (selected.length > 0) {
-					selected[selected.length - 1].classList.remove('old');
-				}
-			}
-		},
-		'listeners': [
-			{
-				'selector': 'body',
-				'event': 'loader-init',
-				'fn': function(event, object, self) {
-					self.sendRequest(self.generateUrl('find'), 'parent=', function(event, self) {
-						if (this.success) {
-							self.settings.browser.addColumn(this.data, self);
-							self.notify.ready();
+						return row;
+					},
+					'sortFn': function(ob1, ob2) {
+						if (ob1.data.order === ob2.data.order) {
+							return ob1.data.name < ob2.data.name;
 						} else {
-							self.notify.failure(this.message);
-						}
-					});			
-				}
-			},
-			{
-				'selector': '.form_layer, .form_exit',
-				'fn': function(event, object, self) {
-					if (event.target === object)
-					self.forms.close();
-				}
-			},
-			{
-				'selector': '.add_thing',
-				'fn': function(event, object, self) {
-					if (!self.settings.browser.selected(true).classList.contains('folder')) {
-						self.notify.failure('You must select a folder.');
-					} else {
-						var entity = object.getAttribute('data-action');
-						self.forms.data.form._entity = entity;
-						self.forms.data.form._selector = entity==='folder'?'.link, .file':entity==='link'?'.folder, .file':'.link, .folder';
-						self.forms.open('add');
-					}
-				}
-			},
-			{
-				'selector': 'button[data-action=delete]',
-				'fn': function(event, object, self) {
-					var browser = self.settings.browser;
-					var selected = browser.selected(true);
-					if (!selected) {
-						self.notify.failure('You must select something.');
-					} else if (selected.parentNode.getAttribute('data-depth') === '1') {
-						self.notify.failure('You can not delete this folder.');
-					} else {
-						self.sendRequest(self.generateUrl('delete', selected.getAttribute('data-id')), null, function(event, self) {
-							if (this.success) {
-								browser.listers[selected.parentElement.getAttribute('data-depth') - 1].remove(selected);
-								browser.renew();
-
-								selected = browser.selected(true);
-								if (selected) {
-									browser.depth = parseInt(selected.parentNode.getAttribute('data-depth')) + 1;
-								} else {
-									browser.depth = 1;
-								}
-								for(var i = browser.depth; i < browser.container.children.length;) {
-									browser.container.removeChild(browser.container.children[i]);
-								}
-
-							} else {
-								self.notify.failure(this.message);
-							}
-						});
-					}
-				}
-			},
-			{
-				'selector': 'button[data-action=edit]',
-				'fn': function(event, object, self) {
-					var browser = self.settings.browser;
-					var selected = browser.selected(true);
-
-					if (!selected) {
-						self.notify.failure('You must select something.');
-					} else if (selected.parentNode.getAttribute('data-depth') === '1') {
-						self.notify.failure('You can not edit this folder.');
-					} else {
-						self.forms.data.form._entity = selected.data.type;
-						self.forms.data.form._id = selected.data.id;
-						self.forms.data.form._selector = selected.data.type==='folder'?'.link, .file':selected.data.type==='link'?'.folder, .file':'.link, .folder';
-						self.forms.open('edit');
-					}
-				}
-			}
-		],
-		'form': {
-			'settings': {
-				'add': {
-					'before': function(container, self) {
-						var newEntity = this._entity;
-						var toHide = this._selector;
-
-						var entity = self.settings.entity;
-						self.settings.entity = newEntity;
-						this.action = self.generateUrl('create');
-						self.settings.entity = entity;
-
-						var others = this.querySelectorAll(toHide);
-						for (var i = 0, other = null; other = others[i]; i++) {
-							other.style.display = 'none';
-							inputs = other.querySelectorAll('input, textarea, select');
-							for (var j = 0, input = null; input = inputs[j]; j++) {
-								input.disabled = 'disabled';
-							}
-						}
-
-						self.settings.browser.select();
-					},
-					'onsubmit': function(event, container, self, type) {
-						var entity = this._entity;
-						event.preventDefault();
-						self.notify.wait();
-						container.classList.remove('shown');
-
-						self.postForm(null, this, function(event, self) {
-							if (this.success) {
-								// add folder or reload parent
-								self.notify.success(entity+' added.');
-								self.settings.browser.listers[self.settings.browser.depth - 1].add(self.settings.browser.createObject(this.data[0], self, self.settings.browser));
-								self.forms.close();
-							} else {
-								self.notify.failure(this.message);
-								container.classList.add('shown');
-							}
-						});
-					},
-					'after': function(container, self) {
-						var toShow = this._selector;
-						this.action="";
-
-						var others = this.querySelectorAll(toShow?toShow:'.link, .file');
-						for (var i = 0, other = null; other = others[i]; i++) {
-							other.style.display = 'block';
-							inputs = other.querySelectorAll('input, textarea, select');
-							for (var j = 0, input = null; input = inputs[j]; j++) {
-								input.disabled = false;
-							}
+							return parseInt(ob1.data.order) < parseInt(ob2.data.order);
 						}
 					}
 				},
-				'edit': {
-					'before': function(container, self) {
-						var newEntity = this._entity;
-						var toHide = this._selector;
+				'buttons': undefined,
+				'listeners': []
+			});
 
-						var entity = self.settings.entity;
-						self.settings.entity = newEntity;
-						var url = self.generateUrl('get', this._id);
-						this.action = self.generateUrl('edit', this._id);
-						self.settings.entity = entity;
+			column.addEventListener('click', function(event) {
+				if (this != event.target) {
+					backTo(this);
+				}
+			});
 
+			column.add = function(data) {
+				loader.lister.add(loader.createObject(data));
+			}
+			column.replace = function(old, data) {
+				loader.lister.replace(old, loader.createObject(data));
+			}
+
+			columnLoaders[columnLoaders.length] = loader;
+
+			for(var i = 0, data = null; data = datas[i]; i++) {
+				loader.lister.add(loader.createObject(data));
+			}
+
+			document.querySelector('#box .content').appendChild(column);
+		}
+
+		var getSelected = function() {
+			var all = document.querySelectorAll('.selected');
+			var last = all[all.length - 1];
+			if (!last || last.classList.contains('old')) {
+				return false;
+			} else {
+				return last;
+			}
+		}
+
+		var backTo = function(table) {
+			var container = document.querySelector('#box .content');
+			var element;
+
+			while ((element = container.children[container.children.length - 1]) !== table) {
+				container.removeChild(element);
+				columnLoaders.splice(columnLoaders.length - 1, 1);
+			}
+		}
+
+		var unSelect = function() {
+			var selected = getSelected();
+			if (selected) {
+				selected.classList.remove('selected');
+				selected.classList.remove('old');
+				if (selected.nextSibling) {
+					selected.nextSibling.classList.add('selected');
+				} else if (selected.previousSibling) {
+					selected.previousSibling.classList.add('selected');
+				} else {
+					var old = document.querySelectorAll('.selected.old');
+					if (old.length > 0) {
+						old[old.length - 1].classList.remove('old');
+						backTo(old[old.length - 1].parentNode.parentNode);
+					}
+				}
+				
+			}
+		}
+
+		var setForm = function(selected, type) {
+			console.log(type);
+			var others = document.querySelectorAll('form .link, form .folder, form .file');
+			for (var i = 0, other = null; other = others[i]; i++) {
+				if (other.classList.contains(type)) {
+					other.style.display = 'block';
+				} else {
+					other.style.display = 'none';
+				}
+				inputs = other.querySelectorAll('input, textarea, select');
+				for (var j = 0, input = null; input = inputs[j]; j++) {
+					if (other.classList.contains(type)) {
+						input.disabled = false;
+					} else {
+						input.disabled = 'disabled';
+					}
+				}
+			}
+
+			var select = document.querySelector('#form_parent');
+			select.value = selected.data.id;
+			if (select.value !== selected.data.id) {
+				var option = document.createElement('option');
+				option.name = option.value = selected.data.id;
+				select.appendChild(option);
+			}
+			select.value = selected.data.id;
+		}
+
+		mainLoader = new Loader({
+			'url': '{{ url('main_page')}}crud/',
+			'bundle': 'folder',
+			'entity': 'fileBase',
+			'table' : undefined,
+			'buttons': undefined,
+			'listen': true,
+			'listeners': [
+				{
+					'selector': 'body',
+					'event': 'loader-init',
+					'fn': function(event, object, self) {
+						if (self.settings.listen) {
+							self.sendRequest(self.generateUrl('find'), 'parent=', function(event, self) {
+								if (this.success) {
+									createColumn(this.data);
+									self.notify.ready();
+								} else {
+									self.notify.failure(this.message);
+								}
+							});
+							self.settings.listen = false;			
+						}
+					}
+				},
+				{
+				'selector': '.form_layer, .form_exit',
+					'fn': function(event, object, self) {
+						if (event.target === object)
+						self.forms.close();
+					}
+				},
+				{
+					'selector': 'button.add_thing',
+					'fn': function(event, object, self) {
+						var selected = getSelected();
+						if (!selected || selected.data.type !== 'folder') {
+							self.notify.failure('You must select a folder.');
+						} else {
+							self.forms.data.form._selected = selected;
+							self.forms.data.form._action = object.getAttribute('data-action');
+							self.forms.open('add');
+						}
+					}
+				},
+				{
+					'selector': 'button[data-action=delete]',
+					'fn': function(event, object, self) {
 						self.notify.wait();
-						self.sendRequest(url, null, function(event, self) {
-							if (this.success) {
-								self.notify.ready();
-								self._handleForm(this.form);
-							} else {
-								self.notify.failure(this.message);
-								self.forms.close();
-							}
-						});
+						var selected = getSelected();
+						if (!selected) {
+							self.notify.failure('You must select something to delete.');
+						} else {
+							self.sendRequest(self.generateUrl('delete', selected.data.id), null, function(event, self) {
+								if (this.success) {
+									self.notify.success('Deleted ' + selected.data.type + '.');
+									selected.delete();
+								} else {
+									self.notify.failure(this.message);
+								}
+							});
+						}
+					}
+				},
+				{
+		 			'selector': 'button[data-action=edit]',
+		 			'fn': function(event, object, self) {
+		 				var selected = getSelected();
+		 				if (!selected) {
+		 					self.notify.failure('You must select something to edit.');
+		 				} else {
+		 					self.forms.data.form._selected = selected;
+		 					self.forms.open('edit');
+		 				}
+		 			}
+		 		}
+			],
+			'form': {
+				'settings': {
+					'add': {
+						'before': function(container, self) {
+							var oldEntity = self.settings.entity;
+								self.settings.entity = this._selected.data.type;
+								this.action = self.generateUrl('create');
+							self.settings.entity = oldEntity;
+							setForm(this._selected, this._action);
+						},
+						'onsubmit': function(event, container, self) {
+							event.preventDefault();
+							self.notify.wait(0);
+							container.classList.remove('shown');
+							var form = this;
 
-						var others = this.querySelectorAll(toHide);
-						for (var i = 0, other = null; other = others[i]; i++) {
-							other.style.display = 'none';
-							inputs = other.querySelectorAll('input, textarea, select');
-							for (var j = 0, input = null; input = inputs[j]; j++) {
-								input.disabled = 'disabled';
-							}
-						}						
+							self.postForm(null, this, function(event, self) {
+								if (this.success) {
+									self.notify.success('Added '+form._selected.data.type+'.');
+									a = form;
+									form._selected.parentNode.parentNode.nextSibling.add(this.data[0]);
+									self.forms.close();
+								} else {
+									self.notify.failure(this.message);
+									container.classList.add('shown');
+								}
+							})
+						},
+						'after': function(container, self) {
+							this.action = '';
+						}
 					},
-					'onsubmit': function(event, container, self) {
-						event.preventDefault();
-						self.notify.wait();
-						container.classList.remove('shown');
+					'edit': {
+						'before': function(container, self) {
+							self.notify.wait();
+							var oldEntity = self.settings.entity;
+								self.settings.entity = this._selected.data.type;
+								this.action = self.generateUrl('edit', this._selected.data.id);
+								var url = self.generateUrl('get', this._selected.data.id);
+							self.settings.entity = oldEntity;
+							self.sendRequest(url, null, function(event, self) {
+								if (this.success) {
+									self.notify.ready();
+									self._handleForm(this.form);
+								} else {
+									self.notify.failure(this.message);
+									self.forms.close();
+								}
+							});
 
-						var selected = self.settings.browser.selected(true);
-						var form = this;
-						self.postForm(null, this, function(event, self) {
-							if (this.success) {
-								self.settings.browser.listers[parseInt(selected.parentNode.getAttribute('data-depth') - 1)].replace(selected, self.settings.browser.createObject(this.data[0], self,self.settings.browser));
-								self.notify.success('Edited '+this.data[0].type+'.');
-								self.forms.close();
-							} else {
-								self.notify.failure(this.message);
-								container.classList.add('shown');
-							}
-						})
-					},
-					'after': function(container, self) {
-						var toShow = this._selector;
-						this.action="";
+							setForm(this._selected, this._selected.data.type);
 
-						var others = this.querySelectorAll(toShow?toShow:'.link, .file');
-						for (var i = 0, other = null; other = others[i]; i++) {
-							other.style.display = 'block';
-							inputs = other.querySelectorAll('input, textarea, select');
-							for (var j = 0, input = null; input = inputs[j]; j++) {
-								input.disabled = false;
-							}
+						},
+						'onsubmit': function(event, container, self) {
+							event.preventDefault();
+							self.notify.wait();
+							container.classList.remove('shown');
+
+							var form = this;
+							self.postForm(null, this, function(event, self) {
+								if (this.success) {
+									backTo(form._selected.parentNode.parentNode);
+									self.notify.success('Edited ' + form._selected.data.type + '.');
+									form._selected.parentNode.parentNode.replace(form._selected, this.data[0]);
+									self.forms.close();
+								} else {
+									self.notify.failure(this.message);
+									container.classList.add('shown');
+								}
+							});
+						},
+						'after': function(container, self) {
+							this.action = '';
 						}
 					}
 				}
 			}
-		}
-	});
-	</script>
+		})
+
+
+
+	})()
+
+		</script>
 {% endblock %}

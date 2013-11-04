@@ -266,7 +266,6 @@ function Loader(settings) {
 		'url': '',
 		'bundle': '',
 		'entity': '',
-		'isSingleForm': false,
 		'table': {
 			'element': document.querySelector('table'),
 			'createFn': function(data) {

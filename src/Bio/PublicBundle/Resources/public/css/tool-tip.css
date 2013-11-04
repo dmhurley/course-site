@@ -113,37 +113,37 @@ https://github.com/AdamWhitcroft/CSS.Tooltips
 /*==================================================*/
 /*  $Gravity                                        */
 /*==================================================*/
-.tip-below[data-tip]:after {
-	top:23px;
+form div:first-of-type[data-tip]:after {
+	top:63px;
 	left:0px;
 }
-.tip-below[data-tip]:before {
+form div:first-of-type[data-tip]:before {
 	border-top-color:transparent;
 	border-right-color:transparent;
 	border-bottom-color:#1a1a1a;
 	border-left-color:transparent;
-	top:13px;
+	top:53px;
 	left:10px;	
 }
-.tip-below.help[data-tip]:before {
+form div:first-of-type.help[data-tip]:before {
 	border-top-color:transparent;
 	border-right-color:transparent;
 	border-bottom-color:#00b7d8;
 	border-left-color:transparent;
 }
-.tip-below.success[data-tip]:before {
+form div:first-of-type.success[data-tip]:before {
 	border-top-color:transparent;
 	border-right-color:transparent;
 	border-bottom-color:#51bd6a;
 	border-left-color:transparent;
 }
-.tip-below.alert[data-tip]:before {
+form div:first-of-type.alert[data-tip]:before {
 	border-top-color:transparent;
 	border-right-color:transparent;
 	border-bottom-color:#f9ca64;
 	border-left-color:transparent;
 }
-.tip-below.error[data-tip]:before {
+form div:first-of-type.error[data-tip]:before {
 	border-top-color:transparent;
 	border-right-color:transparent;
 	border-bottom-color:#e1473e;
