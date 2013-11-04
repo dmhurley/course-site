@@ -60,7 +60,7 @@
 {% block java %}
 	<script>
 	(function() {
-		columnLoaders = [];
+		var columnLoaders = [];
 
 		var createColumn = function(datas) {
 			var column = document.createElement('table');
@@ -141,20 +141,15 @@
 
 			column.addEventListener('click', function(event) {
 				if (this != event.target) {
-					var container = document.querySelector('#box .content');
-					var element;
-					while ((element = container.children[container.children.length - 1]) !== this) {
-						container.removeChild(element);
-						columnLoaders.splice(columnLoaders.length - 1, 1)
-					}
+					backTo(this);
 				}
 			});
 
 			column.add = function(data) {
 				loader.lister.add(loader.createObject(data));
 			}
-			column.replace = function(data) {
-				loader.lister.replace(loader.createObject(data));
+			column.replace = function(old, data) {
+				loader.lister.replace(old, loader.createObject(data));
 			}
 
 			columnLoaders[columnLoaders.length] = loader;
@@ -169,10 +164,20 @@
 		var getSelected = function() {
 			var all = document.querySelectorAll('.selected');
 			var last = all[all.length - 1];
-			if (last.classList.contains('old')) {
+			if (!last || last.classList.contains('old')) {
 				return false;
 			} else {
 				return last;
+			}
+		}
+
+		var backTo = function(table) {
+			var container = document.querySelector('#box .content');
+			var element;
+
+			while ((element = container.children[container.children.length - 1]) !== table) {
+				container.removeChild(element);
+				columnLoaders.splice(columnLoaders.length - 1, 1);
 			}
 		}
 
@@ -189,31 +194,25 @@
 					var old = document.querySelectorAll('.selected.old');
 					if (old.length > 0) {
 						old[old.length - 1].classList.remove('old');
-						var container = document.querySelector('#box .content');
-						var element;
-
-						while ((element = container.children[container.children.length - 1]) !== old[old.length - 1].parentNode.parentNode) {
-							container.removeChild(element);
-							columnLoaders.splice(columnLoaders.length - 1, 1)
-						}
+						backTo(old[old.length - 1].parentNode.parentNode);
 					}
 				}
 				
 			}
 		}
 
-		var setForm = function(selected) {
+		var setForm = function(selected, type) {
+			console.log(type);
 			var others = document.querySelectorAll('form .link, form .folder, form .file');
 			for (var i = 0, other = null; other = others[i]; i++) {
-
-				if (other.classList.contains(selected.data.type)) {
+				if (other.classList.contains(type)) {
 					other.style.display = 'block';
 				} else {
 					other.style.display = 'none';
 				}
 				inputs = other.querySelectorAll('input, textarea, select');
 				for (var j = 0, input = null; input = inputs[j]; j++) {
-					if (other.classList.contains(selected.data.type)) {
+					if (other.classList.contains(type)) {
 						input.disabled = false;
 					} else {
 						input.disabled = 'disabled';
@@ -271,6 +270,7 @@
 							self.notify.failure('You must select a folder.');
 						} else {
 							self.forms.data.form._selected = selected;
+							self.forms.data.form._action = object.getAttribute('data-action');
 							self.forms.open('add');
 						}
 					}
@@ -281,7 +281,7 @@
 						self.notify.wait();
 						var selected = getSelected();
 						if (!selected) {
-
+							self.notify.failure('You must select something to delete.');
 						} else {
 							self.sendRequest(self.generateUrl('delete', selected.data.id), null, function(event, self) {
 								if (this.success) {
@@ -293,8 +293,19 @@
 							});
 						}
 					}
-				}
-
+				},
+				{
+		 			'selector': 'button[data-action=edit]',
+		 			'fn': function(event, object, self) {
+		 				var selected = getSelected();
+		 				if (!selected) {
+		 					self.notify.failure('You must select something to edit.');
+		 				} else {
+		 					self.forms.data.form._selected = selected;
+		 					self.forms.open('edit');
+		 				}
+		 			}
+		 		}
 			],
 			'form': {
 				'settings': {
@@ -304,7 +315,7 @@
 								self.settings.entity = this._selected.data.type;
 								this.action = self.generateUrl('create');
 							self.settings.entity = oldEntity;
-							setForm(this._selected);
+							setForm(this._selected, this._action);
 						},
 						'onsubmit': function(event, container, self) {
 							event.preventDefault();
@@ -323,6 +334,49 @@
 									container.classList.add('shown');
 								}
 							})
+						},
+						'after': function(container, self) {
+							this.action = '';
+						}
+					},
+					'edit': {
+						'before': function(container, self) {
+							self.notify.wait();
+							var oldEntity = self.settings.entity;
+								self.settings.entity = this._selected.data.type;
+								this.action = self.generateUrl('edit', this._selected.data.id);
+								var url = self.generateUrl('get', this._selected.data.id);
+							self.settings.entity = oldEntity;
+							self.sendRequest(url, null, function(event, self) {
+								if (this.success) {
+									self.notify.ready();
+									self._handleForm(this.form);
+								} else {
+									self.notify.failure(this.message);
+									self.forms.close();
+								}
+							});
+
+							setForm(this._selected, this._selected.data.type);
+
+						},
+						'onsubmit': function(event, container, self) {
+							event.preventDefault();
+							self.notify.wait();
+							container.classList.remove('shown');
+
+							var form = this;
+							self.postForm(null, this, function(event, self) {
+								if (this.success) {
+									backTo(form._selected.parentNode.parentNode);
+									self.notify.success('Edited ' + form._selected.data.type + '.');
+									form._selected.parentNode.parentNode.replace(form._selected, this.data[0]);
+									self.forms.close();
+								} else {
+									self.notify.failure(this.message);
+									container.classList.add('shown');
+								}
+							});
 						},
 						'after': function(container, self) {
 							this.action = '';

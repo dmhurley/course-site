@@ -22,12 +22,12 @@ tbody {
 		border-top:solid 1px gray;
 		border-radius: 17px;
 		background:white;
-		height: 150px;
+		height: 100px;
 
 	}
 		#box .footer button {
 			display: inline;
-			margin: 15px 0;
+			margin: 5px 0;
 		}
 
 	#box .content {
@@ -35,7 +35,7 @@ tbody {
 		overflow-x:scroll;
 		overflow-y:hidden;
 		white-space: nowrap;
-		height: 350px;
+		height: 400px;
 		margin-bottom: 0px;
 
 	}
