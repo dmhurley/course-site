@@ -43,11 +43,13 @@
 	</div>
 
 	<div id="box">
+		<div class="header" >
+		
+		</div>
 		<div class="content">
 
 		</div>
-		<div class="header" >
-			<div class="footer">
+		<div class="footer">
 			<button class="add_thing" type="submit" data-action="folder">Add Folder</button>
 			<button class="add_thing" type="submit" data-action="file">Add File</button>
 			<button class="add_thing" type="submit" data-action="link">Add Link</button>
@@ -95,7 +97,7 @@
 			 			} else {
 			 				row.innerHTML = '<td>'+data.name+'</td>';
 			 				row.addEventListener('click', function(event) {
-			 					self.notify.wait();
+			 					mainLoader.notify.wait();
 			 						var _oldEntity = self.settings.entity;
 			 						self.settings.entity = 'folder';
 			 						var url = self.generateUrl('get', data.id);
@@ -104,9 +106,9 @@
 			 						self.sendRequest(url, null, function(event, self) {
 			 						if (this.success) {
 			 							createColumn(this.data[0].children);
-			 							self.notify.ready();
+			 							mainLoader.notify.ready();
 			 						} else {
-			 							self.notify.failure(this.message);
+			 							mainLoader.notify.failure(this.message);
 			 						}
 			 					})
 			 				});
@@ -230,29 +232,25 @@
 			select.value = selected.data.id;
 		}
 
-		mainLoader = new Loader({
+		var mainLoader = new Loader({
 			'url': '{{ url('main_page')}}crud/',
 			'bundle': 'folder',
 			'entity': 'fileBase',
 			'table' : undefined,
 			'buttons': undefined,
-			'listen': true,
 			'listeners': [
 				{
-					'selector': 'body',
-					'event': 'loader-init',
+					'selector': null,
+					'event': 'init',
 					'fn': function(event, object, self) {
-						if (self.settings.listen) {
-							self.sendRequest(self.generateUrl('find'), 'parent=', function(event, self) {
-								if (this.success) {
-									createColumn(this.data);
-									self.notify.ready();
-								} else {
-									self.notify.failure(this.message);
-								}
-							});
-							self.settings.listen = false;			
-						}
+						self.sendRequest(self.generateUrl('find'), 'parent=', function(event, self) {
+							if (this.success) {
+								createColumn(this.data);
+								mainLoader.notify.ready();
+							} else {
+								mainLoader.notify.failure(this.message);
+							}
+						});
 					}
 				},
 				{
@@ -267,7 +265,7 @@
 					'fn': function(event, object, self) {
 						var selected = getSelected();
 						if (!selected || selected.data.type !== 'folder') {
-							self.notify.failure('You must select a folder.');
+							mainLoader.notify.failure('You must select a folder.');
 						} else {
 							self.forms.data.form._selected = selected;
 							self.forms.data.form._action = object.getAttribute('data-action');
@@ -278,17 +276,17 @@
 				{
 					'selector': 'button[data-action=delete]',
 					'fn': function(event, object, self) {
-						self.notify.wait();
+						mainLoader.notify.wait();
 						var selected = getSelected();
 						if (!selected) {
-							self.notify.failure('You must select something to delete.');
+							mainLoader.notify.failure('You must select something to delete.');
 						} else {
 							self.sendRequest(self.generateUrl('delete', selected.data.id), null, function(event, self) {
 								if (this.success) {
-									self.notify.success('Deleted ' + selected.data.type + '.');
+									mainLoader.notify.success('Deleted ' + selected.data.type + '.');
 									selected.delete();
 								} else {
-									self.notify.failure(this.message);
+									mainLoader.notify.failure(this.message);
 								}
 							});
 						}
@@ -299,7 +297,7 @@
 		 			'fn': function(event, object, self) {
 		 				var selected = getSelected();
 		 				if (!selected) {
-		 					self.notify.failure('You must select something to edit.');
+		 					mainLoader.notify.failure('You must select something to edit.');
 		 				} else {
 		 					self.forms.data.form._selected = selected;
 		 					self.forms.open('edit');
@@ -319,18 +317,18 @@
 						},
 						'onsubmit': function(event, container, self) {
 							event.preventDefault();
-							self.notify.wait(0);
+							mainLoader.notify.wait(0);
 							container.classList.remove('shown');
 							var form = this;
 
 							self.postForm(null, this, function(event, self) {
 								if (this.success) {
-									self.notify.success('Added '+form._selected.data.type+'.');
+									mainLoader.notify.success('Added '+form._selected.data.type+'.');
 									a = form;
 									form._selected.parentNode.parentNode.nextSibling.add(this.data[0]);
 									self.forms.close();
 								} else {
-									self.notify.failure(this.message);
+									mainLoader.notify.failure(this.message);
 									container.classList.add('shown');
 								}
 							})
@@ -341,7 +339,7 @@
 					},
 					'edit': {
 						'before': function(container, self) {
-							self.notify.wait();
+							mainLoader.notify.wait();
 							var oldEntity = self.settings.entity;
 								self.settings.entity = this._selected.data.type;
 								this.action = self.generateUrl('edit', this._selected.data.id);
@@ -349,31 +347,30 @@
 							self.settings.entity = oldEntity;
 							self.sendRequest(url, null, function(event, self) {
 								if (this.success) {
-									self.notify.ready();
+									mainLoader.notify.ready();
 									self._handleForm(this.form);
 								} else {
-									self.notify.failure(this.message);
+									mainLoader.notify.failure(this.message);
 									self.forms.close();
 								}
 							});
 
 							setForm(this._selected, this._selected.data.type);
-
 						},
 						'onsubmit': function(event, container, self) {
 							event.preventDefault();
-							self.notify.wait();
+							mainLoader.notify.wait();
 							container.classList.remove('shown');
 
 							var form = this;
 							self.postForm(null, this, function(event, self) {
 								if (this.success) {
 									backTo(form._selected.parentNode.parentNode);
-									self.notify.success('Edited ' + form._selected.data.type + '.');
+									mainLoader.notify.success('Edited ' + form._selected.data.type + '.');
 									form._selected.parentNode.parentNode.replace(form._selected, this.data[0]);
 									self.forms.close();
 								} else {
-									self.notify.failure(this.message);
+									mainLoader.notify.failure(this.message);
 									container.classList.add('shown');
 								}
 							});

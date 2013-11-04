@@ -9,7 +9,7 @@ function Loader(settings) {
 			'type': null,
 			'form': null,
 			'container': null,
-			'settings': null,
+			'settings': null
 		},
 
 		'open': function(type) {
@@ -56,16 +56,27 @@ function Loader(settings) {
 	this.notify = null; 
 	this.lister = null;
 
+	// listener stuff
+	this._listeners = {};
+	this.addEventListener = function(type, fn) {
+		if (!this._listeners[type]) {
+			this._listeners[type] = [];
+		}
+		this._listeners[type].push(fn);
+	}
+
+	this.dispatchEvent = function(event) {
+		if (this._listeners[event.type]) {
+			for(var i = 0, fn = null; fn = this._listeners[event.type][i]; i++) {
+				fn.call(this, event);
+			}
+			return true;
+		}
+		return false;
+	}
+
 /********** PUBLIC FUNCTIONS **********/
 	
-	/**
-	 * @param url the url to send the request to
-	 * @param post the optional post data
-	 * @callback onload
-	 * 		@this the ajax response
-	 *		@event the event
-	 * calls this.failure('Error.') on error or abort
-	 */
 	this.sendRequest = function(url, post, onload, isForm) {
 		var self = this;
 		var ajax = new XMLHttpRequest();
@@ -101,11 +112,6 @@ function Loader(settings) {
 		ajax.send(post);
 	}
 
-	/* @param url the url to send the request to
-	 * @param form the form object to be sent
-	 * @callback onload
-	 *		@param the ajax response
-	 */
 	this.postForm = function(url, form, onload) {
 		var data = new FormData(form);
 		this._clearErrors(form);
@@ -122,11 +128,6 @@ function Loader(settings) {
 		);
 	}
 
-	/*
-	 * generates a url in the format url/bundle/entity/action(/id)
-	 * @param action
-	 * @param id optional variable
-	 */
 	this.generateUrl = function(action, id) {
 		var url = this.settings.url + 
 			   this.settings.bundle + '/' + 
@@ -202,7 +203,7 @@ function Loader(settings) {
 
 		for (key in keys) {
 			var settings = this.settings.listeners[keys[key]];
-			var listeners = document.querySelectorAll(settings.selector);
+			var listeners = settings.selector===null?[this]:document.querySelectorAll(settings.selector);
 			for(var i = 0; listener = listeners[i]; i++) {
 				listener.addEventListener(settings.event?settings.event:'click', (function(button, self, fn) {
 					return function(event) {
@@ -211,7 +212,7 @@ function Loader(settings) {
 				})(listener, this, settings.fn));
 			}
 		}
-		console.log("Registered listeners...")
+		console.log("Registered listeners...");
 	}
 
 	this._getExisting = function(n) {
@@ -253,9 +254,9 @@ function Loader(settings) {
 
 		this._registerListeners();
 
-		var event = new Event('loader-init');
-		event.initEvent('loader-init', false, true);
-		document.body.dispatchEvent(event);
+		var event = new Event('init');
+		event.initEvent('init', false, true);
+		this.dispatchEvent(event);
 
 	}
 
@@ -343,8 +344,8 @@ function Loader(settings) {
 				}
 			},
 			{
-				'selector': 'body',
-				'event': 'loader-init',
+				'selector': null,
+				'event': 'init',
 				'fn': function(event, object, self) {
 					self._getExisting();
 				}

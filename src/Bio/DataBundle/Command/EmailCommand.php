@@ -90,7 +90,6 @@ class EmailCommand extends ContainerAwareCommand {
 
 			$results = $afterTripQuery->getResult();
 
-			print_r(array_keys($results));
 			if (count($results) !== 0) {
 				/******* SEND EMAILS TO STUDENTS *******/
 

@@ -5,7 +5,7 @@
 		{% javascripts 'bundles/bioexam/js/Loader.js'
 					   'bundles/bioexam/js/Parser.js'
 					   'bundles/bioexam/js/Lister.js'
-					   'bundles/bioexam/js/Notify.js' 'bundles/bioexam/js/Parser.js' output="js/*.js" %}
+					   'bundles/bioexam/js/Notify.js' output="js/*.js" %}
 			<script src="{{asset_url}}"></script>
 		{% endjavascripts %}
 {% endblock %}
@@ -24,8 +24,8 @@
 		'buttons': undefined,
 		'listeners': [
 			{
-				'selector': 'body',
-				'event': 'loader-init',
+				'selector': null,
+				'event': 'init',
 				'fn': function(event, object, self) {
 					self.sendRequest(self.generateUrl('global'), null, function(event, self) {
 						console.log(this);
@@ -33,7 +33,7 @@
 						if (this.success) {
 							self.forms.open('set');
 							self._handleForm(this.form);
-							self.notify.success('Success.');
+							self.notify.ready();
 						} else {
 							self.notify.failure(this.message);
 						}

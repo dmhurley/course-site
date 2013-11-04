@@ -49,7 +49,7 @@ class User extends AbstractUserStudent
      *
      * @ORM\Column(name="roles", type="array")
      */
-    private $roles;
+    private $roles = ['ROLE_USER'];
 
     /****** STUDENT FUNCTIONS ********/
     // in order for a user to impersonate a student,

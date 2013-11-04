@@ -1,4 +1,4 @@
-{% extends 'BioPublicBundle::main.html.twig' %}
+{% extends 'BioPublicBundle:template:rowForm.html.twig' %}
 
 {% block head %}
 	{{ parent() }}
@@ -10,38 +10,24 @@
 
 {% block content %}
 <table>
-	<tr>
-		<th>Username</th>
-		<th>Role</th>
-		<th>Promote</th>
-		<th>Demote</th>
-		<th>Reset</th>
-		<th>Delete</th>
-	</tr>
-	{% for user in users if user.roles[0] != "ROLE_SETUP" and app.user != user%}
+	<thead>
 		<tr>
-			<td>{{user.username}}</td>
-			<td>{{user.roles|join(", ")|replace({'ROLE' : '', '_' : ' '}) }}</td>
-			{% if'ROLE_SUPER_ADMIN' in user.roles %}
-				<td>promote</td>
-			{% else %}
-				<td><a href="{{ path('mote_user', {'type' : 'pro', 'id': user.id}) }}">promote</a></td>
-			{% endif %}
-
-			{% if 'ROLE_USER' in user.roles %}
-				<td>demote</td>
-			{% else %}
-				<td><a href="{{ path('mote_user', {'type' : 'de', 'id':user.id}) }}">demote</a></td>
-			{% endif %}
-			<td><a href="{{ path('reset_password', {'id':user.id}) }}">reset</a></td>
-			<td><a href="{{ path('delete_user', {'id':user.id}) }}">delete</a></td>
+			<th>Username</th>
+			<th>Role</th>
+			<th>Promote</th>
+			<th>Demote</th>
+			<th>Reset</th>
+			<th>Delete</th>
 		</tr>
-	{% else %}
-		<tr><td colspan=6 style="text-align:center;">no other users</td></tr>
-	{% endfor %}
-	<tr>
-		<td colspan=6 style="text-align:center;"><a href="{{ path('register') }}">create account</a></td>
-	</tr>
+	</thead>
+
+	<tbody>
+
+	</tbody>
+
+	<tfoot>
+		<tr><td colspan=6 class="link add lonely">create account</td></tr>
+	</tfoot>
 </table>
 
 <div>
@@ -76,4 +62,71 @@
 		</tr>
 	</table>
 </div>
+{% endblock %}
+
+{% block java %}
+	<script>
+		loader = new Loader({
+			'url': '{{ url('main_page') }}crud/',
+			'bundle': 'user',
+			'entity': 'user',
+			'table': {
+				'sortFn': function(ob1, ob2) {
+					return ob1.data.username < ob2.data.username;
+				}
+			},
+			'buttons': {
+				'edit': undefined,
+				'promote': {
+					'fn': function(event, self) {
+						self.notify.wait();
+						var url = "{{ url('view_users') }}promote/" + this.parentNode.id;
+						var ob = this;
+						self.sendRequest(url, null, function(event, self) {
+							if (this.success) {
+								self.lister.replace(ob.parentNode, self.createObject(this.data[0]));
+								self.notify.success('Promoted user.');
+							} else {
+								self.notify.failure(this.message);
+							}
+						});
+					}
+				},
+				'demote': {
+					'fn': function(event, self) {
+						self.notify.wait();
+						var url = "{{ url('view_users') }}demote/" + this.parentNode.id;
+						var ob = this;
+						self.sendRequest(url, null, function(event, self) {
+							if (this.success) {
+								self.lister.replace(ob.parentNode, self.createObject(this.data[0]));
+								self.notify.success('Demoted user.');
+							} else {
+								self.notify.failure(this.message);
+							}
+						});
+					}
+				},
+				'reset': {
+					'fn': function(event, self) {
+						self.notify.wait();
+						var url = "{{ url('view_users') }}reset/" + this.parentNode.id;
+						self.sendRequest(url, null, function(event, self) {
+							if (this.success) {
+								self.notify.success('Password reset.');
+							} else {
+								self.notify.failure(this.message);
+							}
+						});
+					}
+				}
+			},
+			'columns': {
+				'username': null,
+				'roles': function(value, cell) {
+					return value[0].replace(/_/g, ' ').toLowerCase().slice(5);
+				}
+			}
+		});
+	</script>
 {% endblock %}
