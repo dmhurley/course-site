@@ -232,14 +232,6 @@ function Loader(settings) {
 		this.notify.wait();
 		this.parser = new Parser('#{', '}');
 
-		if (this.settings.table) {
-			this.settings.table.container = new Container({
-				'element': self.settings.table.element.querySelector('tbody'),
-				'classes': ['table'],
-				'sortFn':self.settings.table.sortFn
-			});
-		}
-
 		this.forms.data.form = this.settings.form.form;
 		this.forms.data.container = this.settings.form.container;
 
@@ -270,10 +262,10 @@ function Loader(settings) {
 						new Container({
 							'data': child,
 							'type': 'tr',
-							'classes': ['entry'],
+							'classes': ['entry', child.status?child.status:''], // todo find a way to edit more finely
 							'createChildren': function(data, context) {
 								for(button in context.settings.columns) {
-									var cell = document.createElement('td');
+									var cell = this.element.insertCell(-1);
 									var fn = context.settings.columns[button];
 									var value = data[button] === undefined?fn?fn(null, cell):button:fn?fn(data[button], cell, context.parser):data[button];
 									if (value !== undefined) {
@@ -284,6 +276,8 @@ function Loader(settings) {
 												'classes': ['text']
 											})
 										);
+									} else {
+										this.element.removeChild(cell);
 									}
 								}
 

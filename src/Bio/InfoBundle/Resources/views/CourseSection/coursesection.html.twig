@@ -29,7 +29,7 @@
 		'url': '{{ url('main_page')}}crud/',
 		'bundle': 'info',
 		'entity': 'courseSection',
-		'table' : {
+		'container' : {
 			'sortFn': function(ob1, ob2) {
 				return ob1.data.name < ob2.data.name;
 			}

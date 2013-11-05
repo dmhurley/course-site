@@ -29,7 +29,7 @@
 		'url': '{{ url('main_page')}}crud/',
 		'bundle': 'info',
 		'entity': 'hours',
-		'table' : {
+		'container' : {
 			'sortFn': function(ob1, ob2) {
 				return ob1.data.person.f_name > ob2.data.person.f_name;
 			}

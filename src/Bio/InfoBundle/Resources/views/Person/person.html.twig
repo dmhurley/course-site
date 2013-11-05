@@ -30,7 +30,7 @@
 		'url': '{{ url('main_page')}}crud/',
 		'bundle': 'info',
 		'entity': 'person',
-		'table' : {
+		'container' : {
 			'sortFn': function(ob1, ob2) {
 				return ob1.data.f_name > ob2.data.f_name;
 			}
