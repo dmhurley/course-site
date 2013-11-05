@@ -50,10 +50,12 @@ div[data-type=textarea] {
 	display:block !important;
 }
 	div[data-type=textarea] .mce-tinymce {
-		width: 100%;
+		width: calc(100% + 20px);
+		margin: -10px !important;
+		margin-bottom: -10px !important;
+		border-radius: 5px;
 		float: none !important;
 		border:none;
-		margin-bottom: 0px !important;
 	}
 
 	div[data-type=textarea] textarea {

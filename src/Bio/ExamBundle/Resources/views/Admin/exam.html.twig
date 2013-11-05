@@ -35,7 +35,7 @@
 		'url': '{{ url('main_page')}}crud/',
 		'bundle': 'exam',
 		'entity': 'exam',
-		'table' : {
+		'container' : {
 			'sortFn': function(ob1, ob2) {
 				return ob1.data.t_date < ob2.data.t_date;
 			}
@@ -44,7 +44,7 @@
 			'preview': {
 				'event': 'click', //optional
 				'fn': function(event, self) {
-					window.open(self.parser.parse('{{url("preview")}}?id=#{id}&type=exam', this.parentNode), '_blank')
+					window.open(self.parser.parse('{{url("preview")}}?id=#{id}&type=exam', this.parent.data), '_blank')
 				}
 			}
 		},

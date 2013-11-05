@@ -54,7 +54,6 @@ function Loader(settings) {
 
 	this.parser = null;
 	this.notify = null; 
-	this.lister = null;
 
 	// listener stuff
 	this._listeners = {};
@@ -99,7 +98,7 @@ function Loader(settings) {
 			};
 
 		ajax.ontimeout = function() {
-				self.notify.failure('Operation timed out.');
+				self.notify.failure('Request timed out.');
 			};
 		ajax.onerror = function() {
 				self.notify.failure('Error.');
@@ -128,17 +127,22 @@ function Loader(settings) {
 		);
 	}
 
-	this.generateUrl = function(action, id) {
-		var url = this.settings.url + 
-			   this.settings.bundle + '/' + 
-			   this.settings.entity + '/' + 
-			   action + (id?('/' + id):'')+
-			   '.json' ;
-		return url;
-	}
+	// todo switch to settings
+	this.generateUrl = function(action, id, config) {
+		// make sure things are set
+		config = config || {};
+		config.url = config.url || this.settings.url;
+		config.bundle = config.bundle || this.settings.bundle;
+		config.entity = config.entity || this.settings.entity;
+		config.type = config.type || 'json';
 
-	this.createObject = function(data) {
-		return this.settings.table.createFn.call(this, data);
+		var url = config.url + 
+			   config.bundle + '/' + 
+			   config.entity + '/' + 
+			   action + (id?('/' + id):'')+
+			   (config.type?'.'+config.type:'');
+
+		return url;
 	}
 
 /************* PRIVATE FUNCTIONS ***************/
@@ -202,8 +206,9 @@ function Loader(settings) {
 		var keys = Object.keys(this.settings.listeners);
 
 		for (key in keys) {
-			var settings = this.settings.listeners[keys[key]];
+			var settings = this.settings.listeners[keys[key]]; // whyyyyy
 			var listeners = settings.selector===null?[this]:document.querySelectorAll(settings.selector);
+
 			for(var i = 0; listener = listeners[i]; i++) {
 				listener.addEventListener(settings.event?settings.event:'click', (function(button, self, fn) {
 					return function(event) {
@@ -215,37 +220,24 @@ function Loader(settings) {
 		console.log("Registered listeners...");
 	}
 
-	this._getExisting = function(n) {
-		console.log("Retrieving existing rows...");
-		this.sendRequest(this.generateUrl('all') , n, function(event, self) {
-				if (this.success) {
-					for (var i = 0; row = this.data[i]; i++) {
-						self.lister.add(self.createObject(row));
-					}
-					console.log("Displayed existing results...");
-					self.notify.success('Finished loading.');
-				} else {
-					self.notify.failure(this.message);
-				}
-			});
-	}
-
 	// sets it all up
 	this._init = function(settings) {
+		var self = this;
+
 		this.settings = this._setSettings(settings, this.defaults);
 		console.log('set settings...');
 
 		this.forms.self = this;
 		this.notify = new Notify(this.settings.loader);
 		this.notify.wait();
-
 		this.parser = new Parser('#{', '}');
 
 		if (this.settings.table) {
-			this.lister = new Lister(
-				this.settings.table.element.querySelector('tbody'),
-				this.settings.table.sortFn
-			);
+			this.settings.table.container = new Container({
+				'element': self.settings.table.element.querySelector('tbody'),
+				'classes': ['table'],
+				'sortFn':self.settings.table.sortFn
+			});
 		}
 
 		this.forms.data.form = this.settings.form.form;
@@ -257,7 +249,6 @@ function Loader(settings) {
 		var event = new Event('init');
 		event.initEvent('init', false, true);
 		this.dispatchEvent(event);
-
 	}
 
 /*******************************************************************************************************
@@ -267,60 +258,72 @@ function Loader(settings) {
 		'url': '',
 		'bundle': '',
 		'entity': '',
-		'table': {
-			'element': document.querySelector('table'),
-			'createFn': function(data) {
-				var self = this;
-
-				var row = document.createElement('tr');
-				row.data = data;
-				row.id = data.id;
-				for(button in self.settings.columns) {
-					var fn = self.settings.columns[button];
-					var cell = row.insertCell(-1);
-					var value = data[button] === undefined?fn?fn(null, cell):button: fn?fn(data[button], cell, self.parser):data[button];
-					if (value === undefined) {
-						cell.parentNode.removeChild(cell);
-					} else {
-						cell.innerHTML = value;
-					}
-				}
-
-				for (button in self.settings.buttons) {
-					settings = self.settings.buttons[button];
-					var cell = row.insertCell(-1);
-					cell.classList.add('link');
-					cell.classList.add(button);
-					cell.innerHTML = button;
-					cell.addEventListener(settings.event?settings.event:'click', (function(fn) {
-						return function(event) {
-							fn.call(cell, event, self);
-						}
-					})(settings.fn));
-				}
-
-				return row;
-			},
-			'sortFn': function(dataA,dataB) {
+		'container': new Container({
+			'element': document.querySelector('table tbody'),
+			'sortFn': function(a,b) {
 				return false;
+			},
+			'classes': ['parent'],
+			'createChildren': function(data, context) {
+				for(var i = 0, child = null; child = data[i]; i++) {
+					this.addChild(
+						new Container({
+							'data': child,
+							'type': 'tr',
+							'classes': ['entry'],
+							'createChildren': function(data, context) {
+								for(button in context.settings.columns) {
+									var cell = document.createElement('td');
+									var fn = context.settings.columns[button];
+									var value = data[button] === undefined?fn?fn(null, cell):button:fn?fn(data[button], cell, context.parser):data[button];
+									if (value !== undefined) {
+										this.appendChild(
+											new Container({
+												'element': cell,
+												'text': value,
+												'classes': ['text']
+											})
+										);
+									}
+								}
+
+								for (button in context.settings.buttons) {
+									var fn = context.settings.buttons[button].fn;
+									this.appendChild(
+										new Container({
+											'type': 'td',
+											'text': button,
+											'listeners': {
+												'click': fn
+											},
+											'pass': [context],
+											'classes': ['link', button]
+										})
+									);
+								}
+								
+							}
+						}).createChildren(child, context)
+					);
+				}
 			}
-		},
+
+		}),
 		'buttons': {
 			'edit': {
 				'fn': function(event, self) {
-					self.forms.data.form.setAttribute('data-id', this.parentNode.id);
+					self.forms.data.form._row = this.parent;
 					self.forms.open('edit');
 				}
 			},
 			'delete': {
 				'fn': function(event, self) {
 					self.notify.wait();
-					var url = self.generateUrl('delete', this.parentNode.id);
-
+					var url = self.generateUrl('delete', this.parent.data.id);
 					var button = this;
 					self.sendRequest(url, null, function(event, self) {
 						if (this.success) {
-							self.lister.remove(button.parentNode);
+							button.parent.removeSelf();
 							self.notify.success('Deleted ' + self.settings.entity + '.');
 						} else {
 							self.notify.failure(this.message);
@@ -347,7 +350,15 @@ function Loader(settings) {
 				'selector': null,
 				'event': 'init',
 				'fn': function(event, object, self) {
-					self._getExisting();
+					console.log("Retrieving existing rows...");
+					self.sendRequest(self.generateUrl('all') , null, function(event, self) {
+						if (this.success) {
+							self.settings.container.createChildren(this.data, self);
+							self.notify.success('Finished loading.');
+						} else {
+							self.notify.failure(this.message);
+						}
+					});
 				}
 			}
 		],
@@ -367,7 +378,7 @@ function Loader(settings) {
 						container.classList.remove('shown');
 						self.postForm(null, this, function(event, self) {
 							if (this.success) {
-								self.lister.add(self.createObject(this.data[0]));
+								self.settings.container.createChildren(this.data, self);
 								self.notify.success('Created ' +self.settings.entity+'.');
 								self.forms.close();
 							} else {
@@ -384,10 +395,10 @@ function Loader(settings) {
 				'edit': {
 					'before': function(container, self) {
 						this.classList.add('edit');
-						this.action = self.generateUrl('edit', this.getAttribute('data-id'));
+						this.action = self.generateUrl('edit', this._row.data.id);
 
 						self.notify.wait();
-						self.sendRequest(self.generateUrl('get', this.getAttribute('data-id')), null, function(event, self) {
+						self.sendRequest(self.generateUrl('get', this._row.data.id), null, function(event, self) {
 							if (this.success) {
 								self.notify.ready();
 								self._handleForm(this.form);
@@ -405,8 +416,8 @@ function Loader(settings) {
 						var form = this;
 						self.postForm(null, this, function(event, self) {
 							if (this.success) {
-								var row = document.getElementById(form.getAttribute('data-id'));
-								self.lister.replace(row, self.createObject(this.data[0]));
+								form._row.parent.createChild(this.data[0], self);
+								form._row.removeSelf();
 								self.notify.success('Edited '+self.settings.entity+'.');
 								self.forms.close();
 							} else {

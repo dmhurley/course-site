@@ -50,7 +50,7 @@
 		'url': '{{ url('main_page')}}crud/',
 		'bundle': 'exam',
 		'entity': 'question',
-		'table': {
+		'container': {
 			'sortFn': function(ob1, ob2) {
 				return parseInt(ob1.data.id) < parseInt(ob2.data.id);
 			}
@@ -59,7 +59,7 @@
 			'preview': {
 				'event': 'click', //optional
 				'fn': function(event, self) {
-					window.open(self.parser.parse('{{url("preview")}}?id=#{id}&type=question', this.parentNode), '_blank')
+					window.open(self.parser.parse('{{url("preview")}}?id=#{id}&type=question', this.parent.data), '_blank')
 				}
 			}
 		},
