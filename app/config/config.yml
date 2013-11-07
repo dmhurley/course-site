@@ -78,7 +78,7 @@ swiftmailer:
 stfalcon_tinymce:
         include_jquery: false
         tinymce_jquery: false
-        textarea_class: "tinymce"
+        selector: ".tinymce"
         language: %locale%
         # Custom buttons
         theme:
