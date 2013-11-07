@@ -10,7 +10,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Form\FormError;
-use Doctrine\ORM\EntityRepository;
 
 use Bio\DataBundle\Exception\BioException;
 use Bio\DataBundle\Objects\Database;
@@ -20,6 +19,7 @@ use Bio\FolderBundle\Entity\Link;
 use Bio\FolderBundle\Form\FolderType;
 use Bio\FolderBundle\Form\FileType;
 use Bio\FolderBundle\Form\LinkType;
+use Bio\FolderBundle\Form\StudentFolderType;
 
 /**
  * @Route("/admin/folders")
@@ -94,81 +94,99 @@ class DefaultController extends Controller
      * @Template("BioPublicBundle:Template:singleForm.html.twig")
      */
     public function studentAction(Request $request) {
-        $flash = $request->getSession()->getFlashBag();
-
-        $form = $this->createFormBuilder()
-            // ->add('name', 'text', array('label' => 'Folder Name:'))
-            ->add('parent', 'entity', array(
-                'label' => 'Parent:',
-                'class' => 'BioFolderBundle:Folder',
-                'property' => 'name',
-                'query_builder' => function(EntityRepository $repo) {
-                        return $repo->createQueryBuilder('f')
-                            ->where('f.parent IS NULL');
-                    }
-                )
+        $form = $this->createForm(new StudentFolderType(), null, array(
+                'action' => $this->generateUrl('generate_student_folders')
             )
-            ->add('confirmation', 'checkbox', array('label' => "Are you sure?"))
-            ->add('create', 'submit')
-            ->getForm();
-
-        if($request->getMethod() === "POST") {
-            $form->handleRequest($request);
-            if ($form->isValid()) {
-                // does folder exist?
-                $db = new Database($this, 'BioFolderBundle:Folder');
-
-                $folder = $db->findOne(array(
-                    'name' => 'Student Folders',
-                    'parent' => $form->get('parent')->getData()
-                    )
-                );
-
-                if (!$folder) {
-                    $folder = new Folder();
-                    $folder->setName('Student Folders')
-                        ->setParent($form->get('parent')->getData())
-                        ->setPrivate(false);
-                    $db->add($folder);
-                    $db->close();
-                }
-
-                $dbStudentFolders = $db->find(array('parent' => $folder), array(), false);
-                $studentFolders = [];
-
-                $db = new Database($this, 'BioStudentBundle:Student');
-                $students = $db->find(array(), array(), false);
-
-                foreach($students as $student) {
-                    if ( !($f = $this->findObjectByFieldValue($student, $dbStudentFolders, 'student'))) {
-                        $f = new Folder();
-                        $f->setName($student->getFName().' '.$student->getLName().' ')
-                            ->setStudent($student)
-                            ->setParent($folder)
-                            ->setPrivate(false);
-                        $folder->addChild($f);
-                        $db->add($f);
-                    }
-                    $studentFolders[] = $f;
-                }
-
-                foreach($dbStudentFolders as $f) {
-                    if (!in_array($f, $studentFolders, true)) {
-                        $db->delete($f);
-                    }
-                }
-                try {
-                    $db->close();
-                    $flash->set('success', 'Created student folders.');
-                } catch (BioException $e) {
-                    $flash->set('failure', 'Could not create student folders.');
-                }
-
-                return $this->redirect($this->generateUrl('view_folders'));
-            }
-        }
+        )
+            ->add('create', 'submit');
 
         return array('form' => $form->createView(), 'title' => 'Create Student Folders');
+    }
+
+    /**
+     * @Route("/students/generate", name="generate_student_folders")
+     * @Template("BioDataBundle:Crud:full.json.twig")
+     */
+    public function generateStudentFoldersAction(Request $request) {
+        $form = $this->createForm(new StudentFolderType(), null)
+            ->add('create', 'submit');
+
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            $db = new Database($this, 'BioFolderBundle:Folder');
+            $studentFolder = $db->findOne(array(
+                    'name' => 'Student Folders',
+                    'parent' => $form->get('parent')->getData()
+                )
+            );
+
+            // make sure there is a student folder
+            if (!$studentFolder) {
+                $studentFolder = new Folder();
+                $studentFolder->setName('Student Folders')
+                    ->setParent($form->get('parent')->getData())
+                    ->setPrivate(false);
+                $db->add($studentFolder);
+                $db->close();
+            }
+
+            // make sure there are alpha folders
+            foreach(range('A', 'Z') as $character) {
+                $children = $db->find(array('parent' => $studentFolder), array('name' => 'ASC'), false);
+                if (!$this->findObjectByFieldValue($character, $children, 'name')) {
+                    $folder = new Folder();
+                    $folder->setName($character)
+                        ->setParent($studentFolder)
+                        ->setPrivate(false);
+                    $db->add($folder);
+                }
+            }
+            $db->close();
+
+            $children = $db->find(array('parent' => $studentFolder), array('name' => 'ASC'), false);
+            if (count($children) > 26) {
+                return array(
+                    'error' => 'Delete all non capital character folders.'
+                );
+            }
+
+            $folders = array_combine(range('A', 'Z'), $children);
+
+            $students = (new Database($this, 'BioStudentBundle:Student'))->find(array(), array(), false);
+            $studentsWithFolders = [];
+            foreach($students as $student) {
+                $character = strtoupper(substr($student->getLName(), 0, 1));
+                if ( !($f = $this->findObjectByFieldValue($student, $folders[$character]->getChildren()->toArray(), 'student'))) {
+                    $f = new Folder();
+                    $f->setName($student->getLName().', '.$student->getFName())
+                        ->setStudent($student)
+                        ->setParent($folders[$character])
+                        ->setPrivate(false);
+                    $db->add($f);
+                    $studentsWithFolders[] = $f;
+                }
+            }
+            $db->close();
+
+            foreach($folders as $folder) {
+                $alphaFolders = $folder->getChildren()->toArray();
+                foreach($alphaFolders as $studentFolder) {
+                    if (!in_array($studentFolder, $studentsWithFolders, true)) {
+                        $db->delete($studentFolder);
+                    }
+                }
+            }
+            $db->close();
+
+            return array(
+                'entities' => [$studentFolder] //student folder
+            );
+        } else {
+            return array(
+                'form' => $form->createView(),
+                'error' => 'Invalid form.'
+            );
+        }
     }
 
     private function findObjectByFieldValue($needle, $haystack, $field) {

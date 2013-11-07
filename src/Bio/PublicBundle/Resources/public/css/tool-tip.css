@@ -1,6 +1,8 @@
 /*====================================================
 CSS Tooltips by Adam Whitcroft
 https://github.com/AdamWhitcroft/CSS.Tooltips
+
+- EDITED FOR UW BIOLOGY
 ====================================================*/
 /*==================================================*/
 /*  $Tooltips                                       */
@@ -39,12 +41,11 @@ https://github.com/AdamWhitcroft/CSS.Tooltips
 	color:#fff;
 	z-index:9;
 	font-size: 0.75em;
-	height:18px;
 	line-height:18px;
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
-	white-space:nowrap;
+	white-space:normal;
 	word-wrap:normal;
 }
 [data-tip]:hover:before,

@@ -65,15 +65,12 @@
 			var selected = document.querySelectorAll('.selected');
 			var i = 0;
 			var element;
-			console.log(selected);
 			while((element = selected[i]) && element !== container.element) {
-				console.log(element);
 				element.classList.add('old');
 				i++;
 			}
 			i++;
 			while (element = selected[i]) {
-				console.log(element);
 				element.classList.remove('selected');
 				element.classList.remove('old');
 				i++;
@@ -88,7 +85,7 @@
 
 			container.element.classList.add('selected');
 			container.element.classList.remove('old');
-
+			container.parent.parent.element.scrollLeft = container.parent.parent.element.scrollWidth;
 			if (fakeClick) {
 				var fn = container.config.listeners['click'];
 				if (fn) {
@@ -179,7 +176,7 @@
 
 														
 														if (self.data.type === 'folder') {
-															if (self.element.classList.contains('selected')) {
+															if (self.element.classList.contains('selected') && event) {
 																backTo(self.parent.getNextSibling());
 																select(self);
 															} else {
@@ -192,15 +189,14 @@
 																	if (this.success) {
 																		loader.settings.container.createChild(this.data[0].children, loader);
 																		loader.notify.ready();
-																		select(self);
 																	} else {
 																		loader.notify.failure(this.message);
 																	}
+																	select(self);
 																});
 															}
 														} else {
 															backTo(self.parent);
-															select(self);
 															// add preview pane
 															self.parent.parent.addChild(
 																new Container({
@@ -222,6 +218,7 @@
 																	'pass': [context]
 																}).createChildren(self.data, context)
 															);
+															select(self);
 														}
 													},
 													'dblclick': function(event, loader) {
