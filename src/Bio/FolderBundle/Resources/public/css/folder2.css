@@ -53,6 +53,11 @@ tbody {
 			width:auto;
 		}
 
+		#box .content .column:nth-child(3):last-of-type {
+			width: 247px;
+			border-right: none;
+		}
+
 		#box .content .column:empty:after {
 			content: 'empty';
 			text-align:center;

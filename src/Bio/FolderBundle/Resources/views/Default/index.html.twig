@@ -9,8 +9,7 @@
 
 	{% javascripts 'bundles/bioexam/js/Loader.js'
 				   'bundles/bioexam/js/Parser.js'
-				   'bundles/bioexam/js/Notify.js'
-				   'bundles/bioexam/js/Lister.js' %}
+				   'bundles/bioexam/js/Notify.js' %}
 		<script src="{{asset_url}}"></script>
 	{% endjavascripts %}
 {% endblock %}
@@ -63,10 +62,24 @@
 	<script>
 
 		var select = function(container, fakeClick) {
-			var selected = document.querySelectorAll('.selected:not(.old)');
-			for(var i = 0, sel = null; sel = selected[i]; i++) {
-				sel.classList.add('old');
+			var selected = document.querySelectorAll('.selected');
+			var i = 0;
+			var element;
+			console.log(selected);
+			while((element = selected[i]) && element !== container.element) {
+				console.log(element);
+				element.classList.add('old');
+				i++;
 			}
+			i++;
+			while (element = selected[i]) {
+				console.log(element);
+				element.classList.remove('selected');
+				element.classList.remove('old');
+				i++;
+			}
+
+
 			var selected = container.parent.element.querySelector('.selected')
 			if (selected) {
 				selected.classList.remove('selected');
@@ -164,24 +177,31 @@
 													'click': function(event, loader) {
 														var self = this;
 
-														backTo(self.parent);
+														
 														if (self.data.type === 'folder') {
-															loader.notify.wait();
-															var url = loader.generateUrl('get', self.data.id, {
-																'entity': 'folder'
-															});
-															loader.sendRequest(url, null, function(event, loader) {
-																if (this.success) {
-																	loader.settings.container.createChild(this.data[0].children, loader);
-																	loader.notify.ready();
-																	select(self);
-																} else {
-																	loader.notify.failure(this.message);
-																}
-															});
+															if (self.element.classList.contains('selected')) {
+																backTo(self.parent.getNextSibling());
+																select(self);
+															} else {
+																backTo(this.parent);
+																loader.notify.wait();
+																var url = loader.generateUrl('get', self.data.id, {
+																	'entity': 'folder'
+																});
+																loader.sendRequest(url, null, function(event, loader) {
+																	if (this.success) {
+																		loader.settings.container.createChild(this.data[0].children, loader);
+																		loader.notify.ready();
+																		select(self);
+																	} else {
+																		loader.notify.failure(this.message);
+																	}
+																});
+															}
 														} else {
+															backTo(self.parent);
 															select(self);
-															// add preview
+															// add preview pane
 															self.parent.parent.addChild(
 																new Container({
 																	'type': 'div',
