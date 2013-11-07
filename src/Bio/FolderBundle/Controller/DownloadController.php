@@ -24,8 +24,8 @@ class DownloadController extends Controller
      * @Route("/{id}", name="download")
      * @ParamConverter("file", class="BioFolderBundle:File")
      */
-    public function downloadAction(Request $request, File $file) {
-        if (file_exists($file->getAbsolutePath())) {
+    public function downloadAction(Request $request, File $file = null) {
+        if ($file && file_exists($file->getAbsolutePath())) {
             $name = $file->getName();
             $typeArray = explode('.', $file->getPath());
 
@@ -47,13 +47,6 @@ class DownloadController extends Controller
 
             return $response;
         }
-
-        $request->getSession()->getFlashBag()->set('failure', 'Could not find file "'.$filename.'".');
-        
-        if ($request->headers->get('referer')){
-            return $this->redirect($request->headers->get('referer'));
-        } 
-
-        return $this->redirect($this->generateUrl('view_folders'));
+        throw $this->createNotFoundException('Could not find file.');
     }
 }

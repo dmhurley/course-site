@@ -70,9 +70,14 @@
 			'url': '{{ url('main_page') }}crud/',
 			'bundle': 'user',
 			'entity': 'user',
-			'table': {
+			'container': {
 				'sortFn': function(ob1, ob2) {
-					return ob1.data.username < ob2.data.username;
+					var roles = ['ROLE_USER', 'ROLE_STUDENT', 'ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_SETUP'];
+					if (roles.indexOf(ob1.data.roles[0]) === roles.indexOf(ob2.data.roles[0])) {
+						return ob1.data.username < ob2.data.username;
+					} else {
+						return roles.indexOf(ob1.data.roles[0]) > roles.indexOf(ob2.data.roles[0]);
+					}
 				}
 			},
 			'buttons': {
@@ -80,11 +85,18 @@
 				'promote': {
 					'fn': function(event, self) {
 						self.notify.wait();
-						var url = "{{ url('view_users') }}promote/" + this.parentNode.id;
+						var url = self.generateUrl('promote', this.parent.data.id, {
+							'address': "{{ url('view_users') }}",
+							'entity': null,
+							'bundle': null,
+						});
 						var ob = this;
 						self.sendRequest(url, null, function(event, self) {
 							if (this.success) {
-								self.lister.replace(ob.parentNode, self.createObject(this.data[0]));
+
+								self.settings.container.createChildren(this.data, self);
+								ob.parent.removeSelf();
+
 								self.notify.success('Promoted user.');
 							} else {
 								self.notify.failure(this.message);
@@ -95,11 +107,18 @@
 				'demote': {
 					'fn': function(event, self) {
 						self.notify.wait();
-						var url = "{{ url('view_users') }}demote/" + this.parentNode.id;
+						var url = self.generateUrl('demote', this.parent.data.id, {
+							'address': "{{ url('view_users') }}",
+							'entity': null,
+							'bundle': null,
+						});
 						var ob = this;
 						self.sendRequest(url, null, function(event, self) {
 							if (this.success) {
-								self.lister.replace(ob.parentNode, self.createObject(this.data[0]));
+
+								self.settings.container.createChildren(this.data, self);
+								ob.parent.removeSelf();
+
 								self.notify.success('Demoted user.');
 							} else {
 								self.notify.failure(this.message);
@@ -110,7 +129,11 @@
 				'reset': {
 					'fn': function(event, self) {
 						self.notify.wait();
-						var url = "{{ url('view_users') }}reset/" + this.parentNode.id;
+						var url = self.generateUrl('reset', this.parent.data.id, {
+							'address': "{{ url('view_users') }}",
+							'entity': null,
+							'bundle': null,
+						});
 						self.sendRequest(url, null, function(event, self) {
 							if (this.success) {
 								self.notify.success('Password reset.');

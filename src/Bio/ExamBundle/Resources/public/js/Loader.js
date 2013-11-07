@@ -130,17 +130,20 @@ function Loader(settings) {
 	// todo switch to settings
 	this.generateUrl = function(action, id, config) {
 		// make sure things are set
-		config = config || {};
-		config.url = config.url || this.settings.url;
-		config.bundle = config.bundle || this.settings.bundle;
-		config.entity = config.entity || this.settings.entity;
-		config.type = config.type || 'json';
+		config 		=  config 		  ||  {};
+		var address =  config.address !== undefined ? config.address : this.settings.url;
+		var bundle 	=  config.bundle  !== undefined ? config.bundle  : this.settings.bundle;
+		var entity 	=  config.entity  !== undefined ? config.entity  : this.settings.entity;
+		var type 	=  config.type 	  !== undefined ? config.type 	 : 'json';
 
-		var url = config.url + 
-			   config.bundle + '/' + 
-			   config.entity + '/' + 
-			   action + (id?('/' + id):'')+
-			   (config.type?'.'+config.type:'');
+		console.log(address, bundle, entity, action, id, type);
+
+		var url = 
+		 	(address?address:'') + 
+		  	(bundle?bundle + '/':'') + 
+		  	(entity?entity + '/':'') + 
+		   	(action?action + (id?('/' + id):''):'') +
+		   	(type?'.'+type:'');
 
 		return url;
 	}
@@ -364,7 +367,6 @@ function Loader(settings) {
 				'add': {
 					'before': function(container, self) {
 						this.action = self.generateUrl('create');
-						this.classList.add('add');
 					},
 					'onsubmit': function(event, container, self) {
 						event.preventDefault();
@@ -383,12 +385,10 @@ function Loader(settings) {
 					},
 					'after': function(container, self) {
 						this.action = "";
-						this.classList.remove('add');
 					}
 				},
 				'edit': {
 					'before': function(container, self) {
-						this.classList.add('edit');
 						this.action = self.generateUrl('edit', this._row.data.id);
 
 						self.notify.wait();
@@ -422,7 +422,6 @@ function Loader(settings) {
 
 					},
 					'after': function(container, self) {
-						this.classList.remove('edit');
 						this.action = "";
 						this.removeAttribute('data-id');
 					}

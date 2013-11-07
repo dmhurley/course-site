@@ -1,6 +1,7 @@
 function Container(settings, parent) {
 	var self = this;
 
+	settings = settings || {};
 	settings.listeners = settings.listeners || []; 	// required
 	settings.elementType = settings.type || 'tr';
 	settings.classes = settings.classes || ['entry'];
@@ -10,6 +11,7 @@ function Container(settings, parent) {
 	settings.text = settings.text || '';
 
 	self.element = settings.element || document.createElement(settings.elementType);
+	self.element.container = self;
 	self.config = settings;
 	self.parent = parent;
 	self.children = [];
@@ -23,11 +25,13 @@ function Container(settings, parent) {
 	}
 
 	for (listener in settings.listeners) {
-		self.element.addEventListener(listener, function(event) {
-			self.config.pass.unshift(event)
-			settings.listeners[listener].apply(self, self.config.pass);
-			self.config.pass.shift();
-		});
+		self.element.addEventListener(listener, (function(fn, pass) {
+			return function(event) {
+				pass.unshift(event);
+				fn.apply(self, pass);
+				pass.shift();
+			}
+		})(settings.listeners[listener], self.config.pass));
 	}
 
 	for (attribute in self.config.attributes) {
@@ -95,5 +99,19 @@ function Container(settings, parent) {
 	this.createChild = function(data, context) {
 		self.createChildren([data], context);
 		return this;
+	}
+
+	this.getNextSibling = function() {
+		if (self.element.nextSibling) {
+			return self.element.nextSibling.container;
+		}
+		return null;
+	}
+
+	this.getPreviousSibling = function() {
+		if (self.element.previousSibling) {
+			return self.element.previousSibling.container;
+		}
+		return null;
 	}
 }

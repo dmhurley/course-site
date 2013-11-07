@@ -177,11 +177,16 @@ class CrudController extends Controller
         $entity = $this->getEntity($bundle, $entityName, $id);
 
         if (!$entity) {
-            return array('error' => 'Entity not found.');
+            return array(
+                'entities' => [$this->createEntity($bundle, $entityName)],
+                'message' => 'Entity not found.'
+                );
         }
 
         if ($bundle === 'folder' && $entity->getParent() === null) {
             return array('error' => 'Folder cannot be deleted.');
+        } else if ($bundle === 'user' && in_array('ROLE_SETUP', $entity->getRoles())) {
+            return array('error' => 'User cannot be deleted.');
         }
 
         $em->remove($entity);

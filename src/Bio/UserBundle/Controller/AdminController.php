@@ -40,7 +40,7 @@ class AdminController extends Controller
      */
     public function mote(Request $request, $type, User $entity = null) {
 
-    	if ($entity && $entity->getRoles()[0] !== 'ROLE_SETUP' && $entity !== $this->getUser()) {
+    	if ($entity && in_array('ROLE_SETUP', $entity->getRoles()) && $entity !== $this->getUser()) {
             $role = $entity->getRoles()[0];
 
             if ($type==="de") {
@@ -64,7 +64,7 @@ class AdminController extends Controller
                 return array('error' => 'Could not '.$type.'mote that user.');
             }
         } else {
-            return array('error' => 'Could not find that user.');
+            return array('error' => 'Cannot change permissions.');
         }
     }
 
@@ -78,6 +78,8 @@ class AdminController extends Controller
             return array('error' => 'Could not find user.');
         } else if ($user->getEmail() === '') {
            return array('error' => 'Cannot reset a password without an email.');
+        } else if (in_array('ROLE_SETUP', $user->getRoles())){
+            return array('error' => 'Cannot reset password.');
         } else {
             $encoder = $this->get('security.encoder_factory')->getEncoder($user);
             $pwd = substr(md5(rand()), 0, 7);
