@@ -1,5 +1,5 @@
 <div id="timer">
-	<table>
+	<table style="display:none;">
 		<tr>
 			<td rowspan=2 id="handle"></td>
 			<td id="ttLate" class="timer"></td>
@@ -8,7 +8,20 @@
 			<td id="ttEnd" class="timer"></td>
 		</tr>
 	</table>
+	<div class="message">
+		<h5>Error</h5>
+		<p>Your javascript is disabled or there was an error. Finish the test before {{endTime|date('h:i a')}}</p>
+	</div>
 		<style>
+			#timer .message {
+				padding: 10px;
+				width: 180px;
+			}
+
+			#timer .message p {
+				margin-bottom: 0px;
+			}
+
 			#timer {
 				position: fixed;
 				right: -100px;
@@ -78,15 +91,14 @@
 		</style>
 		<script>
 		(function() {
-			function Timer(duration, start, end) {
-				this.duration = duration;
-				this.end = new Date(end*1000);
-				this.start = new Date(start*1000);
+			function Timer(secondsLate, secondsEnd) {
+				this.late = new Date(new Date().valueOf() + secondsLate*1000);
+				this.end = new Date(new Date().valueOf() + secondsEnd*1000);
 				this.lateWarning = false;
 				this.endWarning = false;
 				this.updateTime = function() {
 						var now = new Date();
-						var ttLate = (this.start.valueOf() - now.valueOf())/1000/60 + duration;
+						var ttLate = (this.late.valueOf() - now.valueOf())/1000/60;
 						var ttEnd = (this.end.valueOf() - now.valueOf())/1000/60;
 
 						if (ttLate > ttEnd) {
@@ -121,13 +133,36 @@
 				this.interval = setInterval(
 						(function(self) {
 							return function() {
-								self.updateTime();
+								try {	
+									self.updateTime();
+								} catch (e) {
+									handleError();
+								}
 							}
-						})(this), 300);
+						})(this), 500);
 				this.updateTime();
+
+				this.clearInterval = function() {
+					if (this.interval) {
+						clearInterval(this.interval);
+					}
+				}
 			}
+
+			var timer;
+			function handleError() {
+				timer.clearInterval();
+				document.querySelector('#timer table').style.display = 'none';
+				document.querySelector('#timer .message').style.display = 'block';
+
+			}
+
+			window.addEventListener('error', handleError);
+
 			window.addEventListener('load', function() {
-				timer = new Timer({{duration}} ,"{{start}}", "{{end}}");
+				timer = new Timer({{late}}, {{end}});
+				document.querySelector('#timer table').style.display = 'block';
+				document.querySelector('#timer .message').style.display = 'none';
 
 				document.getElementById('handle').addEventListener('click', function(event) {
 					document.getElementById('timer').classList.toggle('hidden');

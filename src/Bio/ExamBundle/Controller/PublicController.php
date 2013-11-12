@@ -29,7 +29,7 @@ class PublicController extends Controller {
 	 * @Template()
 	 */
 	public function reviewAction(Request $request,Exam $exam) {
-		$student = $this->get('security.context')->getToken()->getUser();
+		$student = $this->get('get.context')->getToken()->getUser();
 
 		$db = new Database($this, 'BioExamBundle:TestTaker');
 		$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
@@ -274,16 +274,14 @@ class PublicController extends Controller {
 				);
 		}
 
-		if ($request->getMethod() === "POST" && count($taker->getAssigned()) > 0) {
-			$assigned = $taker->getAssigned()->toArray();
-			reset($assigned);
-			$taker->setStatus(4)
-				->setTimestamp([
-						'name' => 'grading',
-						'time' => new \DateTime(),
-						'who' => current($assigned)->getStudent()->getUsername()
-					]);
-			$this->getDoctrine()->getManager()->flush();
+		if ($request->getMethod() === "POST") {
+			if (count($taker->getAssigned()) <= 0) {
+				$this->forward('BioExamBundle:Public:check');
+			}
+
+			if (count($taker->getAssigned()) > 0) {
+				$this->handleWaitPost($request, $taker);
+			}
 
 			return $this->redirect($this->generateUrl('exam_entrance'));
 		}
@@ -294,6 +292,19 @@ class PublicController extends Controller {
 				'global' => $global,
 				'title' => 'Finding tests to grade..'
 			));
+	}
+
+	private function handleWaitPost(Request $request, $taker) {
+		$assigned = $taker->getAssigned()->toArray();
+		reset($assigned);
+		$taker->setStatus(4)
+			->setTimestamp([
+					'name' => 'grading',
+					'time' => new \DateTime(),
+					'who' => current($assigned)->getStudent()->getUsername()
+				]);
+		$this->getDoctrine()->getManager()->flush();
+
 	}
 
 	private function gradeAction(Request $request, $exam, $taker, $flash) {
@@ -356,7 +367,7 @@ class PublicController extends Controller {
 	 * @Template("BioExamBundle:Public:check.json.twig")
 	 */
 	public function checkAction(Request $request) {
-		$you = (new Database($this, 'BioExamBundle:TestTaker'))->findOne(array('id' => $request->request->get('a')));
+		$you = (new Database($this, 'BioExamBundle:TestTaker'))->findOne(array('student' => $this->get('security.context')->getToken()->getUser()));
 		$global = (new Database($this, 'BioExamBundle:ExamGlobal'))->findOne(array());
 		$haveGraded = array_merge($you->getAssigned()->toArray(), $you->getGraded()->toArray());
 		if ($you->getGradedNum() >= $global->getGrade() || count($you->getAssigned()) > 0 ) {

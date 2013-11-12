@@ -5,11 +5,14 @@
 
 		<p>You must grade {{global.grade - taker.gradedNum + taker.assigned|length }} more test(s) before you are done.</p>
 
+		<div id="no-java">
+			<p style="font-weight:bold;">It appears that you have javascript disabled or there has been an error. Click the Grade button every few minutes to check for an open test to grade.</p>
+		</div>
 		<div id="submit">
-			<form id="button" method="POST" action="" style="display:none">
+			<form id="button" method="POST" action="">
 				<button>Grade</button>
 			</form>
-			<div id="loadMessage">
+			<div id="loadMessage" style="display:none">
 				Finding test to grade<br />This could take several minutes
 				{% image 'bundles/bioexam/images/ajax-loader.gif' output='images/*.png' %}
 					<div id="loader" style="background-image:url('{{asset_url}}')"></div>
@@ -17,7 +20,11 @@
 			</div>
 		</div>
 		{% if taker.gradedNum > 0 %}
-			{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':exam.gDuration, 'end':date(exam.gDate|date('Y-m-d ') ~ exam.gEnd|date('H:i:s'))|date('U'), 'start':taker.getTimestamp('grading')[0]['time']|date('U')} only %}
+			{% include 'BioExamBundle:Public:timer.html.twig' with {
+				'late': taker.getTimestamp('grading')[0]['time']|date('U') + taker.exam.gDuration * 60 - date()|date('U'),
+				'end': date(taker.exam.gEnd)|date('U') - date()|date('U'),
+				'endTime':taker.exam.gEnd
+			} only %}
 		{% endif %}
 {% endblock %}
 
@@ -48,15 +55,35 @@
 
 			setTimeout((function(self) {
 				return function() {
-					self.check(false);
-					self.interval = setInterval(function() {
-						self.check(self.endtime < new Date());
-					}, 30000);
+					try {
+						self.check(false);
+						self.interval = setInterval(function() {
+							try {
+								self.check(self.endtime < new Date());
+							} catch(e) {
+								handleError();
+							}
+						}, 30000);
+					} catch (e) {
+						handleError();
+					}
 				}
 			})(this), Math.random()*15000);
 		}
+
+		function handleError() {
+			document.getElementById('loadMessage').style.display='none';
+			document.getElementById('no-java').style.display = 'block';
+			document.getElementById('button').style.display = 'block';
+		}
+
+		window.addEventListener('error', handleError)
+
 		window.addEventListener('load', function() {
 			new Checker({{taker.getTimestamp('submitted')[0]['time']|date('U')}});
+			document.getElementById('loadMessage').style.display='block';
+			document.getElementById('no-java').style.display = 'none';
+			document.getElementById('button').style.display = 'none';
 		});
 	})();
 	</script>

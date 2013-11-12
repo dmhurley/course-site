@@ -32,8 +32,7 @@
 	{% endif %}
 
 	{% if exam != null %}
-
-		<p>You can begin {{exam.title}} <b><span id="time"></span></b>.</p>
+		<p id="java" style="display:none;">You can begin {{exam.title}} <b><span id="time"></span></b>.</p>
 
 		<p>Once you begin you will have {{exam.tDuration}} minutes or until {{exam.tEnd|date('h:i a')}} to complete it. Grading will begin 
 		{% if date(exam.tDate|date('Y-m-d')~' '~exam.tStart|date('H:i:s')) >= date(exam.gDate|date('Y-m-d')~' '~exam.gStart|date('H:i:s')) %}
@@ -43,7 +42,8 @@
 		{% endif %} 
 		and lasts for {{exam.gDuration}} minutes or until {{exam.gEnd|date('h:i a')}}.</p>
 
-	<div id="hidden" style="display:none;">
+	<p id="no-java" style="font-weight:bold">It appears you have javascript disabled or there has been an error. The start button will not work until {{exam.tStart|date('h:i a')}} on {{exam.tDate|date('m/d')}}.</p>
+	<div id="hidden">
 		{{ form(form) }}
 	</div>
 	{% endif %}
@@ -101,6 +101,7 @@
 						var diff = this.date.valueOf() - now.valueOf();
 						document.getElementById('time').innerHTML = msToText(diff);
 						if (diff < 0) {
+							console.log('test');
 							clearInterval(this.interval);
 							document.getElementById('hidden').style.display="block";
 						}
@@ -110,7 +111,11 @@
 				this.interval = setInterval(
 					(function(self) {
 						return function() {
-							self.updatePage();
+							try {
+								self.updatePage();
+							} catch(e) {
+								handleError();
+							}
 						}
 					})(this), 10000);
 				this.updatePage();
@@ -142,7 +147,20 @@
 
 				return string;
 			}
+
+			function handleError() {
+				console.log('error');
+				document.getElementById('hidden').style.display='block';
+				document.getElementById('no-java').style.display='block';
+				document.getElementById('java').style.display = 'none';
+			}
+
+			window.addEventListener('error', handleError);
+
 			window.addEventListener('load', function() {
+				document.getElementById('hidden').style.display = 'none';
+				document.getElementById('no-java').style.display = 'none';
+				document.getElementById('java').style.display = 'block';
 				new Pinger("{{ date(exam.tDate|date('Y-m-d ')~exam.tStart|date('H:i:s'))|date('U') }}");
 			});
 		})()
