@@ -88,6 +88,39 @@
 					line-height: 0px;
 					overflow:hidden;
 				}
+				#timer.pulse {
+					animation: pulse .5s infinite;
+					-webkit-animation: pulse .5s infinite;
+					-moz-animation: pulse .5s infinite;
+					-ms-animation: pulse .5s infinite;
+					-o-animation: pulse .5s infinite;
+				}
+
+				@-webkit-keyframes pulse {
+					0% {border-color:rgb(210,14,10);}
+					50% {border-color:rgb(252,220,20);}
+					100% {border-color:rgb(210,14,10);}
+				}
+				@-moz-keyframes pulse {
+					0% {border-color:rgb(210,14,10);}
+					50% {border-color:rgb(252,220,20);}
+					100% {border-color:rgb(210,14,10);}
+				}
+				@-ms-keyframes pulse {
+					0% {border-color:rgb(210,14,10);}
+					50% {border-color:rgb(252,220,20);}
+					100% {border-color:rgb(210,14,10);}
+				}
+				@-o-keyframes pulse {
+					0% {border-color:rgb(210,14,10);}
+					50% {border-color:rgb(252,220,20);}
+					100% {border-color:rgb(210,14,10);}
+				}
+				@keyframes pulse {
+					0% {border-color:rgb(210,14,10);}
+					50% {border-color:rgb(252,220,20);}
+					100% {border-color:rgb(210,14,10);}
+				}
 		</style>
 		<script>
 		(function() {
@@ -127,8 +160,14 @@
 						var htEnd = Math.floor(Math.abs(ttEnd/60));
 						var mtEnd = Math.floor(Math.abs(ttEnd%60));
 						var stEnd = Math.floor(Math.abs(ttEnd%1*60));
-						var eneg = ttEnd > 0?'':'-'
-						document.getElementById('ttEnd').innerHTML = eneg+htEnd + ":" + mtEnd + ":" + (stEnd<10?"0"+stEnd:stEnd);
+						if (ttEnd < 0) {
+							document.getElementById('timer').classList.add('pulse');
+							document.getElementById('timer').classList.remove('hidden');
+							clearInterval(this.interval);
+							document.getElementById('ttEnd').innerHTML = '0:0:00';
+						} else {
+							document.getElementById('ttEnd').innerHTML = htEnd + ":" + mtEnd + ":" + (stEnd<10?"0"+stEnd:stEnd);
+						}
 					}
 				this.interval = setInterval(
 						(function(self) {

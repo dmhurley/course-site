@@ -120,13 +120,13 @@ class PublicController extends Controller {
 			} else
 
 			// test is over
-			if (new \DateTime($exam->getGDate()->format('Y-m-d').' '.$exam->getGEnd()->format('H:i:s')) < new \DateTime()) {
+			if (new \DateTime($exam->getGDate()->format('Y-m-d').' '.$exam->getGEnd()->format('H:i:s')) < new \DateTime('-1 minute')) {
 				$status[] = array('exam' => $exam, 'status' => 'over');
 			} else
 
 			// are they too late to finish
 			if ( (!$taker || $taker->getStatus() < 3) &&
-				new \DateTime($exam->getTDate()->format('Y-m-d').' '.$exam->getTEnd()->format('H:i:s')) < new \DateTime()
+				new \DateTime($exam->getTDate()->format('Y-m-d').' '.$exam->getTEnd()->format('H:i:s')) < new \DateTime('-1 minute')
 				) {
 				$status[] = array('exam' => $exam, 'status' => 'late'); 
 			} else
@@ -148,6 +148,21 @@ class PublicController extends Controller {
 					$db->close();
 				}
 				$status[] = array('exam' => $exam, 'status' => 'current');
+			} else
+
+			// no tests are currently happening but there is one in the future
+			if (!$currentTaker && new \DateTime($exam->getTDate()->format('Y-m-d').' '.$exam->getTStart()->format('H:i:s')) > new \DateTime()) {
+				if ($taker) {
+					$currentTaker = $taker;
+				} else {
+					$currentTaker = new TestTaker();
+					$currentTaker->setStudent($student)
+						->setExam($exam);
+
+					$db->add($currentTaker);
+					$db->close();
+				}
+				$status[] = array('exam' => $exam, 'status' => 'future');
 			} else
 
 			// test happens in the future

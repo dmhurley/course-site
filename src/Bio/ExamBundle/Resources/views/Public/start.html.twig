@@ -54,13 +54,17 @@
 					not taken
 				{% elseif exam['taker'].status < 3 %}
 					not finished
-				{% elseif exam['taker'].status == 5 and not viewAble %}
+				{% elseif exam['taker'].status >= 3 and not viewAble %}
 					pending
 				{% elseif exam['taker'].gradedBy|length == 0 %}
 					ungraded
 				{% else %}
 					{% set outOf = 0 %}
 					{% set totalMean = 0 %}
+
+					{% for question in exam['taker'].exam.questions %}
+						{% set outOf = outOf + question.points %}
+					{% endfor %}
 
 					<!-- find points earned -->
 					{% for answer in exam['taker'].answers %}
