@@ -50,7 +50,7 @@
 			{% endif %}
 
 				
-				{% if exam['taker'] is null %}
+				{% if exam['taker'] is null or exam['taker'].status == 1 %}
 					not taken
 				{% elseif exam['taker'].status < 3 %}
 					not finished

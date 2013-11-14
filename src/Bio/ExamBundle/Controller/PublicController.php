@@ -243,17 +243,16 @@ class PublicController extends Controller {
 					t as taker
 				FROM BioExamBundle:Exam e
 				LEFT JOIN BioExamBundle:TestTaker t
-				WITH t.exam = e
-				WHERE (
-					:section LIKE CONCAT(e.section, '."'%'".')
-					OR 
-					e.section IS NULL
+				WITH (
+					t.exam = e
+					AND (
+						t.student = :student
+						OR
+						t.id IS NULL
+					)
 				)
-				AND (
-					t.student = :student
-					OR
-					t.id IS NULL
-				)
+				WHERE :section LIKE CONCAT(e.section, '."'%'".')
+				OR e.section IS NULL
 				ORDER BY e.tDate ASC, e.tStart ASC
 			')
 			->setParameter('student', $student)
