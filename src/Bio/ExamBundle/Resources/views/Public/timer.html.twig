@@ -35,6 +35,7 @@
 				width:300px;
 				transition: right .3s, border-color 1s;
 				-webkit-transition: right .3s, border-color 1s;
+				-moz-transition: right .3s, border-color 1s;
 				user-select:none;
 				-webkit-user-select:none;
 				-moz-user-select:none;
@@ -116,7 +117,7 @@
 					50% {border-color:rgb(252,220,20);}
 					100% {border-color:rgb(210,14,10);}
 				}
-				@keyframes pulse {
+				@-keyframes pulse {
 					0% {border-color:rgb(210,14,10);}
 					50% {border-color:rgb(252,220,20);}
 					100% {border-color:rgb(210,14,10);}

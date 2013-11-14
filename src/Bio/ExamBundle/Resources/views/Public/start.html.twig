@@ -48,13 +48,12 @@
 			{% else %}
 				{{exam['title']}} - 
 			{% endif %}
-
 				
-				{% if exam['taker'] is null or exam['taker'].status == 1 %}
+				{% if exam['taker'] is null or exam['status'] == 1 %}
 					not taken
-				{% elseif exam['taker'].status < 3 %}
+				{% elseif exam['status'] < 3 %}
 					not finished
-				{% elseif exam['taker'].status >= 3 and not viewAble %}
+				{% elseif exam['status'] >= 3 and not viewAble %}
 					pending
 				{% elseif exam['taker'].gradedBy|length == 0 %}
 					ungraded
@@ -83,6 +82,7 @@
 
 					{{totalMean|number_format(2, '.', ',')}}/{{outOf|number_format(2)}}
 				{% endif %}
+
 			</li>
 			{% endspaceless %}
 		{% endfor %}

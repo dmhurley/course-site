@@ -48,7 +48,7 @@ body { background-color: #3f3f3f; }  					/* side filler */
 }
 
 /******** BORDERS ********/
-.login > a, .menu li { 									/* login button/dropdown */
+.login > a, .menu ul > * { 								/* login button/dropdown */
 	border-color: #4c3782; 
 	border-style: solid;
 	border-width: 1px;
@@ -254,6 +254,7 @@ body {
 			height: 12px;
 			position:absolute;
 			top: -8px;
+			border-bottom: none !important;
 		}
 
 		.login a {
@@ -277,6 +278,13 @@ body {
 				.menu li {
 					padding: 8px 12px;
 					word-wrap: break-word;
+				}
+
+				.menu ul > * {
+					display: list-item;
+				}
+				.menu ul > *:nth-child(n+2) {
+					border-top: none !important;
 				}
 
 #footer {

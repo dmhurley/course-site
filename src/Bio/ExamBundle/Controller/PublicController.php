@@ -29,7 +29,7 @@ class PublicController extends Controller {
 	 * @Template()
 	 */
 	public function reviewAction(Request $request,Exam $exam) {
-		$student = $this->get('get.context')->getToken()->getUser();
+		$student = $this->get('security.context')->getToken()->getUser();
 
 		$db = new Database($this, 'BioExamBundle:TestTaker');
 		$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
@@ -204,7 +204,7 @@ class PublicController extends Controller {
 			->getForm();
 
 		if ($request->getMethod() === "POST") {
-			if ($taker && $exam->getTStart() <= new \DateTime()) {
+			if ($taker && $exam && new \DateTime( $exam->getTDate()->format('Y-m-d').' '.$exam->getTStart()->format('H:i:s') ) <= new \DateTime()) {
 				$taker->setStatus(2);
 				$taker->setTimestamp([
 						'name' => 'started',
@@ -240,7 +240,8 @@ class PublicController extends Controller {
 					e.gDate as gdate,
 					e.gStart as gstart,
 					e.gEnd as gend,
-					t as taker
+					t as taker,
+					t.status as status
 				FROM BioExamBundle:Exam e
 				LEFT JOIN BioExamBundle:TestTaker t
 				WITH (
