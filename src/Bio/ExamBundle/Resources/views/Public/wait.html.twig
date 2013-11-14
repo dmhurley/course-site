@@ -37,7 +37,7 @@
 
 			this.check = function(force) {
 				var ajax = new XMLHttpRequest();
-				ajax.open('POST', '{{ url("check") }}'+(force?'?please':''), true);
+				ajax.open('POST', '{{ url("check", {'id' : taker.id}) }}'+(force?'?please':''), true);
 				ajax.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 				self = this;
 				ajax.onload = function() {
@@ -50,7 +50,7 @@
 						document.getElementById('button').style.display = "block";
 					}
 				};
-				ajax.send("a={{taker.id}}");
+				ajax.send();
 			}
 
 			setTimeout((function(self) {

@@ -61,10 +61,10 @@ class PublicController extends Controller {
 		$taker = null;
 
 		$exams = $this->getNextExams($student->getSection()->getName());
-		list($exam, $taker, $message) = $this->findExam($exams, $student);
+		list($exam, $taker, $messages) = $this->findExam($exams, $student);
 
 		if (!$taker || ($taker->getStatus() === 1 || $taker->getStatus() === 5)) {
-			return $this->startAction($request, $exam, $taker, $message, $student, $flash, $exams);
+			return $this->startAction($request, $exam, $taker, $messages, $student, $flash, $exams);
 		} else if ($taker->getStatus() === 2) {
 			return $this->examAction($request, $exam, $taker, $flash);
 		} else if ($taker->getStatus() === 3) {
@@ -88,11 +88,11 @@ class PublicController extends Controller {
 			AND (:section LIKE CONCAT(e.section, '."'%'".') OR 
 				e.section IS NULL)
 			ORDER BY e.tDate ASC, e.tStart ASC
-		'; // TODO make sure that the section matching is not backwards /works
+		';
 
 		return $em->createQuery($queryString)
 			->setParameter('date', new \DateTime(), \Doctrine\DBAL\Types\Type::DATE)
-			->setParameter('time', new \DateTime(), \Doctrine\DBAL\Types\Type::TIME)
+			->setParameter('time', new \DateTime('-15 minutes'), \Doctrine\DBAL\Types\Type::TIME)
 			->setParameter('section', $section)
 			->getResult();
 	}
@@ -100,37 +100,90 @@ class PublicController extends Controller {
 	
 	private function findExam($exams, $student) {
 		$db = new Database($this, 'BioExamBundle:TestTaker');
-		$message = null;
+
+		// check to see if there are exams in the future
+		if (count($exams) === 0) {
+			return array(null, null, ["There are no more tests currently scheduled."]);
+		}
+
+		// get tests finished, tests to late to finish, tests now, tests in future
+		// tests that are over are automatically not included
+		$status = [];
+		$currentTaker = null;
+
 		foreach($exams as $exam) {
 			$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
-			if (!$taker) {					// if student hasn't started, create taker
-				$taker = new TestTaker();
-				$taker->setStudent($student)
-					->setExam($exam);
-				$db->add($taker);
-				$db->close();
 
-				return array($exam, $taker, null);
-			} else {						// if student has started
-				if ($taker->getStatus() === 5) { // if they've finished, move on to next
-					$message = 'You have already finished '.$exam->getTitle().'.';
-				} else if (     // they haven't finished 
-					$taker->getStatus() < 3 && 
-					new \DateTime(
-							$exam->getTDate()->format('Y-m-d').
-							$exam->getTEnd()->format('H:i:s')
-						) < new \DateTime('-1 minute')
+			// has the person taken this test?
+			if ($taker && $taker->getStatus() === 5) {
+				$status[] = array('exam' => $exam, 'status' => 'finished');
+			} else
+
+			// test is over
+			if (new \DateTime($exam->getGDate()->format('Y-m-d').' '.$exam->getGEnd()->format('H:i:s')) < new \DateTime()) {
+				$status[] = array('exam' => $exam, 'status' => 'over');
+			} else
+
+			// are they too late to finish
+			if ( (!$taker || $taker->getStatus() < 3) &&
+				new \DateTime($exam->getTDate()->format('Y-m-d').' '.$exam->getTEnd()->format('H:i:s')) < new \DateTime()
 				) {
-					$message = "It is too late to take ".$exam->getTitle().".";
-				} else {
-					return array($exam, $taker, $message);
+				$status[] = array('exam' => $exam, 'status' => 'late'); 
+			} else
+
+			// the test is currently happening
+			if (new \DateTime($exam->getTDate()->format('Y-m-d').' '.$exam->getTStart()->format('H:i:s')) <= new \DateTime()) {
+
+				// have they started?
+				if ($taker && !$currentTaker) {
+					$currentTaker = $taker;
+
+				// haven't started. create a test Taker
+				} else if (!$currentTaker) {
+					$currentTaker = new TestTaker();
+					$currentTaker->setStudent($student)
+						->setExam($exam);
+
+					$db->add($currentTaker);
+					$db->close();
 				}
+				$status[] = array('exam' => $exam, 'status' => 'current');
+			} else
+
+			// test happens in the future
+			if (new \DateTime($exam->getTDate()->format('Y-m-d').' '.$exam->getTStart()->format('H:i:s')) > new \DateTime()) {
+				$status[] = array('exam' => $exam, 'status' => 'future');
 			}
 		}
-		return array(null, null, 'No more tests currently scheduled.');
+
+		// generate message
+		$messages = [];
+		foreach($status as $entry) {
+			$status = $entry['status'];
+			$exam = $entry['exam'];
+
+			if ($status === 'finished') {
+				$messages[] = "You have already finished ".$exam->getTitle().".";
+			} else if ($status === 'over') {
+				$messages[] = $exam->getTitle().' is over.';
+			} else if ($status === 'late') {
+				$messages[] = "It is too late to submit and grade ".$exam->getTitle().".";
+			} else if ($status === 'current') {
+				$messages[] = $exam->getTitle()." is happening now.";
+			} else if ($status === 'future') {
+				$messages[] = $exam->getTitle()." will open on ".$exam->getTDate()->format('m/d Y')." at ".$exam->getTStart()->format('h:i a').".";
+				break;
+			}
+		}
+
+		if ($currentTaker) {
+			return array($currentTaker->getExam(), $currentTaker, $messages);
+		} else {
+			return array(null, null, $messages);
+		}
 	}
 
-	private function startAction(Request $request, $exam, $taker, $message, $student, $flash, $exams) {
+	private function startAction(Request $request, $exam, $taker, $messages = [], $student, $flash, $exams) {
 		$form = $this->createFormBuilder()
 			->add('start', 'submit')
 			->getForm();
@@ -153,8 +206,9 @@ class PublicController extends Controller {
 				$this->getDoctrine()->getManager()->flush();
 				$flash->set('success', 'Exam started.');
 				return $this->redirect($this->generateUrl('exam_entrance'));
+			} else {
+				// $flash->set('failure', $message);
 			}
-			$flash->set('failure', 'Exam has not started yet.');
 		}
 
 		$global = (new Database($this, 'BioExamBundle:ExamGlobal'))->findOne(array());
@@ -162,30 +216,40 @@ class PublicController extends Controller {
 
 		$em = $this->getDoctrine()->getManager();
 		$query = $em->createQuery('
-				SELECT e
+				SELECT
+					e.id as id,
+					e.title as title,
+					e.tDate as tdate,
+					e.tStart as tstart,
+					e.tEnd as tend,
+					e.gDate as gdate,
+					e.gStart as gstart,
+					e.gEnd as gend,
+					t as taker
 				FROM BioExamBundle:Exam e
 				LEFT JOIN BioExamBundle:TestTaker t
 				WITH t.exam = e
-				WHERE (e.tDate < :date
-						OR (e.tDate = :date
-						AND e.tStart < :time))
-				AND (:section LIKE CONCAT(e.section, '."'%'".') OR 
-				e.section IS NULL)
-				AND t.id IS NULL
+				WHERE (
+					:section LIKE CONCAT(e.section, '."'%'".')
+					OR 
+					e.section IS NULL
+				)
+				AND (
+					t.student = :student
+					OR
+					t.id IS NULL
+				)
 				ORDER BY e.tDate ASC, e.tStart ASC
 			')
-			->setParameter('date', new \DateTime(), \Doctrine\DBAL\Types\Type::DATE)
-			->setParameter('time', new \DateTime(), \Doctrine\DBAL\Types\Type::TIME)
-			->setParameter('section', $this->get('security.context')->getToken()->getUser()->getSection()->getName());
+			->setParameter('student', $student)
+			->setParameter('section', $student->getSection()->getName());
 
 		return $this->render('BioExamBundle:Public:start.html.twig', array(
 				'form' => $form->createView(),
 				'global' => $global,
 				'exam' => $exam,
-				'message' => $message,
-				'takers' => $takers,
-				'past_exams' => $query->getResult(),
-				'exams' => $exams,
+				'messages' => $messages,
+				'exams' => $query->getResult(),
 				'title' => 'Begin Test'
 			));
 	}
@@ -276,7 +340,7 @@ class PublicController extends Controller {
 
 		if ($request->getMethod() === "POST") {
 			if (count($taker->getAssigned()) <= 0) {
-				$this->forward('BioExamBundle:Public:check');
+				$this->forward('BioExamBundle:Public:check', array('id' => $taker->getId()));
 			}
 
 			if (count($taker->getAssigned()) > 0) {
@@ -363,11 +427,14 @@ class PublicController extends Controller {
 	}
 
 	/**
-	 * @Route("/check.json", name="check")
+	 * @Route("/{id}/check.json", name="check")
 	 * @Template("BioExamBundle:Public:check.json.twig")
 	 */
-	public function checkAction(Request $request) {
-		$you = (new Database($this, 'BioExamBundle:TestTaker'))->findOne(array('student' => $this->get('security.context')->getToken()->getUser()));
+	public function checkAction(Request $request, TestTaker $you) {
+		if ($you->getStudent() !== $this->get('security.context')->getToken()->getUser()) {
+			throw $this->createNotFoundException();
+		}
+
 		$global = (new Database($this, 'BioExamBundle:ExamGlobal'))->findOne(array());
 		$haveGraded = array_merge($you->getAssigned()->toArray(), $you->getGraded()->toArray());
 		if ($you->getGradedNum() >= $global->getGrade() || count($you->getAssigned()) > 0 ) {

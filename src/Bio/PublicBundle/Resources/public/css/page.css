@@ -91,10 +91,12 @@ body { background-color: #3f3f3f; }  					/* side filler */
 	top: -15px;
 	left: 0px;
 	z-index:10000;
-	cursor:n-resize;
 	-webkit-user-select:none;
 	-user-select:none;
 }
+	.success.animated, .failure.animated {
+		cursor: n-resize;
+	}
 
 body {
 	font-family: "Trebuchet MS";

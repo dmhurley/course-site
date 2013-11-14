@@ -1,37 +1,21 @@
 {% extends 'BioExamBundle:Public:main.html.twig' %}
 
-{% block content %}
-	<div id="schedule" class="tableStyle">
-		<table>
-			<thead>
-				<tr>
-					<th>Exam</th>
-					<th>Test</th>
-					<th>Grade</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for e in exams[:3] %}
-					<tr>
-						<td>{{e.title}}</td>
-						<td>{{e.tDate|date('m/d')}} - {{e.tStart|date('h:i a')}} to {{e.tEnd|date('h:i a')}}</td>
-						<td>{{e.gDate|date('m/d')}} - {{e.gStart|date('h:i a')}} to {{e.gEnd|date('h:i a')}}</td>
-					</tr>
-				{% else %}
-					<tr>
-						<td colspan=3 style="text-align:center;">none scheduled</td>
-					</tr>
-				{% endfor %}
-			</tbody>
-		</table>
-	</div>
+{% block content %}	
 	<p>{{global.rules}}</p>
 
-	{% if message != null %}
-		<p>{{message}}</p>
+	{% if messages|length > 0 %}
+		<ul>
+			{% for message in messages %}
+				<li>{{message}}</li>
+			{% endfor %}
+		</ul>
 	{% endif %}
 
 	{% if exam != null %}
+		<br />
+		<hr />
+		<br />
+
 		<p id="java" style="display:none;">You can begin {{exam.title}} <b><span id="time"></span></b>.</p>
 
 		<p>Once you begin you will have {{exam.tDuration}} minutes or until {{exam.tEnd|date('h:i a')}} to complete it. Grading will begin 
@@ -53,39 +37,50 @@
 	<h1>Review Old Tests</h1>
 	<p>Look at your responses, scores, and the actual answers for all past tests. If you have just taken an exam, results will be unavailable until 12 hours after the grading period has ended.</p>
 
-	<h2 style="margin-bottom:5px;">Your Tests</h2>
 	<ul>
-		{% for taker in takers if date(taker.exam.gDate|date('Y-m-d') ~ ' ' ~ taker.exam.gEnd|date('H:i:s')) < date('-12 hours') %}
-			{% if taker.gradedBy|length == 0 %}
-				<li><a href="{{path('review_exam', {'id':taker.exam.id}) }}">{{taker.exam.title}}</a> - (ungraded)
+		{% for exam in exams if date(exam['gdate']|date('Y-m-d')~' '~exam['gend']|date('H:i:s')) < date() or exam['taker']|default({}).status|default(0) == 5 %}	
+			{% spaceless %}
+			<li>
+			{% set viewAble = date(exam['gdate']|date('Y-m-d')~' '~exam['gend']|date('H:i:s')) < date('-12 hours') %}
+
+			{% if viewAble %}
+				<a href="{{path('review_exam', {'id':exam['id']}) }}">{{exam['title']}}</a> - 
 			{% else %}
-				{% set outOf = 0 %}
-				{% set totalMean = 0 %}
+				{{exam['title']}} - 
+			{% endif %}
 
-				{% for answer in taker.answers %}
-					{% set outOf = outOf+answer.question.points %}
+				
+				{% if exam['taker'] is null %}
+					not taken
+				{% elseif exam['taker'].status < 3 %}
+					not finished
+				{% elseif exam['taker'].status == 5 and not viewAble %}
+					pending
+				{% elseif exam['taker'].gradedBy|length == 0 %}
+					ungraded
+				{% else %}
+					{% set outOf = 0 %}
+					{% set totalMean = 0 %}
 
-					{% set questionTotal = 0 %}
-					{% set grades = 0 %}
+					<!-- find points earned -->
+					{% for answer in exam['taker'].answers %}
+						{% set questionTotal = 0 %}
+						{% set grades = 0 %}
 
-					{% for grade in answer.grades if grade.points is not null %}
-						{% set grades = grades + 1 %}
-						{% set questionTotal = questionTotal+grade.points %}
+						{% for grade in answer.grades if grade.points is not null %}
+							{% set grades = grades + 1 %}
+							{% set questionTotal = questionTotal+grade.points %}
+						{% endfor %}
+
+						{% if grades != 0 %}
+							{% set totalMean = totalMean + questionTotal/grades %}
+						{% endif %}
 					{% endfor %}
 
-					{% if grades != 0 %}
-						{% set totalMean = totalMean + questionTotal/grades %}
-					{% endif %}
-				{% endfor %}
-
-				<li><a href="{{path('review_exam', {'id':taker.exam.id}) }}">{{taker.exam.title}}</a> - ({{totalMean|number_format(2, '.', ',')}}/{{outOf|number_format(2)}})</li>
-			{% endif %}
-		{% endfor %}
-	</ul>
-	<h2 style="margin-bottom:5px;">More Tests</h2>
-	<ul>
-		{% for exam in past_exams if date(exam.gDate|date('Y-m-d') ~ ' ' ~ exam.gEnd|date('H:i:s')) < date('-12 hours') %}
-			<li><a href="{{path('review_exam', {'id': exam.id}) }}">{{exam.title}}</a></li>
+					{{totalMean|number_format(2, '.', ',')}}/{{outOf|number_format(2)}}
+				{% endif %}
+			</li>
+			{% endspaceless %}
 		{% endfor %}
 	</ul>
 {% endblock %}
