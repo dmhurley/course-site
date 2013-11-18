@@ -539,7 +539,7 @@ class AdminController extends Controller
                         foreach($answer->getGrades() as $grade) { // status >= 4
 
                             /**** GRADE DATA ****/
-                            $graderID = $grade->getGrader()->getStudent()->getSid();
+                            $graderID = $grade->getGrader()?$grade->getGrader()->getStudent()->getSid():'dropped';
                             if ($grade->getEnd() !== null){
                                 $timeScoredSeconds = strtotime($grade->getEnd()->format("H:i:s")) - strtotime($exam->getGDate()->format("Y-m-d"));
                                 $timeScoredMinutes = $timeScoredSeconds/60;

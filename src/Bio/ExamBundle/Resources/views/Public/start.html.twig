@@ -41,48 +41,21 @@
 		{% for exam in exams if date(exam['gdate']|date('Y-m-d')~' '~exam['gend']|date('H:i:s')) < date() or exam['taker']|default({}).status|default(0) == 5 %}	
 			{% spaceless %}
 			<li>
-			{% set viewAble = date(exam['gdate']|date('Y-m-d')~' '~exam['gend']|date('H:i:s')) < date('-12 hours') %}
+				{% set viewAble = date(exam['gdate']|date('Y-m-d')~' '~exam['gend']|date('H:i:s')) < date('-12 hours') %}
 
-			{% if viewAble %}
-				<a href="{{path('review_exam', {'id':exam['id']}) }}">{{exam['title']}}</a> - 
-			{% else %}
-				{{exam['title']}} - 
-			{% endif %}
-				
-				{% if exam['taker'] is null or exam['status'] == 1 %}
-					not taken
-				{% elseif exam['status'] < 3 %}
-					not finished
-				{% elseif exam['status'] >= 3 and not viewAble %}
-					pending
-				{% elseif exam['taker'].gradedBy|length == 0 %}
-					ungraded
+				{% if viewAble %}
+					<a href="{{path('review_exam', {'id':exam['id']}) }}">{{exam['title']}}</a>
 				{% else %}
-					{% set outOf = 0 %}
-					{% set totalMean = 0 %}
-
-					{% for question in exam['taker'].exam.questions %}
-						{% set outOf = outOf + question.points %}
-					{% endfor %}
-
-					<!-- find points earned -->
-					{% for answer in exam['taker'].answers %}
-						{% set questionTotal = 0 %}
-						{% set grades = 0 %}
-
-						{% for grade in answer.grades if grade.points is not null %}
-							{% set grades = grades + 1 %}
-							{% set questionTotal = questionTotal+grade.points %}
-						{% endfor %}
-
-						{% if grades != 0 %}
-							{% set totalMean = totalMean + questionTotal/grades %}
-						{% endif %}
-					{% endfor %}
-
-					{{totalMean|number_format(2, '.', ',')}}/{{outOf|number_format(2)}}
+					{{exam['title']}}
 				{% endif %}
 
+				{% if exam['taker'] is null or exam['status'] == 1 %}
+					- not taken
+				{% elseif exam['status'] < 5 %}
+					- not finished
+				{% elseif exam['status'] >= 5 %}
+					- finished
+				{% endif %}
 			</li>
 			{% endspaceless %}
 		{% endfor %}
