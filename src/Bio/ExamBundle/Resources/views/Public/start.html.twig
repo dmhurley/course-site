@@ -24,7 +24,7 @@
 		{% else %}
 			{{exam.gDate|date('m/d')}} at {{exam.gStart|date('h:i a')}}
 		{% endif %} 
-		and lasts for {{exam.gDuration}} minutes or until {{exam.gEnd|date('h:i a')}}.</p>
+		and lasts for {{exam.gDuration}} minutes or until {{exam.gEnd|date('h:i a')}}. If the start button does not display once the exam has started, try disabling javascript and refreshing the page or using a different browser.</p>
 
 	<p id="no-java" style="font-weight:bold">It appears you have javascript disabled or there has been an error. The start button will not work until {{exam.tStart|date('h:i a')}} on {{exam.tDate|date('m/d')}}.</p>
 	<div id="hidden">
@@ -69,15 +69,14 @@
 			function Pinger(time) {
 				this.date = new Date(time*1000);
 				this.updatePage = function() {
-						var now = new Date();
-						var diff = this.date.valueOf() - now.valueOf();
-						document.getElementById('time').innerHTML = msToText(diff);
-						if (diff < 0) {
-							console.log('test');
-							clearInterval(this.interval);
-							document.getElementById('hidden').style.display="block";
-						}
+					var now = new Date();
+					var diff = this.date.valueOf() - now.valueOf();
+					document.getElementById('time').innerHTML = msToText(diff);
+					if (diff < 0) {
+						document.getElementById('hidden').style.display="block";
+						clearInterval(this.interval);
 					}
+				}
 
 				// start interval then call once immediately.
 				this.interval = setInterval(
@@ -121,7 +120,6 @@
 			}
 
 			function handleError() {
-				console.log('error');
 				document.getElementById('hidden').style.display='block';
 				document.getElementById('no-java').style.display='block';
 				document.getElementById('java').style.display = 'none';
