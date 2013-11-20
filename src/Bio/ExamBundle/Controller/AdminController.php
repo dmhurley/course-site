@@ -440,7 +440,7 @@ class AdminController extends Controller
             }
 
             /**** TAKER DATA ****/
-            $name = $taker->getStudent()->getLName().", ".$taker->getStudent()->getFName();
+            $name = $taker->getStudent()->getLName().", ".$taker->getStudent()->getFName().($taker->getStudent()->getMName()?' '.$taker->getStudent()->getMName():'');
             $studentID = $taker->getStudent()->getSid();
             $section = $taker->getStudent()->getSection()->getName();
             $didGrade = $taker->getGradedNum() >= $global->getGrade()?"Yes":$taker->getGradedNum();
@@ -619,7 +619,7 @@ class AdminController extends Controller
                     '',
                     $result->getSid(),
                     '',
-                    $result->getLName().', '.$result->getFName(),
+                    $result->getLName().', '.$result->getFName().($result->getMName()?' '.$result->getMName():''),
                     $result->getSection()->getName()
                 )
             );
