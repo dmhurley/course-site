@@ -589,21 +589,26 @@ class AdminController extends Controller
             }
         }
 
+        // finally print out students who never took the exam
         $em = $this->getDoctrine()->getManager();
         $results = $em->createQuery('
                 SELECT s
                 FROM BioStudentBundle:Student s
-                LEFT JOIN BioExamBundle:TestTaker t
-                WITH t.student = s
                 INNER JOIN BioInfoBundle:Section e
                 WITH s.section = e
-                WHERE (t IS NULL OR
-                    t.status = 1)
+                WHERE s NOT IN (
+                    SELECT s1
+                    FROM BioExamBundle:TestTaker t
+                    JOIN BioStudentBundle:Student s1
+                    WITH t.student = s1
+                    AND t.exam = :exam
+                )
                 AND (e.name LIKE CONCAT(:section, '."'%'".') OR 
                     :section IS NULL)
                 ORDER BY s.lName ASC, s.fName ASC
             ')
             ->setParameter('section', $exam->getSection())
+            ->setParameter('exam', $exam)
             ->getResult();
 
         foreach($results as $result) {
@@ -614,7 +619,7 @@ class AdminController extends Controller
                     '',
                     $result->getSid(),
                     '',
-                    $result->getLName().' '.$result->getFName(),
+                    $result->getLName().', '.$result->getFName(),
                     $result->getSection()->getName()
                 )
             );
