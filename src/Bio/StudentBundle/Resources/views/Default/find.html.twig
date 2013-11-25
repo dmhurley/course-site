@@ -1,31 +1,101 @@
-{% extends 'BioPublicBundle::main.html.twig' %}
+{% extends 'BioPublicBundle:Template:rowForm.html.twig' %}
 
 {% block content %}
-	{{form(form)}}
-	{% if app.session.flashbag.has('find') or entities|length > 0%}
 		<table>
-			<tr>
-				<th>ID</th>
-				<th>Name</th>
-				<th>Section</th>
-				<th>Email</th>
-				<th>Edit</th>
-				<th>Reset</th>
-				<th>Delete</th>
-			</tr>
-			{% for entity in entities %}
+			<thead>
 				<tr>
-					<td>{{ entity.sid }}</td>
-					<td>{{ entity.fName }} {{ entity.lName }}</td>
-					<td>{{ entity.section.name }}</td>
-					<td><a href="mailto:{{ entity.email }}">{{ entity.email }}</a></td>
-					<td><a href="{{ path('edit_student', {'id': entity.id}) }}">edit</td>
-					<td><a href="{{ path('reset_password', {'id':entity.id}) }}">reset</a></td>
-					<td><a href="{{ path('delete_student', {'id': entity.id}) }}">delete</td>
+					<th>ID</th>
+					<th>Name</th>
+					<th>Section</th>
+					<th>Email</th>
+					<th>Edit</th>
+					<th>Reset</th>
+					<th>Delete</th>
 				</tr>
-			{% else %}
-				<tr><td colspan=7 style="text-align:center">no students</td></tr>
-			{% endfor %}
+			</thead>
+			<tbody>
+
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan=7 class="lonely link add" >add student</td>
+				</tr>
+			</tfoot>
 		</table>
-	{% endif %}
+{% endblock %}
+
+{% block java %}
+	<script>
+		loader = new Loader({
+			'url': '{{ url('main_page')}}crud/',
+			'bundle': 'student',
+			'entity': 'student',
+			'container' : {
+				'sortFn': function(ob1, ob2) {
+					return ob1.data.f_name < ob2.data.f_name;
+				}
+			},
+			'buttons': {
+				'reset': function(event, self) {
+					// reset some shit
+				}
+			},
+			'columns': {
+				'sid': null,
+				'f_name': null,
+				'l_name': function(value, cell) {
+					cell.previousSibling.innerHTML += ' '+ value;
+					return undefined;
+				},
+				'section': function(value, cell) {
+					return value.name.toUpperCase();
+				},
+				'email': function(value, cell) {
+					if (value) {
+						return '<a href="'+value+'">'+value+'</a>';
+					} else {
+						return '-';
+					}
+				}
+			},
+			'form': {
+				'settings': {
+					'find': {
+						'before': function(container, self) {
+							this.action = self.generateUrl('find');
+
+							var required = this.querySelectorAll('[required]');
+							for(var i = 0, req = null; req = required[i]; i++) {
+								req.removeAttribute('required');
+								req.setAttribute('data-required');
+							}
+						},
+						'onsubmit': function(event, container, self) {
+							event.preventDefault();
+							self.notify.wait();
+							container.classList.remove('shown');
+							self.postForm(null, this, function(event, self) {
+								if (this.success) {
+									self.settings.container.element.innerHTML = '';
+									self.settings.container.createChildren(this.data, self);
+									self.notify.success('Found ' + this.data.length + ' students.');
+									self.forms.close();
+								} else {
+									self.notify.failure(this.message);
+									container.classList.add('shown');
+								}
+							});
+						},
+						'after': function(container, self) {
+							var required = this.querySelectorAll('[data-required]');
+							for(var i = 0, req = null; req = required[i]; i++) {
+								req.setAttribute('required', 'required');
+								req.removeAttribute('data-required');
+							}
+						}
+					}
+				}
+			}
+		});
+	</script>
 {% endblock %}

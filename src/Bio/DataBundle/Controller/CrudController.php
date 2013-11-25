@@ -88,10 +88,26 @@ class CrudController extends Controller
      * @Template("BioDataBundle:Crud:full.json.twig")
      */
     public function findAction(Request $request, $bundle, $entityName) {
+        $findValues = [];
+
+        if ($request->getMethod() === "POST") {
+            $entity = $this->createEntity($bundle, $entityName);
+            $form = $this->createForm($this->createFormType($bundle, $entityName), $entity)
+                ->add('submit', 'submit');
+            $form->handleRequest($request);
+
+            foreach($form->all() as $child) {
+                if ($child->getData() !== null) {
+                    $findValues[$child->getName()] = $child->getData();
+                }
+            }
+        } else {
+            $findValues = $request->request;
+        }
         $repo = $this->getRepository($bundle, $entityName);
         $qb = $repo->createQueryBuilder('e');
         $index = 0;
-        foreach($request->request as $key => $value) {
+        foreach($findValues as $key => $value) {
             if ($value) {
                 $qb->andWhere('e.'.$key.' = :value'.$index)
                     ->setParameter('value'.$index, $value);

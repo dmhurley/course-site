@@ -1,9 +1,7 @@
 Students:
     Students:
         route: students_instruct
-    Find:
-        route: find_student
-    Add:
-        route: add_student
+    Manage:
+        route: manage_students
     Upload:
         route: upload_student
