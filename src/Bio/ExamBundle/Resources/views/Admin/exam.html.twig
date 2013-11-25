@@ -1,5 +1,12 @@
 {% extends 'BioPublicBundle:Template:rowForm.html.twig' %}
 
+{% block head %}
+	{{parent()}}
+	{% stylesheets 'bundles/bioexam/css/form_extension.css' output="css/*.css" %}
+		<link rel="stylesheet" href="{{ asset_url }}" />
+	{% endstylesheets %}
+{% endblock %}
+
 {% block content %}
 	{#<div style="float:left; width:58%">
 		<h4>Global Settings</h4>

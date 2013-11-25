@@ -1,34 +1,42 @@
-.questioncontainer {
-	float:right;
-	height: 450px;
-	width: 400px;
-	border: solid 2px white;
-	border-radius: 5px;
-	box-shadow: 2px 2px 15px;
+#form {
+	padding-right: 400px;
 }
-	.questioncontainer #tag, .questioncontainer > label {
-		float: left;
-		margin: 5px;
-		font-size: 12pt;
-	}
 
-	.questioncontainer #tag {
-		float: right;
-		width: 320px;
-	}
+#form div[data-type=choice] {
+	margin: 0px;
+	display: block;
+	float: left;
+	position: absolute;
+	width: 400px !important;
+	overflow: hidden;
+	height: 100%;
+	padding: 0px;
+	top: 0px;
+	right: 0px;
+}
 
-	.questioncontainer #scroller {
-		overflow-y: scroll;
-		height: 410px;
-		width: 100%;
-	}
+#form div[data-type=choice] > label {
+	display:block;
+	font-size: 20pt;
+	height: 7%;
+}
 
-		#scroller table {
-			width: 100%;
-			margin: 0px;
-		}
+#form div[data-type=choice] #form_questions {
+	height: 93%;
+	overflow:scroll;
+}
 
-.mce-tinymce {
-	float: left !important;
-	margin-bottom: 10px !important;
+#form_questions label {
+	max-height: 70px;
+	overflow: hidden;
+	line-height: 12pt;
+	font-size: 12pt;
+	margin-bottom: 17px;
+	cursor: pointer;
+}
+
+#form_questions .checkbox {
+	float: left;
+	position: relative;
+	top: 30px;
 }

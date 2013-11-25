@@ -163,7 +163,9 @@ function Loader(settings) {
 				if (field.children !== undefined) {
 					this._handleForm(field.children);
 				} else {
-					if ('tinyMCE' in window && element.classList.contains('tinymce')) {
+					if (element.type === 'checkbox') {
+						element.checked = field.checked;
+					} else if ('tinyMCE' in window && element.classList.contains('tinymce')) {
 						var box = tinyMCE.get(field.id);
 						if (box) {
 							box.setContent(field.value, {format: 'raw'});
@@ -227,7 +229,7 @@ function Loader(settings) {
 	this._init = function(settings) {
 		var self = this;
 
-		this.settings = this._setSettings(settings, this.defaults);
+		this.settings = this._setSettings(settings, this.defaults());
 		console.log('set settings...');
 
 		this.forms.self = this;
@@ -249,181 +251,182 @@ function Loader(settings) {
 /*******************************************************************************************************
 											DEFAULTS
 *******************************************************************************************************/
-	this.defaults = {
-		'url': '',
-		'bundle': '',
-		'entity': '',
-		'container': new Container({
-			'element': document.querySelector('table tbody'),
-			'sortFn': function(a,b) {
-				return false;
-			},
-			'classes': ['parent'],
-			'createChildren': function(data, context) {
-				for(var i = 0, child = null; child = data[i]; i++) {
-					this.addChild(
-						new Container({
-							'data': child,
-							'type': 'tr',
-							'classes': ['entry', child.status?child.status:''], // todo find a way to edit more finely
-							'createChildren': function(data, context) {
-								for(button in context.settings.columns) {
-									var cell = this.element.insertCell(-1);
-									var fn = context.settings.columns[button];
-									var value = data[button] === undefined?fn?fn(null, cell):button:fn?fn(data[button], cell, context.parser):data[button];
-									if (value !== undefined) {
+	this.defaults = function() {
+		return {
+			'url': '',
+			'bundle': '',
+			'entity': '',
+			'container': new Container({
+				'element': document.querySelector('table tbody'),
+				'sortFn': function(a,b) {
+					return false;
+				},
+				'classes': ['parent'],
+				'createChildren': function(data, context) {
+					for(var i = 0, child = null; child = data[i]; i++) {
+						this.addChild(
+							new Container({
+								'data': child,
+								'type': 'tr',
+								'classes': ['entry', child.status?child.status:''], // todo find a way to edit more finely
+								'createChildren': function(data, context) {
+									for(button in context.settings.columns) {
+										var cell = this.element.insertCell(-1);
+										var fn = context.settings.columns[button];
+										var value = data[button] === undefined?fn?fn(null, cell):button:fn?fn(data[button], cell, context.parser):data[button];
+										if (value !== undefined) {
+											this.appendChild(
+												new Container({
+													'element': cell,
+													'text': value,
+													'classes': ['text']
+												})
+											);
+										} else {
+											this.element.removeChild(cell);
+										}
+									}
+
+									for (button in context.settings.buttons) {
+										var fn = context.settings.buttons[button].fn;
 										this.appendChild(
 											new Container({
-												'element': cell,
-												'text': value,
-												'classes': ['text']
+												'type': 'td',
+												'text': button,
+												'listeners': {
+													'click': fn
+												},
+												'pass': [context],
+												'classes': ['link', button]
 											})
 										);
-									} else {
-										this.element.removeChild(cell);
 									}
+									
 								}
+							}).createChildren(child, context)
+						);
+					}
+				}
 
-								for (button in context.settings.buttons) {
-									var fn = context.settings.buttons[button].fn;
-									this.appendChild(
-										new Container({
-											'type': 'td',
-											'text': button,
-											'listeners': {
-												'click': fn
-											},
-											'pass': [context],
-											'classes': ['link', button]
-										})
-									);
-								}
-								
-							}
-						}).createChildren(child, context)
-					);
-				}
-			}
-
-		}),
-		'buttons': {
-			'edit': {
-				'fn': function(event, self) {
-					self.forms.data.form._row = this.parent;
-					self.forms.open('edit');
-				}
-			},
-			'delete': {
-				'fn': function(event, self) {
-					self.notify.wait();
-					var url = self.generateUrl('delete', this.parent.data.id);
-					var button = this;
-					self.sendRequest(url, null, function(event, self) {
-						if (this.success) {
-							button.parent.removeSelf();
-							self.notify.success('Deleted ' + self.settings.entity + '.');
-						} else {
-							self.notify.failure(this.message);
-						}
-					});
-				}
-			}
-		},
-		'listeners': [
-			{
-				'selector': '.link.add',
-				'fn': function(event, object, self) {
-					self.forms.open('add');
-				}
-			},
-			{
-				'selector': '.form_layer, .form_exit',
-				'fn': function(event, object, self) {
-					if (event.target === object)
-					self.forms.close();
-				}
-			},
-			{
-				'selector': null,
-				'event': 'init',
-				'fn': function(event, object, self) {
-					console.log("Retrieving existing rows...");
-					self.sendRequest(self.generateUrl('all') , null, function(event, self) {
-						if (this.success) {
-							self.settings.container.createChildren(this.data, self);
-							self.notify.success('Finished loading.');
-						} else {
-							self.notify.failure(this.message);
-						}
-					});
-				}
-			}
-		],
-		'loader': document.querySelector('div.notification'),
-		'form': {
-			'container': document.querySelector('.form_layer'),
-			'form': document.querySelector('.form_container form'),
-			'settings': {
-				'add': {
-					'before': function(container, self) {
-						this.action = self.generateUrl('create');
-					},
-					'onsubmit': function(event, container, self) {
-						event.preventDefault();
-						self.notify.wait();
-						container.classList.remove('shown');
-						self.postForm(null, this, function(event, self) {
-							if (this.success) {
-								self.settings.container.createChildren(this.data, self);
-								self.notify.success('Created ' +self.settings.entity+'.');
-								self.forms.close();
-							} else {
-								self.notify.failure(this.message);
-								container.classList.add('shown');
-							}
-						});
-					},
-					'after': function(container, self) {
-						this.action = "";
+			}),
+			'buttons': {
+				'edit': {
+					'fn': function(event, self) {
+						self.forms.data.form._row = this.parent;
+						self.forms.open('edit');
 					}
 				},
-				'edit': {
-					'before': function(container, self) {
-						this.action = self.generateUrl('edit', this._row.data.id);
-
+				'delete': {
+					'fn': function(event, self) {
 						self.notify.wait();
-						self.sendRequest(self.generateUrl('get', this._row.data.id), null, function(event, self) {
+						var url = self.generateUrl('delete', this.parent.data.id);
+						var button = this;
+						self.sendRequest(url, null, function(event, self) {
 							if (this.success) {
+								button.parent.removeSelf();
+								self.notify.success('Deleted ' + self.settings.entity + '.');
+							} else {
+								self.notify.failure(this.message);
+							}
+						});
+					}
+				}
+			},
+			'listeners': [
+				{
+					'selector': '.link.add',
+					'fn': function(event, object, self) {
+						self.forms.open('add');
+					}
+				},
+				{
+					'selector': '.form_layer, .form_exit',
+					'fn': function(event, object, self) {
+						if (event.target === object)
+						self.forms.close();
+					}
+				},
+				{
+					'selector': null,
+					'event': 'init',
+					'fn': function(event, object, self) {
+						console.log("Retrieving existing rows...");
+						self.sendRequest(self.generateUrl('all') , null, function(event, self) {
+							if (this.success) {
+								self.settings.container.createChildren(this.data, self);
 								self.notify.ready();
-								self._handleForm(this.form);
 							} else {
-								self.notify.failure(this.message);
-								self.forms.close();
+								self.notify.failure(this.message + " Please refresh.");
 							}
 						});
+					}
+				}
+			],
+			'loader': document.querySelector('div.notification'),
+			'form': {
+				'container': document.querySelector('.form_layer'),
+				'form': document.querySelector('.form_container form'),
+				'settings': {
+					'add': {
+						'before': function(container, self) {
+							this.action = self.generateUrl('create');
+						},
+						'onsubmit': function(event, container, self) {
+							event.preventDefault();
+							self.notify.wait();
+							container.classList.remove('shown');
+							self.postForm(null, this, function(event, self) {
+								if (this.success) {
+									self.settings.container.createChildren(this.data, self);
+									self.notify.success('Created ' +self.settings.entity+'.');
+									self.forms.close();
+								} else {
+									self.notify.failure(this.message);
+									container.classList.add('shown');
+								}
+							});
+						},
+						'after': function(container, self) {
+							this.action = "";
+						}
 					},
-					'onsubmit': function(event, container, self) {
-						event.preventDefault();
-						self.notify.wait();
-						container.classList.remove('shown');
+					'edit': {
+						'before': function(container, self) {
+							this.action = self.generateUrl('edit', this._row.data.id);
 
-						var form = this;
-						self.postForm(null, this, function(event, self) {
-							if (this.success) {
-								form._row.parent.createChild(this.data[0], self);
-								form._row.removeSelf();
-								self.notify.success('Edited '+self.settings.entity+'.');
-								self.forms.close();
-							} else {
-								self.notify.failure(this.message);
-								container.classList.add('shown');
-							}
-						});
+							self.notify.wait();
+							self.sendRequest(self.generateUrl('get', this._row.data.id), null, function(event, self) {
+								if (this.success) {
+									self.notify.ready();
+									self._handleForm(this.form);
+								} else {
+									self.notify.failure(this.message);
+									self.forms.close();
+								}
+							});
+						},
+						'onsubmit': function(event, container, self) {
+							event.preventDefault();
+							self.notify.wait();
+							container.classList.remove('shown');
 
-					},
-					'after': function(container, self) {
-						this.action = "";
-						this.removeAttribute('data-id');
+							var form = this;
+							self.postForm(null, this, function(event, self) {
+								if (this.success) {
+									form._row.parent.createChild(this.data[0], self);
+									form._row.removeSelf();
+									self.notify.success('Edited '+self.settings.entity+'.');
+									self.forms.close();
+								} else {
+									self.notify.failure(this.message);
+									container.classList.add('shown');
+								}
+							});
+
+						},
+						'after': function(container, self) {
+							this.action = "";
+						}
 					}
 				}
 			}

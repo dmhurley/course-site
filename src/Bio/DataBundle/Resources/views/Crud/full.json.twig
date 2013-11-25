@@ -7,6 +7,11 @@
 			{% if loop.index > 1 %},{% endif %}
 			"{{error.message}}"
 		{% endfor %}{% endif %}],
+
+		{% if child.vars.checked is defined %}
+			"checked": {% if child.vars.checked %}true{% else %}false{% endif %},
+		{% endif %}
+
 		{% if child.count > 1 %}
 		"children": [{{_self.view(child)}}]
 		{% else %}

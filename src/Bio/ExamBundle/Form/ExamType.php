@@ -34,6 +34,13 @@ class ExamType extends AbstractType
             ->add('gStart', 'time',       array('label'=>'Grading Start:'))
             ->add('gEnd', 'time',         array('label'=>'Grading End:'))
             ->add('gDuration', 'integer', array('label'=>'Grading length in minutes'))
+            ->add('questions', 'entity', array(
+                    'class' => 'BioExamBundle:Question',
+                    'property' => 'readableQuestion',
+                    'multiple' => true,
+                    'expanded' => true
+                )
+            )
         ;
     }
     
