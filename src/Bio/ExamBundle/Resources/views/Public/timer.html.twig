@@ -117,7 +117,7 @@
 					50% {border-color:rgb(252,220,20);}
 					100% {border-color:rgb(210,14,10);}
 				}
-				@-keyframes pulse {
+				@keyframes pulse {
 					0% {border-color:rgb(210,14,10);}
 					50% {border-color:rgb(252,220,20);}
 					100% {border-color:rgb(210,14,10);}
@@ -132,23 +132,24 @@
 				this.endWarning = false;
 				this.updateTime = function() {
 						var now = new Date();
+
 						var ttLate = (this.late.valueOf() - now.valueOf())/1000/60;
 						var ttEnd = (this.end.valueOf() - now.valueOf())/1000/60;
 
 						if (ttLate > ttEnd) {
-							document.getElementById('ttLate').classList.add('hidden');
+							document.getElementById('ttLate').className += ' hidden';
 							ttLate = ttEnd;
 						}
 
 						if (ttLate < 1 && !this.endWarning) {
 							var div = document.getElementById('timer');
-							div.classList.add('alert');
-							div.classList.remove('hidden');
+							div.className += ' alert';
+							div.className = div.className.replace('hidden', '');
 							this.endWarning = true;
 						} else if (ttLate < 5 && !this.lateWarning && !this.endWarning) {
 							var div = document.getElementById('timer');
-							div.classList.add('warning');
-							div.classList.remove('hidden');
+							div.className += ' warning';
+							div.className = div.className.replace('hidden', '');
 							this.lateWarning = true;
 						}
 
@@ -162,8 +163,9 @@
 						var mtEnd = Math.floor(Math.abs(ttEnd%60));
 						var stEnd = Math.floor(Math.abs(ttEnd%1*60));
 						if (ttEnd < 0) {
-							document.getElementById('timer').classList.add('pulse');
-							document.getElementById('timer').classList.remove('hidden');
+							var timer = document.getElementById('timer');
+							timer.className += ' pulse';
+							timer.className = timer.className.replace('hidden', '');
 							clearInterval(this.interval);
 							document.getElementById('ttEnd').innerHTML = '0:0:00';
 						} else {
@@ -188,7 +190,6 @@
 					}
 				}
 			}
-
 			var timer;
 			function handleError() {
 				timer.clearInterval();
@@ -205,7 +206,12 @@
 				document.querySelector('#timer .message').style.display = 'none';
 
 				document.getElementById('handle').addEventListener('click', function(event) {
-					document.getElementById('timer').classList.toggle('hidden');
+					var timer = document.getElementById('timer');
+					if (timer.className.indexOf('hidden') > -1) {
+						timer.className = timer.className.replace('hidden', '');
+					} else {
+						timer.className += ' hidden';
+					}
 				});
 			});
 		})();

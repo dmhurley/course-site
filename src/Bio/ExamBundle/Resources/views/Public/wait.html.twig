@@ -36,11 +36,11 @@
 			this.interval = null;
 
 			this.check = function(force) {
-				var ajax = new XMLHttpRequest();
-				ajax.open('POST', '{{ url("check", {'id' : taker.id}) }}'+(force?'?please':''), true);
-				ajax.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-				self = this;
-				ajax.onload = function() {
+				var self = this;
+
+				var url = '{{ url("check", {'id': taker.id}) }}?t='+(new Date().valueOf()%1000000)+(force?'?please':'');
+				var contentType = "application/x-www-form-urlencoded";
+				var onload = function() {
 					var response = JSON.parse(this.responseText);
 					if (!response.success) {
 
@@ -49,10 +49,33 @@
 						document.getElementById('loadMessage').style.display="none";
 						document.getElementById('button').style.display = "block";
 					}
-				};
-				ajax.send();
-			}
+				}
 
+				if ('XMLHttpRequest' in window) {
+					var ajax = new XMLHttpRequest();
+					ajax.open('POST', url, true);
+					ajax.setRequestHeader("Content-type",contentType);
+
+					if ('onload' in ajax) {
+						ajax.onload = onload;
+						ajax.send();
+					} else if ('onreadystatechange' in ajax) {
+						ajax.onreadystatechange = function() {
+							if (this.readyState === 4) {
+								onload.apply(this, arguments);
+							}
+						}
+						ajax.send();
+					} else {
+						clearInterval(self.interal);
+						handleError();
+					}
+				} else {
+					clearInterval(self.interval);
+					handleError();
+				}
+				
+			}
 			setTimeout((function(self) {
 				return function() {
 					try {
@@ -70,7 +93,6 @@
 				}
 			})(this), Math.random()*15000);
 		}
-
 		function handleError() {
 			document.getElementById('loadMessage').style.display='none';
 			document.getElementById('no-java').style.display = 'block';
