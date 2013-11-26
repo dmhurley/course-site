@@ -1,6 +1,11 @@
 {% extends 'BioPublicBundle:Template:rowForm.html.twig' %}
 
 {% block content %}
+		
+		<div id="buttons">
+			<a class="lonely link add">add student</a>
+			<a class="lonely link find">find students</a>
+		</div>
 		<table>
 			<thead>
 				<tr>
@@ -18,7 +23,14 @@
 			</tbody>
 			<tfoot>
 				<tr>
-					<td colspan=7 class="lonely link add" >add student</td>
+					<td colspan=7>
+						<table>
+							<tr>
+								<td class="lonely link add" >add student</td>
+								<td class="lonely link find" > find students</td>
+							</tr>
+						</table>
+					</td>
 				</tr>
 			</tfoot>
 		</table>
@@ -58,6 +70,42 @@
 					}
 				}
 			},
+			'listeners': [
+				{
+					'selector': '.link.add',
+					'fn': function(event, object, self) {
+						self.forms.open('add');
+					}
+				},
+				{
+					'selector': '.link.find',
+					'fn': function(event, object, self) {
+						self.forms.open('find');
+					}
+				},
+				{
+					'selector': '.form_layer, .form_exit',
+					'fn': function(event, object, self) {
+						if (event.target === object)
+						self.forms.close();
+					}
+				},
+				{
+					'selector': null,
+					'event': 'init',
+					'fn': function(event, object, self) {
+						console.log("Retrieving existing rows...");
+						self.sendRequest(self.generateUrl('all') , null, function(event, self) {
+							if (this.success) {
+								self.settings.container.createChildren(this.data, self);
+								self.notify.ready();
+							} else {
+								self.notify.failure(this.message + " Please refresh.");
+							}
+						});
+					}
+				}
+			],
 			'form': {
 				'settings': {
 					'find': {

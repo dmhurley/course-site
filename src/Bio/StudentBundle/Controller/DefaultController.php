@@ -60,33 +60,63 @@ class DefaultController extends Controller
         );
     }
 
-	/**
+   /**
      * @Route("/upload", name="upload_student")
      * @Template("BioPublicBundle:Template:singleForm.html.twig")
      */
-    public function uploadAction(Request $request) {
-        $flash = $request->getSession()->getFlashBag();
+    public function uploadStudentListAction(Request $request) {
+        $form = $this->createFormBuilder()
+            ->add('file', 'file', array('label' => 'File:'))
+            ->add('Upload', 'submit')
+            ->getForm();
 
+        if ($request->getMethod() === "POST") {
+            return $this->uploadAction($request);
+        }
+
+        return array(
+            'form' => $form->createView(),
+            'title' => 'Upload Student List'
+        );
+    }
+
+	/**
+     * @Route("/../../crud/student/student/upload.json", name="upload_student_list")
+     */
+    public function uploadAction(Request $request) {
     	$form = $this->createFormBuilder()
     		->add('file', 'file', array('label' => 'File:'))
     		->add('Upload', 'submit')
     		->getForm();
 
-    	if ($request->getMethod() === "POST") {
-    		$form->handleRequest($request);
-    		$data = $form->get('file')->getData();
-    		if ($data !== null) {
-    			$file = preg_split('/\n\r|\r\n|\n|\r/', file_get_contents($data), -1, PREG_SPLIT_NO_EMPTY);
-    			try {
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+
+            $data = $form->get('file')->getData();
+            if ($data !== null) {
+                $file = preg_split('/\n\r|\r\n|\n|\r/', file_get_contents($data), -1, PREG_SPLIT_NO_EMPTY);
+                try {
                     $count = $this->uploadStudentList($file);
-                    $flash->set('success', "Uploaded $count students.");
+                    return $this->render('BioDataBundle:Crud:full.json.twig', array(
+                        'success' => true,
+                        'message' => 'Uploaded '.$count.' students.'
+                    ));
                 } catch (BioException $e) {
                     $form->get('file')->addError(new FormError($e->getMessage()));
-                    $flash->set('failure', 'Upload error.');
+                    return $this->render('BioDataBundle:Crud:full.json.twig', array(
+                        'form' => $form->createView(),
+                        'error' => 'Upload error.'
+                    ));
                 }
-	    	}
-    	}
-    	return array("form" => $form->createView(), 'title' => "Upload Student List");
+            }
+
+        }
+
+         return $this->render('BioDataBundle:Crud:full.json.twig', array(
+            'form' => $form->createView(),
+            'error' => 'Invalid form.'
+        ));
     }
 
     private function uploadStudentList($file) {
@@ -104,7 +134,11 @@ class DefaultController extends Controller
 
         $sections = [];
         for ($i = 1; $i < count($file); $i++) {
-            list($sid, $name, $sectionName, $credits, $gender, $class, $major, $email) = str_getcsv($file[$i]);
+            try {
+                list($sid, $name, $sectionName, $credits, $gender, $class, $major, $email) = str_getcsv($file[$i]);
+            } catch (\Exception $e) {
+                 throw new BioException("The file was badly formatted");
+            }
             if (!($sid && $name && $sectionName &&
                   $credits && $gender && $class && $major)) {
                 throw new BioException("The file was badly formatted");

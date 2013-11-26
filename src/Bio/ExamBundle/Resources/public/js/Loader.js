@@ -83,7 +83,7 @@ function Loader(settings) {
 		console.log("sending request to: " + url);
 
 		ajax.open(post?'POST':'GET', url, true);
-		ajax.timeout = 10000;
+		ajax.timeout = 25000;
 
 		ajax.onload = function(event) {
 				var json = {'success': false, 'message': 'Error.', 'data': [], 'form': []};
