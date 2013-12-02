@@ -64,7 +64,7 @@
 			<th>Evaluations</th>
 			<th>View</th>
 			<th>Review</th>
-			<th>Download</th>
+			<th><a href="{{path('eval_download_all')}}">Download All</a></th>
 		</tr>
 		{% for trip in trips %}
 		{% if date(trip.end) < date() %}

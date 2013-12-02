@@ -476,7 +476,7 @@ class AdminController extends Controller
         $responseText = ["Name\tEmail\tTrip"];
 
         $query = $this->getDoctrine()->getManager()->createQuery('
-                SELECT s.fName as fName, s.lName as lName, s.email as email, t.title as trip
+                SELECT s.fName as fName, s.lName as lName, s.email as email, t.title as trip, t.start as start
                 FROM BioStudentBundle:Student s
                 LEFT JOIN BioTripBundle:Trip t
                 WITH s MEMBER OF t.students
@@ -489,7 +489,7 @@ class AdminController extends Controller
 
         foreach($results as $result) {
             if ($result['trip'] != null) {
-                $responseText[] = ($result['fName']." ".$result['lName']."\t".$result['email']."\t".$result['trip']);
+                $responseText[] = ($result['lName'].", ".$result['fName']."\t".$result['email']."\t".$result['trip'].' - '.$result['start']->format('Y-m-d'));
             }
         }
         foreach($results as $result) {
@@ -514,23 +514,45 @@ class AdminController extends Controller
     }
 
     /**
+     * @Route("/evals/download/all", name="eval_download_all")
+     */
+    public function downloadAllAction(Request $request) {
+        $trips = $this->getDoctrine()->getManager()->createQuery('
+                SELECT t
+                FROM BioTripBundle:Trip t
+                WHERE t.end < :now
+            ')->setParameter('now', new \DateTime())
+            ->getResult();
+
+        $responseText = ["trip\tstudentID\tname\tquestion\tanswer\ttimestamp\tscore"];
+
+        foreach($trips as $trip) {
+            $responseText = $this->returnEvals($trip, $responseText);
+        }
+
+        $response = $this->render('BioPublicBundle:Template:blank.html.twig', array(
+            'text' => implode("\n", $responseText)
+            )
+        );
+        $response->headers->set(
+            "Content-Type", 'application/plaintext'
+            );
+
+        $response->headers->set(
+            'Content-Disposition', ('attachment; filename="'.$trip->getTitle().'_eval.txt"')
+            );
+        return $response;
+    }
+
+    /**
      * @Route("/evals/download/{id}", name="trip_download")
      */
     public function downloadAction(Request $request, Trip $trip = null) {
         $flash = $request->getSession()->getFlashBag();
 
         if ($trip) {
-            $responseText = ["trip\tstudentID\tquestion\tanswer\ttimestamp\tscore"];
-            foreach ($trip->getEvals() as $eval) {
-                foreach($eval->getAnswers() as $answer) {
-                    $responseText[] = $trip->getTitle()."\t".
-                        $eval->getStudent()->getSid()."\t".
-                        $answer->getEvalQuestion()->getID()."\t".
-                        $answer->getAnswer()."\t".
-                        $eval->getTimestamp()->format('Y-m-d H:i:s')."\t".
-                        $eval->getScore();
-                }
-            }
+            $responseText = ["trip\tstudentID\tname\tquestion\tanswer\ttimestamp\tscore"];
+            $responseText = $this->returnEvals($trip, $responseText);
 
             $response = $this->render('BioPublicBundle:Template:blank.html.twig', array(
                 'text' => implode("\n", $responseText)
@@ -549,5 +571,20 @@ class AdminController extends Controller
             $flash->set('failure', 'Could not find trip.');
             return $this->redirect($this->generateUrl('trip_evals'));
         }
+    }
+
+    private function returnEvals($trip, $returner = []) {
+        foreach ($trip->getEvals() as $eval) {
+                foreach($eval->getAnswers() as $answer) {
+                    $returner[] = $trip->getTitle().' - '.$trip->getStart()->format('Y-m-d')."\t".
+                        $eval->getStudent()->getSid()."\t".
+                        $eval->getStudent()->getLName().', '.$eval->getStudent()->getFName()."\t".
+                        $answer->getEvalQuestion()->getID()."\t".
+                        $answer->getAnswer()."\t".
+                        $eval->getTimestamp()->format('Y-m-d H:i:s')."\t".
+                        $eval->getScore();
+                }
+            }
+        return $returner;
     }
 }

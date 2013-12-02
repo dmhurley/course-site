@@ -47,6 +47,13 @@ class Student extends AbstractUserStudent
     /**
      * @var string
      *
+     * @ORM\Column(name="mName", type="string", length=50, nullable=true)
+     */
+    protected $mName;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="lName", type="string", length=50)
      * @Assert\NotBlank()
      */
@@ -135,6 +142,30 @@ class Student extends AbstractUserStudent
     {
         return ucfirst($this->fName);
     }
+
+    /**
+     * Set mName
+     *
+     * @param string $mName
+     * @return Student
+     */
+    public function setMName($mName)
+    {
+        $this->mName = $mName;
+    
+        return $this;
+    }
+
+    /**
+     * Get mName
+     *
+     * @return string 
+     */
+    public function getMName()
+    {
+        return ucfirst($this->mName);
+    }
+
 
     /**
      * Set lName

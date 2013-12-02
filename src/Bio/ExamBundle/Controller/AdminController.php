@@ -171,9 +171,12 @@ class AdminController extends Controller
         /******* DATA *******/
         $examID = $exam->getId();
         foreach ($takers as $taker) {   // status >= 1
+            if ($taker->getStatus() === 1) {
+                continue;
+            }
 
             /**** TAKER DATA ****/
-            $name = $taker->getStudent()->getLName().", ".$taker->getStudent()->getFName();
+            $name = $taker->getStudent()->getLName().", ".$taker->getStudent()->getFName().($taker->getStudent()->getMName()?' '.$taker->getStudent()->getMName():'');
             $studentID = $taker->getStudent()->getSid();
             $section = $taker->getStudent()->getSection()->getName();
             $didGrade = $taker->getGradedNum() >= $global->getGrade()?"Yes":$taker->getGradedNum();
@@ -272,7 +275,7 @@ class AdminController extends Controller
                         foreach($answer->getGrades() as $grade) { // status >= 4
 
                             /**** GRADE DATA ****/
-                            $graderID = $grade->getGrader()->getStudent()->getSid();
+                            $graderID = $grade->getGrader()?$grade->getGrader()->getStudent()->getSid():'dropped';
                             if ($grade->getEnd() !== null){
                                 $timeScoredSeconds = strtotime($grade->getEnd()->format("H:i:s")) - strtotime($exam->getGDate()->format("Y-m-d"));
                                 $timeScoredMinutes = $timeScoredSeconds/60;
@@ -283,7 +286,7 @@ class AdminController extends Controller
                                 $gradeTime = "";
                             }
 
-                            $comment = $grade->getComment();
+                            $comment = str_replace(array("\n", "\t", "\r\n", "\n\r", "\r"), ' ', $grade->getComment());
 
                             if ($grade->getPoints() !== null) {
                                 $points = $grade->getPoints();
@@ -320,6 +323,42 @@ class AdminController extends Controller
                     }
                 }
             }
+        }
+
+        // finally print out students who never took the exam
+        $em = $this->getDoctrine()->getManager();
+        $results = $em->createQuery('
+                SELECT s
+                FROM BioStudentBundle:Student s
+                INNER JOIN BioInfoBundle:Section e
+                WITH s.section = e
+                WHERE s NOT IN (
+                    SELECT s1
+                    FROM BioExamBundle:TestTaker t
+                    JOIN BioStudentBundle:Student s1
+                    WITH t.student = s1
+                    AND t.exam = :exam
+                )
+                AND (e.name LIKE CONCAT(:section, '."'%'".') OR 
+                    :section IS NULL)
+                ORDER BY s.lName ASC, s.fName ASC
+            ')
+            ->setParameter('section', $exam->getSection())
+            ->setParameter('exam', $exam)
+            ->getResult();
+
+        foreach($results as $result) {
+            $responseText[] = $this->echoArray(
+                array(
+                    '',
+                    '',
+                    '',
+                    $result->getSid(),
+                    '',
+                    $result->getLName().', '.$result->getFName().($result->getMName()?' '.$result->getMName():''),
+                    $result->getSection()->getName()
+                )
+            );
         }
 
         $response = $this->render('BioPublicBundle:Template:blank.html.twig', array(

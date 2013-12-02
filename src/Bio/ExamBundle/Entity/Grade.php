@@ -57,8 +57,8 @@ class Grade
 
     /**
      * @ORM\ManyToOne(targetEntity="TestTaker")
-     * @ORM\JoinColumn(name="grader_id", referencedColumnName="id", onDelete="CASCADE")
      * @Serial\MaxDepth(1)
+     * @ORM\JoinColumn(name="grader_id", referencedColumnName="id", onDelete="SET NULL")
      **/
     private $grader;
 

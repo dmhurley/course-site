@@ -5,19 +5,26 @@
 
 		<p>You must grade {{global.grade - taker.gradedNum + taker.assigned|length }} more test(s) before you are done.</p>
 
+		<div id="no-java">
+			<p style="font-weight:bold;">It appears that you have javascript disabled or there has been an error. Click the Grade button every few minutes to check for an open test to grade.</p>
+		</div>
 		<div id="submit">
-			<form id="button" method="POST" action="" style="display:none">
-				<button>Grade</button>
+			<form id="button" method="POST" action="">
+				<button type="submit">Grade</button>
 			</form>
-			<div id="loadMessage">
+			<div id="loadMessage" style="display:none">
 				Finding test to grade<br />This could take several minutes
 				{% image 'bundles/bioexam/images/ajax-loader.gif' output='images/*.png' %}
 					<div id="loader" style="background-image:url('{{asset_url}}')"></div>
 				{% endimage %}
 			</div>
 		</div>
-		{% if taker.gradedNum > 0 %}
-			{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':exam.gDuration, 'end':date(exam.gDate|date('Y-m-d ') ~ exam.gEnd|date('H:i:s'))|date('U'), 'start':taker.getTimestamp('grading')[0]['time']|date('U')} only %}
+		{% if taker.getTimestamp('grading')|length > 0 %}
+			{% include 'BioExamBundle:Public:timer.html.twig' with {
+				'late': taker.getTimestamp('grading')[0]['time']|date('U') + taker.exam.gDuration * 60 - date()|date('U'),
+				'end': date(taker.exam.gEnd)|date('U') - date()|date('U'),
+				'endTime':taker.exam.gEnd
+			} only %}
 		{% endif %}
 {% endblock %}
 
@@ -29,11 +36,11 @@
 			this.interval = null;
 
 			this.check = function(force) {
-				var ajax = new XMLHttpRequest();
-				ajax.open('POST', '{{ url("check") }}'+(force?'?please':''), true);
-				ajax.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-				self = this;
-				ajax.onload = function() {
+				var self = this;
+
+				var url = '{{ url("check", {'id': taker.id}) }}?t='+(new Date().valueOf()%1000000)+(force?'?please':'');
+				var contentType = "application/x-www-form-urlencoded";
+				var onload = function() {
 					var response = JSON.parse(this.responseText);
 					if (!response.success) {
 
@@ -42,21 +49,63 @@
 						document.getElementById('loadMessage').style.display="none";
 						document.getElementById('button').style.display = "block";
 					}
-				};
-				ajax.send("a={{taker.id}}");
-			}
+				}
 
+				if ('XMLHttpRequest' in window) {
+					var ajax = new XMLHttpRequest();
+					ajax.open('POST', url, true);
+					ajax.setRequestHeader("Content-type",contentType);
+
+					if ('onload' in ajax) {
+						ajax.onload = onload;
+						ajax.send();
+					} else if ('onreadystatechange' in ajax) {
+						ajax.onreadystatechange = function() {
+							if (this.readyState === 4) {
+								onload.apply(this, arguments);
+							}
+						}
+						ajax.send();
+					} else {
+						clearInterval(self.interal);
+						handleError();
+					}
+				} else {
+					clearInterval(self.interval);
+					handleError();
+				}
+				
+			}
 			setTimeout((function(self) {
 				return function() {
-					self.check(false);
-					self.interval = setInterval(function() {
-						self.check(self.endtime < new Date());
-					}, 30000);
+					try {
+						self.check(false);
+						self.interval = setInterval(function() {
+							try {
+								self.check(self.endtime < new Date());
+							} catch(e) {
+								handleError();
+							}
+						}, 30000);
+					} catch (e) {
+						handleError();
+					}
 				}
 			})(this), Math.random()*15000);
 		}
+		function handleError() {
+			document.getElementById('loadMessage').style.display='none';
+			document.getElementById('no-java').style.display = 'block';
+			document.getElementById('button').style.display = 'block';
+		}
+
+		window.addEventListener('error', handleError)
+
 		window.addEventListener('load', function() {
 			new Checker({{taker.getTimestamp('submitted')[0]['time']|date('U')}});
+			document.getElementById('loadMessage').style.display='block';
+			document.getElementById('no-java').style.display = 'none';
+			document.getElementById('button').style.display = 'none';
 		});
 	})();
 	</script>

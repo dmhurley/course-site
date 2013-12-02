@@ -162,12 +162,17 @@ class DefaultController extends Controller
                 $sid = "0".$sid;
             }
             $entity = new Student();
+            $firstAndMiddle = explode(' ', $fName);
             $entity->setSid($sid)
                 ->setSection($section)
                 ->setEmail($email)
-                ->setFName(explode(' ', $fName)[0])
+                ->setFName($firstAndMiddle[0])
                 ->setLName($lName)
                 ->setPassword($encoder->encodePassword($lName, $entity->getSalt()));
+
+                if (count($firstAndMiddle) > 1) {
+                    $entity->setMName($firstAndMiddle[1]);
+                }
             if (!in_array($sid, $sids) && !in_array($email, $emails)) {
                 $sids[] = $sid;
                 if ($email) {
@@ -181,6 +186,7 @@ class DefaultController extends Controller
         foreach ($ents as $ent) {
             if ($dbEnt = $this->findObjectByFieldValue($ent->getSid(), $dbEnts, 'sid')) {
                 $dbEnt->setLName($ent->getLName())
+                    ->setMName($ent->getMName())
                     ->setFName($ent->getFName())
                     ->setSection($ent->getSection())
                     ->setEmail($ent->getEmail());

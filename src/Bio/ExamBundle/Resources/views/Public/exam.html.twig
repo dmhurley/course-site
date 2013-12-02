@@ -32,6 +32,10 @@
 	{{form_end(form)}}
 
 	{% if taker is defined %}
-		{% include 'BioExamBundle:Public:timer.html.twig' with {'duration':taker.exam.tDuration, 'end':date(taker.exam.tDate|date('Y-m-d') ~' '~ taker.exam.tEnd|date('H:i:s'))|date('U'), 'start':taker.getTimestamp('started')[0]['time']|date('U')} only %}
+		{% include 'BioExamBundle:Public:timer.html.twig' with {
+			'late': taker.getTimestamp('started')[0]['time']|date('U') + taker.exam.tDuration * 60 - date()|date('U'),
+			'end': taker.exam.tEnd|date('U') - date()|date('U'),
+			'endTime': taker.exam.tEnd
+		} only %}
 	{% endif %}
 {% endblock %}
