@@ -88,7 +88,7 @@ function Loader(settings) {
 		ajax.onload = function(event) {
 				var json = {'success': false, 'message': 'Error.', 'data': [], 'form': []};
 				if (this.status !== 200) {
-					json.message= this.statusText;
+					json.message= this.status + ' ' + this.statusText;
 				} else {
 					try {
 						json = JSON.parse(this.responseText);

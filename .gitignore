@@ -4,6 +4,7 @@ app/bootstrap*
 # Symfony directories
 web/bundles/
 vendor/
+spool
 
 # Configuration files
 app/config/parameters.ini

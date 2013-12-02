@@ -30,7 +30,7 @@ class Student extends AbstractUserStudent
     /**
      * @var string
      *
-     * @ORM\Column(name="sid", type="privatestring")
+     * @ORM\Column(name="sid", type="privatestring", unique=true)
      * @Assert\NotBlank()
      * @Assert\Regex("/^[0-9]{7}$/")
      */

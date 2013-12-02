@@ -48,8 +48,22 @@
 				}
 			},
 			'buttons': {
-				'reset': function(event, self) {
-					// reset some shit
+				'reset': {
+					'fn' :function(event, self) {
+						self.notify.wait();
+						var url = self.generateUrl('reset', this.parent.data.id, {
+							'address': "{{ url('view_users') }}",
+							'entity': null,
+							'bundle': null,
+						});
+						self.sendRequest(url, null, function(event, self) {
+							if (this.success) {
+								self.notify.success('Password reset.');
+							} else {
+								self.notify.failure(this.message);
+							}
+						});
+					}
 				}
 			},
 			'columns': {
