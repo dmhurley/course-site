@@ -7,14 +7,14 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Bio\UserBundle\Entity\AbstractUserStudent;
 use JMS\Serializer\Annotation as Serial;
-
-
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Student
  *
  * @ORM\Table()
  * @ORM\Entity
+ * @UniqueEntity(fields={"sid"}, message="There is already a person with that Student ID")
  */
 class Student extends AbstractUserStudent
 {
@@ -30,7 +30,7 @@ class Student extends AbstractUserStudent
     /**
      * @var string
      *
-     * @ORM\Column(name="sid", type="privatestring", unique=true)
+     * @ORM\Column(name="sid", type="privatestring")
      * @Assert\NotBlank()
      * @Assert\Regex("/^[0-9]{7}$/")
      */

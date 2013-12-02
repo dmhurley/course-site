@@ -60,6 +60,48 @@ class CrudController extends Controller
     }
 
     /**
+     * CREATE a new USER
+     * 
+     * @Route("/create_user.json", name="create_user")
+     * @Template("BioDataBundle:Crud:full.json.twig")
+     */
+    public function createUserAction(Request $request, $bundle, $entityName) {
+        if ($entityName !== 'student' && $entityName !== 'user') {
+            return $this->create404Response();
+        } else {
+            $entity = $this->createEntity($bundle, $entityName);
+            $form = $this->createForm($this->createFormType($bundle, $entityName), $entity)
+                ->add('submit', 'submit');
+
+            $form->handleRequest($request);
+
+            if ($form->isValid()) {
+                if ($entityName === 'student') {
+                    $password = $entity->getLName();
+                } else {
+                    $password = $entity->getPassword();
+                }
+
+                $encoder = $this->get('security.encoder_factory')->getEncoder($entity);
+                $entity->setPassword($encoder->encodePassword($password, $entity->getSalt()));
+
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($entity);
+                $em->flush();
+
+                return array(
+                    'entities' => array($entity)
+                );
+            }
+
+            return array(
+                'form' => $form->createView(),
+                'error' => 'Invalid form.'
+            );
+        }
+    }
+
+    /**
      * GET an entity.
      *
      * @Route("/get/{id}.json", name="get_entity")

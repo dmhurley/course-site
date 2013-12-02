@@ -42,17 +42,13 @@ class DefaultController extends Controller
     	$entity = new Student();
     	$form = $this->createForm(new StudentType(), $entity,
             array(
-                'action' => $this->generateUrl('create_entity', array(
+                'action' => $this->generateUrl('create_user', array(
                         'bundle' => 'student',
                         'entityName' => 'student'
                     )
                 )
             )
         );
-
-    	
-        // $encoder = $this->get('security.encoder_factory')->getEncoder($entity);
-        // $entity->setPassword($encoder->encodePassword($entity->getLName(), $entity->getSalt()));
                    
         return array(
             'form' => $form->createView(),

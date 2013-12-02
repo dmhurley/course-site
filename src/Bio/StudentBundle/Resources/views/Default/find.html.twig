@@ -141,6 +141,11 @@
 								req.removeAttribute('data-required');
 							}
 						}
+					},
+					'add': {
+						'before': function(container, self) {
+							this.action = self.generateUrl('create_user');
+						}
 					}
 				}
 			}
