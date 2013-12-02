@@ -348,21 +348,23 @@ class PublicController extends Controller {
 			new \DateTime(/**/)) {
 			$flash->set('failure', 
 					'Grading starts at '.
-					$exam->getGStart()->format('m/d'). ' at '.
-					$exam->getGDate()->format('h:i a')
+					$exam->getGdate()->format('m/d'). ' at '.
+					$exam->getGStart()->format('h:i a')
 				);
-		}
+		} else {
 
-		if ($request->getMethod() === "POST") {
-			if (count($taker->getAssigned()) <= 0) {
-				$this->forward('BioExamBundle:Public:check', array('id' => $taker->getId()));
+			if ($request->getMethod() === "POST") {
+				if (count($taker->getAssigned()) <= 0) {
+					$this->forward('BioExamBundle:Public:check', array('id' => $taker->getId()));
+				}
+
+				if (count($taker->getAssigned()) > 0) {
+					$this->handleWaitPost($request, $taker);
+				}
+
+				return $this->redirect($this->generateUrl('exam_entrance'));
 			}
 
-			if (count($taker->getAssigned()) > 0) {
-				$this->handleWaitPost($request, $taker);
-			}
-
-			return $this->redirect($this->generateUrl('exam_entrance'));
 		}
 
 		return $this->render('BioExamBundle:Public:wait.html.twig', array(
