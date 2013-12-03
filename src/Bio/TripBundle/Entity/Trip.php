@@ -4,6 +4,8 @@ namespace Bio\TripBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation as Serial;
+
 
 /**
  * Trip
@@ -43,6 +45,7 @@ class Trip
      *
      * @ORM\Column(name="longSum", type="text")
      * @Assert\NotBlank()
+     * @Serial\Exclude
      */
     private $longSum;
 
@@ -51,6 +54,7 @@ class Trip
      *
      * @ORM\Column(name="start", type="datetime")
      * @Assert\DateTime()
+     * @Serial\Type("DateTime<'U'>")
      */
     private $start;
 
@@ -59,6 +63,7 @@ class Trip
      *
      * @ORM\Column(name="end", type="datetime")
      * @Assert\DateTime()
+     * @Serial\Type("DateTime<'U'>")
      */
     private $end;
 

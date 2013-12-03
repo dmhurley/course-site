@@ -17,6 +17,7 @@ use Bio\TripBundle\Entity\Evaluation;
 use Bio\TripBundle\Entity\EvalQuestion;
 use Bio\TripBundle\Entity\Response;
 use Bio\UserBundle\Entity\AbstractUserStudent;
+use Bio\TripBundle\Form\TripType;
 
 
 /** 
@@ -41,128 +42,65 @@ class AdminController extends Controller
         $flash = $request->getSession()->getFlashBag();
 
     	$trip = new Trip();
-    	$form = $this->get('form.factory')->createNamedBuilder('form', 'form', $trip)
-    		->add('title', 'text', array('label' => 'Title:'))
-    		->add('start', 'datetime', array(
-                'widget' => 'single_text',
-                'label' => 'Start:',
-                'attr' => array('class' => 'datetime')
-                )
-            )
-    		->add('end', 'datetime', array(
-                'label' => 'End:',
-                'widget' => 'single_text',
-                'attr' => array('class' => 'datetime')
-                )
-            )
-    		->add('max', 'integer', array('label' => 'Limit:'))
-    		->add('email', 'email', array('label' => 'Leader Email:'))
-            ->add('shortSum', 'textarea', array(
-                'label' => 'Short Summary:',
-                'attr' => array(
-                    'class' => 'tinymce',
-                    'data-theme' => 'bio'
+    	$form = $this->createForm(new TripType(), $trip,
+                array(
+                    'action' => $this->generateUrl('create_entity', array(
+                        'bundle' => 'trip',
+                        'entityName' => 'trip'
+                        )
                     )
                 )
             )
-            ->add('longSum', 'textarea', array(
-                'label' => 'Long Summary:',
-                'attr' => array(
-                    'class' => 'tinymce',
-                    'data-theme' => 'bio'
-                    )
-                )
-            )
-    		->add('add', 'submit')
-    		->getForm();
+        	->add('add', 'submit');
 
-        $db = new Database($this, 'BioTripBundle:TripGlobal');
-        $global = $db->findOne(array());
-        $globalForm = $this->get('form.factory')->createNamedBuilder('global', 'form', $global)
-            ->add('opening', 'datetime', array(
-                'label' => 'Signup Start:',
-                'widget' => 'single_text',
-                'attr' => array('class' => 'datetime')
-                )
-            )
-            ->add('closing', 'datetime', array(
-                'label' => 'Evaluations Due:',
-                'widget' => 'single_text',
-                'attr' => array('class' => 'datetime')
-                )
-            )
-            ->add('maxTrips', 'integer', array('label' => "Max Trips:"))
-            ->add('evalDue', 'integer',  array('label' => "Days Until Late:"))
-            ->add('notifications', 'checkbox', array(
-                'label' => 'Notifications:',
-                'required' => false
-                )
-            )
-            ->add('start', 'datetime', array(
-                'label' => 'Start:',
-                'widget' => 'single_text',
-                'attr' => array('class' => 'datetime')
-                )
-            )
-            ->add('instructions', 'textarea', array(
-                'label' => 'Trip Instructions',
-                'attr' => array(
-                    'class' => 'tinymce',
-                    'data-theme' => 'bio'
-                    )
-                )
-            )
-            ->add('guidePass', 'password', array(
-                'label' => 'Leader Password:',
-                'always_empty' => false,
-                'attr' => array('value' => $global->getGuidePass())
-                )
-            )
-            ->add('set', 'submit')
-            ->getForm();
-
-    	$db = new Database($this, 'BioTripBundle:Trip');
-
-    	if ($request->getMethod() === "POST") {
-            $isValid = true;
-
-            if ($request->request->has('form')){
-        		$form->handleRequest($request);
-        		if ($form->isValid()) {
-        			$db->add($trip);
-        		} else {
-                    $isValid = false;
-                }
-            }
-
-            if ($request->request->has('global')) {
-                $globalForm->handleRequest($request);
-                if (!$globalForm->isValid()) {
-                    $isValid = false;
-                }
-            }
-            if ($isValid) {
-                try {
-                    $db->close();
-                    $flash->set('success', 'Saved change.');
-                    return $this->redirect($this->generateUrl('manage_trips'));
-                } catch (BioException $e) {
-                    $flash->set('failure', 'Unable to save change.');
-                }
-            } else {
-                $flash->set('failure', 'Invalid Form.');
-            }
-    	}
-    	$trips = $db->find(
-            array(),
-            array('start' => 'ASC', 'end' => 'ASC'),
-            false
-            );
+        // $db = new Database($this, 'BioTripBundle:TripGlobal');
+        // $global = $db->findOne(array());
+        // $globalForm = $this->get('form.factory')->createNamedBuilder('global', 'form', $global)
+        //     ->add('opening', 'datetime', array(
+        //         'label' => 'Signup Start:',
+        //         'widget' => 'single_text',
+        //         'attr' => array('class' => 'datetime')
+        //         )
+        //     )
+        //     ->add('closing', 'datetime', array(
+        //         'label' => 'Evaluations Due:',
+        //         'widget' => 'single_text',
+        //         'attr' => array('class' => 'datetime')
+        //         )
+        //     )
+        //     ->add('maxTrips', 'integer', array('label' => "Max Trips:"))
+        //     ->add('evalDue', 'integer',  array('label' => "Days Until Late:"))
+        //     ->add('notifications', 'checkbox', array(
+        //         'label' => 'Notifications:',
+        //         'required' => false
+        //         )
+        //     )
+        //     ->add('start', 'datetime', array(
+        //         'label' => 'Start:',
+        //         'widget' => 'single_text',
+        //         'attr' => array('class' => 'datetime')
+        //         )
+        //     )
+        //     ->add('instructions', 'textarea', array(
+        //         'label' => 'Trip Instructions',
+        //         'attr' => array(
+        //             'class' => 'tinymce',
+        //             'data-theme' => 'bio'
+        //             )
+        //         )
+        //     )
+        //     ->add('guidePass', 'password', array(
+        //         'label' => 'Leader Password:',
+        //         'always_empty' => false,
+        //         'attr' => array('value' => $global->getGuidePass())
+        //         )
+        //     )
+        //     ->add('set', 'submit')
+        //     ->getForm();
 
         return array(
             'form' => $form->createView(),
-            'globalForm' => $globalForm->createView(),
-            'trips' => $trips,
+            //'globalForm' => $globalForm->createView(),
             'title' => "Manage Trips"
             );
     }

@@ -64,10 +64,6 @@
 	color: rgb(0, 0, 238);
 }
 
-table .text {
-	padding: 1px !important;
-}
-
 table textarea {
 	width: 500px;
 	resize:none;

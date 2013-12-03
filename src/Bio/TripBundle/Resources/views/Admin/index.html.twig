@@ -1,4 +1,4 @@
-{% extends 'BioPublicBundle::main.html.twig' %}
+{% extends 'BioPublicBundle:Template:rowForm.html.twig' %}
 
 {% block head %}
 	{{ parent() }}
@@ -7,15 +7,14 @@
 		<link rel="stylesheet" href="{{ asset_url }}" />
 	{% endstylesheets %}
 
-	{% javascripts 'bundles/biotrip/js/switcher.js'
-				   'bundles/biopublic/js/DragDrop.js'
+	{% javascripts 'bundles/biopublic/js/DragDrop.js'
 				   'bundles/biotrip/js/pikaday.js' output="js/*.js" %}
 		<script src="{{asset_url}}"></script>
 	{% endjavascripts %}
 {% endblock %}
 
 {% block content %}
-	<div id="switcher">
+	<!-- <div id="switcher">
 		<div style="text-align:center;">
 			<span style="margin-right:60px;" id="formButton" class="link">Add Trip</span>
 			<span id="globalButton" class="link">Change Settings</span>
@@ -23,40 +22,36 @@
 
 		<div id="formContainer">
 			<h4>Add Trip</h4>
-			{{ form(form) }}
+	
 		</div>
 
 		<div id="globalContainer" style="display:none;">
 			<h4>Global Settings</h4>
-			{{ form(globalForm) }}
+			
 		</div>
-	</div>
+	</div> -->
 
 	<table>
-		<tr>
-			<th>Trip</th>
-			<th>Start</th>
-			<th>End</th>
-			<th>Spots Taken</th>
-			<th>View</th>
-			<th>Copy</th>
-			<th>Edit</th>
-			<th>Delete</th>
-		</tr>
-		{% for trip in trips %}
+		<thead>
 			<tr>
-				<td>{{ trip.title }}</td>
-				<td>{{ trip.start|date('m-d-y h:i a') }}</td>
-				<td>{{ trip.end|date('m-d-y h:i a') }}</td>
-				<td>{{ trip.students|length }}/{{trip.max}}</td>
-				<td><a href="{{ path('view_trip', {'id':trip.id}) }}">view</a></td>
-				<td><a href="{{ path('copy_trip', {'id':trip.id}) }}">copy</a></td>
-				<td><a href="{{ path('edit_trip', {'id':trip.id}) }}">edit</a></td>
-				<td><a href="{{ path('delete_trip', {'id':trip.id}) }}">delete</a></td>
+				<th>Trip</th>
+				<th>Start</th>
+				<th>End</th>
+				<th>Spots Taken</th>
+				<th>View</th>
+				<th>Copy</th>
+				<th>Edit</th>
+				<th>Delete</th>
 			</tr>
-		{% else %}
-			<tr><td colspan=7 style="text-align:center;">no trips</td></tr>
-		{% endfor %}
+		</thead>
+		<tbody>
+
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan=8 class="link lonely add">add trip</td>
+			</tr>
+		</tfoot>
 	</table>
 {% endblock %}
 
@@ -66,14 +61,52 @@
 		(function() {
 			window.addEventListener('load', function() {
 				var datetimes = document.querySelectorAll('input.datetime');
-					for(var i = 0; _datetime = datetimes[i]; i++) {
+					for(var i = 0, datetime = null; datetime = datetimes[i]; i++) {
 						new Pikaday({
-							field: _datetime,
+							field: datetime,
 							showTime: true
 						});
 					}
 				}
 			);
 		})();
+	</script>
+
+	<script>
+	loader = new Loader({
+		'url': '{{ url('main_page')}}crud/',
+		'bundle': 'trip',
+		'entity': 'trip',
+		'container' : {
+			'sortFn': function(ob1, ob2) {
+				return ob1.data.start < ob2.data.start;
+			}
+		},
+		'buttons': { // added to each column (left to right order)
+			'view': {
+				'event': 'click', //optional
+				'fn': function(event, self) {
+					window.open(self.parser.parse('{{ url('view_trip', {'id':"ZZZZZZ"})|replace({'ZZZZZZ':'#{id}'}) }}', this.parent.data), '_blank')
+				}
+			},
+			'copy': {
+				'fn': function(event, self) {
+					
+				}
+			}
+		},
+		'columns': {
+			'title': null,
+			'start': function(value, self, parser) {
+				return parser.parseDate('#{m}/#{d}/#{y} #{H}:#{i}', new Date(value * 1000));
+			},
+			'end': function(value, self, parser) {
+				return parser.parseDate('#{m}/#{d}/#{y} #{H}:#{i}', new Date(value * 1000));
+			},
+			'students': function(value, self, parser) {
+				return value.length + "";
+			}
+		}
+	});
 	</script>
 {% endblock %}
