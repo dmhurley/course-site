@@ -15,6 +15,10 @@
 	{% endjavascripts %}
 {% endblock %}
 
+{% block title %}
+	<h2><a href="{{ url('clear_folders') }}" class="link">clear</a></h2>
+{% endblock %}
+
 {% block content %}
 	<div class="form_layer">
 		<div class="form_container">
@@ -249,7 +253,9 @@
 					'selector': null,
 					'event': 'init',
 					'fn': function(event, object, self) {
-						self.sendRequest(self.generateUrl('find'), 'parent=', function(event, self) {
+						self.sendRequest(self.generateUrl('find', null, {
+							'entity': 'folder'
+						})+'?parent', null, function(event, self) {
 							if (this.success) {
 								self.settings.container.createChild(this.data, self);
 								self.notify.ready();

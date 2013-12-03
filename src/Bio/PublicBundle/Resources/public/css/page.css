@@ -98,6 +98,10 @@ body { background-color: #3f3f3f; }  					/* side filler */
 
 }
 
+.notification.animated {
+	top: -15px;
+}
+
 .notification.shown {
 	top: -15px;
 }
@@ -123,7 +127,7 @@ body {
 .link {
 	cursor:pointer;
 	text-decoration:underline;
-	color: rgb(0, 0, 238);
+	color: rgb(0, 0, 238) !important;
 }
 
 #container {
@@ -212,6 +216,12 @@ body {
 	float:left;
 	margin-bottom: 1em;
 }
+	
+	#titleBox * {
+		display: inline-block;
+		margin-right: 25px;
+	}
+
 	#center h1 {
 		font-size: 24px;
 		margin-bottom: 18px;

@@ -1,61 +1,84 @@
-{% extends 'BioPublicBundle::main.html.twig' %}
+{% extends 'BioPublicBundle:Template:rowForm.html.twig' %}
 
 {% block head %}
 	{{ parent() }}
 		{% stylesheets 'bundles/bioscore/css/tableextension.css' filter="cssrewrite" output="css/*.css" %}
 			<link rel="stylesheet" href="{{ asset_url }}" />
 		{% endstylesheets %}
-	<style type="text/css">
-		td {
-			border-right-width: 1px;
-			border-right-style: solid;
-		}
-	</style>
+{% endblock %}
+
+{% block title %}
+	<h2 class="link add">upload</h2>
 {% endblock %}
 
 {% block content %}
-	{{form(form)}}
 	{% if scores|length > 0 %}
 		<div class="tableStyle" id="scroller">
 			<table>
-				<tr>
-					<th></th>
-					{% for key in scores[0].scores|keys %}
-						<th>{{key}}</th>
-					{% endfor %}
-				</tr>
-				{% if stats|length > 0 %}
-					{% for stat in stats %}
-						<tr>
-							<td>{{stat.name|capitalize}}</td>
-							{% for test in stat.stats %}
-								<td>
-									{% if test =='' %}
-										-
-									{% elseif '.' in test %}
-										{{test|number_format(3, '.', '')}}
-									{% else %}
-										{{test|number_format(1, '.', '')}}
-									{% endif %}
-								</td>
-							{% endfor %}
-						</tr>
-					{% endfor %}
-				{% endif %}
-				{% for person in scores %}
+				<thead>
 					<tr>
-						<td>{{person.sid}}</td>
-						{% for test in person.scores %}
-							{% if test == '' %}
-								<td> - </td>
-							{% else %}
-								<td>{{test}}</td>
-							{% endif %}
-						{% endfor %}
+						
 					</tr>
-				{% endfor %}
+				</thead>
+				<tbody>
+				</tbody>
 			</table>
 		</div>
-		{{parent()}}
 	{% endif %}
+{% endblock %}
+
+{% block java %}
+	<script>
+	var didHeaders = false;
+	loader = new Loader({
+		'url': '{{ url('main_page')}}crud/',
+		'bundle': 'score',
+		'entity': 'scores',
+		'container': {
+			'sortFn': function(ob1, ob2) {
+				return ob1.data.sid < ob2.data.sid;
+			}
+		},
+		'buttons': undefined,
+		'columns': {
+			'sid': null,
+			'scores': function(value, cell) {
+				if (!didHeaders) {
+					didHeaders = true;
+					var head = document.querySelector('thead tr');
+					var newHeader = document.createElement('th');
+					head.appendChild(newHeader);
+					for (key in value) {
+						newHeader = document.createElement('th');
+						newHeader.innerHTML = key;
+						head.appendChild(newHeader);
+					}
+				}
+
+				var keys = Object.keys(value);
+
+				cell.innerHTML = value[keys[0]];
+				if (value) {
+					for (var i = 0; i < keys.length; i++) {
+						var newCell = document.createElement('td');
+						newCell.innerHTML = value[keys[i]];
+						cell.parentNode.appendChild(newCell);
+					}
+					return undefined;
+				} else {
+					return '-';
+				}
+			}
+		},
+		'form': {
+			'settings': {
+				'add': {
+					'before': function(container, self) {
+						this.action = "";
+					}
+				}
+			}
+		}
+	});
+	</script>
 {% endblock %}

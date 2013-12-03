@@ -1,9 +1,10 @@
-{% extends 'BioPublicBundle::main.html.twig' %}
+{% extends 'BioPublicBundle:Template:singleForm.html.twig' %}
 
 {% block content %}
 	<h2>Settings</h2>
 		{{form(form)}}
 	<h2>Unregistered</h2>
+	<table><tbody></tbody></table> {# TODO fix the defaults so this doesn't happen! #}
 	<table>
 		<thead>
 			<tr>
@@ -24,4 +25,8 @@
 			{% endfor %}
 		</tbody>
 	</table>
+
 {% endblock %}
+
+{% block bundle %}'clicker'{% endblock %}
+{% block entity %}'clickerGlobal'{% endblock %}

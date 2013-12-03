@@ -35,6 +35,7 @@ function Notify(object) {
 		}, n);
 	}
 	this._show = function() {
+		this.object.classList.remove('bounceOutUp');
 		this.object.classList.add('shown');
 	},
 	this._hide = function() {

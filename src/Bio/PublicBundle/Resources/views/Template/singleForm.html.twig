@@ -18,8 +18,8 @@
 	<script>
 	var loader = new Loader({
 		'url': '{{ url('main_page')}}crud/',
-		'bundle': 'info',
-		'entity': 'info',
+		'bundle': {% block bundle %}'info'{% endblock %},
+		'entity': {% block entity %}'info'{% endblock %},
 		'container' : undefined,
 		'buttons': undefined,
 		'listeners': [

@@ -8,6 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Form\FormError;
 
 use Bio\DataBundle\Exception\BioException;
 use Bio\DataBundle\Objects\Database;
@@ -54,14 +55,18 @@ class DefaultController extends Controller
 
 		    	try {
 		    		$this->uploadStudentScores($file, $db);
-		    		$flash->set('success', 'Scores uploaded.');
+                    return $this->render('BioDataBundle:Crud:full.json.twig', array(
+
+                    ));
 		    	} catch (BioException $e) {
-		    		$flash->set('failure', $e->getMessage());
+                    $form->get('file')->addError(new FormError($e->getMessage()));
 		    	}
-		    } else {
-		    	$flash->set('failure', 'Invalid form.');
 		    }
-		    return $this->redirect($this->generateUrl('scores'));
+
+            return $this->render('BioDataBundle:Crud:full.json.twig', array(
+                    'error' => 'Invalid form.',
+                    'form' => $form->createView()
+            ));
 	    }
 
     	$scores = $db->find(array(), array(), false);
@@ -137,6 +142,7 @@ class DefaultController extends Controller
 	    			$db->add($score);
 		    	}
 	    	}
+             $db->close();
 	    } catch (\Exception $e) {
 	    	$db->clear();
 			for ($j = 0; $j < count($entities); $j++) {

@@ -144,7 +144,7 @@ class CrudController extends Controller
                 }
             }
         } else {
-            $findValues = $request->request;
+            $findValues = $request->query;
         }
         $repo = $this->getRepository($bundle, $entityName);
         $qb = $repo->createQueryBuilder('e');

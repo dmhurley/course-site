@@ -205,7 +205,6 @@ class DefaultController extends Controller
      * @Template()
      */
     public function clearAction(Request $request) {
-        $flash = $request->getSession()->getFlashBag();
 
         $form = $this->createFormBuilder()
             ->add('confirmation', 'checkbox', array(
@@ -222,16 +221,16 @@ class DefaultController extends Controller
 
             if ($form->isValid()) {
                 $db = new Database($this, 'BioFolderBundle:Folder');
-                $root = $db->findOne(array('name' => "sidebar"));
+                $root = $db->findOne(array('name' => "sidebar", 'parent' => null));
                 $db->deleteMany($root->getChildren()->toArray());
 
-                $sidebar = $db->findOne(array('name' => "mainpage"));
+                $sidebar = $db->findOne(array('name' => "mainpage", 'parent' => null));
                 $db->deleteMany($sidebar->getChildren()->toArray());
                 try {
                     $db->close();
-                    $flash->set('success', 'All folders deleted.');
+                    return $this->render('BioDataBundle:Crud:full.json.twig', array());
                 } catch (BioException $e) {
-                    $flash->set('failure', 'Oops. Folders were not deleted.');
+                     return $this->render('BioDataBundle:Crud:full.json.twig', array('error' => 'Folders were not deleted.'));
                 }
 
                 return $this->redirect($this->generateUrl('view_folders'));

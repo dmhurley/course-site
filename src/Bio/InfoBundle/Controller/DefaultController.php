@@ -37,10 +37,24 @@ class DefaultController extends Controller {
         )
         ->add('submit', 'submit');
 
+        if ($entityName === 'announcement') {
+            $name = 'Announcements';
+        } else if ($entityName === 'person') {
+             $name = 'People';
+        } else if ($entityName === 'hours') {
+             $name = 'Hours';
+        } else if ($entityName === 'courseSection') {
+             $name = 'Course Sections';
+        } else if ($entityName === 'section') {
+             $name = 'Lab Sections';
+        } else {
+             $name = $uc;
+        }
+
         return $this->render('BioInfoBundle:'.$uc.':'.$lc.'.html.twig', 
                 array(
                     'form' => $form->createView(),
-                    'title' => 'Manage' 
+                    'title' => 'Manage '.$name 
                     )
                 );
     }

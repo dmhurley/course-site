@@ -15,6 +15,7 @@ use Bio\ClickerBundle\Entity\ClickerGlobal;
 use Bio\StudentBundle\Entity\Student;
 use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
+use Bio\ClickerBundle\Form\ClickerGlobalType;
 
 /**
  * @Route("/admin/clicker")
@@ -33,33 +34,15 @@ class DefaultController extends Controller {
      * @Template()
      */
     public function manageAction(Request $request) {
-        $flash = $request->getSession()->getFlashBag();
-
-        $db = new Database($this, 'BioClickerBundle:ClickerGlobal');
-        $global = $db->findOne(array());
-        $form = $this->createFormBuilder($global)
-            ->add('notifications', 'checkbox', array(
-                'label' => 'Notifications:',
-                'required' => false
+        $form = $this->createForm(new ClickerGlobalType(), null, array(
+                    'action' => $this->generateUrl('global_entity', array(
+                            'bundle' => 'clicker',
+                            'entityName' => 'clickerGlobal'
+                        )
+                    )
                 )
             )
-            ->add('start', 'datetime', array(
-                'label' => 'Start:',
-                'attr' => array('class' => 'datetime')
-                )
-            )
-            ->add('save', 'submit')
-            ->getForm();
-
-        if ($request->getMethod() === "POST") {
-            $form->handleRequest($request);
-            if ($form->isValid()) {
-                $db->close();
-                $flash->set('success', 'Changes saved.');
-            } else {
-                $flash->set('failure', 'Changes not saved.');
-            }
-        }
+            ->add('save', 'submit');
 
         $em = $this->getDoctrine()->getManager();
         $query = $em->createQuery('
@@ -215,7 +198,6 @@ class DefaultController extends Controller {
      * @Template()
      */
     public function clearAction(Request $request) {
-        $flash = $request->getSession()->getFlashBag();
     	$form = $this->createFormBuilder()
     		->add('confirmation', 'checkbox', array(
                 'constraints' => new Assert\True(
@@ -225,16 +207,19 @@ class DefaultController extends Controller {
             )
     		->add('clear', 'submit', array('label' => 'Clear Clickers'))
     		->getForm();
+
     	if ($request->getMethod() === "POST") {
     		$form->handleRequest($request);
 
     		if ($form->isValid()) {
     			$db = new Database($this, 'BioClickerBundle:Clicker');
                 $db->truncate();
-		        $flash->set('success', 'All clicker registrations cleared.');
-                return $this->redirect($this->generateUrl('clear_list'));
+                return $this->render('BioDataBundle:Crud:full.json.twig', array());
     		} else {
-                $flash->set('failure', 'Invalid form.');
+                 return $this->render('BioDataBundle:Crud:full.json.twig', array(
+                    'error' => 'Invalid form.'
+                    )
+                 );
             }
     	}
 

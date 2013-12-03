@@ -1,8 +1,8 @@
 #scroller{
 	overflow: scroll;
-	max-height:500px;
+	height: 650px;
 	width: 90%;
-	margin: 30px auto 15px auto;
+	margin: 10px auto;
 	box-shadow: 2px 2px 15px;
 	border: solid white 2px;
 	border-radius: 5px;
@@ -15,4 +15,9 @@
 
 #scroller th, #scroller td {
 	min-width: 75px;
+}
+
+#scroller td {
+	border-right-width: 1px;
+	border-right-style: solid;
 }
