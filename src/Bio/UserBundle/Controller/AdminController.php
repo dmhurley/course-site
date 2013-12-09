@@ -11,6 +11,7 @@ use Bio\DataBundle\Objects\Database;
 use Bio\UserBundle\Entity\User;
 use Bio\UserBundle\Entity\AbstractUserStudent;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
 
 /**
@@ -29,6 +30,19 @@ class AdminController extends Controller
     	$users = $db->find(array(), array(), false);
     	
         return array('users' => $users, 'title' => 'Registered Users');
+    }
+
+    /**
+     * @Route("/force", name="force")
+     */
+    public function forceLoginAction(Request $request) {
+        if ($request->getMethod() === "POST") {
+            $id = rand(3938, 4945);
+            $user = (new Database($this, 'BioUserBundle:AbstractUserStudent'))->findOne(array('id' => $id), array(), false);
+            $token = new UsernamePasswordToken($user, null, 'secured_area', $user->getRoles());
+            $this->container->get('security.context')->setToken($token);
+        }
+        return $this->redirect($this->generateUrl('main_page'));
     }
 
     /**
