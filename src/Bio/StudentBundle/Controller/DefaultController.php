@@ -286,7 +286,8 @@ class DefaultController extends Controller
         $ents = [];
 
         $sections = [];
-        for ($i = 1; $i < count($file); $i++) {
+        $studentCount = count($file);
+        for ($i = 1; $i < $studentCount; $i++) {
             list($sid, $name, $sectionName, $credits, $gender, $class, $major, $email) = str_getcsv($file[$i]);
             if (!($sid && $name && $sectionName &&
                   $credits && $gender && $class && $major)) {

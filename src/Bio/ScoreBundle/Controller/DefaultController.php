@@ -109,7 +109,8 @@ class DefaultController extends Controller
         $header = explode("\t", $file[0]); // get titles of tests. Column titles
 
         try {
-	    	for($i = 1; $i < count($file); $i++) { // go down the rows, starting at the second one
+            $lineCount = count($file);
+	    	for($i = 1; $i < $lineCount; $i++) { // go down the rows, starting at the second one
 		    	$data = explode("\t", $file[$i]);  // split row into columns
 		    	if (count($header) !== count($data)) {
 		    		throw new BioException('Improperly formatted file. All rows must have the same number of columns.');
@@ -128,7 +129,8 @@ class DefaultController extends Controller
 		    		$score->setSid($sid);
 		    		$array = array();
 
-		    		for ($j = 1; $j < count($data); $j++) { // go down columns starting at second one
+                    $columnCount = count($data);
+		    		for ($j = 1; $j < $columnCount; $j++) { // go down columns starting at second one
 		    			$array[$header[$j]] = $data[$j];    // entries to titles
 		    		}
 		    		$score->setScores($array);
@@ -138,10 +140,12 @@ class DefaultController extends Controller
 	    	}
 	    } catch (\Exception $e) {
 	    	$db->clear();
-			for ($j = 0; $j < count($entities); $j++) {
+            $entityCount = count($entities);
+			for ($j = 0; $j < $entityCount; $j++) {
                 $db->add($entities[$j]);
             }
-            for ($j = 0; $j < count($stats); $j++) {
+            $statCount = count($stats);
+            for ($j = 0; $j < $statCount; $j++) {
             	$db->add($stats[$j]);
             }
             $db->close();
@@ -156,7 +160,8 @@ class DefaultController extends Controller
     	$stat->setName($data[0]);
 
     	$array = array();
-    	for ($j = 1; $j < count($data); $j++) {
+        $dataCount = count($data);
+    	for ($j = 1; $j < $dataCount; $j++) {
     		$array[$header[$j]] = $data[$j];
     	}
     	$stat->setStats($array);
