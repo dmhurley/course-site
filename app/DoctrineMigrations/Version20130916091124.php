@@ -7,8 +7,6 @@ use Doctrine\DBAL\Migrations\AbstractMigration,
 
 use Symfony\Component\HttpFoundation\File\File as RealFile;
 
-use Bio\FolderBundle\Entity\File;
-
 /**
  * Auto-generated Migration: Please modify to your needs!
  */

@@ -9,9 +9,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 
-use Bio\DataBundle\Exception\BioException;
-use Bio\DataBundle\Objects\Database;
-use Bio\FolderBundle\Entity\Folder;
 use Bio\FolderBundle\Entity\File;
 
 /**

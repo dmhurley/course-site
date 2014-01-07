@@ -2,7 +2,6 @@
 
 namespace Bio\InfoBundle\Entity;
 
-use Symfony\Component\Form\FormBuilder;
 use Doctrine\ORM\Mapping as ORM;
 
 

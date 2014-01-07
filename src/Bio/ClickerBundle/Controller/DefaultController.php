@@ -11,8 +11,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Form\FormError;
 
 use Bio\ClickerBundle\Entity\Clicker;
-use Bio\ClickerBundle\Entity\ClickerGlobal;
-use Bio\StudentBundle\Entity\Student;
 use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 

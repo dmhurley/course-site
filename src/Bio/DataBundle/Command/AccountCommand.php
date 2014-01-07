@@ -4,12 +4,8 @@ namespace Bio\DataBundle\Command;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use Symfony\Component\Process\Process;
-
-use Symfony\Component\Security\Core\User\UserInterface;
 use Bio\UserBundle\Entity\User;
 use Bio\DataBundle\Objects\Database;
 

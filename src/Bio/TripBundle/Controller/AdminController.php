@@ -13,9 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 use Bio\TripBundle\Entity\Trip;
-use Bio\TripBundle\Entity\Evaluation;
 use Bio\TripBundle\Entity\EvalQuestion;
-use Bio\TripBundle\Entity\Response;
 use Bio\UserBundle\Entity\AbstractUserStudent;
 
 

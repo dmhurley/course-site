@@ -5,18 +5,13 @@ namespace Bio\UserBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-
-use Symfony\Component\HttpFoundation\Request;
-use Bio\DataBundle\Objects\Database;
-use Symfony\Component\Form\FormError;
-
-use Bio\UserBundle\Entity\User;
-use Bio\UserBundle\Entity\AbstractUserStudent;
-
 use Symfony\Component\Security\Core\SecurityContext;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\Util\StringUtils;
-use Symfony\Component\Validator\ExecutionContextInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Form\FormError;
+
+use Bio\DataBundle\Objects\Database;
 
 /**
  * @Route("/user")

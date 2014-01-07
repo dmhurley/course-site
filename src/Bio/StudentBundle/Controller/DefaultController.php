@@ -17,7 +17,6 @@ use Bio\StudentBundle\Form\StudentType;
 use Bio\DataBundle\Exception\BioException;
 use Bio\DataBundle\Objects\Database;
 use Doctrine\DBAL\Types\Type as DBALType;
-use Bio\DataBundle\Type\Type;
 
 /**
  * @Route("/admin/student")

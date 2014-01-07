@@ -9,11 +9,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 
 use Bio\DataBundle\Objects\Database;
-use Bio\DataBundle\Exception\BioException;
 use Bio\ExamBundle\Entity\Exam;
 use Bio\ExamBundle\Entity\TestTaker;
 use Bio\ExamBundle\Entity\Answer;
-use Symfony\Component\Validator\Constraints as Assert;
 use Bio\ExamBundle\Entity\Grade;
 
 use Bio\ExamBundle\Type\AnswerType;

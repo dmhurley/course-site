@@ -12,7 +12,6 @@ use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 use Bio\ExamBundle\Entity\Exam;
 use Bio\ExamBundle\Entity\Question;
-use Bio\ExamBundle\Entity\ExamGlobal;
 
 /**
  * @Route("/admin/exam")
