@@ -148,19 +148,11 @@ class InstallCommand extends ContainerAwareCommand
     }
 
     private function setSidebar(array $bundles, OutputInterface $output) {
-        $distribution = 'app/config/parameters.yml.dist';
-        $destination = 'app/config/parameters.yml';
-        $thing = 'sidebar';
-        
-        $this->setConfig($bundles, $output, $thing);
+        $this->setConfig($bundles, $output, 'sidebar');
     }
 
     private function setRouting(array $bundles, OutputInterface $output) {
-        $distribution = 'app/config/routing.yml.dist';
-        $destination = 'app/config/routing.yml';
-        $thing = 'routing';
-
-        $this->setConfig($bundles, $output, $thing);
+        $this->setConfig($bundles, $output, 'routing');
     }
         
 }

@@ -274,7 +274,6 @@ class AdminController extends Controller
 		if ($q) {
             $em = $this->getDoctrine()->getManager();
             $qb = $em->createQueryBuilder();
-            $expr = $qb->expr();
 
             $query = $qb->select('e')
                 ->from('BioExamBundle:Exam', 'e')

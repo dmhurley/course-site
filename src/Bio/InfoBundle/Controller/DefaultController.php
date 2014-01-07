@@ -76,7 +76,6 @@ class DefaultController extends Controller {
         $flash = $request->getSession()->getFlashBag();
 
         $uc = ucfirst($entityName);
-        $lc = strtolower($entityName);
         $full = [];
         preg_match_all('/((?:^|[A-Z])[a-z]+)/', $entityName, $full);
         $full = ucfirst(implode(' ', $full[0]));

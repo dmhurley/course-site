@@ -439,7 +439,7 @@ class Exam
     public function otherChecks(ExecutionContextInterface $context) {
         $testStart = new \DateTime($this->getTDate()->format('Y-m-d ').$this->getTStart()->format('H:i:s'));
         $testEnd = new \DateTime($this->getTDate()->format('Y-m-d ').$this->getTEnd()->format('H:i:s'));
-        $gradeStart = new \DateTime($this->getGDate()->format('Y-m-d ').$this->getGStart()->format('H:i:s'));
+        // $gradeStart = new \DateTime($this->getGDate()->format('Y-m-d ').$this->getGStart()->format('H:i:s'));
         $gradeEnd = new \DateTime($this->getGDate()->format('Y-m-d ').$this->getGEnd()->format('H:i:s'));
 
        if ($gradeEnd <= $testEnd) {

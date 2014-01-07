@@ -225,7 +225,6 @@ class PublicController extends Controller {
 		}
 
 		$global = (new Database($this, 'BioExamBundle:ExamGlobal'))->findOne(array());
-		$takers = (new Database($this, 'BioExamBundle:TestTaker'))->find(array('student' => $student), array(), false);
 
 		$em = $this->getDoctrine()->getManager();
 		$query = $em->createQuery('
