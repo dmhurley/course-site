@@ -6,9 +6,6 @@
 <html>
 	<head>
 		<title>{% block title %}{{tt}}{% endblock %}</title>
-		{% image 'bundles/biopublic/images/favicon.ico' output="images/*.ico" %}
-			<link rel="shortcut icon" href="{{ asset_url }}" />
-		{% endimage %}
 		
 		<!-- BASIC STYLE SHEETS -->
 		{% stylesheets 'bundles/biopublic/css/page.css' 
