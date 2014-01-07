@@ -11,6 +11,7 @@ use Bio\DataBundle\Objects\Database;
 use Bio\UserBundle\Entity\User;
 use Bio\UserBundle\Entity\AbstractUserStudent;
 use Symfony\Component\Validator\Constraints as Assert;
+use Bio\DataBundle\Exception\BioException;
 
 
 /**
@@ -34,7 +35,7 @@ class AdminController extends Controller
     /**
      * @Route("/{type}mote/{id}", name="mote_user", requirements={"type" = "de|pro"})
      */
-    public function mote(Request $request, $type, User $entity = null) {
+    public function moteUserAction(Request $request, $type, User $entity = null) {
         $flash = $request->getSession()->getFlashBag();
 
     	if ($entity && $entity->getRoles()[0] !== 'ROLE_SETUP' && $entity !== $this->getUser()) {
@@ -74,7 +75,7 @@ class AdminController extends Controller
     /**
      * @Route("/delete/{id}", name="delete_user")
      */
-    public function delete(Request $request, User $entity = null) {
+    public function deleteUserAction(Request $request, User $entity = null) {
         $flash = $request->getSession()->getFlashBag();
 
         if ($entity && $entity->getRoles()[0] !== 'ROLE_SETUP' && $entity !== $this->getUser()) {
@@ -98,7 +99,7 @@ class AdminController extends Controller
      * @Route("/register", name="register")
      * @Template("BioPublicBundle:Template:singleForm.html.twig")
      */
-    public function registerAction(Request $request) {
+    public function registerUserAction(Request $request) {
         $flash = $request->getSession()->getFlashBag();
 
         $user = new User();
@@ -151,7 +152,7 @@ class AdminController extends Controller
     /**
      * @Route("/reset/{id}", name="reset_password")
      */
-    public function resetAction(Request $request, AbstractUserStudent $user = null) {
+    public function resetUserAction(Request $request, AbstractUserStudent $user = null) {
         $flash = $request->getSession()->getFlashBag();
 
         if (!$user) {

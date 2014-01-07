@@ -326,7 +326,7 @@ class DefaultController extends Controller
 
                     // sign out
     	    		$flash->set('success', 'Contact information sent.');
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     $flash->set('failure', 'Error confirming match.');
                 }
 	    		return $this->redirect($this->generateUrl('main_page'));

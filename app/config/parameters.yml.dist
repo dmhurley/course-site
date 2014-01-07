@@ -12,5 +12,5 @@ parameters:
     mailer_dev_address: dhurl@u.washington.edu
     mailer_spool_directory: /Library/Webserver/spool
     locale: en
-    secret: ThisTokenIsNotSoSecretChangeIt
+    secret:
     bundles: default

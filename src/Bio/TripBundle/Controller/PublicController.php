@@ -389,7 +389,7 @@ class PublicController extends Controller
         }
     }
 
-    public function findObjectByFieldValue($needle, $haystack, $field) {
+    private function findObjectByFieldValue($needle, $haystack, $field) {
         $getter = 'get'.ucFirst($field);
 
         foreach ($haystack as $straw) {
