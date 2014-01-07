@@ -10,7 +10,7 @@
 	{% if form is defined %}
 		{{form(form)}}
 	{% elseif promo is defined %}
-		{{promo|raw}}
+		{{promo|safe}}
 	{% endif %}
 {% endblock %}
 

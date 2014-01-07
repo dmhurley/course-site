@@ -9,14 +9,14 @@
 				<h2 style="float:right;">{{grade.vars.data.answer.question.points}} points</h2>
 
 				<div class="q">
-					{{grade.vars.data.answer.question.question|raw}}
+					{{grade.vars.data.answer.question.question|safe}}
 				</div>
 
 				<div class="line"></div>
 
 				<h2>Rubric</h2>
 				<div class="q">
-					{{grade.vars.data.answer.question.answer|raw}}
+					{{grade.vars.data.answer.question.answer|safe}}
 				</div>
 
 				<div class="line"></div>

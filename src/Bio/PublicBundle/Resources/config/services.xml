@@ -13,6 +13,11 @@
         <service id="kernel.listener.access_denied.handler" class="%bio_public.handler.class%">
             <argument type="service" id="router" />
         </service>
+
+        <service id="bio_data.twig.bio_extension" class="Bio\DataBundle\Twig\BioExtension">
+            <tag name="twig.extension" />
+            <argument type="service" id="service_container" />
+        </service>
     </services>
     
 </container>

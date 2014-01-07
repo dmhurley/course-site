@@ -15,7 +15,7 @@
 	<div class="trip">
 		<h3>No trips</h3>
 		{% if message != '' %}
-			<p>{{message|raw}}</p>
+			<p>{{message|safe}}</p>
 		{% endif %}
 	</div>
 	{% endfor %}
@@ -24,7 +24,7 @@
 {% import _self as row %}
 
 {% block content %}
-	<div>{{global.instructions|raw}}</div>
+	<div>{{global.instructions|safe}}</div>
 
 	{% if is_granted('ROLE_STUDENT') %}
 		{{row.trip(your, 'Your Trips', 'current', 'You are not signed up for any trips.', global, false)}}
