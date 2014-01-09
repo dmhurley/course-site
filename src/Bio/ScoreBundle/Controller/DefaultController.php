@@ -100,7 +100,7 @@ class DefaultController extends Controller
             );
     }
 
-    private function uploadStudentScores($file, $db) {
+    private function uploadStudentScores(array $file, Database $db) {
     	$entities = $db->truncate();
     	$tempDb = new Database($this, 'BioScoreBundle:Stat');
     	$stats = $tempDb->truncate();

@@ -121,7 +121,7 @@ class InstallCommand extends ContainerAwareCommand
         $output->writeln("Installed: ".implode(" ", $bundles));
     }
 
-    private function setConfig($bundles, $output, $thing, $pre = null) {
+    private function setConfig(array $bundles,OutputInterface $output, $thing) {
         $distribution = 'app/config/'.$thing.'.yml.dist';
         $destination = 'app/config/'.$thing.'.yml';
 

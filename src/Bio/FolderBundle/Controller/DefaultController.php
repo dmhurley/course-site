@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-
+use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Form\FormError;
@@ -214,7 +214,7 @@ class DefaultController extends Controller
             );
     }
 
-    private function validate($entity, $form, $field) {
+    private function validate($entity, Form $form, $field) {
         $validator = $this->get('validator');
         $errors = $validator->validate($entity);
         if (count($errors) > 0) {

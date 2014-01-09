@@ -5,10 +5,11 @@ namespace Bio\SwitchBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Request;
 
 use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
-use Bio\SwitchBundle\Entity\Request;
+use Bio\SwitchBundle\Entity\Request as BioRequest;
 
 use Doctrine\ORM\EntityRepository;
 
@@ -26,7 +27,7 @@ class DefaultController extends Controller
      * @Route("/admin/switch/requests", name="switch_requests")
      * @Template()
      */
-    public function requestsAction(\Symfony\Component\HttpFoundation\Request $request)
+    public function requestsAction(Request $request)
     {	
     	$db = new Database($this, 'BioSwitchBundle:Request');
     	$requests = $db->find(array(), array(), false);
@@ -38,7 +39,7 @@ class DefaultController extends Controller
      * @Route("/switch", name="request_switch")
      * @Template()
      */
-    public function requestAction(\Symfony\Component\HttpFoundation\Request $request) {
+    public function requestAction(Request $request) {
     	$session = $request->getSession();
     	$flash = $session->getFlashBag();
 
@@ -84,7 +85,7 @@ class DefaultController extends Controller
         return $this->redirect($this->generateUrl('main_page'));
     }
 
-    private function setRequestAction($request, $student, $section, $db) {
+    private function setRequestAction(Request $request, $student, $section, $db) {
         $flash = $request->getSession()->getFlashBag();
 
     	$form = $this->createFormBuilder()
@@ -109,7 +110,7 @@ class DefaultController extends Controller
 
                 $wants = $form->get('want')->getData();
                 if (count($wants) > 0){
-                     $r = new Request();
+                     $r = new BioRequest();
                      $db->add($r);
                      $r->setStatus(2)
                         ->setLastUpdated(new \DateTime())
@@ -137,7 +138,7 @@ class DefaultController extends Controller
         );
     }
 
-    private function viewRequestAction($request, $r, $db) {
+    private function viewRequestAction(Request $request, $r, $db) {
         $flash = $request->getSession()->getFlashBag();
 
     	$em = $this->getDoctrine()->getManager();
@@ -222,7 +223,7 @@ class DefaultController extends Controller
         );
     }
 
-    private function confirmationAction($request, $r, $db) {
+    private function confirmationAction(Request $request, $r, $db) {
         $flash = $request->getSession()->getFlashBag();
 
     	// check if the other requester cancelled request

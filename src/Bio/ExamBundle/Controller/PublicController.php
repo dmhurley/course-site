@@ -7,12 +7,14 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 
 use Bio\DataBundle\Objects\Database;
 use Bio\ExamBundle\Entity\Exam;
 use Bio\ExamBundle\Entity\TestTaker;
 use Bio\ExamBundle\Entity\Answer;
 use Bio\ExamBundle\Entity\Grade;
+use Bio\UserBundle\Entity\AbstractUserStudent;
 
 use Bio\ExamBundle\Type\AnswerType;
 use Bio\ExamBundle\Type\GradeType;
@@ -96,7 +98,7 @@ class PublicController extends Controller {
 	}
 	
 	
-	private function findExam($exams, $student) {
+	private function findExam(array $exams, AbstractUserStudent $student) {
 		$db = new Database($this, 'BioExamBundle:TestTaker');
 
 		// check to see if there are exams in the future
@@ -196,7 +198,7 @@ class PublicController extends Controller {
 		}
 	}
 
-	private function startAction(Request $request, $exam, $taker, $messages = [], $student, $flash, $exams) {
+	private function startAction(Request $request, Exam $exam, TestTaker $taker, array $messages = array(), AbstractUserStudent $student, FlashBag $flash, array $exams) {
 		$form = $this->createFormBuilder()
 			->add('start', 'submit')
 			->getForm();
@@ -266,7 +268,7 @@ class PublicController extends Controller {
 			));
 	}
 
-	private function examAction(Request $request, $exam, $taker, $flash) {
+	private function examAction(Request $request, Exam $exam, TestTaker $taker, FlashBag $flash) {
 		$form = $this->createFormBuilder($taker)
 				->add('answers', 'collection', array(
 						'type' => new AnswerType(),
@@ -302,7 +304,7 @@ class PublicController extends Controller {
 			));
 	}
 
-	private function waitAction(Request $request, $exam, $taker, $flash) {
+	private function waitAction(Request $request, Exam $exam, TestTaker $taker, FlashBag $flash) {
 		$global = (new Database($this, 'BioExamBundle:ExamGlobal'))->findOne(array());
 
 		if ($taker->getGradedNum() >= $global->getGrade() && count($taker->getAssigned()) === 0) {
@@ -372,7 +374,7 @@ class PublicController extends Controller {
 			));
 	}
 
-	private function handleWaitPost(Request $request, $taker) {
+	private function handleWaitPost(Request $request, TestTaker $taker) {
 		$assigned = $taker->getAssigned()->toArray();
 		reset($assigned);
 		$taker->setStatus(4)
@@ -385,7 +387,7 @@ class PublicController extends Controller {
 
 	}
 
-	private function gradeAction(Request $request, $exam, $taker, $flash) {
+	private function gradeAction(Request $request, Exam $exam, TestTaker $taker, FlashBag $flash) {
 		$assigned = $taker->getAssigned()->toArray();
 		reset($assigned);
 		$target = current($assigned);

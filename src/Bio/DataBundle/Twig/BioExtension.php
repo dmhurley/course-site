@@ -14,7 +14,7 @@ class BioExtension extends \Twig_Extension
     public function safeFilter($string)
     {   
         // TODO html encode script tags and only script tags
-        return string;
+        return $string;
     }
 
     public function getName()
