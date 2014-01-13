@@ -18,7 +18,7 @@
 	{% set private = '' %}
 {% endif %}
 
-{% if root.children is defined and root.id == selected %}
+{% if root.children is defined and root.id == parent.id %}
 	{% set id = 'selected' %}
 {% else %}
 	{% set id = '' %}
@@ -50,7 +50,7 @@
 {% if root.children is defined and root.children|length > 0 %}
 	<ul>
 		{% for child in root.children %}
-			{% include 'BioFolderBundle:Default:structure.html.twig' with {'root' : child, 'selected' : selected} %}
+			{% include 'BioFolderBundle::structure.html.twig' with {'root' : child, 'selected' : parent} %}
 		{% endfor %}
 	</ul>
 {% endif %}

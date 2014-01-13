@@ -11,14 +11,11 @@ use Symfony\Component\HttpFoundation\Request;
 
 use Bio\FolderBundle\Entity\File;
 
-/**
- * @Route("/download")
- * @Template()
- */
-class DownloadController extends Controller
+class PublicController extends Controller
 {
     /**
-     * @Route("/{id}", name="download")
+     * @Route("/download/{id}")
+     * @Route("/folders/download/id", name="download")
      * @ParamConverter("file", class="BioFolderBundle:File")
      */
     public function downloadAction(Request $request, File $file) {

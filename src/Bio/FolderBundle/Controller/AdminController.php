@@ -17,12 +17,16 @@ use Bio\DataBundle\Objects\Database;
 use Bio\FolderBundle\Entity\Folder;
 use Bio\FolderBundle\Entity\File;
 use Bio\FolderBundle\Entity\Link;
+use Bio\FolderBundle\Form\FolderType;
+use Bio\FolderBundle\Form\FileType;
+use Bio\FolderBundle\Form\LinkType;
+use Bio\FolderBundle\Form\StudentFolderType;
 
 /**
  * @Route("/admin/folders")
  * @Template()
  */
-class DefaultController extends Controller
+class AdminController extends Controller
 {
     /**
      * @Route("/", name="folders_instruct")
@@ -40,162 +44,118 @@ class DefaultController extends Controller
     {	 
         $flash = $request->getSession()->getFlashBag();
 
-        $selected = 1;
+        $db = new Database($this, 'BioFolderBundle:Folder');
+
         $private = false;
     	if ($request->query->get('id')) {
-    		$selected = $request->query->get('id');
+            $parent = $db->findOne(array('id' => $request->query->get('id')));
             if ($request->query->get('private')){
                 $private = true;
             }
-    	} 
-    	$db = new Database($this, 'BioFolderBundle:Folder');
+    	} else {
+            $parent = $db->findOne(array('parent' => null));
+        }
 
     	$sidebar = $db->findOne(array('name' => 'sidebar', 'parent' => null));
         $mainpage = $db->findOne(array('name' => 'mainpage', 'parent' => null));
 
         /****** ADD FOLDER FORM ******/
         $folder = new Folder();
-    	$form = $this->get('form.factory')->createNamedBuilder('tfolder', 'form', $folder)
-    		->add('name', 'text', array('label' => 'Name:'))
-            ->add('private', 'checkbox', array(
-                'label' => 'Private:',
-                'required' => false,
-                'attr' => $private?array('checked' => 'checked'):array()
-                )
-            )
-    		->add('add', 'submit')
-    		->add('id', 'hidden', array(
-                'mapped' => false,
-                'data'=>$selected
-                )
-            )
-    		->getForm();
+        $folder->setParent($parent);
+    	$folderForm = $this->get('form.factory')->createNamedBuilder('tfolder', new FolderType(), $folder)
+            ->add('add', 'submit')
+            ->getForm();
 
         /****** ADD FILE FORM ******/
         $file = new File();
-    	$form1 = $this->get('form.factory')->createNamedBuilder('tfile', 'form', $file)
-    		->add('file', 'file', array(
-                'label' => false, 
-                'constraints' => new Assert\File(
-                        array(
-                            "maxSize" => "32M"
-                        )
-                    )
-                )
-            )
-    		->add('name', 'text', array('label' => 'Name:'))
-    		->add('id', 'hidden', array(
-                'mapped' => false,
-                'data' => $selected
-                )
-            )
-    		->add('upload', 'submit')
-    		->getForm();
+        $file->setParent($parent);
+    	$fileForm = $this->get('form.factory')->createNamedBuilder('tfile', new FileType(), $file)
+            ->add('add', 'submit')
+            ->getForm();
 
         /****** ADD LINK FORM ******/
         $link = new Link();
-        $form2 = $this->get('form.factory')->createNamedBuilder('tlink', 'form', $link)
-            ->add('name', 'text', array('label' => 'Title:'))
-            ->add('address', 'text', array('label' => 'URL:'))
-            ->add('link', 'submit')
-            ->add('id', 'hidden', array(
-                'mapped' => false,
-                'data'=>$selected
-                )
-            )
+        $link->setParent($parent);
+        $linkForm = $this->get('form.factory')->createNamedBuilder('tlink', new LinkType(), $link)
+            ->add('add', 'submit')
             ->getForm();
 
         if ($request->getMethod() === "POST") {
 
             if ($request->request->has('tfolder')) {
-                $form->handleRequest($request);
-                if ($form->isValid()) {
-                    $parent = $db->findOne(array('id' => $form->get('id')->getData()));
-                    if (!$parent) {
-                        $flash->set('failure', "Parent folder could not be found.");
-                    } else {
-                        $folder->setParent($parent);
-                        if ($this->validate($folder, $form, 'name')) {
-                            $parent->addChild($folder);
-                            $db->add($folder);
-                            try {
-                                $db->close();
-                                $flash->set('success', "Folder \"".$folder->getName()."\" added.");
-                                return $this->redirect(
-                                        $this->generateUrl('view_folders').'?id='.$selected.($private?'&private=1':'')
-                                    );
-                            } catch (BioException $e) {
-                                $flash->set('failure', "Folder could not be added.");
-                                $db->delete($folder);
-                                $parent->removeChild($folder);
-                            }
-                        } else {
-                            $flash->set('failure', "Invalid form.");
+                $folderForm->handleRequest($request);
+                if ($folderForm->isValid()) {
+                    if ($this->validate($folder, $folderForm, 'name')) {
+                        $parent->addChild($folder);
+                        $db->add($folder);
+
+                        try {
+                            $db->close();
+                            $flash->set('success', "Folder \"".$folder->getName()."\" added.");
+                            return $this->redirect(
+                                    $this->generateUrl('view_folders').'?id='.$parent->getId().($private?'&private=1':'')
+                                );
+                        } catch (BioException $e) {
+                            $flash->set('failure', "Folder could not be added.");
+                            $db->delete($folder);
+                            $parent->removeChild($folder);
                         }
+                    } else {
+                        $flash->set('failure', "Invalid form.");
                     }
                 } else {
                     $request->getSession()->getFlashBag()->set('failure', "Invalid form.");
                 }
             } else if ($request->request->has('tfile')) {
-                $form1->handleRequest($request);
-                if ($form1->isValid()) {
-                    $parent = $db->findOne(array('id' => $form1->get('id')->getData()));
-                    if (!$parent) {
-                         $flash->set('failure', "Parent folder could not be found.");
-                    } else {
-                        $file->setParent($parent);
-                        if ($this->validate($file, $form1, 'name')) {
-                            $parent->addChild($file);
-                            try {
-                                $db->add($file);
-                                $db->close("1");
-                                $flash->set('success', "File \"".$file->getName()."\" uploaded.");
-                                return $this->redirect(
-                                        $this->generateUrl('view_folders').'?id='.$selected.($private?'&private':'')
-                                    );
-                            } catch (BioException $e) {
-                                if ($e->getMessage() === '1') {
-                                    $flash->set('failure', 'File could not be uploaded.');
-                                } else {
-                                    $flash->set('failure', 'Invalid form.');
-                                    if ($e->getMessage() === '3') {
-                                        $form1->get('file')->addError(new FormError('No file uploaded.'));
-                                    }
-                                }
+                $fileForm->handleRequest($request);
+                if ($fileForm->isValid()) {
+                    if ($this->validate($file, $fileForm, 'name')) {
+                        $parent->addChild($file);
+                        $db->add($file);
 
-                                $parent->removeChild($file);
+                        try {
+                            $db->close("1");
+                            $flash->set('success', "File \"".$file->getName()."\" uploaded.");
+                            return $this->redirect(
+                                    $this->generateUrl('view_folders').'?id='.$parent->getId().($private?'&private':'')
+                                );
+                        } catch (BioException $e) {
+                            if ($e->getMessage() === '1') {
+                                $flash->set('failure', 'File could not be uploaded.');
+                            } else {
+                                $flash->set('failure', 'Invalid form.');
+                                if ($e->getMessage() === '3') {
+                                    $fileForm->get('file')->addError(new FormError('No file uploaded.'));
+                                }
                             }
-                        } else {
-                            $flash->set('failure', "Invalid form.");
+
+                            $parent->removeChild($file);
                         }
+                    } else {
+                        $flash->set('failure', "Invalid form.");
                     }
                 } else {
                     $flash->set('failure', "Invalid form.");
                 }
             } else if ($request->request->has('tlink')) {
-                $form2->handleRequest($request);
-                if ($form2->isValid()) {
-                    $parent = $db->findOne(array('id' => $form2->get('id')->getData()));
-                    if (!$parent) {
-                        $flash->set('failure', "Parent folder could not be found.");
-                    } else {
-                        $link->setParent($parent);
-                        if ($this->validate($link, $form2, 'name')) {
-                            $parent->addChild($link);
-                            $db->add($link);
-                            try {
-                                $db->close();
-                                $flash->set('success', "Link added.");
-                                return $this->redirect(
-                                        $this->generateUrl('view_folders').'?id='.$selected.($private?'&private':'')
-                                    );
-                            } catch (BioException $e) {
-                                $flash->set('failure', 'Link could not be added.');
-                                $parent->removeChild($link);
-                            }
-                        } else {
-                            $flash->set('failure', 'Invalid form.');
+                $linkForm->handleRequest($request);
+                if ($linkForm->isValid()) {
+                    if ($this->validate($link, $linkForm, 'name')) {
+                        $parent->addChild($link);
+                        $db->add($link);
+
+                        try {
+                            $db->close();
+                            $flash->set('success', "Link added.");
+                            return $this->redirect(
+                                    $this->generateUrl('view_folders').'?id='.$parent->getId().($private?'&private':'')
+                                );
+                        } catch (BioException $e) {
+                            $flash->set('failure', 'Link could not be added.');
+                            $parent->removeChild($link);
                         }
+                    } else {
+                        $flash->set('failure', 'Invalid form.');
                     }
                 } else {
                     $flash->set('failure', 'Invalid form.');
@@ -206,10 +166,10 @@ class DefaultController extends Controller
         return array(
             'root' => $sidebar,
             'main' => $mainpage,
-            'selected' => $selected,
-            'folderForm'=>$form->createView(),
-            'fileForm' => $form1->createView(),
-            'linkForm' => $form2->createView(),
+            'parent' => $parent,
+            'folderForm'=>$folderForm->createView(),
+            'fileForm' => $fileForm->createView(),
+            'linkForm' => $linkForm->createView(),
             'title' => "View Folders"
             );
     }
@@ -325,22 +285,8 @@ class DefaultController extends Controller
     public function studentAction(Request $request) {
         $flash = $request->getSession()->getFlashBag();
 
-        $form = $this->createFormBuilder()
-            // ->add('name', 'text', array('label' => 'Folder Name:'))
-            ->add('parent', 'entity', array(
-                'label' => 'Parent:',
-                'class' => 'BioFolderBundle:Folder',
-                'property' => 'name',
-                'query_builder' => function(EntityRepository $repo) {
-                        return $repo->createQueryBuilder('f')
-                            ->where('f.parent IS NULL');
-                    }
-                )
-            )
-            ->add('confirmation', 'checkbox', array('label' => "Are you sure?"))
-            ->add('create', 'submit')
-            ->getForm();
-
+        $form = $this->createForm(new StudentFolderType(), null)
+            ->add('create', 'submit');
         if($request->getMethod() === "POST") {
             $form->handleRequest($request);
             if ($form->isValid()) {

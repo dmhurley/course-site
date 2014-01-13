@@ -16,12 +16,12 @@
 
 <h2 style="margin-top:30px; margin-bottom:5px;">Front Page Content</h2>
 <ul>
-	{% include 'BioFolderBundle:Default:structure.html.twig' with {'root' : main, 'selected' : selected} %}
+	{% include 'BioFolderBundle::structure.html.twig' with {'root' : main, 'parent' : parent} %}
 </ul>
 
 <h2 style="margin-top:30px; margin-bottom:5px;">Sidebar Content</h2>
 <ul>
-	{% include 'BioFolderBundle:Default:structure.html.twig' with {'root' : root, 'selected' : selected} %}
+	{% include 'BioFolderBundle::structure.html.twig' with {'root' : root, 'parent' : parent} %}
 </ul>
 
 <div class="f">
