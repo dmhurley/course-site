@@ -83,7 +83,6 @@ class DefaultController extends Controller {
     public function deleteAction(Request $request, $entityName, $entity = null) {
         $flash = $request->getSession()->getFlashBag();
 
-        $lc = strtolower($entityName);
         $uc = ucfirst($entityName);
         $entityType = 'Bio\\InfoBundle\\Entity\\'.$uc;
 

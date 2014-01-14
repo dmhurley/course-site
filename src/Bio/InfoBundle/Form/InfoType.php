@@ -14,7 +14,6 @@ class InfoType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {   
-        $array = file('bundles/bioinfo/buildings.txt', FILE_IGNORE_NEW_LINES);
         $builder
             ->add('courseNumber', 'text', array('label' => 'Course Number:'))
             ->add('title', 'text', array('label' => 'Course Name:'))

@@ -10,10 +10,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Form\FormError;
 
-use Bio\ClickerBundle\Entity\Clicker;
 use Bio\ClickerBundle\Form\ClickerGlobalType;
 use Bio\DataBundle\Objects\Database;
-use Bio\DataBundle\Exception\BioException;
 
 /**
  * @Route("/admin/clicker")

@@ -9,8 +9,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Form\FormError;
-use Doctrine\ORM\EntityRepository;
 
 use Bio\DataBundle\Exception\BioException;
 use Bio\DataBundle\Objects\Database;

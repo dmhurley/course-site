@@ -7,7 +7,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Form\FormError;
 
 use Bio\ClickerBundle\Entity\Clicker;
