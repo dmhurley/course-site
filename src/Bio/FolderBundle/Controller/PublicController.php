@@ -15,7 +15,7 @@ class PublicController extends Controller
 {
     /**
      * @Route("/download/{id}")
-     * @Route("/folders/download/id", name="download")
+     * @Route("/folders/download/{id}", name="download")
      * @ParamConverter("file", class="BioFolderBundle:File")
      */
     public function downloadAction(Request $request, File $file) {

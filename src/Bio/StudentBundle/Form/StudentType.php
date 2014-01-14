@@ -16,7 +16,6 @@ class StudentType extends AbstractType {
 		$builder
 			->add('sid', 'text', array(
 				'label' => "Student ID:",
-				'read_only' => $options['edit'],
 				'attr' => array(
 					'pattern' => '[0-9]{7}',
 					'title' => '7 digit student ID')
@@ -36,7 +35,7 @@ class StudentType extends AbstractType {
             	)
             )
     		->add('email', 'email', array('label' => "Email:"))
-    		->add($options['title'], 'submit');
+    	;
 	}
 
 	// make sure to add all the default options you might add
