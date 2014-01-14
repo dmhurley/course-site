@@ -12,7 +12,7 @@
 			<th>Edit</th>
 			<th>Delete</th>
 		</tr>
-		{% for person in hourss %}
+		{% for person in entities %}
 			<tr>
 			{% if person.hours|length != 0 %}
 				<td rowspan={{person.hours|length}}>{{person.fullName}}</td>

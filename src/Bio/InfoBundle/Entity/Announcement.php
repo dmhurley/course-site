@@ -40,6 +40,11 @@ class Announcement extends Base
      */
     private $text;
 
+    public function __construct() {
+        $this->timestamp = new \DateTime();
+        $this->setExpiration = new \DateTime('+1 week');
+    }
+
     /**
      * Set timestamp
      *
@@ -107,22 +112,6 @@ class Announcement extends Base
     public function getText()
     {
         return $this->text;
-    }
-
-    public function addToForm(FormBuilder $builder) {
-        $builder
-            ->add('timestamp', 'datetime', array(
-                'attr' => array('class' => 'datetime'),
-                'label' => 'Start Time:'
-                )
-            )
-            ->add('expiration', 'datetime', array(
-                'attr' => array('class' => 'datetime'),
-                'label' => 'End Time:'
-                )
-            )
-            ->add('text', 'textarea', array('label' => 'Announcement:'));
-        return $builder;
     }
 
     public function findSelf($db, $options = array(), $orderBy = array('expiration' => 'DESC')){
