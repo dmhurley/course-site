@@ -344,7 +344,7 @@ class AdminController extends Controller
             $name = $taker->getStudent()->getLName().", ".$taker->getStudent()->getFName().($taker->getStudent()->getMName()?' '.$taker->getStudent()->getMName():'');
             $studentID = $taker->getStudent()->getSid();
             $section = $taker->getStudent()->getSection()->getName();
-            $didGrade = $taker->getGradedNum() >= $global->getGrade()?"Yes":$taker->getGradedNum();
+            $didGrade = $taker->getStatus() === 5 || count($taker->getGraded()) >= $global->getGrade()?"Yes":count($taker->getGraded());
 
             if ($taker->getStatus() >= 3) {
                 $timeElapsedSeconds = $taker->getTimestamp('submitted')[0]['time']->getTimestamp() - $taker->getTimestamp('started')[0]['time']->getTimestamp();

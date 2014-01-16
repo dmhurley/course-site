@@ -350,6 +350,7 @@ class PublicController extends Controller {
 					$exam->getGdate()->format('m/d'). ' at '.
 					$exam->getGStart()->format('h:i a')
 				);
+			$flash->set('banner_stay', true);
 		} else {
 
 			if ($request->getMethod() === "POST") {

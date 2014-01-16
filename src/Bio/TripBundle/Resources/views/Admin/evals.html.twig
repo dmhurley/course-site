@@ -72,7 +72,7 @@
 		{% else %}
 			<tr class="passed">
 		{% endif %}
-				<td>{{trip.title}}</td>
+				<td>{{trip.title}} - {{trip.start|date('Y-m-d')}}</td>
 				<td>{{trip.evals|length}}/{{trip.students|length}}</td>
 				<td><a href="{{ path('view_trip', {'id':trip.id}) }}">view</a></td>
 				<td><a href="{{ path('eval_review', {'id': trip.id, 'title':trip.title}) }}">review</a></td>
