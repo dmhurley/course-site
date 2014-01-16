@@ -13,7 +13,7 @@
 				<button type="submit">Grade</button>
 			</form>
 			<div id="loadMessage" style="display:none">
-				Finding test to grade<br />This could take several minutes
+				This page will find test for you to grade after {{exam.gStart|date('m/d - h:i a')}}.<br />The process may take several minutes.
 				{% image 'bundles/bioexam/images/ajax-loader.gif' output='images/*.png' %}
 					<div id="loader" style="background-image:url('{{asset_url}}')"></div>
 				{% endimage %}
