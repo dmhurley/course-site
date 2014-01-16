@@ -198,7 +198,7 @@ class PublicController extends Controller {
 		}
 	}
 
-	private function startAction(Request $request, Exam $exam, TestTaker $taker, array $messages = array(), AbstractUserStudent $student, FlashBag $flash, array $exams) {
+	private function startAction(Request $request, Exam $exam = null, TestTaker $taker = null, array $messages = array(), AbstractUserStudent $student, FlashBag $flash, array $exams) {
 		$form = $this->createFormBuilder()
 			->add('start', 'submit')
 			->getForm();
