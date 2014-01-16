@@ -489,12 +489,12 @@ class AdminController extends Controller
 
         foreach($results as $result) {
             if ($result['trip'] != null) {
-                $responseText[] = ($result['lName'].", ".$result['fName']."\t".$result['email']."\t".$result['trip'].' - '.$result['start']->format('Y-m-d'));
+                $responseText[] = ($result['lName'].", ".$result['fName']."\t".$result['email']."\t".$result['trip'].' - '.$result['start']->format('Y-m-d h:i a'));
             }
         }
         foreach($results as $result) {
             if ($result['trip'] == null) {
-                $responseText[] = ($result['fName']." ".$result['lName']."\t".$result['email']."\t".$result['trip']);
+                $responseText[] = ($result['fName']." ".$result['lName']."\t".$result['email']."\t".$result['trip'].' '.$result['start']);
             }
         }
 
