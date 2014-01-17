@@ -21,8 +21,16 @@ class DefaultController extends Controller {
      * @Route("/", name="view")
      */
     public function baseAction(Request $request, $entityName) {
+        $flash = $request->getSession()->getFlashBag();
         $lc = strtolower($entityName);
         $uc = ucfirst($entityName);
+        $full = implode(' ', preg_split('/((?:[A-Z])[a-z]+)/', $uc, null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY));
+        if ($entityName === 'person') {
+            $name = 'People';
+        } else {
+            $name = $full.'s';
+        }
+
         $entityType = 'Bio\\InfoBundle\\Entity\\'.$uc;
         $formType = 'Bio\\InfoBundle\\Form\\'.$uc.'Type';
 
@@ -42,22 +50,6 @@ class DefaultController extends Controller {
             } else {
                 $flash->set('failure', 'Invalid form.');
             }
-        }
-
-
-
-        if ($entityName === 'announcement') {
-            $name = 'Announcements';
-        } else if ($entityName === 'person') {
-             $name = 'People';
-        } else if ($entityName === 'hours') {
-             $name = 'Hours';
-        } else if ($entityName === 'courseSection') {
-             $name = 'Course Sections';
-        } else if ($entityName === 'section') {
-             $name = 'Lab Sections';
-        } else {
-             $name = $uc;
         }
 
         if ($lc === 'hours') {
@@ -85,6 +77,7 @@ class DefaultController extends Controller {
 
         $uc = ucfirst($entityName);
         $entityType = 'Bio\\InfoBundle\\Entity\\'.$uc;
+        $full = implode(' ', preg_split('/((?:[A-Z])[a-z]+)/', $uc, null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY));
 
         if ($entity && is_a($entity, $entityType)){
             $db = new Database($this, 'BioInfoBundle:Info');
@@ -92,12 +85,12 @@ class DefaultController extends Controller {
 
             try {
                 $db->close();
-                $flash->set('success', $full.' deleted.');
+                $flash->set('success', $full . ' deleted.');
             } catch (BioException $e) {
-                $flash->set('failure', 'Could not delete that object.');
+                $flash->set('failure', 'Could not delete that ' . $full . ' .');
             }
         } else {
-            $flash->set('failure', 'Could not find that object.');
+            $flash->set('failure', 'Could not find that ' . $full . '.');
         }
 
         if ($request->headers->get('referer')){
@@ -119,6 +112,7 @@ class DefaultController extends Controller {
         $uc = ucfirst($entityName);
         $entityType = 'Bio\\InfoBundle\\Entity\\'.$uc;
         $formType = 'Bio\\InfoBundle\\Form\\'.$uc.'Type';
+        $full = implode(' ', preg_split('/((?:[A-Z])[a-z]+)/', $uc, null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY));
         
         if ($entity && is_a($entity, $entityType)) {
 
@@ -132,7 +126,7 @@ class DefaultController extends Controller {
                     $db = new Database($this, 'BioInfoBundle:'.$uc);
                     try {
                         $db->close();
-                        $flash->set('success', 'Successfully edited.');
+                        $flash->set('success', $full.' edited.');
                         return $this->redirect($this->generateUrl("view", array('entityName' => $entityName)));
                     } catch (BioException $e) {
                         $flash->set('failure', 'Unable to save changes.');
@@ -147,7 +141,7 @@ class DefaultController extends Controller {
                 'title' => 'Edit '.$full
             );
         } else {
-            $flash->set('failure', 'Could not find that object.');
+            $flash->set('failure', 'Could not find that ' . $full . '.');
         }
 
         return $this->redirect($this->generateUrl('view', array('entityName' => $lc)));

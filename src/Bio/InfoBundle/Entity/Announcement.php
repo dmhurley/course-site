@@ -4,7 +4,7 @@ namespace Bio\InfoBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Bio\InfoBundle\Entity\Base;
-use Bio\DataBundle\Object\Database;
+use Bio\DataBundle\Objects\Database;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -42,7 +42,7 @@ class Announcement extends Base
 
     public function __construct() {
         $this->timestamp = new \DateTime();
-        $this->setExpiration = new \DateTime('+1 week');
+        $this->expiration = new \DateTime('+1 week');
     }
 
     /**
