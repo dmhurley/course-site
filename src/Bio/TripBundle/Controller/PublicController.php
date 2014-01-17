@@ -13,6 +13,7 @@ use Bio\DataBundle\Exception\BioException;
 use Bio\TripBundle\Entity\Trip;
 use Bio\TripBundle\Entity\Evaluation;
 use Bio\TripBundle\Entity\Response;
+use Bio\UserBundle\AbstractUserStudent;
 
 /** 
  * @Route("/trip")
