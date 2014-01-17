@@ -4,7 +4,7 @@ namespace Bio\InfoBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Bio\InfoBundle\Entity\Base;
-use Symfony\Component\Form\FormBuilder;
+use Bio\DataBundle\Object\Database;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -205,43 +205,8 @@ class Section extends Base
     {
         return $this->room;
     }
-
-     public function addToForm(FormBuilder $builder) {
-        $array = file('bundles/bioinfo/buildings.txt', FILE_IGNORE_NEW_LINES);
-        $builder
-            ->add('name', 'text', array(
-                'label' => 'Name:',
-                'attr' => array(
-                    'pattern' => '^[A-Z][A-Z0-9]?$',
-                    'title' => 'Valid capitalized section name.'
-                    )
-                )
-            )
-            ->add('days', 'choice', array(
-                'label' => 'Day:',
-                'choices' => array(
-                    "m" => "Monday",
-                    "tu" => "Tuesday",
-                    "w" => "Wednesday",
-                    "th" => "Thursday",
-                    "f" => "Friday",
-                    "sa" => "Saturday",
-                    "su" => "Sunday"),
-                'multiple' => true))
-            ->add('start', 'time', array('label' => 'Start Time:'))
-            ->add('end', 'time', array('label' => 'End Time:'))
-            ->add('bldg', 'choice', array(
-                'choices' => array_combine($array, $array),
-                'validation_groups' => false,
-                'label' => "Building:"
-                )
-            )
-            ->add('room', 'text', array('label' => 'Room:'));
-
-        return $builder;
-    }
-
-    public function findSelf($db, $options = array(), $orderBy = array('name' => 'ASC')){
+    
+    public function findSelf(Database $db, array $options = array(), array $orderBy = array('name' => 'ASC')){
         return $db->find($options, $orderBy, false);
     }
 }

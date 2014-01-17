@@ -4,7 +4,7 @@ namespace Bio\InfoBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Bio\InfoBundle\Entity\Base;
-use Symfony\Component\Form\FormBuilder;
+use Bio\DataBundle\Object\Database;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -39,6 +39,11 @@ class Announcement extends Base
      * @Assert\NotBlank()
      */
     private $text;
+
+    public function __construct() {
+        $this->timestamp = new \DateTime();
+        $this->setExpiration = new \DateTime('+1 week');
+    }
 
     /**
      * Set timestamp
@@ -109,23 +114,7 @@ class Announcement extends Base
         return $this->text;
     }
 
-    public function addToForm(FormBuilder $builder) {
-        $builder
-            ->add('timestamp', 'datetime', array(
-                'attr' => array('class' => 'datetime'),
-                'label' => 'Start Time:'
-                )
-            )
-            ->add('expiration', 'datetime', array(
-                'attr' => array('class' => 'datetime'),
-                'label' => 'End Time:'
-                )
-            )
-            ->add('text', 'textarea', array('label' => 'Announcement:'));
-        return $builder;
-    }
-
-    public function findSelf($db, $options = array(), $orderBy = array('expiration' => 'DESC')){
+    public function findSelf(Database $db, array $options = array(), array $orderBy = array('expiration' => 'DESC')){
         return $db->find($options, $orderBy, false);
     }
 }

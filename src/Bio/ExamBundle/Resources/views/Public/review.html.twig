@@ -8,14 +8,14 @@
 				<h2 style="float:right;">{{answer.question.points}} points</h2>
 
 				<div class="q">
-					{{answer.question.question|raw}}
+					{{answer.question.question|safe}}
 				</div>
 
 				<div class="line"></div>
 
 				<h2>Rubric</h2>
 				<div class="q">
-					{{answer.question.answer|raw}}
+					{{answer.question.answer|safe}}
 				</div>
 
 				<div class="line"></div>
@@ -55,14 +55,14 @@
 				<h2 style="float:right;">{{question.points}} points</h2>
 
 				<div class="q">
-					{{question.question|raw}}
+					{{question.question|safe}}
 				</div>
 
 				<div class="line"></div>
 
 				<h2>Answer</h2>
 				<div class="q">
-					{{question.answer|raw}}
+					{{question.answer|safe}}
 				</div>
 			</div>
 		{% endfor %}

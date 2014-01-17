@@ -4,7 +4,7 @@ namespace Bio\InfoBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Bio\InfoBundle\Entity\Base;
-use Symfony\Component\Form\FormBuilder;
+use Bio\DataBundle\Object\Database;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\ExecutionContextInterface;
 
@@ -177,31 +177,7 @@ class Hours extends Base
         return $this->person;
     }
 
-    public function addToForm(FormBuilder $builder) {
-        $builder
-            ->add('person', 'entity', array(
-                'class' => 'BioInfoBundle:Person',
-                'property' => 'fullName',
-                'label' => 'Instructor:'
-                )
-            )
-            ->add('days', 'text', array(
-                'label' => 'Days:',
-                'required' => false
-                )
-            )
-            ->add('start', 'time', array('label' => 'Start Time:'))
-            ->add('end', 'time', array('label' => 'End Time:'))
-            ->add('byAppointment', 'checkbox', array(
-                'required' => false,
-                'label' => 'By Appointment?'
-                )
-            );
-
-        return $builder;
-    }
-
-    public function findSelf($db, $options = array(), $orderBy = array()){
+    public function findSelf(Database $db, array $options = array(), array $orderBy = array()){
         return $db->find($options, $orderBy, false);
     }
 }

@@ -3,8 +3,6 @@
 namespace Bio\FolderBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Bio\InfoBundle\Entity\Base;
-use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Validator\Constraints as Assert;
 use Bio\FolderBundle\Entity\FileBase;
 

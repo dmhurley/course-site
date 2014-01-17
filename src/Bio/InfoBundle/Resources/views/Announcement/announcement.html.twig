@@ -14,7 +14,7 @@
 	{% set shown = [] %}
 	{% set hidden = [] %}
 
-	{% for ann in announcements %}
+	{% for ann in entities %}
 		{% if date() > date(ann.expiration) %}
 			{% set expired = expired|merge([ann]) %}
 		{% elseif date() < date(ann.timestamp) %}
@@ -65,8 +65,8 @@
 			</tr>
 		{% endfor %}
 
-		{% if announcements|length == 0 %}
-			<tr><td colspan=6 style="text-align:center">no announcements</td></tr>
+		{% if entities|length == 0 %}
+			<tr><td colspan=6 style="text-align:center">no entities</td></tr>
 		{% endif %}
 	</table>
 {% endblock %}

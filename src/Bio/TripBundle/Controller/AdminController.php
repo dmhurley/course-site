@@ -13,9 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 use Bio\TripBundle\Entity\Trip;
-use Bio\TripBundle\Entity\Evaluation;
 use Bio\TripBundle\Entity\EvalQuestion;
-use Bio\TripBundle\Entity\Response;
 use Bio\UserBundle\Entity\AbstractUserStudent;
 
 
@@ -573,7 +571,7 @@ class AdminController extends Controller
         }
     }
 
-    private function returnEvals($trip, $returner = []) {
+    private function returnEvals(Trip $trip, array $returner = []) {
         foreach ($trip->getEvals() as $eval) {
                 foreach($eval->getAnswers() as $answer) {
                     $returner[] = $trip->getTitle().' - '.$trip->getStart()->format('Y-m-d')."\t".

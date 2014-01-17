@@ -17,7 +17,6 @@ use Bio\StudentBundle\Form\StudentType;
 use Bio\DataBundle\Exception\BioException;
 use Bio\DataBundle\Objects\Database;
 use Doctrine\DBAL\Types\Type as DBALType;
-use Bio\DataBundle\Type\Type;
 
 /**
  * @Route("/admin/student")
@@ -155,17 +154,21 @@ class DefaultController extends Controller
         $flash = $request->getSession()->getFlashBag();
 
     	$entity = new Student();
-    	$form = $this->createForm(new StudentType(), $entity, array('label' => 'add'));
+    	$form = $this->createForm(new StudentType(), $entity)
+            ->add('submit', 'submit');
 
     	if ($request->getMethod() === "POST") {
     		$form->handleRequest($request);
     		if ($form->isValid()) {
     			try {
                     $db = new Database($this, 'BioStudentBundle:Student');
+
+                    // create password based off last name
                     $encoder = $this->get('security.encoder_factory')->getEncoder($entity);
                     $entity->setPassword($encoder->encodePassword($entity->getLName(), $entity->getSalt()));
+
                     $db->add($entity);
-                    $db->close("That Student ID or email is already registered.");
+                    $db->close();
                     $flash->set('success', 'Student added.');
                     return $this->redirect($this->generateUrl('add_student'));
                 } catch (BioException $e) {
@@ -178,7 +181,10 @@ class DefaultController extends Controller
     			$flash->set('failure', 'Invalid form.');
     		}
     	}
-        return array('form' => $form->createView(), 'title' => "Add Student");
+        return array(
+            'form' => $form->createView(),
+            'title' => "Add Student"
+        );
     }
 
     /**
@@ -218,11 +224,8 @@ class DefaultController extends Controller
             return $this->redirect($this->generateUrl('find_student'));
         }
 
-    	$form = $this->createForm(new StudentType(), $student, array(
-            'title' => 'save',
-            'edit' => true
-            )
-        );
+    	$form = $this->createForm(new StudentType(), $student)
+            ->add('save', 'submit');
 
     	if ($request->getMethod() === "POST") {		// if request was sent
     		$form->handleRequest($request);
@@ -287,7 +290,8 @@ class DefaultController extends Controller
         $ents = [];
 
         $sections = [];
-        for ($i = 1; $i < count($file); $i++) {
+        $studentCount = count($file);
+        for ($i = 1; $i < $studentCount; $i++) {
             list($sid, $name, $sectionName, $credits, $gender, $class, $major, $email) = str_getcsv($file[$i]);
             if (!($sid && $name && $sectionName &&
                   $credits && $gender && $class && $major)) {

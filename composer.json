@@ -20,7 +20,6 @@
         "sensio/generator-bundle": "2.3.*",
         "incenteev/composer-parameter-handler": "~2.0",
         "stfalcon/tinymce-bundle": "dev-master",
-        "codeception/codeception": "@stable",
         "doctrine/migrations": "dev-master",
         "doctrine/doctrine-migrations-bundle": "dev-master"
     },

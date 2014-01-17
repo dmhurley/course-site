@@ -4,7 +4,6 @@ namespace Bio\FolderBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Bio\FolderBundle\Entity\FileBase;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Folder

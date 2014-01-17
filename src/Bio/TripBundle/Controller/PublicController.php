@@ -13,6 +13,7 @@ use Bio\DataBundle\Exception\BioException;
 use Bio\TripBundle\Entity\Trip;
 use Bio\TripBundle\Entity\Evaluation;
 use Bio\TripBundle\Entity\Response;
+use Bio\UserBundle\AbstractUserStudent;
 
 /** 
  * @Route("/trip")
@@ -389,7 +390,7 @@ class PublicController extends Controller
         }
     }
 
-    public function findObjectByFieldValue($needle, $haystack, $field) {
+    private function findObjectByFieldValue($needle, $haystack, $field) {
         $getter = 'get'.ucFirst($field);
 
         foreach ($haystack as $straw) {
@@ -400,13 +401,13 @@ class PublicController extends Controller
         return null;
     }
 
-    private function sendStudentEmail($student, $trip) {
+    private function sendStudentEmail(AbstractUserStudent $student, Trip $trip) {
         if ($trip->getStart() < new \DateTime('+1 day')) {
             // send email
         }
     }
 
-    private function sendCeleseNotification($student, $trip, $joining) {
+    private function sendCeleseNotification(AbstractUserStudent $student, Trip $trip, $joining) {
         $db = new Database($this, 'BioTripBundle:TripGlobal');
         $global = $db->findOne(array());
 

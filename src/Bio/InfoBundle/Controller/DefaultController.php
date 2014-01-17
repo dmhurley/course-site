@@ -21,37 +21,45 @@ class DefaultController extends Controller {
      * @Route("/", name="view")
      */
     public function baseAction(Request $request, $entityName) {
-        $flash = $request->getSession()->getFlashBag();
-
-        $uc = ucfirst($entityName);
         $lc = strtolower($entityName);
-        $type = 'Bio\InfoBundle\Entity\\'.$uc;
-        $full = [];
-        preg_match_all('/((?:^|[A-Z])[a-z]+)/', $entityName, $full);
-        $full = ucfirst(implode(' ', $full[0]));
+        $uc = ucfirst($entityName);
+        $entityType = 'Bio\\InfoBundle\\Entity\\'.$uc;
+        $formType = 'Bio\\InfoBundle\\Form\\'.$uc.'Type';
 
-        $entity = new $type;
-        if ($lc === 'announcement') {
-            $entity->setTimestamp(new \DateTime());
-            $entity->setExpiration((new \DateTime())->modify('+1 week'));
-        }
-        $form = $entity->addToForm($this->createFormBuilder($entity))            
-            ->add('add', 'submit')
-            ->getForm();
+        $entity = new $entityType;
+        $form = $this->createForm(new $formType, $entity)
+            ->add('submit', 'submit');
 
         $db = new Database($this, 'BioInfoBundle:'.$uc);
-        if ($request->getMethod() === "POST") {
+        if ($request->getMethod() === 'POST') {
             $form->handleRequest($request);
 
             if ($form->isValid()) {
                 $db->add($entity);
                 $db->close();
-                $flash->set('success', $full.' added.');
+                $flash->set('success', 'Successfully added.');
                 return $this->redirect($this->generateUrl('view', array('entityName' => $entityName)));
             } else {
                 $flash->set('failure', 'Invalid form.');
             }
         }
+
+
+
+        if ($entityName === 'announcement') {
+            $name = 'Announcements';
+        } else if ($entityName === 'person') {
+             $name = 'People';
+        } else if ($entityName === 'hours') {
+             $name = 'Hours';
+        } else if ($entityName === 'courseSection') {
+             $name = 'Course Sections';
+        } else if ($entityName === 'section') {
+             $name = 'Lab Sections';
+        } else {
+             $name = $uc;
+        }
+
         if ($lc === 'hours') {
             $db = new Database($this, 'BioInfoBundle:Person');
             $entities = $db->find(array(), array(), false);
@@ -59,11 +67,11 @@ class DefaultController extends Controller {
             $entities = $entity->findSelf($db);
         }
 
-        $plural = $uc[strlen($uc)-1]==='s'?$full:$full.'s';
         return $this->render('BioInfoBundle:'.$uc.':'.$lc.'.html.twig', 
                 array(
-                    'form' => $form->createView(), $lc.'s' => $entities,
-                    'title' => 'Manage '.$plural 
+                    'form' => $form->createView(),
+                    'entities' => $entities,
+                    'title' => 'Manage '.$name
                     )
                 );
     }
@@ -76,12 +84,9 @@ class DefaultController extends Controller {
         $flash = $request->getSession()->getFlashBag();
 
         $uc = ucfirst($entityName);
-        $lc = strtolower($entityName);
-        $full = [];
-        preg_match_all('/((?:^|[A-Z])[a-z]+)/', $entityName, $full);
-        $full = ucfirst(implode(' ', $full[0]));
+        $entityType = 'Bio\\InfoBundle\\Entity\\'.$uc;
 
-        if ($entity && is_a($entity, "Bio\InfoBundle\Entity\\".$uc)){
+        if ($entity && is_a($entity, $entityType)){
             $db = new Database($this, 'BioInfoBundle:Info');
             $db->delete($entity);
 
@@ -89,10 +94,10 @@ class DefaultController extends Controller {
                 $db->close();
                 $flash->set('success', $full.' deleted.');
             } catch (BioException $e) {
-                $flash->set('failure', 'Could not delete that '.$full.'.');
+                $flash->set('failure', 'Could not delete that object.');
             }
         } else {
-            $flash->set('failure', 'Could not find that '.$full.'.');
+            $flash->set('failure', 'Could not find that object.');
         }
 
         if ($request->headers->get('referer')){
@@ -110,17 +115,15 @@ class DefaultController extends Controller {
     public function editAction(Request $request, $entityName, $entity = null) {
         $flash = $request->getSession()->getFlashBag();
 
-        $uc = ucfirst($entityName);
         $lc = strtolower($entityName);
-        $full = [];
-        preg_match_all('/((?:^|[A-Z])[a-z]+)/', $entityName, $full);
-        $full = ucfirst(implode(' ', $full[0]));
+        $uc = ucfirst($entityName);
+        $entityType = 'Bio\\InfoBundle\\Entity\\'.$uc;
+        $formType = 'Bio\\InfoBundle\\Form\\'.$uc.'Type';
         
-        if ($entity && is_a($entity, "Bio\InfoBundle\Entity\\".$uc)) {
-            $form = $entity->addToForm($this->createFormBuilder($entity))
-                ->add('id', 'hidden')
-                ->add('save', 'submit')
-                ->getForm();
+        if ($entity && is_a($entity, $entityType)) {
+
+            $form = $this->createForm(new $formType, $entity)
+                ->add('save', 'submit');
 
             if ($request->getMethod() === "POST") {
                 $form->handleRequest($request);
@@ -129,7 +132,7 @@ class DefaultController extends Controller {
                     $db = new Database($this, 'BioInfoBundle:'.$uc);
                     try {
                         $db->close();
-                        $flash->set('success', $full.' edited.');
+                        $flash->set('success', 'Successfully edited.');
                         return $this->redirect($this->generateUrl("view", array('entityName' => $entityName)));
                     } catch (BioException $e) {
                         $flash->set('failure', 'Unable to save changes.');
@@ -139,9 +142,12 @@ class DefaultController extends Controller {
                 }
             }
 
-            return array('form' => $form->createView(), 'title' => 'Edit '.$full);
+            return array(
+                'form' => $form->createView(),
+                'title' => 'Edit '.$full
+            );
         } else {
-            $flash->set('failure', 'Could not find that '.$full.'.');
+            $flash->set('failure', 'Could not find that object.');
         }
 
         return $this->redirect($this->generateUrl('view', array('entityName' => $lc)));

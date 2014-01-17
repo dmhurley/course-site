@@ -8,7 +8,7 @@
 				<h1 style="float:left;margin-top:18px;">Question {{loop.index}}</h1>
 				<h2 style="float:right;">{{answer.vars.data.question.points}} points</h2>
 				<div class="q">
-					{{answer.vars.data.question.question|raw}}
+					{{answer.vars.data.question.question|safe}}
 				</div>
 
 				<div class="line"></div>

@@ -58,7 +58,7 @@
 			{% if is_granted('ROLE_ADMIN') %}
 				{{ form_widget(form.description) }}
 			{% else %}
-				{{ form.description.vars['data']|raw}}
+				{{ form.description.vars['data']|safe}}
 			{% endif %}
 		</div>
 	{% endif %}
@@ -101,7 +101,7 @@
 					<ul>
 						<li>{{ann.timestamp|date('m/d/y h:i a')}}</li>
 						<ul>
-							<li>{{ann.text|raw}}</li>
+							<li>{{ann.text|safe}}</li>
 						</ul>
 					</ul>
 				{% endfor %}

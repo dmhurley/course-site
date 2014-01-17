@@ -2,9 +2,6 @@
 
 namespace Bio\DataBundle\Objects;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Doctrine\ORM\EntityManager;
-
 use Bio\DataBundle\Exception\BioException;
 
 class Database {

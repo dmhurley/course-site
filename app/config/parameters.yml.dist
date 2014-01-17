@@ -11,6 +11,8 @@ parameters:
     mailer_password: null
     mailer_dev_address: dhurl@u.washington.edu
     mailer_spool_directory: /Library/Webserver/spool
+    gmail_dev_username: youremailhere@gmail.com
+    gmail_dev_password: yourgmailpasswordhere
     locale: en
-    secret: ThisTokenIsNotSoSecretChangeIt
+    secret:
     bundles: default

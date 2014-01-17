@@ -6,10 +6,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-
 use Symfony\Component\Process\Process;
-
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Yaml\Yaml;
 
 class InstallCommand extends ContainerAwareCommand
@@ -124,7 +121,7 @@ class InstallCommand extends ContainerAwareCommand
         $output->writeln("Installed: ".implode(" ", $bundles));
     }
 
-    private function setConfig($bundles, $output, $thing, $pre = null) {
+    private function setConfig(array $bundles,OutputInterface $output, $thing) {
         $distribution = 'app/config/'.$thing.'.yml.dist';
         $destination = 'app/config/'.$thing.'.yml';
 
@@ -151,19 +148,11 @@ class InstallCommand extends ContainerAwareCommand
     }
 
     private function setSidebar(array $bundles, OutputInterface $output) {
-        $distribution = 'app/config/parameters.yml.dist';
-        $destination = 'app/config/parameters.yml';
-        $thing = 'sidebar';
-        
-        $this->setConfig($bundles, $output, $thing);
+        $this->setConfig($bundles, $output, 'sidebar');
     }
 
     private function setRouting(array $bundles, OutputInterface $output) {
-        $distribution = 'app/config/routing.yml.dist';
-        $destination = 'app/config/routing.yml';
-        $thing = 'routing';
-
-        $this->setConfig($bundles, $output, $thing);
+        $this->setConfig($bundles, $output, 'routing');
     }
         
 }

@@ -14,7 +14,7 @@
 		</thead>
 
 		<tbody>
-			{% for section in coursesections %}
+			{% for section in entities %}
 				<tr>
 					<td>{{section.name}}</td>
 					<td>{{section.days|join(', ')|title}} {{section.startTime|date('h:i a')}} - {{section.endTime|date('h:i a')}}</td>

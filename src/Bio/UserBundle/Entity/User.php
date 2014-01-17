@@ -2,10 +2,9 @@
 
 namespace Bio\UserBundle\Entity;
 
-use Symfony\Component\Security\Core\User\UserInterface;
-
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
 use Bio\UserBundle\Entity\AbstractUserStudent;
 use Bio\InfoBundle\Entity\Section;
 

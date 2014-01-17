@@ -13,7 +13,7 @@
 			<th>Room</th>
 			<th>Edit</th>
 		</tr>
-		{% for section in sections %}
+		{% for section in entities %}
 			<tr>
 				<td>{{section.name|upper}}</td>
 				<td>{{section.days|join(', ')|title}}</td>

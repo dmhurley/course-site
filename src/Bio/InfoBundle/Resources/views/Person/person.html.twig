@@ -13,11 +13,11 @@
 			<th>Edit</th>
 			<th>Delete</th>
 		</tr>
-		{% for person in persons %}
+		{% for person in entities %}
 			<tr>
 				<td>{{ person.fullName }}</td>
 				<td>{{person.email}}</td>
-				<td><a href="http://www.washington.edu/maps/?{{person.bldg|split("	")[0]}}">{{person.bldg|default('</a>no building<a>')|raw}}</a></td>
+				<td><a href="http://www.washington.edu/maps/?{{person.bldg|default("	")|split("	")[0]}}">{{person.bldg|default('</a>no building<a>')|safe}}</a></td>
 				<td>{{person.room|default('no room')}}</td>
 				<td>{{person.title|title}}</td>
 				<td><a href="{{ path('edit', {'entityName' : 'person', 'id' : person.id}) }}">edit</a></td>

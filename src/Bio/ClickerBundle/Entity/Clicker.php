@@ -3,7 +3,6 @@
 namespace Bio\ClickerBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Bio\StudentBundle\Entity\Student as Student;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**

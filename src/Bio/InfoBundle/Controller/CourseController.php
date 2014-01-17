@@ -41,7 +41,6 @@ class CourseController extends Controller
 			$db->add($info);
 		}
 
-        $array = file('bundles/bioinfo/buildings.txt', FILE_IGNORE_NEW_LINES);
     	$form = $this->createFormBuilder($info)
     		->add('courseNumber', 'text', array('label' => 'Course Number:'))
     		->add('title', 'text', array('label' => 'Course Name:'))

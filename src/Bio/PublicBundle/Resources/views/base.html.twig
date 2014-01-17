@@ -6,9 +6,6 @@
 <html>
 	<head>
 		<title>{% block title %}{{tt}}{% endblock %}</title>
-		{% image 'bundles/biopublic/images/favicon.ico' output="images/*.ico" %}
-			<link rel="shortcut icon" href="{{ asset_url }}" />
-		{% endimage %}
 		
 		<!-- BASIC STYLE SHEETS -->
 		{% stylesheets 'bundles/biopublic/css/page.css' 
@@ -27,11 +24,11 @@
 	<body>
 		{% if app.session.flashbag.has('failure') %}
 			<div class="failure {% if app.session.flashbag.has('banner_stay') %}{% do app.session.flashbag.get('banner_stay') %}{% else %}bounceOutUp animated" onClick="this.style.display='none';{% endif %}">
-				{{ app.session.flashbag.get('failure')[0]|raw }}
+				{{ app.session.flashbag.get('failure')[0]|safe }}
 			</div>
 		{% elseif app.session.flashbag.has('success') %}
 			<div class="success {% if app.session.flashbag.has('banner_stay') %}{% do app.session.flashbag.get('banner_stay') %}{% else %}bounceOutUp animated" onClick="this.style.display='none';{% endif %}">
-				{{ app.session.flashbag.get('success')[0]|raw }}
+				{{ app.session.flashbag.get('success')[0]|safe }}
 			</div>
 		{% endif %}
 		<div id="container">

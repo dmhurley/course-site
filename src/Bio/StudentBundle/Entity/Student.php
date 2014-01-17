@@ -4,7 +4,6 @@ namespace Bio\StudentBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Bio\UserBundle\Entity\AbstractUserStudent;
 
 

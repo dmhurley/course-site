@@ -29,7 +29,7 @@ assetic:
 
 swiftmailer:
     transport: gmail
-    username: uwbio999
-    password: 
+    username: %gmail_dev_username%
+    password: %gmail_dev_password%
     delivery_address: %mailer_dev_address%
 

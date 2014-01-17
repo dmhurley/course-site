@@ -9,7 +9,7 @@
 	<h3 style="max-width:70%">{{trip.title}}</h3>
 	<h3>{{trip.start|date('m/d h:i a')}} - {{trip.end|date('m/d h:i a')}}</h3>
 
-	<p style="clear:both;">{{trip.shortSum|raw}}</p>
+	<p style="clear:both;">{{trip.shortSum|safe}}</p>
 
 	{#
 	 # If student is signed up for trip, show evalutation link

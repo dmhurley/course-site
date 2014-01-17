@@ -2,9 +2,7 @@
 namespace Bio\DataBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use Bio\DataBundle\Objects\Database;
@@ -90,7 +88,6 @@ class EmailCommand extends ContainerAwareCommand {
 
 			$results = $afterTripQuery->getResult();
 
-			print_r(array_keys($results));
 			if (count($results) !== 0) {
 				/******* SEND EMAILS TO STUDENTS *******/
 

@@ -2,14 +2,10 @@
 namespace Bio\DataBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-
 use Symfony\Component\Process\Process;
-
-use Bio\DataBundle\Objects\Database;
 
 class SetupCommand extends ContainerAwareCommand
 {
@@ -18,27 +14,35 @@ class SetupCommand extends ContainerAwareCommand
         $this
             ->setName('bio:setup')
             ->setDescription('Setup a biology course page.')
+            ->addOption(
+                'no-account',
+                null,
+                InputOption::VALUE_NONE,
+                'create an admin account on setup?'
+            )
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
-    {
-        $dialog = $this->getHelperSet()->get('dialog');
-        $username = $dialog->ask(
-            $output,
-            'Username: ',
-            null
-        );
-        $password = $dialog->askHiddenResponse(
+    {   
+        if (!$input->getOption('no-account')) {
+            $dialog = $this->getHelperSet()->get('dialog');
+            $username = $dialog->ask(
                 $output,
-                'Password: ',
-                false
+                'Username: ',
+                null
             );
-        $email = $dialog->ask(
-            $output,
-            'Email: ',
-            null
-        );
+            $password = $dialog->askHiddenResponse(
+                    $output,
+                    'Password: ',
+                    false
+                );
+            $email = $dialog->ask(
+                $output,
+                'Email: ',
+                null
+            );
+        }
 /***************************** CREATE DATABASE ********************************/
 $output->writeln('<info>Creating database</info>');
 $output->writeln('<question>--------------------------------------------</question>');
@@ -53,19 +57,22 @@ $output->writeln('<question>--------------------------------------------</questi
         $process->run(function($type, $buffer){echo $buffer;});
 
 /************************* CREATE ACCOUNT *****************************/
-        $output->writeln('<info>Creating Account</info>');
-$output->writeln('<question>--------------------------------------------</question>');
-        $process = new Process(
-                'php app/console bio:create:account'.
-                ' --username='.$username.
-                ' --password='.$password.
-                ' --email='.$email.
-                ' --role=ROLE_SUPER_ADMIN',
-             null, null, null, 300);
         
-        $process->run(function($type, $buffer){echo $buffer;});
-        if (!$process->isSuccessful()) {
-            throw new \Exception('Unable to add user. '.$process->getExitCodeText());
+         if (!$input->getOption('no-account')) {
+            $output->writeln('<info>Creating Account</info>');
+            $output->writeln('<question>--------------------------------------------</question>');
+            $process = new Process(
+                    'php app/console bio:create:account'.
+                    ' --username='.$username.
+                    ' --password='.$password.
+                    ' --email='.$email.
+                    ' --role=ROLE_SUPER_ADMIN',
+                 null, null, null, 300);
+            
+            $process->run(function($type, $buffer){echo $buffer;});
+            if (!$process->isSuccessful()) {
+                throw new \Exception('Unable to add user. '.$process->getExitCodeText());
+            }
         }
 
         $output->writeln("Clearing cache.");

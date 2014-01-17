@@ -12,7 +12,9 @@ use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 use Bio\ExamBundle\Entity\Exam;
 use Bio\ExamBundle\Entity\Question;
-use Bio\ExamBundle\Entity\ExamGlobal;
+use Bio\ExamBundle\Form\ExamType;
+use Bio\ExamBundle\Form\ExamGlobalType;
+use Bio\ExamBundle\Form\QuestionType;
 
 /**
  * @Route("/admin/exam")
@@ -35,42 +37,15 @@ class AdminController extends Controller
     public function examAction(Request $request)
     {
         $flash = $request->getSession()->getFlashBag();
+
         $exam = new Exam();
-    	$form = $this->get('form.factory')->createNamedBuilder('form', 'form', $exam)
-    		->add('title', 'text', array('label'=>'Exam Name:'))
-            ->add('section', 'text', array(
-                'label'=>'Section:',
-                'required' => false,
-                'empty_data' => '',
-                'attr' => array(
-                    'pattern' => '(\A\Z)|(^[A-Z][A-Z0-9]?$)',
-                    'title' => 'One or two letter capitalized section name.'
-                    )
-                )
-            )
-    		->add('tDate', 'date',        array('label' => 'Test Date:'))
-    		->add('tStart', 'time',       array('label'=>'Test Start:'))
-    		->add('tEnd', 'time',         array('label'=>'Test End:'))
-    		->add('tDuration', 'integer', array('label'=>'Test Length (m):'))
-            ->add('gDate', 'date',        array('label' => 'Grading Date:'))
-            ->add('gStart', 'time',       array('label'=>'Grading Start:'))
-            ->add('gEnd', 'time',         array('label'=>'Grading End:'))
-            ->add('gDuration', 'integer', array('label'=>'Grade Length (m):'))
-   			->add('add', 'submit')
-   			->getForm();
+    	$form = $this->createForm(new ExamType(), $exam)
+            ->add('submit', 'submit');
 
         $db = new Database($this, 'BioExamBundle:ExamGlobal');
         $global = $db->findOne(array());
-        $globalForm = $this->get('form.factory')->createNamedBuilder('global', 'form', $global)
-            ->add('grade', 'integer', array('label' => "Tests To Grade:"))
-            ->add('comments', 'checkbox', array(
-                'label' => 'Force Comments',
-                'required' => false
-                )
-            )
-            ->add('rules', 'textarea', array('label' => "Test Rules:"))
-            ->add('set', 'submit')
-            ->getForm();
+        $globalForm = $this->createForm(new ExamGlobalType(), $global)
+            ->add('set', 'submit');
 
    		if ($request->getMethod() === "POST") {
             $isValid = true;
@@ -150,35 +125,15 @@ class AdminController extends Controller
             return $this->redirect($this->generateUrl('manage_exams'));
         }
 
-		$form = $this->createFormBuilder($exam)
-			->add('title', 'text', array('label'=>'Exam Name:'))
-            ->add('section', 'text', array('label'=>'Section:',
-                'required' => false,
-                'empty_data' => '',
-                'attr' => array(
-                    'pattern' => '(\A\Z)|(^[A-Z][A-Z0-9]?$)',
-                    'title' => 'One or two letter capitalized section name.'
-                    )
-                )
-            )
-    		->add('tDate', 'date',        array('label' => 'Date:'))
-    		->add('tStart', 'time',       array('label'=>'Start Time:'))
-    		->add('tEnd', 'time',         array('label'=>'End Time:'))
-    		->add('tDuration', 'integer', array('label'=>'Duration (m):'))
-            ->add('gDate', 'date',        array('label' => 'Grading Date:'))
-            ->add('gStart', 'time',       array('label'=>'Grading Start:'))
-            ->add('gEnd', 'time',         array('label'=>'Grading End:'))
-            ->add('gDuration', 'integer', array('label'=>'Grade Length (m):'))
-    		->add('questions', 'entity', array(
+		$form = $this->createForm(new ExamType(), $exam)
+            ->add('questions', 'entity', array(
                 'class' => 'BioExamBundle:Question',
                 'property'=>'formattedQuestion',
                 'multiple' => true,
                 'expanded'=> true
                 )
             )
-    		->add('id', 'hidden')
-   			->add('save', 'submit')
-   			->getForm();
+            ->add('save', 'submit');
 
     	if ($request->getMethod() === "POST") {
 	   		$form->handleRequest($request);
@@ -207,36 +162,10 @@ class AdminController extends Controller
      */
     public function questionAction(Request $request) {
         $flash = $request->getSession()->getFlashBag();
+
     	$q = new Question();
-    	$form = $this->createFormBuilder($q)
-    		->add('question', 'textarea', array(
-                'label' => 'Question:',
-                'attr' => array(
-                    'class' => 'tinymce',
-                    'data-theme' => 'bio'
-                    )
-                )
-            )
-    		->add('answer', 'textarea', array(
-                'label' => 'Answer/Rubric:',
-                'attr' => array(
-                    'class' => 'tinymce',
-                    'data-theme' => 'bio'
-                    )
-                )
-            )
-    		->add('points', 'integer', array('label' => 'Points:'))
-            ->add('tags', 'text',      array('label' => 'Tags:',
-                'mapped' => false,
-                'required' => false,
-                'attr' => array(
-                    'pattern' => '[a-z\s]+',
-                    'title' => 'Lower case tags seperated by spaces. a-z only.'
-                    )
-                )
-            )
-    		->add('add', 'submit')
-    		->getForm();
+    	$form = $this->createForm(new QuestionType(), $q)
+            ->add('submit', 'submit');
 
     	$db = new Database($this, 'BioExamBundle:Question');
 
@@ -275,7 +204,6 @@ class AdminController extends Controller
 		if ($q) {
             $em = $this->getDoctrine()->getManager();
             $qb = $em->createQueryBuilder();
-            $expr = $qb->expr();
 
             $query = $qb->select('e')
                 ->from('BioExamBundle:Exam', 'e')
@@ -309,36 +237,9 @@ class AdminController extends Controller
      */
     public function editQuestionAction(Request $request, Question $q = null) {
         $flash = $request->getSession()->getFlashBag();
-		$form = $this->createFormBuilder($q)
-			->add('question', 'textarea', array(
-                'attr' => array(
-                    'class' => 'tinymce',
-                    'data-theme' => 'bio'
-                    )
-                )
-            )
-    		->add('answer', 'textarea', array(
-                'attr' => array(
-                    'class' => 'tinymce',
-                    'data-theme' => 'bio'
-                    )
-                )
-            )
-    		->add('points', 'integer')
-            ->add('tags', 'text', array(
-                'label' => 'Tags:',
-                'data' => implode(' ', $q->getTags()),
-                'mapped' => false,
-                'required' => false,
-                'attr' => array(
-                    'pattern' => '[a-z\s]+',
-                    'title' => 'Lower case tags seperated by spaces. a-z only.'
-                    )
-                )
-            )
-    		->add('id', 'hidden')
-   			->add('save', 'submit')
-   			->getForm();
+
+		$form = $this->createForm(new QuestionType(), $q)
+            ->add('submit', 'submit');
 
     	if ($request->getMethod() === "POST") {
 	   		$form->handleRequest($request);

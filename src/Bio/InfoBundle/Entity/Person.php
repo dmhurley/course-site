@@ -4,7 +4,7 @@ namespace Bio\InfoBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Bio\InfoBundle\Entity\Base;
-use Symfony\Component\Form\FormBuilder;
+use Bio\DataBundle\Object\Database;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -215,30 +215,6 @@ class Person extends Base
         return $this->title;
     }
 
-    public function addToForm(FormBuilder $builder) {
-        $array = file('bundles/bioinfo/buildings.txt', FILE_IGNORE_NEW_LINES);
-        $builder->add('fName', 'text', array('label' => 'First Name:'))
-            ->add('lName', 'text', array('label' => 'Last Name:'))
-            ->add('email', 'email', array('label' => 'Email:'))
-            ->add('bldg', 'choice', array(
-                'choices' => array_combine($array, $array),
-                'empty_value' => '-',
-                'required' => false,
-                'label' => 'Building:'
-                )
-            )
-            ->add('room', 'text', array('label' => 'Room:', 'required' => false))
-            ->add('title', 'choice', array(
-                'choices' => array(
-                    'instructor' => 'Instructor',
-                    'ta' => 'TA',
-                    'coordinator' => 'Coordinator'
-                ),
-                'label' => 'Title:'
-                )
-            );
-        return $builder;
-    }
     
     /**
      * Add hours
@@ -273,7 +249,7 @@ class Person extends Base
         return $this->hours;
     }
 
-    public function findSelf($db, $options = array(), $orderBy = array('fName' => 'ASC', 'lName' => 'ASC')){
+    public function findSelf(Database $db, array $options = array(), array $orderBy = array('fName' => 'ASC', 'lName' => 'ASC')){
         return $db->find($options, $orderBy, false);
     }
 }
