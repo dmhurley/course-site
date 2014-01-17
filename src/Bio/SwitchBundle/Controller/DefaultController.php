@@ -10,6 +10,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 use Bio\SwitchBundle\Entity\Request as BioRequest;
+use Bio\UserBundle\Entity\AbstractUserStudent;
+use Bio\InfoBundle\Entity\Section;
 
 use Doctrine\ORM\EntityRepository;
 
@@ -85,7 +87,7 @@ class DefaultController extends Controller
         return $this->redirect($this->generateUrl('main_page'));
     }
 
-    private function setRequestAction(Request $request, $student, $section, $db) {
+    private function setRequestAction(Request $request, AbstractUserStudent $student, Section $section, Database $db) {
         $flash = $request->getSession()->getFlashBag();
 
     	$form = $this->createFormBuilder()
@@ -138,7 +140,7 @@ class DefaultController extends Controller
         );
     }
 
-    private function viewRequestAction(Request $request, $r, $db) {
+    private function viewRequestAction(Request $request, BioRequest $r, Database $db) {
         $flash = $request->getSession()->getFlashBag();
 
     	$em = $this->getDoctrine()->getManager();
@@ -223,7 +225,7 @@ class DefaultController extends Controller
         );
     }
 
-    private function confirmationAction(Request $request, $r, $db) {
+    private function confirmationAction(Request $request, BioRequest $r, Database $db) {
         $flash = $request->getSession()->getFlashBag();
 
     	// check if the other requester cancelled request

@@ -400,13 +400,13 @@ class PublicController extends Controller
         return null;
     }
 
-    private function sendStudentEmail($student, $trip) {
+    private function sendStudentEmail(AbstractUserStudent $student, Trip $trip) {
         if ($trip->getStart() < new \DateTime('+1 day')) {
             // send email
         }
     }
 
-    private function sendCeleseNotification($student, $trip, $joining) {
+    private function sendCeleseNotification(AbstractUserStudent $student, Trip $trip, $joining) {
         $db = new Database($this, 'BioTripBundle:TripGlobal');
         $global = $db->findOne(array());
 

@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -15,6 +16,7 @@ use Bio\DataBundle\Objects\Database;
 use Bio\FolderBundle\Entity\Folder;
 use Bio\FolderBundle\Entity\File;
 use Bio\FolderBundle\Entity\Link;
+use Bio\FolderBundle\Entity\FileBase;
 use Bio\FolderBundle\Form\FolderType;
 use Bio\FolderBundle\Form\FileType;
 use Bio\FolderBundle\Form\LinkType;
@@ -187,7 +189,7 @@ class AdminController extends Controller
      * @Route("/delete/{id}", name="delete_folder")
      * @ParamConverter("entity", class="BioFolderBundle:FileBase")
      */
-    public function deleteAction(Request $request, $entity = null) {
+    public function deleteAction(Request $request, FileBase $entity = null) {
         $flash = $request->getSession()->getFlashBag();
 
         $type = $this->getType($entity);
@@ -213,7 +215,7 @@ class AdminController extends Controller
      * @Template("BioPublicBundle:Template:singleForm.html.twig")
      * @ParamConverter("entity", class="BioFolderBundle:FileBase")
      */
-    public function editAction(Request $request, $entity = null) {
+    public function editAction(Request $request, FileBase $entity = null) {
         $flash = $request->getSession()->getFlashBag();
         if ($entity && !$this->isRoot($entity)) {
             $type = $this->getType($entity);
@@ -263,7 +265,7 @@ class AdminController extends Controller
         }
     }
 
-    private function isRoot($entity = null) {
+    private function isRoot(FileBase $entity = null) {
         $hasName = method_exists($entity, 'getName');
         $isFolder = method_exists($entity, 'getFiles');
         $isParentless = $entity && $entity->getParent() === null;
@@ -272,7 +274,7 @@ class AdminController extends Controller
         return $isFolder && $hasName && $isParentless && ($name === 'sidebar' || $name === 'mainpage');
     }
 
-    private function getType($entity = null) {
+    private function getType(FileBase $entity = null) {
         return method_exists($entity, 'getPrivate')?"Folder":(method_exists($entity, 'getAddress')?"Link":"File");
     }
 

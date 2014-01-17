@@ -4,6 +4,7 @@ namespace Bio\InfoBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Bio\InfoBundle\Entity\Base;
+use Bio\DataBundle\Object\Database;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -113,7 +114,7 @@ class Announcement extends Base
         return $this->text;
     }
 
-    public function findSelf($db, $options = array(), $orderBy = array('expiration' => 'DESC')){
+    public function findSelf(Database $db, array $options = array(), array $orderBy = array('expiration' => 'DESC')){
         return $db->find($options, $orderBy, false);
     }
 }

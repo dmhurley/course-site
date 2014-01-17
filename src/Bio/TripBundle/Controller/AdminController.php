@@ -571,7 +571,7 @@ class AdminController extends Controller
         }
     }
 
-    private function returnEvals($trip, $returner = []) {
+    private function returnEvals(Trip $trip, array $returner = []) {
         foreach ($trip->getEvals() as $eval) {
                 foreach($eval->getAnswers() as $answer) {
                     $returner[] = $trip->getTitle().' - '.$trip->getStart()->format('Y-m-d')."\t".

@@ -5,6 +5,7 @@ namespace Bio\InfoBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Bio\InfoBundle\Entity\Base;
+use Bio\DataBundle\Object\Database;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
@@ -212,7 +213,7 @@ class CourseSection extends Base
         return $this->name;
     }
 
-    public function findSelf($db, $options = array(), $orderBy = array('name' => 'ASC')) {
+    public function findSelf(DataBase $db, array $options = array(), array $orderBy = array('name' => 'ASC')) {
         return $db->find($options, $orderBy, false);
     }
 }

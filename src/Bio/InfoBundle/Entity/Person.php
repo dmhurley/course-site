@@ -4,6 +4,7 @@ namespace Bio\InfoBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Bio\InfoBundle\Entity\Base;
+use Bio\DataBundle\Object\Database;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -248,7 +249,7 @@ class Person extends Base
         return $this->hours;
     }
 
-    public function findSelf($db, $options = array(), $orderBy = array('fName' => 'ASC', 'lName' => 'ASC')){
+    public function findSelf(Database $db, array $options = array(), array $orderBy = array('fName' => 'ASC', 'lName' => 'ASC')){
         return $db->find($options, $orderBy, false);
     }
 }

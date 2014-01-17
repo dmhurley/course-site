@@ -4,6 +4,7 @@ namespace Bio\InfoBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Bio\InfoBundle\Entity\Base;
+use Bio\DataBundle\Object\Database;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -205,7 +206,7 @@ class Section extends Base
         return $this->room;
     }
     
-    public function findSelf($db, $options = array(), $orderBy = array('name' => 'ASC')){
+    public function findSelf(Database $db, array $options = array(), array $orderBy = array('name' => 'ASC')){
         return $db->find($options, $orderBy, false);
     }
 }
