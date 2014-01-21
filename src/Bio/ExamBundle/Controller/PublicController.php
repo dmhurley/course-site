@@ -60,21 +60,31 @@ class PublicController extends Controller {
 		$exam = null;
 		$taker = null;
 
+
+		$response = null;
 		$exams = $this->getNextExams($student->getSection()->getName());
 		list($exam, $taker, $messages) = $this->findExam($exams, $student);
 
 		if (!$taker || ($taker->getStatus() === 1 || $taker->getStatus() === 5)) {
-			return $this->startAction($request, $exam, $taker, $messages, $student, $flash, $exams);
+			$response = $this->startAction($request, $exam, $taker, $messages, $student, $flash, $exams);
 		} else if ($taker->getStatus() === 2) {
-			return $this->examAction($request, $exam, $taker, $flash);
+			$response = $this->examAction($request, $exam, $taker, $flash);
 		} else if ($taker->getStatus() === 3) {
-			return $this->waitAction($request, $exam, $taker, $flash);
+			$response = $this->waitAction($request, $exam, $taker, $flash);
 		} else if ($taker->getStatus() === 4) {
-			return $this->gradeAction($request, $exam, $taker, $flash);
+			$response = $this->gradeAction($request, $exam, $taker, $flash);
 		} else {
 			$flash->set('failure', 'Error.');
+
+			// return right away so we don't add no-cache headers
 			return $this->redirect($this->generateUrl('main_page'));
 		}
+
+		$response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
+		$response->headers->set('Pragma', 'no-cache');
+		$response->headers->set('Expires', '0');
+
+		return $response;
 	}
 	private function getNextExams($section) {
 		$em = $this->getDoctrine()->getManager();

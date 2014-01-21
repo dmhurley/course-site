@@ -329,7 +329,7 @@ class AdminController extends Controller
             "Grade Time (s)\t".    // what?
             "Answer\t".            // didn't have to submit
             "Score\t".             // didn't have to be graded
-            "Total Mean".
+            "Total Mean\t".
             "Comment"
         ];
 
