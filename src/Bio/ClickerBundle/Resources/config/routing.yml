@@ -2,7 +2,3 @@ bio_clicker:
     resource: '@BioClickerBundle/Controller/'
     type: annotation
     prefix: /
-register_clicker:
-    path: /clicker/register
-    defaults:
-        _controller: 'BioClickerBundle:Default:register'
