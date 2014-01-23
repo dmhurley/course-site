@@ -5,4 +5,13 @@
 	{% stylesheets 'bundles/bioexam/css/exam.css' filter="cssrewrite" output="css/*.css" %}
 		<link rel="stylesheet" href="{{ asset_url }}" />
 	{% endstylesheets %}
+	<script>
+		window.addEventListener('load', function() {
+			document.addEventListener('keydown', function(evt) {
+				if (evt.keyCode === 8 && evt.target.tagName !== 'TEXTAREA') {
+					evt.preventDefault();
+				}
+			});
+		});
+	</script>
 {% endblock %}
