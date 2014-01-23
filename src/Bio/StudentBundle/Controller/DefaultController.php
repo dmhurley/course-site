@@ -291,10 +291,18 @@ class DefaultController extends Controller
 
         $sections = [];
         $studentCount = count($file);
+        
+        $headers = $studentCount > 0 ? array_flip(str_getcsv($file[0])) : [];
+
         for ($i = 1; $i < $studentCount; $i++) {
-            list($sid, $name, $sectionName, $credits, $gender, $class, $major, $email) = str_getcsv($file[$i]);
-            if (!($sid && $name && $sectionName &&
-                  $credits && $gender && $class && $major)) {
+
+            $line = str_getcsv($file[$i]);
+            $sid = $line[$headers['StudentNo']];
+            $name = $line[$headers['Name']];
+            $sectionName = isset($headers['LB Sect']) ? $line[$headers['LB Sect']] : 'AA';
+            $email = isset($headers['Email']) ? $line[$headers['Email']] : '';
+
+            if (!($sid && $name && $sectionName)) {
                 throw new BioException("The file was badly formatted");
             }
 
@@ -325,12 +333,10 @@ class DefaultController extends Controller
                 ->setSection($section)
                 ->setEmail($email)
                 ->setFName($firstAndMiddle[0])
+                ->setMName(count($firstAndMiddle) > 1 ? $firstAndMiddle[1] : '')
                 ->setLName($lName)
                 ->setPassword($encoder->encodePassword($lName, $entity->getSalt()));
 
-                if (count($firstAndMiddle) > 1) {
-                    $entity->setMName($firstAndMiddle[1]);
-                }
             if (!in_array($sid, $sids) && !in_array($email, $emails)) {
                 $sids[] = $sid;
                 if ($email) {
