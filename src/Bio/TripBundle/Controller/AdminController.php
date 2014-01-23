@@ -15,6 +15,8 @@ use Bio\DataBundle\Exception\BioException;
 use Bio\TripBundle\Entity\Trip;
 use Bio\TripBundle\Entity\EvalQuestion;
 use Bio\UserBundle\Entity\AbstractUserStudent;
+use Bio\TripBundle\Form\TripType;
+use Bio\TripBundle\Form\TripGlobalType;
 
 
 /** 
@@ -39,85 +41,14 @@ class AdminController extends Controller
         $flash = $request->getSession()->getFlashBag();
 
     	$trip = new Trip();
-    	$form = $this->get('form.factory')->createNamedBuilder('form', 'form', $trip)
-    		->add('title', 'text', array('label' => 'Title:'))
-    		->add('start', 'datetime', array(
-                'widget' => 'single_text',
-                'label' => 'Start:',
-                'attr' => array('class' => 'datetime')
-                )
-            )
-    		->add('end', 'datetime', array(
-                'label' => 'End:',
-                'widget' => 'single_text',
-                'attr' => array('class' => 'datetime')
-                )
-            )
-    		->add('max', 'integer', array('label' => 'Limit:'))
-    		->add('email', 'email', array('label' => 'Leader Email:'))
-            ->add('shortSum', 'textarea', array(
-                'label' => 'Short Summary:',
-                'attr' => array(
-                    'class' => 'tinymce',
-                    'data-theme' => 'bio'
-                    )
-                )
-            )
-            ->add('longSum', 'textarea', array(
-                'label' => 'Long Summary:',
-                'attr' => array(
-                    'class' => 'tinymce',
-                    'data-theme' => 'bio'
-                    )
-                )
-            )
-    		->add('add', 'submit')
-    		->getForm();
+    	$form = $this->get('form.factory')->createNamed('form', new TripType(), $trip)
+    		
+    		->add('add', 'submit');
 
         $db = new Database($this, 'BioTripBundle:TripGlobal');
         $global = $db->findOne(array());
-        $globalForm = $this->get('form.factory')->createNamedBuilder('global', 'form', $global)
-            ->add('opening', 'datetime', array(
-                'label' => 'Signup Start:',
-                'widget' => 'single_text',
-                'attr' => array('class' => 'datetime')
-                )
-            )
-            ->add('closing', 'datetime', array(
-                'label' => 'Evaluations Due:',
-                'widget' => 'single_text',
-                'attr' => array('class' => 'datetime')
-                )
-            )
-            ->add('maxTrips', 'integer', array('label' => "Max Trips:"))
-            ->add('evalDue', 'integer',  array('label' => "Days Until Late:"))
-            ->add('notifications', 'checkbox', array(
-                'label' => 'Notifications:',
-                'required' => false
-                )
-            )
-            ->add('start', 'datetime', array(
-                'label' => 'Start:',
-                'widget' => 'single_text',
-                'attr' => array('class' => 'datetime')
-                )
-            )
-            ->add('instructions', 'textarea', array(
-                'label' => 'Trip Instructions',
-                'attr' => array(
-                    'class' => 'tinymce',
-                    'data-theme' => 'bio'
-                    )
-                )
-            )
-            ->add('guidePass', 'password', array(
-                'label' => 'Leader Password:',
-                'always_empty' => false,
-                'attr' => array('value' => $global->getGuidePass())
-                )
-            )
-            ->add('set', 'submit')
-            ->getForm();
+        $globalForm = $this->get('form.factory')->createNamed('global', new TripGlobalType($global), $global)
+            ->add('set', 'submit');
 
     	$db = new Database($this, 'BioTripBundle:Trip');
 
@@ -173,41 +104,8 @@ class AdminController extends Controller
     	$flash = $request->getSession()->getFlashBag();
 
         if ($entity) {
-        	$form = $this->createFormBuilder($entity)
-        		->add('title', 'text', array('label' => 'Title:'))
-        		->add('start', 'datetime', array(
-                    'label' => 'Start:',
-                    'widget' => 'single_text',
-                    'attr' => array('class' => 'datetime')
-                    )
-                )
-        		->add('end', 'datetime', array(
-                    'label' => 'End:',
-                    'widget' => 'single_text',
-                    'attr' => array('class' => 'datetime')
-                    )
-                )
-        		->add('max', 'integer', array('label' => 'Limit:'))
-        		->add('email', 'email', array('label' => 'Leader Email:'))
-                ->add('shortSum', 'textarea', array(
-                    'label' => 'Short Summary:',
-                    'attr' => array(
-                        'class' => 'tinymce',
-                        'data-theme' => 'bio'
-                        )
-                    )
-                )
-                 ->add('longSum', 'textarea', array(
-                    'label' => 'Long Summary:',
-                    'attr' => array(
-                        'class' => 'tinymce',
-                        'data-theme' => 'bio'
-                        )
-                    )
-                 )
-        		->add('id', 'hidden')
-        		->add('save', 'submit')
-        		->getForm();
+            $form = $this->createForm(new TripType(), $entity)
+        		->add('save', 'submit');
 
         	if ($request->getMethod() === "POST") {
         		$form->handleRequest($request);
