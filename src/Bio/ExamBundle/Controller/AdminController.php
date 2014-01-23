@@ -39,12 +39,12 @@ class AdminController extends Controller
         $flash = $request->getSession()->getFlashBag();
 
         $exam = new Exam();
-    	$form = $this->createForm(new ExamType(), $exam)
+    	$form = $this->get('form.factory')->createNamed('form', new ExamType(), $exam)
             ->add('submit', 'submit');
 
         $db = new Database($this, 'BioExamBundle:ExamGlobal');
         $global = $db->findOne(array());
-        $globalForm = $this->createForm(new ExamGlobalType(), $global)
+        $globalForm = $this->get('form.factory')->createNamed('global', new ExamGlobalType(), $global)
             ->add('set', 'submit');
 
    		if ($request->getMethod() === "POST") {

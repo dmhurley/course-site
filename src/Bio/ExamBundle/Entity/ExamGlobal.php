@@ -37,6 +37,14 @@ class ExamGlobal
     private $comments;
 
     /**
+     * @var integer
+     *
+     * @Assert\GreaterThanOrEqual(value=0)
+     * @ORM\Column(name="review_hours", type="integer")
+     */
+    private $reviewHours;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="rules", type="text")
@@ -85,6 +93,29 @@ class ExamGlobal
 
     public function getComments() {
         return $this->comments;
+    }
+
+     /**
+     * Set reviewHours
+     *
+     * @param integer $reviewHours
+     * @return ExamGlobal
+     */
+    public function setReviewHours($reviewHours)
+    {
+        $this->reviewHours = $reviewHours;
+    
+        return $this;
+    }
+
+    /**
+     * Get reviewHours
+     *
+     * @return integer 
+     */
+    public function getReviewHours()
+    {
+        return $this->reviewHours;
     }
 
     /**

@@ -21,6 +21,7 @@ class ExamGlobalType extends AbstractType
                 'required' => false
                 )
             )
+            ->add('reviewHours', 'integer', array('label' => 'Hours to review:'))
             ->add('rules', 'textarea', array('label' => "Test Rules:"))
         ;
     }
