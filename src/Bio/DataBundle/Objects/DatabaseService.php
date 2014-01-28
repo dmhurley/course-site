@@ -8,11 +8,9 @@ use Bio\DataBundle\Objects\Database;
 class DatabaseService {
 
 	private $doctrine;
-	private $session;
 	
-	public function __construct($doctrine, $routing) {
+	public function __construct($doctrine) {
 		$this->doctrine = $doctrine;
-		var_dump($routing);
 	}
 
 	public function createDatabase($repo) {

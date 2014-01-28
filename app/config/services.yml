@@ -1,4 +1,9 @@
 services:
     bio.database:
         class: Bio\DataBundle\Objects\DatabaseService
-        arguments: ["@doctrine", "@routing.loader"]
+        arguments: ["@doctrine"]
+    bio.database.connection.setter:
+        class: Bio\DataBundle\Objects\DatabaseConnectionSetter
+        arguments: ["@doctrine.dbal.default_connection", "@router", "%database_user%", "%database_password%"]
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController}

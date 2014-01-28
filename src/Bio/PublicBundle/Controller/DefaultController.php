@@ -25,10 +25,10 @@ class DefaultController extends Controller
      * @Route("/", name="main_page")
      * @Template()
      */
-    public function indexAction(Request $request, $year, $quarter)
+    public function indexAction(Request $request)
     {   
         $flash = $request->getSession()->getFlashBag();
-        
+
         /**************** GET PEOPLE ***************/
         $db = $this->get('bio.database')->createDatabase('BioInfoBundle:Person');
         $instructors = $db->find(
@@ -143,6 +143,8 @@ class DefaultController extends Controller
                 $flash->set('failure', 'Form Invalid.');
             }
         }
+
+        echo $info->getCourseNumber();
 
 
         return array(

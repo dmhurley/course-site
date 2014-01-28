@@ -49,10 +49,11 @@ doctrine:
         driver:   %database_driver%
         host:     %database_host%
         port:     %database_port%
-        dbname:   %database_name%
+        dbname:   'empty_database'
         user:     %database_user%
         password: %database_password%
         charset:  UTF8
+        wrapper_class: 'Bio\DataBundle\Objects\ConnectionWrapper'
         # if using pdo_sqlite as your database driver, add the path in parameters.yml
         # e.g. database_path: %kernel.root_dir%/data/data.db3
         # path:     %database_path%

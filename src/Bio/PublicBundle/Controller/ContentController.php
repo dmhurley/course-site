@@ -6,8 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Response;
 
-
-
 class ContentController extends Controller
 {	
 	/**
@@ -52,12 +50,11 @@ class ContentController extends Controller
 		}
 	}
 	/**
-	 * @Template()
+	 * @Template();
 	 */
 	public function titleAction() {
 		$db = $this->get('bio.database')->createDatabase('BioInfoBundle:Info');
 		$info = $db->findOne(array());
-
 		return array('entity' => $info);
 	}
 
