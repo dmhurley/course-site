@@ -7,11 +7,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 
-use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 use Bio\SwitchBundle\Entity\Request as BioRequest;
 use Bio\UserBundle\Entity\AbstractUserStudent;
 use Bio\InfoBundle\Entity\Section;
+use Bio\DataBundle\Objects\Database;
+
 
 use Doctrine\ORM\EntityRepository;
 
@@ -31,7 +32,7 @@ class DefaultController extends Controller
      */
     public function requestsAction(Request $request)
     {	
-    	$db = new Database($this, 'BioSwitchBundle:Request');
+    	$db = $this->get('bio.database')->createDatabase('BioSwitchBundle:Request');
     	$requests = $db->find(array(), array(), false);
 
         return array('requests' => $requests, 'title' => 'Requests');
@@ -57,11 +58,11 @@ class DefaultController extends Controller
         }
 
         // get section
-        $db = new Database($this, 'BioInfoBundle:Section');
+        $db = $this->get('bio.database')->createDatabase('BioInfoBundle:Section');
         $section = $student->getSection();
 
         // see if they have a request
-		$db = new Database($this, 'BioSwitchBundle:Request');
+		$db = $this->get('bio.database')->createDatabase('BioSwitchBundle:Request');
 		$r = $db->findOne(array('student' => $student));
 
 		if ($request->query->has('cancel') && $r) {
@@ -194,7 +195,7 @@ class DefaultController extends Controller
                         $flash->set('failure', 'Could not send request.');
                     }
 
-                    $db = new Database($this, 'BioInfoBundle:Info');
+                    $db = $this->get('bio.database')->createDatabase('BioInfoBundle:Info');
                     $info = $db->findOne(array());
                     $message = \Swift_Message::newInstance()
                         ->setSubject("Someone wants to switch sections")
@@ -256,7 +257,7 @@ class DefaultController extends Controller
                 $flash->set('failure', 'Error declining request.');
             }
 
-            $db = new Database($this, 'BioInfoBundle:Info');
+            $db = $this->get('bio.database')->createDatabase('BioInfoBundle:Info');
             $info = $db->findOne(array());
             $message = \Swift_Message::newInstance()
                 ->setSubject('Switch Cancelled')
@@ -306,7 +307,7 @@ class DefaultController extends Controller
                     $db->close();
 
                     // only if db is closed do you send message
-                    $db = new Database($this, 'BioInfoBundle:Info');
+                    $db = $this->get('bio.database')->createDatabase('BioInfoBundle:Info');
                     $info = $db->findOne(array()); 
     	    		$message = \Swift_Message::newInstance()
     	    			->setSubject('Switch Sections')

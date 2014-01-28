@@ -9,9 +9,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 
 use Bio\DataBundle\Exception\BioException;
-use Bio\DataBundle\Objects\Database;
 use Bio\ScoreBundle\Entity\Scores;
 use Bio\ScoreBundle\Entity\Stat;
+use Bio\DataBundle\Objects\Database;
+
 
 /**
  * @Route("/admin/scores")
@@ -39,7 +40,7 @@ class DefaultController extends Controller
     		->add('upload', 'submit')
     		->getForm();
 
-    	$db = new Database($this, 'BioScoreBundle:Scores');
+    	$db = $this->get('bio.database')->createDatabase('BioScoreBundle:Scores');
 
     	if ($request->getMethod() === "POST"){
     		$form->handleRequest($request);
@@ -64,7 +65,7 @@ class DefaultController extends Controller
 	    }
 
     	$scores = $db->find(array(), array(), false);
-    	$db = new Database($this, 'BioScoreBundle:Stat');
+    	$db = $this->get('bio.database')->createDatabase('BioScoreBundle:Stat');
     	$stats = $db->find(array(), array(), false);
 
         return array(
@@ -82,7 +83,7 @@ class DefaultController extends Controller
         $flash = $request->getSession()->getFlashBag();
         $student = $this->get('security.context')->getToken()->getUser();
 
-        $db = new Database($this, 'BioScoreBundle:Scores');
+        $db = $this->get('bio.database')->createDatabase('BioScoreBundle:Scores');
         $score = $db->findOne(array('sid' => $student->getSid()), array(), false);
 
         if (!$score) {
@@ -90,7 +91,7 @@ class DefaultController extends Controller
             return $this->redirect($this->generateUrl('main_page'));
         }
 
-        $db = new Database($this, 'BioScoreBundle:Stat');
+        $db = $this->get('bio.database')->createDatabase('BioScoreBundle:Stat');
         $stats = $db->find(array(), array(), false);
 
         return array(
@@ -102,7 +103,7 @@ class DefaultController extends Controller
 
     private function uploadStudentScores(array $file, Database $db) {
     	$entities = $db->truncate();
-    	$tempDb = new Database($this, 'BioScoreBundle:Stat');
+    	$tempDb = $this->get('bio.database')->createDatabase('BioScoreBundle:Stat');
     	$stats = $tempDb->truncate();
         $sids = [];
 

@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 
 use Bio\ClickerBundle\Form\ClickerGlobalType;
-use Bio\DataBundle\Objects\Database;
 
 /**
  * @Route("/admin/clicker")
@@ -31,7 +30,7 @@ class AdminController extends Controller {
     public function manageAction(Request $request) {
         $flash = $request->getSession()->getFlashBag();
 
-        $db = new Database($this, 'BioClickerBundle:ClickerGlobal');
+        $db = $this->get('bio.database')->createDatabase('BioClickerBundle:ClickerGlobal');
         $global = $db->findOne(array());
 
         $form = $this->createForm(new ClickerGlobalType(), $global)
@@ -71,7 +70,7 @@ class AdminController extends Controller {
      * @Route("/download", name="download_list")
      */
     public function downloadAction(Request $request) {
-        $db = new Database($this, 'BioClickerBundle:Clicker');
+        $db = $this->get('bio.database')->createDatabase('BioClickerBundle:Clicker');
         $clickers = $db->find(array(), array(), false);
         $em = $this->getDoctrine()->getManager();
         $query = $em->createQuery('
@@ -134,7 +133,7 @@ class AdminController extends Controller {
     		$form->handleRequest($request);
 
     		if ($form->isValid()) {
-    			$db = new Database($this, 'BioClickerBundle:Clicker');
+    			$db = $this->get('bio.database')->createDatabase('BioClickerBundle:Clicker');
                 $db->truncate();
 		        $flash->set('success', 'All clicker registrations cleared.');
                 return $this->redirect($this->generateUrl('clear_list'));

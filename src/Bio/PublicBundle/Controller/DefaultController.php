@@ -8,7 +8,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 
-use Bio\DataBundle\Objects\Database;
 use Bio\FolderBundle\Entity\File;
 
 
@@ -26,12 +25,12 @@ class DefaultController extends Controller
      * @Route("/", name="main_page")
      * @Template()
      */
-    public function indexAction(Request $request)
+    public function indexAction(Request $request, $year, $quarter)
     {   
         $flash = $request->getSession()->getFlashBag();
-
+        
         /**************** GET PEOPLE ***************/
-        $db = new Database($this, 'BioInfoBundle:Person');
+        $db = $this->get('bio.database')->createDatabase('BioInfoBundle:Person');
         $instructors = $db->find(
             array('title' => 'instructor'),
             array('fName' => 'ASC', 'lName' => 'ASC'),
@@ -49,18 +48,18 @@ class DefaultController extends Controller
             );
 
         /**************** GET INFO ***************/
-        $db = new Database($this, 'BioInfoBundle:Info');
+        $db = $this->get('bio.database')->createDatabase('BioInfoBundle:Info');
         $info = $db->findOne(array());
 
         /**************** GET SECTIONS ***************/
-        $db = new Database($this, 'BioInfoBundle:Section');
+        $db = $this->get('bio.database')->createDatabase('BioInfoBundle:Section');
         $lSections = $db->find(
             array(),
             array('name' => 'ASC'),
             false
             );
 
-        $db = new Database($this, 'BioInfoBundle:CourseSection');
+        $db = $this->get('bio.database')->createDatabase('BioInfoBundle:CourseSection');
         $cSections = $db->find(
             array(),
             array('name' => 'ASC'),
@@ -68,7 +67,7 @@ class DefaultController extends Controller
         );
 
         /**************** GET DIRECTORIES ***************/
-        $db = new Database($this, 'BioFolderBundle:Folder');
+        $db = $this->get('bio.database')->createDatabase('BioFolderBundle:Folder');
         $root = $db->findOne(array('name' => 'mainpage', 'parent' => null));
 
         $folders = $db->find(
@@ -77,14 +76,14 @@ class DefaultController extends Controller
             false
             );
 
-        $db = new Database($this, 'BioFolderBundle:File');
+        $db = $this->get('bio.database')->createDatabase('BioFolderBundle:File');
         $files = $db->find(
             array('parent' => $root),
             array('name' => 'ASC'),
             false
         );
 
-        $db = new Database($this, 'BioFolderBundle:Link');
+        $db = $this->get('bio.database')->createDatabase('BioFolderBundle:Link');
         $links = $db->find(
             array('parent' => $root),
             array('name' => 'ASC'),
@@ -103,7 +102,7 @@ class DefaultController extends Controller
         $anns = $query->getResult();
         
         /**************** CREATE FORM ***************/
-        $db = new Database($this, 'BioPublicBundle:PublicGlobal');
+        $db = $this->get('bio.database')->createDatabase('BioPublicBundle:PublicGlobal');
         $global = $db->findOne(array());
         $choiceArray = [
             'info',
@@ -169,7 +168,7 @@ class DefaultController extends Controller
     public function folderAction(Request $request, $id) {
         $flash = $request->getSession()->getFlashBag();
 
-        $db = new Database($this, 'BioFolderBundle:Folder');
+        $db = $this->get('bio.database')->createDatabase('BioFolderBundle:Folder');
         $root = $db->findOne(array('id' => $id));
 
         if (!$root || $root->getPrivate()) {
@@ -225,7 +224,7 @@ class DefaultController extends Controller
     public function deleteFolderAction(Request $request, $id, $id2) {
         $flash = $request->getSession()->getFlashBag();
 
-        $db = new Database($this, 'BioFolderBundle:File');
+        $db = $this->get('bio.database')->createDatabase('BioFolderBundle:File');
         $root = $db->findOne(array('id' => $id2));
         $student = $this->get('security.context')->getToken()->getUser();
 

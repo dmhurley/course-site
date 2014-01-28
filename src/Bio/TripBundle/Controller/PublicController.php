@@ -8,7 +8,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 use Symfony\Component\HttpFoundation\Request;
 
-use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 use Bio\TripBundle\Entity\Trip;
 use Bio\TripBundle\Entity\Evaluation;
@@ -28,7 +27,7 @@ class PublicController extends Controller
     	$session = $request->getSession();
     	$flash = $session->getFlashBag();
 
-        $db = new Database($this, 'BioTripBundle:TripGlobal');
+        $db = $this->get('bio.database')->createDatabase('BioTripBundle:TripGlobal');
         $global = $db->findOne(array());
 
         if ($global->getOpening() > new \DateTime()) {
@@ -103,7 +102,7 @@ class PublicController extends Controller
             ->getQuery();
         $yourTrips = $yourQuery->getResult();
 
-        $db = new Database($this, 'BioTripBundle:TripGlobal');
+        $db = $this->get('bio.database')->createDatabase('BioTripBundle:TripGlobal');
         $global = $db->findOne(array());
     	if (!$trip) {
     		$flash->set('failure', 'Trip could not be found.');
@@ -136,7 +135,7 @@ class PublicController extends Controller
     public function leaveAction(Request $request, Trip $trip = null) {
         $flash = $request->getSession()->getFlashBag();
 
-        $db = new Database($this, 'BioTripBundle:TripGlobal');
+        $db = $this->get('bio.database')->createDatabase('BioTripBundle:TripGlobal');
         $global = $db->findOne(array());
     	if (!$trip) {
     		$flash->set('failure', 'Trip not found.');
@@ -160,7 +159,7 @@ class PublicController extends Controller
             // TODO make sure trip hasn't passed!!!!!!
     		$trip->removeStudent($student);
             try {
-              $db = new Database($this, 'BioTripBundle:Trip');  
+              $db = $this->get('bio.database')->createDatabase('BioTripBundle:Trip');  
     		  $db->close();
 
               // send emails
@@ -197,12 +196,12 @@ class PublicController extends Controller
         $flash = $request->getSession()->getFlashBag();
 
         /****** GET STUFF FROM DATABASE ******/
-        $db = new Database($this, 'BioTripBundle:TripGlobal');
+        $db = $this->get('bio.database')->createDatabase('BioTripBundle:TripGlobal');
         $global = $db->findOne(array()); 
     
         $student = $this->get('security.context')->getToken()->getUser();
 
-        $db = new Database($this, 'BioTripBundle:Evaluation');
+        $db = $this->get('bio.database')->createDatabase('BioTripBundle:Evaluation');
         $eval = $db->findOne(array('trip' => $trip, 'student' => $student));
 
         /****** DOES STUDENT/TRIP EXISTS ******/
@@ -289,7 +288,7 @@ class PublicController extends Controller
         if ($request->getSession()->has('leaderEmail')) {
             $email = $request->getSession()->get('leaderEmail');
 
-            $db = new Database($this, 'BioTripBundle:Trip');
+            $db = $this->get('bio.database')->createDatabase('BioTripBundle:Trip');
             $trips = $db->find(array('email' => $email), array(), false);
 
             return array('trips' => $trips, 'title' => 'Your Trips');
@@ -309,10 +308,10 @@ class PublicController extends Controller
         if ($request->getMethod() === "POST") {
             $form->handleRequest($request);
             if ($form->isValid()) {
-                $db = new Database($this, 'BioTripBundle:TripGlobal');
+                $db = $this->get('bio.database')->createDatabase('BioTripBundle:TripGlobal');
                 $global = $db->findOne(array());
 
-                $db = new Database($this, 'BioTripBundle:Trip');
+                $db = $this->get('bio.database')->createDatabase('BioTripBundle:Trip');
                 $trips = $db->find(array('email' => $form->get('email')->getData()), array(), false);
 
                 if (count($trips) > 0) {
@@ -362,7 +361,7 @@ class PublicController extends Controller
      * @Template()
      */
     public function promoAction(Request $request) {
-        $db = new Database($this, 'BioTripBundle:TripGlobal');
+        $db = $this->get('bio.database')->createDatabase('BioTripBundle:TripGlobal');
         $global = $db->findOne(array());
 
         if ($this->get('security.context')->isGranted('ROLE_ADMIN')) {
@@ -408,7 +407,7 @@ class PublicController extends Controller
     }
 
     private function sendCeleseNotification(AbstractUserStudent $student, Trip $trip, $joining) {
-        $db = new Database($this, 'BioTripBundle:TripGlobal');
+        $db = $this->get('bio.database')->createDatabase('BioTripBundle:TripGlobal');
         $global = $db->findOne(array());
 
         if ($global->getNotifications() && $global->getStart() < new \DateTime()) {

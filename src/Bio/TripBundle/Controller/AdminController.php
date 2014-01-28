@@ -10,7 +10,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 use Symfony\Component\HttpFoundation\Request;
 
-use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 use Bio\TripBundle\Entity\Trip;
 use Bio\TripBundle\Entity\EvalQuestion;
@@ -45,12 +44,12 @@ class AdminController extends Controller
     		
     		->add('add', 'submit');
 
-        $db = new Database($this, 'BioTripBundle:TripGlobal');
+        $db = $this->get('bio.database')->createDatabase('BioTripBundle:TripGlobal');
         $global = $db->findOne(array());
         $globalForm = $this->get('form.factory')->createNamed('global', new TripGlobalType($global), $global)
             ->add('set', 'submit');
 
-    	$db = new Database($this, 'BioTripBundle:Trip');
+    	$db = $this->get('bio.database')->createDatabase('BioTripBundle:Trip');
 
     	if ($request->getMethod() === "POST") {
             $isValid = true;
@@ -111,7 +110,7 @@ class AdminController extends Controller
         		$form->handleRequest($request);
 
         		if ($form->isValid()) {
-                    $db = new Database($this, 'BioTripBundle:Trip');
+                    $db = $this->get('bio.database')->createDatabase('BioTripBundle:Trip');
                     try {
         			    $db->close();
                         $flash->set('success', 'Trip edited.');
@@ -139,7 +138,7 @@ class AdminController extends Controller
         $flash = $request->getSession()->getFlashBag();
 
         if ($entity) {
-            $db = new Database($this, 'BioTripBundle:Trip');
+            $db = $this->get('bio.database')->createDatabase('BioTripBundle:Trip');
             $db->delete($entity);
             try {
                 $db->close();
@@ -165,7 +164,7 @@ class AdminController extends Controller
         $flash = $request->getSession()->getFlashBag();
 
         if ($entity) {
-            $db = new Database($this, 'BioTripBundle:Trip');
+            $db = $this->get('bio.database')->createDatabase('BioTripBundle:Trip');
             $trip = new Trip();
             $trip->setTitle($entity->getTitle())
                 ->setShortSum($entity->getShortSum())
@@ -196,7 +195,7 @@ class AdminController extends Controller
         $flash = $request->getSession()->getFlashBag();
 
         if ($student && $trip) {
-            $db = new Database($this, 'BioTripBundle:Trip');
+            $db = $this->get('bio.database')->createDatabase('BioTripBundle:Trip');
             $trip->removeStudent($student);
             $db->close();
             $flash->set('success', 'Removed student.');
@@ -218,9 +217,9 @@ class AdminController extends Controller
     public function evalsAction(Request $request) {
         $flash = $request->getSession()->getFlashBag();
 
-        $db = new Database($this, 'BioTripBundle:TripGlobal');
+        $db = $this->get('bio.database')->createDatabase('BioTripBundle:TripGlobal');
         $global = $db->findOne(array());
-        $db = new Database($this, 'BioTripBundle:EvalQuestion');
+        $db = $this->get('bio.database')->createDatabase('BioTripBundle:EvalQuestion');
 
         if ($request->getMethod() === "POST") {
             $evalQuestions = array();
@@ -284,7 +283,7 @@ class AdminController extends Controller
         }
 
         $questions = $global->getEvalQuestions();        
-        $db = new Database($this, 'BioTripBundle:Trip');
+        $db = $this->get('bio.database')->createDatabase('BioTripBundle:Trip');
         $trips = $db->find(array(), array('start' => 'ASC', 'end' => 'ASC'), false);
 
 
@@ -347,7 +346,7 @@ class AdminController extends Controller
             $form->handleRequest($request);
 
             if ($form->isValid()) {
-                $db = new Database($this, 'BioTripBundle:Evaluation');
+                $db = $this->get('bio.database')->createDatabase('BioTripBundle:Evaluation');
                 $dbEval = $db->findOne(
                     array(
                         'id' => $form->get('i')->getData(),

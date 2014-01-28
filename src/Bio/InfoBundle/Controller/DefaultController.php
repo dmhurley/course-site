@@ -8,7 +8,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 use Symfony\Component\HttpFoundation\Request;
-use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 
 /**
@@ -38,7 +37,7 @@ class DefaultController extends Controller {
         $form = $this->createForm(new $formType, $entity)
             ->add('submit', 'submit');
 
-        $db = new Database($this, 'BioInfoBundle:'.$uc);
+        $db = $this->get('bio.database')->createDatabase('BioInfoBundle:'.$uc);
         if ($request->getMethod() === 'POST') {
             $form->handleRequest($request);
 
@@ -53,7 +52,7 @@ class DefaultController extends Controller {
         }
 
         if ($lc === 'hours') {
-            $db = new Database($this, 'BioInfoBundle:Person');
+            $db = $this->get('bio.database')->createDatabase('BioInfoBundle:Person');
             $entities = $db->find(array(), array(), false);
         } else {
             $entities = $entity->findSelf($db);
@@ -80,7 +79,7 @@ class DefaultController extends Controller {
         $full = implode(' ', preg_split('/((?:[A-Z])[a-z]+)/', $uc, null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY));
 
         if ($entity && is_a($entity, $entityType)){
-            $db = new Database($this, 'BioInfoBundle:Info');
+            $db = $this->get('bio.database')->createDatabase('BioInfoBundle:Info');
             $db->delete($entity);
 
             try {
@@ -123,7 +122,7 @@ class DefaultController extends Controller {
                 $form->handleRequest($request);
 
                 if($form->isValid()) {
-                    $db = new Database($this, 'BioInfoBundle:'.$uc);
+                    $db = $this->get('bio.database')->createDatabase('BioInfoBundle:'.$uc);
                     try {
                         $db->close();
                         $flash->set('success', $full.' edited.');

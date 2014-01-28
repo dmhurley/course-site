@@ -7,7 +7,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 use Symfony\Component\HttpFoundation\Request;
-use Bio\DataBundle\Objects\Database;
 use Bio\UserBundle\Entity\User;
 use Bio\UserBundle\Entity\AbstractUserStudent;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -25,7 +24,7 @@ class AdminController extends Controller
      */
     public function indexAction(Request $request)
     {	
-    	$db = new Database($this, "BioUserBundle:User");
+    	$db = $this->get('bio.database')->createDatabase("BioUserBundle:User");
 
     	$users = $db->find(array(), array(), false);
     	
@@ -54,7 +53,7 @@ class AdminController extends Controller
             		$entity->setRoles(array("ROLE_SUPER_ADMIN"));
             	}
             }
-            $db = new Database($this, 'BioUserBundle:User');
+            $db = $this->get('bio.database')->createDatabase('BioUserBundle:User');
             try {
                 $db->close();
                 $flash->set('success', ucfirst($type)."moted '".$entity->getUserName()."'.");
@@ -79,7 +78,7 @@ class AdminController extends Controller
         $flash = $request->getSession()->getFlashBag();
 
         if ($entity && $entity->getRoles()[0] !== 'ROLE_SETUP' && $entity !== $this->getUser()) {
-            $db = new Database($this, 'BioUserBundle:User');
+            $db = $this->get('bio.database')->createDatabase('BioUserBundle:User');
             $db->delete($entity);
             $db->close();
             $flash->set('success', "Deleted '".$entity->getUsername()."'.");
@@ -128,7 +127,7 @@ class AdminController extends Controller
         if ($request->getMethod() === "POST") {
             $form->handleRequest($request);
             if ($form->isValid()) {
-                $db = new Database($this, 'BioUserBundle:User');
+                $db = $this->get('bio.database')->createDatabase('BioUserBundle:User');
                 $factory = $this->get('security.encoder_factory');
                 $encoder = $factory->getEncoder($user);
                 $pwd = $encoder->encodePassword($user->getPassword(), $user->getSalt());
@@ -164,7 +163,7 @@ class AdminController extends Controller
             $pwd = substr(md5(rand()), 0, 7);
             $user->setPassword($encoder->encodePassword($pwd, $user->getSalt()));
 
-            $db = new Database($this, 'BioInfoBundle:Info');
+            $db = $this->get('bio.database')->createDatabase('BioInfoBundle:Info');
             $info = $db->findOne(array());
 
             $this->getDoctrine()->getManager()->flush();

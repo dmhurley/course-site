@@ -9,7 +9,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 
-use Bio\DataBundle\Objects\Database;
 use Bio\ExamBundle\Entity\Exam;
 use Bio\ExamBundle\Entity\TestTaker;
 use Bio\ExamBundle\Entity\Answer;
@@ -31,7 +30,7 @@ class PublicController extends Controller {
 	public function reviewAction(Request $request,Exam $exam) {
 		$student = $this->get('security.context')->getToken()->getUser();
 
-		$db = new Database($this, 'BioExamBundle:TestTaker');
+		$db = $this->get('bio.database')->createDatabase('BioExamBundle:TestTaker');
 		$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
 
 		if ($taker && $student) {
@@ -109,7 +108,7 @@ class PublicController extends Controller {
 	
 	
 	private function findExam(array $exams, AbstractUserStudent $student) {
-		$db = new Database($this, 'BioExamBundle:TestTaker');
+		$db = $this->get('bio.database')->createDatabase('BioExamBundle:TestTaker');
 
 		// check to see if there are exams in the future
 		if (count($exams) === 0) {
@@ -236,7 +235,7 @@ class PublicController extends Controller {
 			}
 		}
 
-		$global = (new Database($this, 'BioExamBundle:ExamGlobal'))->findOne(array());
+		$global = $this->get('bio.database')->createDatabase('BioExamBundle:ExamGlobal')->findOne(array());
 
 		$em = $this->getDoctrine()->getManager();
 		$query = $em->createQuery('
@@ -315,7 +314,7 @@ class PublicController extends Controller {
 	}
 
 	private function waitAction(Request $request, Exam $exam, TestTaker $taker, FlashBag $flash) {
-		$global = (new Database($this, 'BioExamBundle:ExamGlobal'))->findOne(array());
+		$global = $this->get('bio.database')->createDatabase('BioExamBundle:ExamGlobal')->findOne(array());
 
 		if ($taker->getGradedNum() >= $global->getGrade() && count($taker->getAssigned()) === 0) {
 			$code = base64_encode(
@@ -337,7 +336,7 @@ class PublicController extends Controller {
 			$flash->set('banner_stay', true);
 
 			if ($taker->getStudent()->getEmail() !== '') {
-				$info = (new Database($this, 'BioInfoBundle:Info'))->findOne(array());
+				$info = $this->get('bio.database')->createDatabase('BioInfoBundle:Info')->findOne(array());
 
 				$message = \Swift_Message::newInstance()
 					->setSubject($taker->getExam()->getTitle().' confirmation')
@@ -417,7 +416,7 @@ class PublicController extends Controller {
 
 		$grades = ['grades' => $query->getResult()];
 
-		$comments = (new Database($this, 'BioExamBundle:ExamGlobal'))->findOne(array())->getComments();
+		$comments = $this->get('bio.database')->createDatabase('BioExamBundle:ExamGlobal')->findOne(array())->getComments();
 		$form = $this->createFormBuilder($grades)
 			->add('grades', 'collection', array(
 					'type' => new GradeType($comments)
@@ -462,7 +461,7 @@ class PublicController extends Controller {
 			throw $this->createNotFoundException();
 		}
 
-		$global = (new Database($this, 'BioExamBundle:ExamGlobal'))->findOne(array());
+		$global = $this->get('bio.database')->createDatabase('BioExamBundle:ExamGlobal')->findOne(array());
 		$haveGraded = array_merge($you->getAssigned()->toArray(), $you->getGraded()->toArray());
 		if ($you->getGradedNum() >= $global->getGrade() || count($you->getAssigned()) > 0 ) {
 			return array('success' => true);

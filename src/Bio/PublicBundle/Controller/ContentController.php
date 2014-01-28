@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Response;
 
-use Bio\DataBundle\Objects\Database;
 
 
 class ContentController extends Controller
@@ -21,7 +20,7 @@ class ContentController extends Controller
 			return array('options' => $options);
 
 		} else {
-			$db = new Database($this, 'BioFolderBundle:Folder');
+			$db = $this->get('bio.database')->createDatabase('BioFolderBundle:Folder');
 			$root = $db->findOne(array('name' => 'sidebar', 'parent' => null));
 
 			$folders = $db->find(
@@ -30,14 +29,14 @@ class ContentController extends Controller
 				false
 				);
 
-			$db = new Database($this, 'BioFolderBundle:File');
+			$db = $this->get('bio.database')->createDatabase('BioFolderBundle:File');
 			$files = $db->find(
 				array('parent' => $root),
 				array('name' => 'ASC'),
 				false
 				);
 
-			$db = new Database($this, 'BioFolderBundle:Link');
+			$db = $this->get('bio.database')->createDatabase('BioFolderBundle:Link');
 			$links = $db->find(
 				array('parent' => $root),
 				array('name' => 'ASC'),
@@ -56,14 +55,14 @@ class ContentController extends Controller
 	 * @Template()
 	 */
 	public function titleAction() {
-		$db = new Database($this, 'BioInfoBundle:Info');
+		$db = $this->get('bio.database')->createDatabase('BioInfoBundle:Info');
 		$info = $db->findOne(array());
 
 		return array('entity' => $info);
 	}
 
 	public function emailAction() {
-        $db = new Database($this, 'BioInfoBundle:Info');
+        $db = $this->get('bio.database')->createDatabase('BioInfoBundle:Info');
         $instructor = $db->findOne(array());
         $link = 'mailto:';
         $link.=$instructor->getEmail();

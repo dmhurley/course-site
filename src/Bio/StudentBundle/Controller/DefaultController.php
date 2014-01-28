@@ -15,7 +15,6 @@ use Bio\InfoBundle\Entity\Section;
 use Bio\InfoBundle\Entity\CourseSection;
 use Bio\StudentBundle\Form\StudentType;
 use Bio\DataBundle\Exception\BioException;
-use Bio\DataBundle\Objects\Database;
 use Doctrine\DBAL\Types\Type as DBALType;
 
 /**
@@ -38,7 +37,7 @@ class DefaultController extends Controller
     public function findAction(Request $request){
         $flash = $request->getSession()->getFlashBag();
 
-        $db = new Database($this, 'BioInfoBundle:Section');
+        $db = $this->get('bio.database')->createDatabase('BioInfoBundle:Section');
         $findArray = $flash->peek('find');
         if ( isset($findArray['section'])) {
             $s = $db->find(array('id' => $findArray['section']), array(), false);
@@ -161,7 +160,7 @@ class DefaultController extends Controller
     		$form->handleRequest($request);
     		if ($form->isValid()) {
     			try {
-                    $db = new Database($this, 'BioStudentBundle:Student');
+                    $db = $this->get('bio.database')->createDatabase('BioStudentBundle:Student');
 
                     // create password based off last name
                     $encoder = $this->get('security.encoder_factory')->getEncoder($entity);
@@ -194,7 +193,7 @@ class DefaultController extends Controller
         $flash = $request->getSession()->getFlashBag();
 
         if ($student !== null){
-            $db = new Database($this, 'BioStudentBundle:Student');
+            $db = $this->get('bio.database')->createDatabase('BioStudentBundle:Student');
             $db->delete($student);
 
             try {
@@ -230,7 +229,7 @@ class DefaultController extends Controller
     	if ($request->getMethod() === "POST") {		// if request was sent
     		$form->handleRequest($request);
     		if ($form->isValid()) {					// and form was valid
-    			$db = new Database($this, 'BioStudentBundle:Student');
+    			$db = $this->get('bio.database')->createDatabase('BioStudentBundle:Student');
                 try {
                     $db->close();
                     $flash->set('success', 'Student edited.');
@@ -277,10 +276,10 @@ class DefaultController extends Controller
     }
 
     private function uploadStudentList($file) {
-        $db = new Database($this, 'BioStudentBundle:Student');
+        $db = $this->get('bio.database')->createDatabase('BioStudentBundle:Student');
         $dbEnts = $db->find(array(), array(), false);
 
-        $db = new Database($this, 'BioInfoBundle:Section');
+        $db = $this->get('bio.database')->createDatabase('BioInfoBundle:Section');
         $dbSections = $db->find(array(), array(), false);
 
         $encoder = $this->get('security.encoder_factory')->getEncoder(new Student());
@@ -371,7 +370,7 @@ class DefaultController extends Controller
             }
         }
 
-        $db = new Database($this, 'BioInfoBundle:CourseSection');
+        $db = $this->get('bio.database')->createDatabase('BioInfoBundle:CourseSection');
         $s = $db->find(array(), array(), false);
 
         $cSections = [];

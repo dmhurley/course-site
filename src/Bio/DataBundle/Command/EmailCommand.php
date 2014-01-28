@@ -5,7 +5,6 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use Bio\DataBundle\Objects\Database;
 
 class EmailCommand extends ContainerAwareCommand {
 	protected function configure() {
@@ -91,7 +90,7 @@ class EmailCommand extends ContainerAwareCommand {
 			if (count($results) !== 0) {
 				/******* SEND EMAILS TO STUDENTS *******/
 
-				$db = new Database($this->getContainer(), 'BioInfoBundle:Info');
+				$db = $this->get('bio.database')->createDatabase('BioInfoBundle:Info');
 				$info = $db->findOne(array());
 
 				$message = \Swift_Message::newInstance()

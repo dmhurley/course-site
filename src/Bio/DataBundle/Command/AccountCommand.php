@@ -7,7 +7,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use Bio\UserBundle\Entity\User;
-use Bio\DataBundle\Objects\Database;
 
 class AccountCommand extends ContainerAwareCommand
 {
@@ -78,7 +77,7 @@ class AccountCommand extends ContainerAwareCommand
                 )];
         }
 
-        $db = new Database($this->getContainer(), 'BioUserBundle:User');
+        $db = $this->get('bio.database')->createDatabase('BioUserBundle:User');
 
         $factory = $this->getContainer()->get('security.encoder_factory');
         $user = new User();

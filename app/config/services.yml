@@ -1,0 +1,4 @@
+services:
+    bio.database:
+        class: Bio\DataBundle\Objects\DatabaseService
+        arguments: ["@doctrine", "@routing.loader"]

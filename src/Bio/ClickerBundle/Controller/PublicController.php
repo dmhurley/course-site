@@ -11,7 +11,6 @@ use Symfony\Component\Form\FormError;
 
 use Bio\ClickerBundle\Entity\Clicker;
 use Bio\ClickerBundle\Form\ClickerType;
-use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 
 /**
@@ -35,12 +34,12 @@ class PublicController extends Controller {
     		if ($form->isValid()){
                 $student = $this->get('security.context')->getToken()->getUser();
 	    		
-                $db = new Database($this, 'BioClickerBundle:ClickerGlobal');
+                $db = $this->get('bio.database')->createDatabase('BioClickerBundle:ClickerGlobal');
                 $global = $db->findOne(array());
-                $db = new Database($this, 'BioInfoBundle:Info');
+                $db = $this->get('bio.database')->createDatabase('BioInfoBundle:Info');
                 $info = $db->findOne(array());
 
-				$db = new Database($this, 'BioClickerBundle:Clicker');
+				$db = $this->get('bio.database')->createDatabase('BioClickerBundle:Clicker');
                 if ($dbClicker = $db->findOne(array('student' => $student))){
                     $flash->set('success', "Clicker ID changed to #".$form->get('cid')->getData());
                     $clicker = $dbClicker;

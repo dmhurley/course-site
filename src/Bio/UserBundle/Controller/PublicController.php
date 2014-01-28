@@ -11,7 +11,6 @@ use Symfony\Component\Security\Core\Util\StringUtils;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\FormError;
 
-use Bio\DataBundle\Objects\Database;
 
 /**
  * @Route("/user")
@@ -59,7 +58,7 @@ class PublicController extends Controller
             $form->handleRequest($request);
 
             if ($form->isValid()) {
-                $db = new Database($this, 'BioUserBundle:AbstractUserStudent');
+                $db = $this->get('bio.database')->createDatabase('BioUserBundle:AbstractUserStudent');
                 $users = $db->find(array('email' => $form->get('email')->getData()), array(), false);
                 foreach($users as $user) {
                     if ($user->getUsername() === $form->get('username')->getData()) {

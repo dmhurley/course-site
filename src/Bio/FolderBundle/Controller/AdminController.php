@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 
 use Bio\DataBundle\Exception\BioException;
-use Bio\DataBundle\Objects\Database;
 use Bio\FolderBundle\Entity\Folder;
 use Bio\FolderBundle\Entity\File;
 use Bio\FolderBundle\Entity\Link;
@@ -44,7 +43,7 @@ class AdminController extends Controller
     {	 
         $flash = $request->getSession()->getFlashBag();
 
-        $db = new Database($this, 'BioFolderBundle:Folder');
+        $db = $this->get('bio.database')->createDatabase('BioFolderBundle:Folder');
 
         $private = false;
     	if ($request->query->get('id')) {
@@ -194,7 +193,7 @@ class AdminController extends Controller
 
         $type = $this->getType($entity);
 		if(!$this->isRoot($entity)) {
-            $db = new Database($this, 'BioFolderBundle:Folder'); 
+            $db = $this->get('bio.database')->createDatabase('BioFolderBundle:Folder'); 
 			$db->delete($entity);
             try {
     			$db->close();
@@ -291,7 +290,7 @@ class AdminController extends Controller
             $form->handleRequest($request);
             if ($form->isValid()) {
                 // does folder exist?
-                $db = new Database($this, 'BioFolderBundle:Folder');
+                $db = $this->get('bio.database')->createDatabase('BioFolderBundle:Folder');
 
                 $folder = $db->findOne(array(
                     'name' => 'Student Folders',
@@ -311,7 +310,7 @@ class AdminController extends Controller
                 $dbStudentFolders = $db->find(array('parent' => $folder), array(), false);
                 $studentFolders = [];
 
-                $db = new Database($this, 'BioStudentBundle:Student');
+                $db = $this->get('bio.database')->createDatabase('BioStudentBundle:Student');
                 $students = $db->find(array(), array(), false);
 
                 foreach($students as $student) {
@@ -378,7 +377,7 @@ class AdminController extends Controller
             $form->handleRequest($request);
 
             if ($form->isValid()) {
-                $db = new Database($this, 'BioFolderBundle:Folder');
+                $db = $this->get('bio.database')->createDatabase('BioFolderBundle:Folder');
                 $root = $db->findOne(array('name' => "sidebar"));
                 $db->deleteMany($root->getChildren()->toArray());
 

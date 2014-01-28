@@ -10,8 +10,8 @@ class Database {
 	private $repo;
 	private $entityClass;
 
-	public function __construct($controller, $repo) {
-		$this->em = $controller->get('doctrine')->getManager();
+	public function __construct($em, $repo) {
+		$this->em = $em;
 		$this->repo = $this->em->getRepository($repo);
 		$exploded = explode(":", $repo);
 		$this->entityClass = $exploded[1];

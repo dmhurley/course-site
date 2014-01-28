@@ -8,7 +8,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 use Symfony\Component\HttpFoundation\Request;
 
-use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 use Bio\ExamBundle\Entity\Exam;
 use Bio\ExamBundle\Entity\Question;
@@ -42,7 +41,7 @@ class AdminController extends Controller
     	$form = $this->get('form.factory')->createNamed('form', new ExamType(), $exam)
             ->add('submit', 'submit');
 
-        $db = new Database($this, 'BioExamBundle:ExamGlobal');
+        $db = $this->get('bio.database')->createDatabase('BioExamBundle:ExamGlobal');
         $global = $db->findOne(array());
         $globalForm = $this->get('form.factory')->createNamed('global', new ExamGlobalType(), $global)
             ->add('set', 'submit');
@@ -81,7 +80,7 @@ class AdminController extends Controller
             }
    		}
 
-        $db = new Database($this, 'BioExamBundle:Exam');
+        $db = $this->get('bio.database')->createDatabase('BioExamBundle:Exam');
    		$exams = $db->find(array(), array('tDate' => 'ASC'), false);
 
     	return array(
@@ -99,7 +98,7 @@ class AdminController extends Controller
         $flash = $request->getSession()->getFlashBag();
 
 		if ($exam) {
-            $db = new Database($this, 'BioExamBundle:Exam');
+            $db = $this->get('bio.database')->createDatabase('BioExamBundle:Exam');
 			$db->delete($exam);
 			$db->close();
 			$flash->set('success', 'Exam deleted.');
@@ -139,7 +138,7 @@ class AdminController extends Controller
 	   		$form->handleRequest($request);
 
 	   		if ($form->isValid()) {
-                    $db = new Database($this, 'BioExamBundle:Exam');
+                    $db = $this->get('bio.database')->createDatabase('BioExamBundle:Exam');
  
                     try {
 	   				    $db->close();
@@ -167,7 +166,7 @@ class AdminController extends Controller
     	$form = $this->createForm(new QuestionType(), $q)
             ->add('submit', 'submit');
 
-    	$db = new Database($this, 'BioExamBundle:Question');
+    	$db = $this->get('bio.database')->createDatabase('BioExamBundle:Question');
 
     	if ($request->getMethod() === "POST") {
 
@@ -215,7 +214,7 @@ class AdminController extends Controller
             if (count($result) > 0) {
                 $flash->set('failure', 'That question is used in an Exam.');
             } else {
-                $db = new Database($this, 'BioExamBundle:Question');
+                $db = $this->get('bio.database')->createDatabase('BioExamBundle:Question');
     			$db->delete($q);
     			$db->close();
     			$flash->set('success', 'Question deleted.');
@@ -244,7 +243,7 @@ class AdminController extends Controller
     	if ($request->getMethod() === "POST") {
 	   		$form->handleRequest($request);
 	   		if ($form->isValid()) {
-                $db = new Database($this, 'BioExamBundle:Question');
+                $db = $this->get('bio.database')->createDatabase('BioExamBundle:Question');
                 try {
                     $q->setTags(explode(" ", $form->get('tags')->getData()));
    				    $db->close();
@@ -272,7 +271,7 @@ class AdminController extends Controller
             $id = $request->query->get('id');
             $type = $request->query->get('type');
 
-            $db = new Database($this, 'BioExamBundle:'.ucfirst($type));
+            $db = $this->get('bio.database')->createDatabase('BioExamBundle:'.ucfirst($type));
             $entity = $db->findOne(array('id' => $id));
 
             if ($entity) {
@@ -302,9 +301,9 @@ class AdminController extends Controller
         }
 
         // get all test takers from exam, get global settings
-        $db = new Database($this, 'BioExamBundle:TestTaker');
+        $db = $this->get('bio.database')->createDatabase('BioExamBundle:TestTaker');
         $takers = $db->find(array('exam' => $exam->getId()), array('id' => 'ASC'), false);
-        $db = new Database($this, 'BioExamBundle:ExamGlobal');
+        $db = $this->get('bio.database')->createDatabase('BioExamBundle:ExamGlobal');
         $global = $db->findOne(array());
 
 

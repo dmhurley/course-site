@@ -9,7 +9,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 
 use Bio\InfoBundle\Entity\Info;
-use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 
 /**
@@ -33,7 +32,7 @@ class CourseController extends Controller
     public function indexAction(Request $request) {
         $flash = $request->getSession()->getFlashBag();
 
-        $db = new Database($this, 'BioInfoBundle:Info');
+        $db = $this->get('bio.database')->createDatabase('BioInfoBundle:Info');
 		$info = $db->findOne();
 
 		if (!$info) {

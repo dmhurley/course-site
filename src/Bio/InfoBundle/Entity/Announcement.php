@@ -5,7 +5,6 @@ namespace Bio\InfoBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Bio\InfoBundle\Entity\Base;
 use Bio\DataBundle\Objects\Database;
-
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
