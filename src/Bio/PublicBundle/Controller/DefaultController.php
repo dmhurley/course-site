@@ -144,9 +144,6 @@ class DefaultController extends Controller
             }
         }
 
-        echo $info->getCourseNumber();
-
-
         return array(
             'instructors' => $instructors,
             'tas' => $tas,

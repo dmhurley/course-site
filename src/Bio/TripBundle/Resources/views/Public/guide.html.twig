@@ -20,7 +20,7 @@
 					<td>{{ trip.start|date('d-m-y h:i a') }}</td>
 					<td>{{ trip.end|date('d-m-y h:i a') }}</td>
 					<td>{{ trip.students|length }}/{{trip.max}}</td>
-					<td><a href="{{ path('tour_guide_view_trip', {'id': trip.id }) }}">view</a></td>
+					<td><a href="{{ internal('tour_guide_view_trip', {'id': trip.id }) }}">view</a></td>
 				</tr>
 			{% endfor %}
 		</tbody>

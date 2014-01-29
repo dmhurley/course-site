@@ -8,14 +8,14 @@
 			<a>Options</a>
 		 	<div class="menu">
 		 		<ul>
-		 			<a href="{{ path('change_password') }}"><li>change password</li></a>
+		 			<a href="{{ internal('change_password') }}"><li>change password</li></a>
 		 			<li>Name: {% if is_granted('ROLE_ADMIN') %}{{app.user.username}}{% elseif is_granted('ROLE_STUDENT') %}{{app.user.fName}}{% else %}{{app.user.username}}{% endif %}</li>
 		 			<li>Role: {{app.user.roles[0][5:]|replace({'_':' '})}}</li>
-		 			<a href="{{ path('logout') }}"><li>logout</li></a>
+		 			<a href="{{ internal('logout') }}"><li>logout</li></a>
 		 		</ul>
 		 	</div>
 		{% else %}
-			<a href="{{ path('login') }}">Login</a>
+			<a href="{{ internal('login') }}">Login</a>
 		{% endif %}
 	</div>
 

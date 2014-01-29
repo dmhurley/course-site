@@ -23,8 +23,8 @@
 					<td>{{(person.hours|first).start|date('h:i a')}}</td>
 					<td>{{(person.hours|first).end|date('h:i a')}}</td>
 				{% endif %}
-				<td><a href="{{ path('edit', {'entityName' : 'hours', 'id' : (person.hours|first).id }) }}">edit</a></td>
-				<td><a href="{{ path('delete', {'entityName' : 'hours', 'id' : (person.hours|first).id}) }}">delete</a></td>
+				<td><a href="{{ internal('edit', {'entityName' : 'hours', 'id' : (person.hours|first).id }) }}">edit</a></td>
+				<td><a href="{{ internal('delete', {'entityName' : 'hours', 'id' : (person.hours|first).id}) }}">delete</a></td>
 			</tr>
 			{% for hour in person.hours %}
 				{% if not loop.first %}
@@ -36,8 +36,8 @@
 							<td >{{ hour.start|date('h:i') }}</td>
 							<td>{{ hour.end|date('h:i') }}</td>
 						{% endif %}
-						<td><a href="{{ path('edit', {'entityName' : 'hours', 'id' : hour.id }) }}">edit</a></td>
-						<td><a href="{{ path('delete', {'entityName' : 'hours', 'id' : hour.id}) }}?id={{ hour.id }}">delete</a></td>
+						<td><a href="{{ internal('edit', {'entityName' : 'hours', 'id' : hour.id }) }}">edit</a></td>
+						<td><a href="{{ internal('delete', {'entityName' : 'hours', 'id' : hour.id}) }}?id={{ hour.id }}">delete</a></td>
 					</tr>
 				{% endif %}
 			{% endfor %}

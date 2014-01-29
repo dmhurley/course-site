@@ -3,15 +3,15 @@
 		<ul class="trunk">
 			{% for key,value in options %}
 				<li class="branch">
-					<a href="{{ path(options[key][key]['route']) }}">{{key}}</a>
+					<a href="{{ internal(options[key][key]['route']) }}">{{key}}</a>
 					{% if options[key]|length > 1 %}
 						<ul class="twig">
 							{% for key1,value1 in options[key] %}
 								{% if key1 != key %}
 									{% if 'vars' in value1|keys  %}
-										<li class="leaf"><a href="{{ path(value1['route'], value1['vars']) }}">{{key1}}</a></li>
+										<li class="leaf"><a href="{{ internal(value1['route'], value1['vars']) }}">{{key1}}</a></li>
 									{% else %}
-										<li class="leaf"><a href="{{ path(value1['route']) }}">{{ key1}}</a></li>
+										<li class="leaf"><a href="{{ internal(value1['route']) }}">{{ key1}}</a></li>
 									{% endif %}
 								{% endif %}
 							{% endfor %}
@@ -24,7 +24,7 @@
 {% else %}
 	<div class="content">
 		<ul class="trunk">
-			<li class="branch"><a href="{{ path('main_page') }}">Home</a></li>
+			<li class="branch"><a href="{{ internal('main_page') }}">Home</a></li>
 			{% if folders|length > 0 %}
 
 
@@ -34,7 +34,7 @@
 						{% for folder in folders if not folder.private %}
 							{% if folder.private != true %}
 								<li class="leaf">
-									<a href="{{ path('public_folder', {'id' : folder.id}) }}">{{folder.name}}</a>
+									<a href="{{ internal('public_folder', {'id' : folder.id}) }}">{{folder.name}}</a>
 								</li>
 							{% endif %}
 						{% endfor %}
@@ -49,7 +49,7 @@
 					<ul class="twig">
 						{% for file in files %}
 							<li class="leaf">
-								<a href="{{ path('download', {'id' : file.id}) }}">{{file.name}}</a>
+								<a href="{{ internal('download', {'id' : file.id}) }}">{{file.name}}</a>
 							</li>
 						{% endfor %}
 					</ul>

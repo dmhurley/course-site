@@ -18,7 +18,7 @@
 	{% if date(trip.start) < date() %} {# if trip is over #}
 		{% if date(trip.end) < date() %}
 			{% if cur != '' %}
-				<a class="eval" href="{{ path('eval_trip', {'id': trip.id, 'tripTitle': trip.title|replace({" " : "_"})}) }}">Evaluate Trip</a> - 
+				<a class="eval" href="{{ internal('eval_trip', {'id': trip.id, 'tripTitle': trip.title|replace({" " : "_"})}) }}">Evaluate Trip</a> - 
 			{% else %}
 				<a></a>
 			{% endif %}
@@ -34,15 +34,15 @@
 		{% endif %}
 	{% else %} {# if user is signed up for trip #}
 		{% if cur != ''  %}
-			<a href="{{ path('leave_trip', {'id': trip.id}) }}">Leave Trip</a>
+			<a href="{{ internal('leave_trip', {'id': trip.id}) }}">Leave Trip</a>
 		{% else %}
 			{% if maxed or trip.students|length >= trip.max %}
 				<a>Join Trip</a>
 			{% else %}
-				<a href="{{ path('join_trip', {'id': trip.id}) }}">Join Trip</a>
+				<a href="{{ internal('join_trip', {'id': trip.id}) }}">Join Trip</a>
 			{% endif %}
 		{% endif %}
 		- {{trip.max - trip.students|length}} spots left.
 	{% endif %}
-	<a href="{{ path('view_trip', {'id': trip.id}) }}">View Trip</a>
+	<a href="{{ internal('view_trip', {'id': trip.id}) }}">View Trip</a>
 </div>

@@ -6,7 +6,7 @@
 		{% image 'bundles/biofolder/images/manage.png' output='images/*.png' %}
 			<img src="{{ asset_url }}"/>
 		{% endimage %}
-		<h2><a href="{{ path('view_folders') }}">Manage</a></h2>
+		<h2><a href="{{ internal('view_folders') }}">Manage</a></h2>
 		<p> Folders are a great way for you to organize files and links on your course site. You'll notice two root folders are already created (<i>sidebar</i> and <i>mainpage</i>), these cannot be deleted or modified in any way. Any folders that are direct children of a root folder will show up on the sidebar or front page under <b>Folders</b>. Likewise, any files or links that are a direct child a root folder will appear in the sidebar or front page under there respective sections.</p>
 
 		<p>Folders can have an unlimited number folders, files, and links nested inside of them, nested many levels deep. To place a file or folder inside another folder, click the latter folder's name. You will then see a small label next to the folder name saying <i> - selected </i>, now anything you create will be a child of that folder.</p>
@@ -22,7 +22,7 @@
 		{% image 'bundles/biofolder/images/clear.png' output='images/*.png' %}
 			<img src="{{ asset_url }}"/>
 		{% endimage %}
-		<h2><a href="{{ path('clear_folders') }}">Clear</a></h2>
+		<h2><a href="{{ internal('clear_folders') }}">Clear</a></h2>
 		<p>Quickly delete every folder except for <i>mainpage</i> and <i>sidebar</i>. There is <b>no</b> way to undo this.</p>
 	</div>
 {% endblock %}

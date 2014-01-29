@@ -7,7 +7,7 @@
 		{% image 'bundles/biostudent/images/find.png' output='images/*.png' %}
 		    <img src="{{ asset_url }}"/>
 		{% endimage %}
-		<h2><a href="{{ path('find_student') }}">Find</a></h2>
+		<h2><a href="{{ internal('find_student') }}">Find</a></h2>
 		<p> If you wish to find a certain student among the list or view all students in a section, the find page will allow you to do so. From this page you can search by any combination of fields, and additionally edit, reset the passwords of,or delete the resulting students. You can view a list of all students in the course by not filling in any fields, although in large classes that isn't a good idea. Remember that this list is only as up to date as the last uploaded student list from the registrars office and should not be considered official. When a students password is reset they will be emailed the new temporary password.</p>
 	</div>
 
@@ -15,7 +15,7 @@
 		{% image 'bundles/biostudent/images/add.png' output='images/*.png' %}
 		    <img src="{{ asset_url }}"/>
 		{% endimage %}
-		<h2><a href="{{ path('add_student') }}">Add</a></h2>
+		<h2><a href="{{ internal('add_student') }}">Add</a></h2>
 		<p> The add page lets you add students to the list for testing or temporary purposes. Keep in mind that any changes here will not be reflected in the official list, and that any changes made will be be overwritten when a student list is uploaded. </p>
 	</div>
 
@@ -23,7 +23,7 @@
 		{% image 'bundles/biostudent/images/upload.png' output='images/*.png' %}
 		    <img src="{{ asset_url }}"/>
 		{% endimage %}
-		<h2><a href="{{ path('upload_student') }}">Upload</a></h2>
+		<h2><a href="{{ internal('upload_student') }}">Upload</a></h2>
 		<p> From here you can upload <i>.csv</i> files from the registrars office. This will only work if the file is properly formatted. Uploading a list will completely overwrite any changes you have made. When you upload a list, students and sections will automatically be added, updated, or deleted as needed.</p>
 	</div>
 {% endblock %}

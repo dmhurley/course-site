@@ -47,7 +47,7 @@ class File extends FileBase
      * @param string $path
      * @return File
      */
-    public function setPath($path)
+    public function setinternal($path)
     {
         $this->path = $path;
     
@@ -59,7 +59,7 @@ class File extends FileBase
      *
      * @return string 
      */
-    public function getPath()
+    public function getinternal()
     {
         return $this->path;
     }
@@ -85,11 +85,11 @@ class File extends FileBase
         return $this->file;
     }
 
-    public function getAbsolutePath() {
+    public function getAbsoluteinternal() {
         return $this->getUploadRootDirectory().'/'.$this->path;
     }
 
-    public function getWebPath() {
+    public function getWebinternal() {
         return $this->getUploadDirectory().'/'.$this->path;
     }
 
@@ -134,7 +134,7 @@ class File extends FileBase
      * @ORM\PostRemove()
      */
     public function removeUpload() {
-        if ($file = $this->getAbsolutePath()) {
+        if ($file = $this->getAbsoluteinternal()) {
             if(file_exists($file)){
                 unlink($file);
             }

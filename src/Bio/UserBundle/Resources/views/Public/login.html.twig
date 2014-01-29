@@ -1,7 +1,7 @@
 {% extends 'BioPublicBundle::main.html.twig' %}
 
 {% block content %}
-	<form action="{{ path('login_check') }}" method="POST">
+	<form action="{{ internal('login_check') }}" method="POST">
 		<div id="form">
 			<div>
 				<label for="form_username" class="required">Username:</label>
@@ -13,7 +13,7 @@
 			</div>
 			<div>
 				<label style="height:1px"></label>
-				{#<a href="{{ path('register') }}">create account</a>&emsp;#} <a href="{{ path('user_reset') }}">forgot password</a>
+				{#<a href="{{ internal('register') }}">create account</a>&emsp;#} <a href="{{ internal('user_reset') }}">forgot password</a>
 			</div>
 			<div>
 				<button type="submit" id="form_login" name="form[login]">Login</button>

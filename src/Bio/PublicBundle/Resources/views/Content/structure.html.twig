@@ -1,5 +1,5 @@
 {% if parent and root.parent != null and not root.parent.private %}
-	<li class="folder"><a href="{{ path('public_folder', {'id': root.parent.id}) }}">..</a></li>
+	<li class="folder"><a href="{{ internal('public_folder', {'id': root.parent.id}) }}">..</a></li>
 {% endif %}
 
 {% if root.children is defined %}
@@ -20,17 +20,17 @@
 {% if root.children is defined and parent %}
 	<b>{{root.name}}</b>
 {% elseif root.children is defined %}
-	<a href="{{ path('public_folder', {id: root.id}) }}">{{ root.name }}</a>
+	<a href="{{ internal('public_folder', {id: root.id}) }}">{{ root.name }}</a>
 	<span class="{{full}}"></span>
 {% elseif root.address is defined %}
 	<a href="{{root.address}}"> {{root.name}}</a>
 {% elseif root.path is defined %}
-	<a href="{{ path('download', {'id' : root.id}) }}"> {{root.name}}.{{root.path|split('.')|last}} </a>
+	<a href="{{ internal('download', {'id' : root.id}) }}"> {{root.name}}.{{root.path|split('.')|last}} </a>
 {% endif %}
 
 {% if root.children is not defined and root.parent and app.user and root.parent.student == app.user %}
 <span>
-	<a href="{{ path('delete_public_file', {'id':root.parent.id, 'id2':root.id})}}">delete</a>
+	<a href="{{ internal('delete_public_file', {'id':root.parent.id, 'id2':root.id})}}">delete</a>
 </span>
 {% endif %}
 

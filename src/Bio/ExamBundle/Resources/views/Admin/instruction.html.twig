@@ -6,7 +6,7 @@
 		{% image 'bundles/bioexam/images/exams.png' output='images/*.png' %}
 		    <img src="{{ asset_url }}"/>
 		{% endimage %}
-		<h2><a href="{{ path('manage_exams') }}">Manage Exams</a></h2>
+		<h2><a href="{{ internal('manage_exams') }}">Manage Exams</a></h2>
 		<p> From this page you can create practice exams for students to take and edit the global settings that apply to every exam. Once an exam has been created, you can edit it (and add questions to it), preview what it will look like to students, or delete it. After an exam has occured, you can click on its name to download a <i>tab delimited .txt</i> file that can be opened in Excel.</p>
 
 		<p>You can give different exams to different sections by filling out the section field. For example if you want an exam to only be given to students in section AB, the exam should be assigned as such. If you want to assign the exam to students in sections AA to A9, simply put <i>A</i>. Leave the field blank to include all sections.</p>
@@ -30,7 +30,7 @@
 		{% image 'bundles/bioexam/images/questions.png' output='images/*.png' %}
 		    <img src="{{ asset_url }}"/>
 		{% endimage %}
-		<h2><a href="{{ path('manage_questions') }}">Manage Questions</a></h2>
+		<h2><a href="{{ internal('manage_questions') }}">Manage Questions</a></h2>
 		<p> This page allows you to create questions that can later be put onto exams. It also displays all previously created questions and allows you to preview, edit, and delete them. You must specify the question, answer, and number of points the question is worth to make a test. Tags are optional, but can be very helpful if there are a lot of questions to choose from.</p> 
 
 		<p>The text boxes for the question and cooresponding answer/rubric allow you to write in rich text format. Giving you the ability to create lists and tables, insert images, and more. Make sure to preview the question once it's been created because the exact formatting and style will slightly change.</p>

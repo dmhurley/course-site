@@ -23,7 +23,7 @@
 		{% for exam in exams %}
 			<tr>
 				{% if date() > date(exam.gDate|date('Y-m-d')~' '~exam.gEnd|date('H:i:s')) %}
-					<td><a href="{{ path('download_exam', {'id' : exam.id}) }}">{{exam.title}}</a></td>
+					<td><a href="{{ internal('download_exam', {'id' : exam.id}) }}">{{exam.title}}</a></td>
 				{% else %}
 					<td>{{exam.title}}</td>
 				{% endif %}
@@ -31,9 +31,9 @@
 				<td>{{exam.tDate|date('m-d-y')}}</td>
 				<td>{{exam.tStart|date('h:i a')}}</td>
 				<td>{{exam.questions|length}}</td>
-				<td><a href="{{ path('preview') }}?id={{exam.id}}&type=exam">preview</a></td>
-				<td><a href="{{ path('edit_exam', {'id':exam.id}) }}">edit</a></td>
-				<td><a href="{{ path('delete_exam', {'id':exam.id}) }}">delete</a></td>
+				<td><a href="{{ internal('preview') }}?id={{exam.id}}&type=exam">preview</a></td>
+				<td><a href="{{ internal('edit_exam', {'id':exam.id}) }}">edit</a></td>
+				<td><a href="{{ internal('delete_exam', {'id':exam.id}) }}">delete</a></td>
 			</tr>
 		{% else %}
 			<tr><td colspan=8 style="text-align:center;">no exams</td></tr>

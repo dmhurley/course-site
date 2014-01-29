@@ -7,3 +7,8 @@ services:
         arguments: ["@doctrine.dbal.default_connection", "@router", "%database_user%", "%database_password%"]
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController}
+    bio.twig.extension:
+        class: Bio\DataBundle\Twig\BioExtension
+        arguments: ["@router"]
+        tags:
+            - { name: twig.extension }

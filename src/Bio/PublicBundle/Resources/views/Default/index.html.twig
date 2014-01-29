@@ -115,7 +115,7 @@
 				<ul>
 					<ul>
 						{% for folder in folders if not folder.private %}
-							<li><a href="{{ path('public_folder', {'id' : folder.id}) }}">{{folder.name}}</a></li>
+							<li><a href="{{ internal('public_folder', {'id' : folder.id}) }}">{{folder.name}}</a></li>
 						{% endfor %}
 					</ul>
 				</ul>
@@ -129,7 +129,7 @@
 				<ul>
 					<ul>
 						{% for file in files %}
-							<li><a href="{{ path('download', {'id' : file.id}) }}">{{file.name}}</a></li>
+							<li><a href="{{ internal('download', {'id' : file.id}) }}">{{file.name}}</a></li>
 						{% endfor %}
 					</ul>
 				</ul>

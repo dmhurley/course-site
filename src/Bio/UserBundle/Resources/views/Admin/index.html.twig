@@ -25,22 +25,22 @@
 			{% if'ROLE_SUPER_ADMIN' in user.roles %}
 				<td>promote</td>
 			{% else %}
-				<td><a href="{{ path('mote_user', {'type' : 'pro', 'id': user.id}) }}">promote</a></td>
+				<td><a href="{{ internal('mote_user', {'type' : 'pro', 'id': user.id}) }}">promote</a></td>
 			{% endif %}
 
 			{% if 'ROLE_USER' in user.roles %}
 				<td>demote</td>
 			{% else %}
-				<td><a href="{{ path('mote_user', {'type' : 'de', 'id':user.id}) }}">demote</a></td>
+				<td><a href="{{ internal('mote_user', {'type' : 'de', 'id':user.id}) }}">demote</a></td>
 			{% endif %}
-			<td><a href="{{ path('reset_password', {'id':user.id}) }}">reset</a></td>
-			<td><a href="{{ path('delete_user', {'id':user.id}) }}">delete</a></td>
+			<td><a href="{{ internal('reset_password', {'id':user.id}) }}">reset</a></td>
+			<td><a href="{{ internal('delete_user', {'id':user.id}) }}">delete</a></td>
 		</tr>
 	{% else %}
 		<tr><td colspan=6 style="text-align:center;">no other users</td></tr>
 	{% endfor %}
 	<tr>
-		<td colspan=6 style="text-align:center;"><a href="{{ path('register') }}">create account</a></td>
+		<td colspan=6 style="text-align:center;"><a href="{{ internal('register') }}">create account</a></td>
 	</tr>
 </table>
 

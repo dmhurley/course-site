@@ -49,10 +49,10 @@
 				<td>{{ trip.start|date('m-d-y h:i a') }}</td>
 				<td>{{ trip.end|date('m-d-y h:i a') }}</td>
 				<td>{{ trip.students|length }}/{{trip.max}}</td>
-				<td><a href="{{ path('view_trip', {'id':trip.id}) }}">view</a></td>
-				<td><a href="{{ path('copy_trip', {'id':trip.id}) }}">copy</a></td>
-				<td><a href="{{ path('edit_trip', {'id':trip.id}) }}">edit</a></td>
-				<td><a href="{{ path('delete_trip', {'id':trip.id}) }}">delete</a></td>
+				<td><a href="{{ internal('view_trip', {'id':trip.id}) }}">view</a></td>
+				<td><a href="{{ internal('copy_trip', {'id':trip.id}) }}">copy</a></td>
+				<td><a href="{{ internal('edit_trip', {'id':trip.id}) }}">edit</a></td>
+				<td><a href="{{ internal('delete_trip', {'id':trip.id}) }}">delete</a></td>
 			</tr>
 		{% else %}
 			<tr><td colspan=7 style="text-align:center;">no trips</td></tr>

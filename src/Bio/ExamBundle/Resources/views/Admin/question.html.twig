@@ -28,9 +28,9 @@
 				<td>{{question.question|striptags|replace({'&nbsp;': ''})}}</td>
 				<td>{{question.id}}</td>
 				<td>{{question.points}} pts</td>
-				<td><a href="{{ path('preview') }}?id={{question.id}}&type=question">preview</a></td>
-				<td><a href="{{ path('edit_question', {'id':question.id}) }}">edit</a></td>
-				<td><a href="{{ path('delete_question', {'id':question.id}) }}">delete</a></td>
+				<td><a href="{{ internal('preview') }}?id={{question.id}}&type=question">preview</a></td>
+				<td><a href="{{ internal('edit_question', {'id':question.id}) }}">edit</a></td>
+				<td><a href="{{ internal('delete_question', {'id':question.id}) }}">delete</a></td>
 			</tr>
 		{% else %}
 			<tr><td colspan=5 style="text-align:center;">no questions</td></tr>

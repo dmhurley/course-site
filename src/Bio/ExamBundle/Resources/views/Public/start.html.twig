@@ -44,7 +44,7 @@
 				{% set viewAble = date(exam['gdate']|date('Y-m-d')~' '~exam['gend']|date('H:i:s')) < date('-' ~ global.reviewHours ~ ' hours') %}
 
 				{% if viewAble %}
-					<a href="{{path('review_exam', {'id':exam['id']}) }}">{{exam['title']}}</a>
+					<a href="{{internal('review_exam', {'id':exam['id']}) }}">{{exam['title']}}</a>
 				{% else %}
 					{{exam['title']}}
 				{% endif %}

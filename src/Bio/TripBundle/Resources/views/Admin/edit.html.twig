@@ -28,7 +28,7 @@
 				<td>{{student.sid}}</td>
 				<td>{{student.lName}}, {{student.fName}}</td>
 				<td><a href="mailto:{{student.email}}">{{student.email}}</a></td>
-				<td><a href="{{ path('remove_student', {'id': trip.id, 'sid':student.id}) }}">remove</a></td>
+				<td><a href="{{ internal('remove_student', {'id': trip.id, 'sid':student.id}) }}">remove</a></td>
 			</tr>
 		{% endfor %}
 		{% if trip.students|length > 1 %}

@@ -29,9 +29,11 @@ class DatabaseConnectionSetter
     	if (!$this->hasRun) {
     		// get route
 	        $route = $this->router->match($this->router->getContext()->getPathInfo());
-	        $this->connection->switchTo('bio', $this->user, $this->pass);
-
-	        $this->hasRun = true;
+            if ( isset($route['year']) && isset($route['quarter']) && isset($route['number']) ) {
+                $dbName = $route['number'].'-'.$route['quarter'].'-'.$route['year'];
+                $this->connection->switchTo($dbName, $this->user, $this->pass);
+                $this->hasRun = true;
+            }
     	}
 
         // if ($controller[0] instanceof TokenAuthenticatedController) {

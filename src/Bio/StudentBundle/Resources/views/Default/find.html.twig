@@ -19,9 +19,9 @@
 					<td>{{ entity.fName }} {{ entity.lName }}</td>
 					<td>{{ entity.section.name }}</td>
 					<td><a href="mailto:{{ entity.email }}">{{ entity.email }}</a></td>
-					<td><a href="{{ path('edit_student', {'id': entity.id}) }}">edit</td>
-					<td><a href="{{ path('reset_password', {'id':entity.id}) }}">reset</a></td>
-					<td><a href="{{ path('delete_student', {'id': entity.id}) }}">delete</td>
+					<td><a href="{{ internal('edit_student', {'id': entity.id}) }}">edit</td>
+					<td><a href="{{ internal('reset_password', {'id':entity.id}) }}">reset</a></td>
+					<td><a href="{{ internal('delete_student', {'id': entity.id}) }}">delete</td>
 				</tr>
 			{% else %}
 				<tr><td colspan=7 style="text-align:center">no students</td></tr>

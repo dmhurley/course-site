@@ -21,7 +21,7 @@
 				<td>{{section.end|date('H:i')}}</td>
 				<td><a href="http://www.washington.edu/maps/?{{section.bldg|split("	")[0]}}">{{section.bldg}}</a></td>
 				<td>{{section.room}}
-				<td><a href="{{ path('edit', {'entityName' : 'section', 'id':section.id}) }}">edit</a></td>
+				<td><a href="{{ internal('edit', {'entityName' : 'section', 'id':section.id}) }}">edit</a></td>
 			</tr>
 		{% else %}
 			<tr><td colspan=8 style="text-align:center">no sections</td></tr>

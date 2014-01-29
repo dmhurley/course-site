@@ -19,7 +19,7 @@
 					<td>{{section.name}}</td>
 					<td>{{section.days|join(', ')|title}} {{section.startTime|date('h:i a')}} - {{section.endTime|date('h:i a')}}</td>
 					<td><a href="http://www.washington.edu/maps/?{{section.bldg|split("	")[0]}}">{{section.bldg|split("	")[0]}}</a> - {{section.room}}</td>
-					<td><a href="{{ path('edit', {'entityName':'courseSection', 'id':section.id}) }}">edit</a></td>
+					<td><a href="{{ internal('edit', {'entityName':'courseSection', 'id':section.id}) }}">edit</a></td>
 				</tr>
 			{% else %}
 				<tr>

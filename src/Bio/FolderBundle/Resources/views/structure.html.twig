@@ -27,23 +27,23 @@
 <li class="{{type}} {{private}}" id="{{id}}">
 
 {% if root.children is defined %}
-	<a href="{{ path('view_folders', {'id' : root.id})}}{% if root.private %}&private=1{% endif %}">
+	<a href="{{ internal('view_folders', {'id' : root.id})}}{% if root.private %}&private=1{% endif %}">
 		{{ root.name }}
 	</a>
 	<span class="{{full}} {{id}}"></span>
 {% elseif root.address is defined %}
 	<a href="{{root.address}}"> {{root.name}}</a>
 {% elseif root.path is defined %}
-	<a href="{{ path('download', {'id' : root.id}) }}"> {{root.name}}.{{root.path|split('.')|last}} </a>
+	<a href="{{ internal('download', {'id' : root.id}) }}"> {{root.name}}.{{root.path|split('.')|last}} </a>
 {% endif %}
 
 {% if root.parent != null %}
 <!-- floats right so put in reverse order -->
 <span>
-	<a href="{{ path('delete_folder', {'id':root.id})}}">delete</a>
+	<a href="{{ internal('delete_folder', {'id':root.id})}}">delete</a>
 </span>
 <span>
-	<a href="{{ path('edit_folder', {'id':root.id}) }}">edit</a>
+	<a href="{{ internal('edit_folder', {'id':root.id}) }}">edit</a>
 </span>
 {% endif %}
 

@@ -30,7 +30,7 @@
 		{{row.trip(your, 'Your Trips', 'current', 'You are not signed up for any trips.', global, false)}}
 
 	{% else %}
-		{{row.trip(your, 'Your Trips', 'current', '<a href="' ~ path("login") ~ '">Sign in</a> to see your trips.', global, false)}}
+		{{row.trip(your, 'Your Trips', 'current', '<a href="' ~ internal("login") ~ '">Sign in</a> to see your trips.', global, false)}}
 	{% endif %}
 
 	{{row.trip(future, 'Future Trips', '', 'Check back soon for more trips.', global, your|length >= global.maxTrips )}}

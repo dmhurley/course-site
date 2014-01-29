@@ -6,7 +6,7 @@
 		{% image 'bundles/bioswitch/images/requests.png' output='images/*.png' %}
 			<img src="{{ asset_url }}"/>
 		{% endimage %}
-		<h2><a href="{{ path('switch_requests') }}">Requests</a></h2>
+		<h2><a href="{{ internal('switch_requests') }}">Requests</a></h2>
 		<p>From this page you can view the status all pending requests, and cancel requests if need be. By default the link to the request page cannot be found on the site. But you can distribute the link yourself with the URL:</p> <p><input onClick="this.select();" value="{{ url('request_switch') }}" /></p><p> If you do wish to test the request feature, make sure the section <i>A9</i> is created, because all users are assigned the placeholder section <i>A9</i> when impersonating a student.</p>
 	</div>
 {% endblock %}

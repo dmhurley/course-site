@@ -6,7 +6,7 @@
 		{% image 'bundles/bioclicker/images/register.png' output='images/*.png' %}
 			<img src="{{ asset_url }}"/>
 		{% endimage %}
-		<h2><a href="{{ path('register_clicker') }}">Register</a></h2>
+		<h2><a href="{{ internal('register_clicker') }}">Register</a></h2>
 		<p> The link to this page can be accessed by any student registered in your course. But by default this link cannot be found anywhere on the site. You can distribute the link yourself with the url <input onClick="this.select();" value="{{ url('register_clicker') }}" />.<br /> Only one student can be registered to a clicker at a time, but students can change the clicker they are registered to at any time.</p>
 	</div>
 
@@ -14,7 +14,7 @@
 		{% image 'bundles/bioclicker/images/download.png' output='images/*.png' %}
 			<img src="{{ asset_url }}"/>
 		{% endimage %}
-		<h2><a href="{{ path('download_list') }}">Download</a></h2>
+		<h2><a href="{{ internal('download_list') }}">Download</a></h2>
 		<p>This link will download a properly formatted .xls file containing all students registered and their clicker IDs for use with Turning Point software.</p>
 	</div>
 
@@ -22,7 +22,7 @@
 		{% image 'bundles/bioclicker/images/clear.png' output='images/*.png' %}
 			<img src="{{ asset_url }}"/>
 		{% endimage %}
-		<h2><a href="{{ path('clear_list') }}">Clear</a></h2>
+		<h2><a href="{{ internal('clear_list') }}">Clear</a></h2>
 		<p>A quick way to delete all registrations at the end of a quarter. This action <b>cannot</b> be undone.</p>
 	</div>
 {% endblock %}

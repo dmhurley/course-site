@@ -64,7 +64,7 @@
 			<th>Evaluations</th>
 			<th>View</th>
 			<th>Review</th>
-			<th><a href="{{path('eval_download_all')}}">Download All</a></th>
+			<th><a href="{{internal('eval_download_all')}}">Download All</a></th>
 		</tr>
 		{% for trip in trips %}
 		{% if date(trip.end) < date() %}
@@ -74,9 +74,9 @@
 		{% endif %}
 				<td>{{trip.title}} - {{trip.start|date('Y-m-d')}}</td>
 				<td>{{trip.evals|length}}/{{trip.students|length}}</td>
-				<td><a href="{{ path('view_trip', {'id':trip.id}) }}">view</a></td>
-				<td><a href="{{ path('eval_review', {'id': trip.id, 'title':trip.title}) }}">review</a></td>
-				<td><a href="{{ path('trip_download', {'id': trip.id}) }}">download</a></td>
+				<td><a href="{{ internal('view_trip', {'id':trip.id}) }}">view</a></td>
+				<td><a href="{{ internal('eval_review', {'id': trip.id, 'title':trip.title}) }}">review</a></td>
+				<td><a href="{{ internal('trip_download', {'id': trip.id}) }}">download</a></td>
 			</tr>
 		{% else %}
 			<tr><td colspan=5 style="text-align:center;">no trips</td></tr>

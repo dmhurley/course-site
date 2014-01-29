@@ -18,12 +18,12 @@ class PublicController extends Controller
      * @ParamConverter("file", class="BioFolderBundle:File")
      */
     public function downloadAction(Request $request, File $file) {
-        if (file_exists($file->getAbsolutePath())) {
+        if (file_exists($file->getAbsoluteinternal())) {
             $name = $file->getName();
-            $typeArray = explode('.', $file->getPath());
+            $typeArray = explode('.', $file->getinternal());
 
             $response = $this->render('BioPublicBundle:Template:blank.html.twig', array(
-                'text' => file_get_contents($file->getAbsolutePath())
+                'text' => file_get_contents($file->getAbsoluteinternal())
                 )
             );
             $response->headers->set(
@@ -35,7 +35,7 @@ class PublicController extends Controller
                 );
             
             $response->headers->set(
-                'Content-Length', filesize($file->getAbsolutePath())
+                'Content-Length', filesize($file->getAbsoluteinternal())
                 );
 
             return $response;
