@@ -34,6 +34,7 @@ class PublicController extends Controller
             $session->remove(SecurityContext::AUTHENTICATION_ERROR);
         }
         if ($error) {
+            print_r([$error->getMessage(), $error->getFile(), $error->getLine()]);
             $session->getFlashBag()->set('failure', "Incorrect username or password.");
         }
 

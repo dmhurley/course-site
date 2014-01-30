@@ -3,20 +3,20 @@
 namespace Bio\DataBundle\Twig;
 
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 
 class BioExtension extends \Twig_Extension
 {   
 
     // shamelessly stolen and modified from Symfony\Bridge\Twig\Extension\RoutingExtension.php
+    private $request;
     private $router;
-    public function __construct($router) {
-        $this->router = $router;
-        $path = $router->match($router->getContext()->getPathInfo());
-        $this->path = array(
-                'year' => isset($path['year']) ? $path['year'] : 2014,
-                'quarter' => isset($path['quarter']) ? $path['quarter'] : 'win',
-                'number' => isset($path['number']) ? $path['number'] : 180
-            );
+    private $logger;
+
+    public function __construct($container) {
+        $this->request = $container->get('request');
+        $this->router = $container->get('router');
+        $this->logger = $container->get('logger');
     }
     public function getFunctions() {
         return array(
@@ -24,9 +24,16 @@ class BioExtension extends \Twig_Extension
         );
     }
     public function getInternalPath($name, $parameters = array(), $relative = false) {
-        $parameters = array_merge($parameters, $this->path);
+        $path = $this->router->match($this->request->getPathInfo());
+        $defaultParameters = array(
+            'year' => $path['year'],
+            'quarter' => $path['quarter'],
+            'number' => $path['number']
+        );
+        $parameters = array_merge($parameters, $defaultParameters);
         return $this->router->generate($name, $parameters, $relative ? UrlGeneratorInterface::RELATIVE_PATH : UrlGeneratorInterface::ABSOLUTE_PATH);
     }
+
     public function isUrlGenerationSafe(\Twig_Node $argsNode)
     {
         // support named arguments

@@ -4,11 +4,11 @@ services:
         arguments: ["@doctrine"]
     bio.database.connection.setter:
         class: Bio\DataBundle\Objects\DatabaseConnectionSetter
-        arguments: ["@doctrine.dbal.default_connection", "@router", "%database_user%", "%database_password%"]
+        arguments: ["@service_container", "%database_user%", "%database_password%"]
         tags:
-            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController}
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 100}
     bio.twig.extension:
         class: Bio\DataBundle\Twig\BioExtension
-        arguments: ["@router"]
+        arguments: ["@service_container"]
         tags:
             - { name: twig.extension }
