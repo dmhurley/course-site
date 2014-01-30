@@ -9,7 +9,8 @@ security:
             form_login:
                 login_path:  login
                 check_path:  login_check
-                use_referer: true 
+                use_referer: true
+                default_target_path: main_page
             logout:
                 path: logout
                 target: main_page
@@ -17,13 +18,13 @@ security:
             switch_user: true
 
     access_control:
-        # - { path: ^/user/(login|reset)$, roles: IS_AUTHENTICATED_ANONYMOUSLY } #
-        - { path: ^/admin/user/, roles: ROLE_SUPER_ADMIN }
-        - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/, roles: ROLE_USER } #
-        - { path: "^/trip(/promo|/view/[0-9]*|/guide(/trip/[0-9]*)?)?$", roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/(exam|trip|switch|clicker|scores), roles: ROLE_STUDENT }
-        - { path: ^/user/change, roles: ROLE_USER }
+        # - { path: "^/[0-9]{4}/[a-z]{3}/[0-9]{1,5}/user/(login|reset)$", roles: IS_AUTHENTICATED_ANONYMOUSLY } #
+        - { path: "^/[0-9]{4}/[a-z]{3}/[0-9]{1,5}/admin/user/", roles: ROLE_SUPER_ADMIN }
+        - { path: "^/[0-9]{4}/[a-z]{3}/[0-9]{1,5}/admin", roles: ROLE_ADMIN }
+        # - { path: "^/[0-9]{4}/[a-z]{3}/[0-9]{1,5}/", roles: ROLE_USER } #
+        - { path: "^/[0-9]{4}/[a-z]{3}/[0-9]{1,5}/trip(/promo|/view/[0-9]*|/guide(/trip/[0-9]*)?)?$", roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: "^/[0-9]{4}/[a-z]{3}/[0-9]{1,5}/(exam|trip|switch|clicker|scores)", roles: ROLE_STUDENT }
+        - { path: "^/[0-9]{4}/[a-z]{3}/[0-9]{1,5}/user/change", roles: ROLE_USER }
 
     providers:
         chain_provider:
