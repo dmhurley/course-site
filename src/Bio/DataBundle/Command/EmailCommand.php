@@ -17,11 +17,11 @@ class EmailCommand extends ContainerAwareCommand {
 		$em = $this->getContainer()->get('doctrine')->getManager();
 
 		$global = $em->createQuery('Select g from BioTripBundle:TripGlobal g')->getSingleResult();
-		
+
 
 		// only do anything if the current time falls between the opening and closing times
 		if ($global->getOpening() < new \DateTime() && $global->getClosing() > new \DateTime()){
-			
+
 			/******* GET STUDENTS WHO NEED NOTIFICATIONS *******/
 			/*
 			 * select students
@@ -48,7 +48,7 @@ class EmailCommand extends ContainerAwareCommand {
 								t.end < :one
 								AND t.end > :onesubone
 							)
-							OR 
+							OR
 							(
 								t.end < :two
 								AND t.end > :twosubone
@@ -59,11 +59,11 @@ class EmailCommand extends ContainerAwareCommand {
 								AND t.end > :threesubone
 							)
 						)';
-			
+
 			$v = $global->getEvalDue();
 			$days = floor($v/3 + .5);
 
-			$daysArray = [$days, $days*2, $days*3];
+			$daysArray = array($days, $days*2, $days*3);
 
 			$daysArray = array_map(function($value) use ($v) {
 					if ($value >= $v) {
@@ -108,7 +108,7 @@ class EmailCommand extends ContainerAwareCommand {
 						$output->writeln("    ".$result['email']." - ". $result['title'].' - '.$result['days'] ." day(s) left.");
 						$message->setTo($result['email'])
 							->setBody(
-								$this->getContainer()->get('templating')->render('BioDataBundle:Default:email.html.twig', 
+								$this->getContainer()->get('templating')->render('BioDataBundle:Default:email.html.twig',
 									array(
 										'global' => $global,
 										'days' => $result['days'],
@@ -123,7 +123,7 @@ class EmailCommand extends ContainerAwareCommand {
 			} else {
 				$output->writeln("No emails sent. None needed.");
 			}
-			
+
 		} else {
 			$output->writeln("No emails sent. Evals not open.");
 		}

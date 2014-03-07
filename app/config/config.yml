@@ -99,6 +99,7 @@ stfalcon_tinymce:
                 forced_root_block: "p"
                 autoresize_min_height: 65
                 autoresize_max_height: 300
+                paste_data_images: true
 
             # Advanced theme with almost all enabled plugins
             advanced:

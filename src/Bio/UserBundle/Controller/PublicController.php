@@ -64,9 +64,10 @@ class PublicController extends Controller
                 foreach($users as $user) {
                     if ($user->getUsername() === $form->get('username')->getData()) {
                         
-                        $this->forward('BioUserBundle:Admin:reset', array('id' => $user->getId()));
-                        $flash->set('success', 'New password sent.');
-                        return $this->redirect($this->generateUrl('main_page'));
+                        return $this->forward('BioUserBundle:Admin:resetUser', array(
+                            'id' => $user->getId(),
+                            'request' => $request
+                        ));
                     }
                 }
                 $error = new FormError("Could not find user with that name and email");
