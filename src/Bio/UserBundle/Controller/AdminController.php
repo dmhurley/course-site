@@ -177,7 +177,7 @@ class AdminController extends Controller
                 ->setBody(
                     'Your new password for the biol'. $info->getCourseNumber() .
                     ' site is <code>'. $pwd .'</code>. Please sign in at '.
-                    '<a href="'.$this->generateUrl('change_password').'">'.$this->generateUrl('change_password').'</a> '.
+                    '<a href="'.$this->generateUrl('change_password', array(), true).'">'.$this->generateUrl('change_password', array(), true).'</a> '.
                     'with the username: <code>'.$user->getUsername().'</code> to change it.'
                     );
 
