@@ -27,7 +27,10 @@ security:
         - { path: ^/(exam|trip|switch|clicker|scores), roles: ROLE_STUDENT }
         - { path: ^/user/change, roles: ROLE_USER }
         - { path: ^/, roles: %minimum_role% } #
+<<<<<<< HEAD
 
+=======
+>>>>>>> FETCH_HEAD
 
     providers:
         chain_provider:
