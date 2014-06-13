@@ -54,7 +54,7 @@
                 <td>{{survey.name}}</td>
                 <td>{{survey.questions | length}}</td>
                 <td><a href="">download</a></td>
-                <td><a href="">delete</a></td>
+                <td><a href="{{ path('delete_survey', {'id':survey.id}) }}">delete</a></td>
             </tr>
         {% else %}
             <tr><td colspan=4 style="text-align:center;">no surveys</td></tr>

@@ -69,7 +69,7 @@ class AdminController extends Controller
 
         if ($survey) {
             $db = new Database($this, 'BioSurveyBundle:Survey');
-            $db->delete($exam);
+            $db->delete($survey);
             $db->close();
             $flash->set('success', 'Survey deleted.');
         } else {
