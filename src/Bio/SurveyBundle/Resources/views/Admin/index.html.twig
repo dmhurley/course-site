@@ -35,6 +35,9 @@
                     </tfoot>
                 </thead>
             </table>
+            <div>
+                <button type="submit">submit</button>
+            </div>
         </div>
     </form>
 
@@ -73,16 +76,19 @@
             });
 
             document.getElementById('response').onclick = function() {
-                body.innerHTML += "\
-                    <tr>\
-                        <td>\
-                            <textarea required='required' name='form["+index+"][]'></textarea>\
-                        </td>\
-                        <td class='delete'>\
-                            delete\
-                        </td>\
-                    </tr>\
-                ";
+                var tr = document.createElement('tr');
+                var left = document.createElement('td');
+                var right = document.createElement('td');
+                right.classList.add('delete');
+                right.innerHTML = 'delete';
+
+                var text = document.createElement('textarea');
+                text.name="form["+index+"][]";
+
+                left.appendChild(text);
+                tr.appendChild(left);
+                tr.appendChild(right);
+                body.appendChild(tr);
                 index++;
             }
 
@@ -123,6 +129,7 @@
                 tr.appendChild(right);
 
                 body.appendChild(tr);
+                index++;
             }
         })();
     </script>
