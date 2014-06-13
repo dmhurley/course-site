@@ -10,14 +10,13 @@ use Symfony\Component\HttpFoundation\Request;
 
 use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
-use Bio\SurveyBundle\Form\SurveyType;
-use Bio\Survey\Entity\Survey;
+use Bio\SurveyBundle\Entity\Survey;
 
 
 /**
  * @Route("/admin/survey")
  */
-class DefaultController extends Controller
+class AdminController extends Controller
 {
     /**
      * @Route("/manage", name="manage_surveys")
@@ -27,17 +26,11 @@ class DefaultController extends Controller
     {
         $flash = $request->getSession()->getFlashBag();
         $survey = new Survey();
-        $form = $this->get('form.factory')->createNamed('form', new SurveyType(), $survey)
-            ->add('submit', 'submit');
 
         if ($request->getMethod() === "POST") {
             $form->handleRequest($request);
             if ($form->isValid()) {
-                try {
-                    $db->close();
-                    $flash->set('success', 'Created survey.');
-                    return $this->redirect($this->generateUrl('manage_surveys'));
-                }
+
             }
         }
 
@@ -45,7 +38,6 @@ class DefaultController extends Controller
         $surveys = $db->find(array(), array(), false);
 
         return array(
-            'form' => $form->createView(),
             'surveys' => $surveys,
             'title' => 'Manage Surveys'
         );

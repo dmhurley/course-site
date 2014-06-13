@@ -1,0 +1,68 @@
+{% extends 'BioPublicBundle::main.html.twig' %}
+
+{% block head %}
+    {{ parent() }}
+{% endblock %}
+
+{% block content %}
+    <h2>Create Survey</h2>
+    <form method="POST" class="tableStyle">
+        <div id="form">
+            <div>
+                <label for="form_name" class="required">Survey Name</label>
+                <input type="text" id="form_name" name="name" required="required">
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Question</th>
+                        <th>Delete</th>
+                    </tr>
+                    <tbody id="body">
+
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan=2>
+                                <table>
+                                    <tr>
+                                        <td style="text-align:center;"><span id="add">add question</span></td>
+                                        <td style="text-align:center;"><span id="multiple">add multiple choice</span></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </thead>
+            </table>
+        </div>
+    </form>
+
+    <h2>Download Surveys</h2>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Questions</th>
+            <th>Download</th>
+            <th>Delete</th>
+        </tr>
+        {% for survey in surveys %}
+            <tr>
+                <td>{{survey.name}}</td>
+                <td>0</td>
+                <td><a href="">download</a></td>
+                <td><a href="">delete</a></td>
+            </tr>
+        {% else %}
+            <tr><td colspan=4 style="text-align:center;">no surveys</td></tr>
+        {% endfor %}
+    </table>
+{% endblock %}
+
+{% block java %}
+    <script>
+        (function() {
+
+        })();
+    </script>
+{% endblock %}
