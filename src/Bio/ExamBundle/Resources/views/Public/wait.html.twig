@@ -74,7 +74,7 @@
 					clearInterval(self.interval);
 					handleError();
 				}
-				
+
 			}
 			setTimeout((function(self) {
 				return function() {
@@ -86,12 +86,12 @@
 							} catch(e) {
 								handleError();
 							}
-						}, 30000);
+						}, 45000);
 					} catch (e) {
 						handleError();
 					}
 				}
-			})(this), Math.random()*15000);
+			})(this), Math.random()*30000);
 		}
 		function handleError() {
 			document.getElementById('loadMessage').style.display='none';
