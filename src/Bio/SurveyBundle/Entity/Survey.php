@@ -34,7 +34,7 @@ class Survey
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="SurveyQuestion", mappedBy="survey")
+     * @ORM\OneToMany(targetEntity="SurveyQuestion", mappedBy="survey", cascade={"persist"})
      */
     private $questions;
 
@@ -48,11 +48,11 @@ class Survey
 
     public function setName($name) {
         $this->name = $name;
-        return this;
+        return $this;
     }
 
     public function getName() {
-        return $name;
+        return $this->name;
     }
 
     /**
@@ -64,7 +64,7 @@ class Survey
     public function addQuestion(\Bio\SurveyBundle\Entity\SurveyQuestion $questions)
     {
         $this->questions[] = $questions;
-    
+
         return $this;
     }
 
@@ -81,7 +81,7 @@ class Survey
     /**
      * Get questions
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getQuestions()
     {

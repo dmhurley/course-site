@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 use Bio\SurveyBundle\Entity\Survey;
+use Bio\SurveyBundle\Entity\SurveyQuestion;
 
 
 /**
@@ -26,15 +27,32 @@ class AdminController extends Controller
     {
         $flash = $request->getSession()->getFlashBag();
         $survey = new Survey();
+        $db = new Database($this, 'BioSurveyBundle:Survey');
 
         if ($request->getMethod() === "POST") {
-            $form->handleRequest($request);
-            if ($form->isValid()) {
+            $data = $request->request->get('form');
+            foreach ($data as $key => $value) {
+                if (is_numeric($key)) {
+                    $question = new SurveyQuestion();
+                    $question->setType(
+                        count($value) === 1 ? "response" : "multiple"
+                    );
+                    $question->setSurvey($survey);
+                    $question->setData($value);
+                    $survey->addQuestion($question);
+                }
+            }
+            $survey->setName($data['name']);
 
+            try {
+                $db->add($survey);
+                $db->close();
+                $flash->set('success', 'Survey added.');
+            } catch(\Exception $e) {
+                $flash->set('failure', 'Survey could not be added.');
             }
         }
 
-        $db = new Database($this, 'BioSurveyBundle:Survey');
         $surveys = $db->find(array(), array(), false);
 
         return array(
