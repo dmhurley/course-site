@@ -29,6 +29,7 @@ class AppKernel extends Kernel
             new Bio\ExamBundle\BioExamBundle(),
             new Bio\SwitchBundle\BioSwitchBundle(),
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
+            new Bio\SurveyBundle\BioSurveyBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
