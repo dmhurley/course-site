@@ -31,37 +31,33 @@ class PublicController extends Controller {
     	if ($request->getMethod() === "POST") {
     		$form->handleRequest($request);
             $clicker = new Clicker();
-    		
+
     		if ($form->isValid()){
                 $student = $this->get('security.context')->getToken()->getUser();
-	    		
-                $db = new Database($this, 'BioClickerBundle:ClickerGlobal');
-                $global = $db->findOne(array());
-                $db = new Database($this, 'BioInfoBundle:Info');
-                $info = $db->findOne(array());
 
-				$db = new Database($this, 'BioClickerBundle:Clicker');
-                if ($dbClicker = $db->findOne(array('student' => $student))){
-                    $flash->set('success', "Clicker ID changed to #".$form->get('cid')->getData());
-                    $clicker = $dbClicker;
-                } else {
-                    $flash->set('success', "Clicker ID #".$form->get('cid')->getData()." registered.");
-                    $db->add($clicker);
-                    $clicker->setStudent($student);
-                }
-				$clicker->setCid($form->get('cid')->getData());
+                // try to register clicker
+                $em = $this->getDoctrine()->getManager();
+                $result = $em->getRepository('BioClickerBundle:Clicker')
+                    ->registerClicker($student, $form->get('cid')->getData());
 
-				try {
-					$db->close();
 
-                    if ($global->getStart() <= new \DateTime() && $global->getNotifications()) {
+                if ($result['success']) {
+                    $flash->set('success', $result['message']);
+
+                    // send email if settings allow
+                    $db = new Database($this, 'BioClickerBundle:ClickerGlobal');
+                    $global = $db->findOne(array());
+
+                    if ($global->getStart() <= new \DateTime() &&
+                        $global->getNotifications() &&
+                        $global->getNotificationEmail()) {
                         $message = \Swift_Message::newInstance()
                             ->setSubject(
                                 'New Clicker Registration: '. $clicker->getCid().
                                 ' - '.$student->getFName()." ".$student->getLName()
                                 )
                             ->setFrom($this->container->getParameter('mailer_dev_address'))
-                            ->setTo($info->getEmail())
+                            ->setTo($global->getNotificationEmail())
                             ->setBody(
                                     $student->getFName().' '. $student->getLName() .
                                     ' registered clicker #'. $clicker->getCid() .
@@ -71,11 +67,10 @@ class PublicController extends Controller {
                     }
 
                     return $this->redirect($this->generateUrl('register_clicker'));
-				} catch (BioException $e) {
-					$flash->set('failure', "Invalid form.");
-                    $form->get('cid')->addError(new FormError('Someone else is already registered to that clicker.'));
-					$flash->get('success'); // remove the successful flash message that was set earlier
-				}
+                } else {
+                    $flash->set('failure', "Invalid form.");
+                    $form->get('cid')->addError(new FormError($result['message']));
+                }
 
 	    	} else {
 	    		$flash->set('failure', 'Invalid form.');

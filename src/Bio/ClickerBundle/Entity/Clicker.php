@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Clicker
  *
  * @ORM\Table()
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Bio\ClickerBundle\Repository\ClickerRepository")
  */
 class Clicker
 {
@@ -40,7 +40,7 @@ class Clicker
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -56,14 +56,14 @@ class Clicker
     public function setCid($cid)
     {
         $this->cid = strtoupper($cid);
-    
+
         return $this;
     }
 
     /**
      * Get cid
      *
-     * @return string 
+     * @return string
      */
     public function getCid()
     {
@@ -83,14 +83,14 @@ class Clicker
     public function setStudent(\Bio\UserBundle\Entity\AbstractUserStudent $student = null)
     {
         $this->student = $student;
-    
+
         return $this;
     }
 
     /**
      * Get student
      *
-     * @return \Bio\UserBundle\Entity\AbstractUserStudent 
+     * @return \Bio\UserBundle\Entity\AbstractUserStudent
      */
     public function getStudent()
     {

@@ -25,9 +25,12 @@ class ClickerGlobalType extends AbstractType
                 'attr' => array('class' => 'datetime')
                 )
             )
+            ->add('notificationEmail', 'email', array(
+                'label' => 'Email:'
+            ))
         ;
     }
-    
+
     /**
      * @param OptionsResolverInterface $resolver
      */

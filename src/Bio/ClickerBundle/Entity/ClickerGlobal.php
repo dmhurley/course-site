@@ -39,11 +39,20 @@ class ClickerGlobal
      */
     private $start;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="notificationEmail", type="string", length=255)
+     * @Assert\NotBlank()
+     * @Assert\Email()
+     */
+    private $notificationEmail;
+
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -59,14 +68,14 @@ class ClickerGlobal
     public function setNotifications($notifications)
     {
         $this->notifications = $notifications;
-    
+
         return $this;
     }
 
     /**
      * Get notifications
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getNotifications()
     {
@@ -82,17 +91,39 @@ class ClickerGlobal
     public function setStart($start)
     {
         $this->start = $start;
-    
+
         return $this;
     }
 
     /**
      * Get start
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getStart()
     {
         return $this->start;
+    }
+
+    /**
+     * Get notification email
+     *
+     * @return String
+     */
+    public function getNotificationEmail() {
+        return $this->notificationEmail;
+    }
+
+
+    /**
+     * Set notification email
+     *
+     * @param String $email
+     * @return String
+     */
+    public function setNotificationEmail($notificationEmail) {
+        $this->notificationEmail = $notificationEmail;
+
+        return $this;
     }
 }
