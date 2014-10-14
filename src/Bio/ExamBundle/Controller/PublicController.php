@@ -291,6 +291,11 @@ class PublicController extends Controller {
 		if ($request->getMethod() === "POST") {
 			$form->handleRequest($request);
 			$flash->set('success', 'Answers saved.');
+			$taker->setTimestamp([
+				'name' => 'saved',
+				'time' => new \DateTime()
+			]);
+
 			$this->getDoctrine()->getManager()->flush();
 
 			if ($form->isValid() && $form->get('submit')->isClicked()) {
