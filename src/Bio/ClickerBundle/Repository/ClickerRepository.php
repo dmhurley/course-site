@@ -50,17 +50,13 @@ class ClickerRepository extends EntityRepository {
      * @return {Clicker}
      */
     public function getClickerByUser(User $user) {
-        try {
-            return $this->getEntityManager()
-                ->createQuery('
-                    SELECT c
-                    FROM BioClickerBundle:Clicker c
-                    WHERE c.student = :student
-                ')
-                ->setParameter('student', $user)
-                ->getOneOrNullResult();
-        } catch (\Exception $e) {
-            return null;
-        }
+        return $this->getEntityManager()
+            ->createQuery('
+                SELECT c
+                FROM BioClickerBundle:Clicker c
+                WHERE c.student = :student
+            ')
+            ->setParameter('student', $user)
+            ->getOneOrNullResult();
     }
 }
