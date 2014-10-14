@@ -52,6 +52,7 @@ abstract class AbstractUserStudent implements UserInterface
 	public abstract function getSid();
     public abstract function getFName();
     public abstract function getLName();
+	public abstract function getMName();
     public abstract function getSection();
 
     public function getId() {

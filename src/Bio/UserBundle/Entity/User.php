@@ -65,6 +65,9 @@ class User extends AbstractUserStudent
     public function getFName() {
         return $this->getUsername();
     }
+    public function getMName() {
+        return '';
+    }
     public function getLName() {
         return 'Admin';
     }
