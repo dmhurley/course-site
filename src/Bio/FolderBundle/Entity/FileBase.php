@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Bio\FolderBundle\Repository\FileBaseRepository");
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({"base" = "FileBase", "folder":"Folder", "file":"File", "link":"Link"})
@@ -45,7 +45,7 @@ class FileBase {
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -61,14 +61,14 @@ class FileBase {
     public function setName($name)
     {
         $this->name = $name;
-    
+
         return $this;
     }
 
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -84,14 +84,14 @@ class FileBase {
     public function setParent(\Bio\FolderBundle\Entity\Folder $parent = null)
     {
         $this->parent = $parent;
-    
+
         return $this;
     }
 
     /**
      * Get parent
      *
-     * @return \Bio\FolderBundle\Entity\Folder 
+     * @return \Bio\FolderBundle\Entity\Folder
      */
     public function getParent()
     {

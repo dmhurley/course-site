@@ -9,7 +9,7 @@ use Bio\FolderBundle\Entity\FileBase;
  * Folder
  *
  * @ORM\Table()
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Bio\FolderBundle\Repository\FolderRepository")
  */
 class Folder extends FileBase
 {
@@ -24,7 +24,7 @@ class Folder extends FileBase
 
     /**
      * @var boolean
-     * 
+     *
      * @ORM\Column(name="private", type="boolean")
      */
     private $private;
@@ -32,14 +32,14 @@ class Folder extends FileBase
     /**
      * @ORM\ManyToOne(targetEntity="\Bio\StudentBundle\Entity\Student")
      * @ORM\JoinColumn(name="studentID", referencedColumnName="id", onDelete="CASCADE")
-     **/ 
+     **/
     private $student;
 
     /**
      * Constructor
      */
     public function __construct()
-    {   
+    {
         $this->private = false;
         $this->children = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -53,14 +53,14 @@ class Folder extends FileBase
     public function setPrivate($private)
     {
         $this->private = $private;
-    
+
         return $this;
     }
 
     /**
      * Get private
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getPrivate()
     {
@@ -76,7 +76,7 @@ class Folder extends FileBase
     public function addChild(\Bio\FolderBundle\Entity\FileBase $child)
     {
         $this->children[] = $child;
-    
+
         return $this;
     }
 
@@ -93,7 +93,7 @@ class Folder extends FileBase
     /**
      * Get links
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getChildren()
     {
