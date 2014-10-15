@@ -59,4 +59,37 @@ class ClickerRepository extends EntityRepository {
             ->setParameter('student', $user)
             ->getOneOrNullResult();
     }
+
+    /**
+     * Queries and returns all unregistered students
+     * @return {Collection} - result
+     */
+    public function getUnregisteredStudents() {
+        return $this->getEntityManager()
+            ->createQuery('
+                SELECT s
+                FROM BioStudentBundle:Student s
+                LEFT JOIN BioClickerBundle:Clicker c
+                WITH s = c.student
+                WHERE c.id IS NULL
+                ORDER BY s.lName ASC
+            ')
+            ->getResult();
+    }
+
+    /**
+     * Clears all clcker registrations and
+     * resets the id counter
+     * @return {Collection} all deleted clickers
+     */
+    public function removeAll() {
+        $clickers = $this->findAll();
+
+        $em = $this->getEntityManager();
+        $connection = $em->getConnection();
+        $platform = $connection->getDatabasePlatform();
+        $connection->executeUpdate($platform->getTruncateTableSQL('Clicker', true));
+
+        return $clickers;
+    }
 }
