@@ -13,7 +13,7 @@ use Bio\InfoBundle\Entity\Section;
  * User
  *
  * @ORM\Table()
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Bio\UserBundle\Repository\UserRepository")
  * @UniqueEntity("username")
  */
 class User extends AbstractUserStudent
@@ -85,7 +85,7 @@ class User extends AbstractUserStudent
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -101,14 +101,14 @@ class User extends AbstractUserStudent
     public function setUsername($username)
     {
         $this->username = $username;
-    
+
         return $this;
     }
 
     /**
      * Get username
      *
-     * @return string 
+     * @return string
      */
     public function getUsername()
     {
@@ -124,14 +124,14 @@ class User extends AbstractUserStudent
     public function setPassword($password)
     {
         $this->password = $password;
-    
+
         return $this;
     }
 
     /**
      * Get password
      *
-     * @return string 
+     * @return string
      */
     public function getPassword()
     {
@@ -147,14 +147,14 @@ class User extends AbstractUserStudent
     public function setRoles($roles)
     {
         $this->roles = $roles;
-    
+
         return $this;
     }
 
     /**
      * Get roles
      *
-     * @return array 
+     * @return array
      */
     public function getRoles()
     {
@@ -162,6 +162,6 @@ class User extends AbstractUserStudent
     }
 
     public function eraseCredentials() {
-        
+
     }
 }

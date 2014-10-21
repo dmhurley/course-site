@@ -24,47 +24,33 @@ class AdminController extends Controller
      * @Template()
      */
     public function indexAction(Request $request)
-    {	
-    	$db = new Database($this, "BioUserBundle:User");
+    {
+    	$users = $this->getDoctrine()
+                      ->getManager()
+                      ->getRepository('BioUserBundle:User')
+                      ->findAll();
 
-    	$users = $db->find(array(), array(), false);
-    	
         return array('users' => $users, 'title' => 'Registered Users');
     }
 
     /**
      * @Route("/{type}mote/{id}", name="mote_user", requirements={"type" = "de|pro"})
      */
-    public function moteUserAction(Request $request, $type, User $entity = null) {
+    public function moteUserAction(Request $request, $type, User $user = null) {
         $flash = $request->getSession()->getFlashBag();
 
-    	if ($entity && $entity->getRoles()[0] !== 'ROLE_SETUP' && $entity !== $this->getUser()) {
-            $role = $entity->getRoles()[0];
+        // try to change user role
+        $result = $this->getDoctrine()
+                     ->getManager()
+                     ->getRepository('BioUserBundle:User')
+                     ->mote($user, $type === 'pro');
 
-            if ($type==="de") {
-            	if ($role === "ROLE_ADMIN") {
-            		$entity->setRoles(array("ROLE_USER"));
-            	} else if ($role === "ROLE_SUPER_ADMIN") {
-            		$entity->setRoles(array("ROLE_ADMIN"));
-            	}
-            } else {
-            	if ($role === "ROLE_USER") {
-            		$entity->setRoles(array("ROLE_ADMIN"));
-            	} else if ($role === "ROLE_ADMIN") {
-            		$entity->setRoles(array("ROLE_SUPER_ADMIN"));
-            	}
-            }
-            $db = new Database($this, 'BioUserBundle:User');
-            try {
-                $db->close();
-                $flash->set('success', ucfirst($type)."moted '".$entity->getUserName()."'.");
-            } catch (BioException $e) {
-                $flash->set('failure', 'Could not '.$type.'mote that user.');
-            }
-        } else {
-            $flash->set('failure', 'Could not find that user.');
-        }
+        $flash->set(
+            $result['success'] ? 'success' : 'failure',
+            $result['message']
+        );
 
+        // if redirect back to last page if possible
         if ($request->headers->get('referer')){
             return $this->redirect($request->headers->get('referer'));
         } else {
@@ -78,14 +64,15 @@ class AdminController extends Controller
     public function deleteUserAction(Request $request, User $entity = null) {
         $flash = $request->getSession()->getFlashBag();
 
-        if ($entity && $entity->getRoles()[0] !== 'ROLE_SETUP' && $entity !== $this->getUser()) {
-            $db = new Database($this, 'BioUserBundle:User');
-            $db->delete($entity);
-            $db->close();
-            $flash->set('success', "Deleted '".$entity->getUsername()."'.");
-        } else {
-            $flash->set('failure', 'Could not find that user.');
-        }
+        $result = $this->getDoctrine()
+                       ->getManager()
+                       ->getRepository('BioUserBundle:User')
+                       ->delete($entity);
+
+        $flash->set(
+            $result['success'] ? 'success' : 'failure',
+            $result['message']
+        );
 
         if ($request->headers->get('referer')){
             return $this->redirect($request->headers->get('referer'));
@@ -104,6 +91,7 @@ class AdminController extends Controller
 
         $user = new User();
 
+        // TODO move form out to a FormType
         $form = $this->createFormBuilder($user)
             ->add('username', 'text', array(
                 'label' => 'Username:',
@@ -128,22 +116,30 @@ class AdminController extends Controller
         if ($request->getMethod() === "POST") {
             $form->handleRequest($request);
             if ($form->isValid()) {
-                $db = new Database($this, 'BioUserBundle:User');
-                $factory = $this->get('security.encoder_factory');
-                $encoder = $factory->getEncoder($user);
-                $pwd = $encoder->encodePassword($user->getPassword(), $user->getSalt());
-                $user->setPassword($pwd);
+                $em = $this->getDoctrine()->getManager();
+
+                // set some default user stuff
                 $user->setRoles(array('ROLE_USER'));
 
-                $db->add($user);
-                $db->close();
-                $flash->set('success', 'Registered account.');
+                // add user to db
+                $em->persist($user);
+
+                // set password and save
+                $result = $em->getRepository('BioUserBundle:AbstractUserStudent')
+                    ->changePassword(
+                        $user,
+                        $this->get('security.encoder_factory'),
+                        $user->getPassword()
+                    );
+
+                $flash->set(
+                    $result['success'] ? 'success' : 'failure',
+                    $result['success'] ? 'User created.' : 'Could not create user.'
+                );
                 return $this->redirect($this->generateUrl('login'));
             } else {
                 $flash->set('failure', 'Invalid form.');
             }
-        } else {
-            // $flash->set('failure', 'An instructor will have to approve this account. Don\'t bother signing up if you are a student or don\'t have permission.');
         }
 
         return array('form' => $form->createView(), 'title' => 'Register Account');
@@ -155,34 +151,43 @@ class AdminController extends Controller
     public function resetUserAction(Request $request, AbstractUserStudent $user = null) {
         $flash = $request->getSession()->getFlashBag();
 
-        if (!$user) {
-            $flash->set('failure', 'Could not find user.');
-        } else if ($user->getEmail() === '') {
-            $flash->set('failure', 'Cannot reset a password without an email.');
+        // cannnot reset password with an email
+        if ($user && !$user->getEmail()) {
+            $flash->set('failure', 'Cannot reset a password with an email.');
         } else {
-            $encoder = $this->get('security.encoder_factory')->getEncoder($user);
-            $pwd = substr(md5(rand()), 0, 7);
-            $user->setPassword($encoder->encodePassword($pwd, $user->getSalt()));
 
-            $db = new Database($this, 'BioInfoBundle:Info');
-            $info = $db->findOne(array());
+            // try to reset password
+            $result=$this->getDoctrine()
+                         ->getManager()
+                         ->getRepository('BioUserBundle:AbstractUserStudent')
+                         ->reset($user, $this->get('security.encoder_factory'));
 
-            $this->getDoctrine()->getManager()->flush();
+            // send email if it worked
+            if ($result['success']) {
 
-            $message = \Swift_Message::newInstance()
-                ->setSubject('Password Reset')
-                ->setFrom($info->getEmail())
-                ->setTo($user->getEmail())
-                ->setContentType('text/html')
-                ->setBody(
-                    'Your new password for the biol'. $info->getCourseNumber() .
-                    ' site is <code>'. $pwd .'</code>. Please sign in at '.
-                    '<a href="'.$this->generateUrl('change_password', array(), true).'">'.$this->generateUrl('change_password', array(), true).'</a> '.
-                    'with the username: <code>'.$user->getUsername().'</code> to change it.'
+                $db = new Database($this, 'BioInfoBundle:Info');
+                $info = $db->findOne(array());
+
+
+                $message = \Swift_Message::newInstance()
+                    ->setSubject('Password Reset')
+                    ->setFrom($info->getEmail())
+                    ->setTo($user->getEmail())
+                    ->setContentType('text/html')
+                    ->setBody(
+                        'Your new password for the biol'. $info->getCourseNumber() .
+                        ' site is <code>'. $result['password'] .'</code>. Please sign in at '.
+                        '<a href="'.$this->generateUrl('change_password', array(), true).'">'.
+                        $this->generateUrl('change_password', array(), true).'</a> '.
+                        'with the username: <code>'.$user->getUsername().'</code> to change it.'
                     );
+                $this->get('mailer')->send($message);
+            }
 
-            $this->get('mailer')->send($message);
-            $flash->set('success', 'Password reset.');
+            $flash->set(
+                $result['success'] ? 'success' : 'failure',
+                $result['message']
+            );
         }
 
         if ($request->headers->get('referer')){
