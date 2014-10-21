@@ -24,6 +24,7 @@ class PublicController extends Controller
      */
     public function loginAction(Request $request) {
     	$session = $request->getSession();
+        $flash = $session->getFlashbag();
 
         // get the login error if there is one
         if ($request->attributes->has(SecurityContext::AUTHENTICATION_ERROR)) {
@@ -35,10 +36,13 @@ class PublicController extends Controller
             $session->remove(SecurityContext::AUTHENTICATION_ERROR);
         }
         if ($error) {
-            $session->getFlashBag()->set('failure', "Incorrect username or password.");
+            $flash->set('failure', "Incorrect username or password.");
         }
 
-        return array('title' => "Log In", 'last_username' => $session->get(SecurityContext::LAST_USERNAME));
+        return array(
+            'title' => "Log In",
+            'last_username' => $session->get(SecurityContext::LAST_USERNAME)
+        );
     }
 
 
@@ -59,21 +63,28 @@ class PublicController extends Controller
             $form->handleRequest($request);
 
             if ($form->isValid()) {
-                $db = new Database($this, 'BioUserBundle:AbstractUserStudent');
-                $users = $db->find(array('email' => $form->get('email')->getData()), array(), false);
-                foreach($users as $user) {
-                    if ($user->getUsername() === $form->get('username')->getData()) {
-                        
-                        return $this->forward('BioUserBundle:Admin:resetUser', array(
-                            'id' => $user->getId(),
-                            'request' => $request
-                        ));
-                    }
+                $username = $form->get('username')->getData();
+                $email = $form->get('email')->getData();
+
+                $em = $this->getDoctrine()->getManager();
+                $user = $em->getRepository('BioUserBundle:AbstractUserStudent')
+                           ->getUserByUsername($username);
+
+                // if the provided username and email don't match
+                // our records, add FormErrors to the form
+                if (!$user || $user->getEmail() !== $email) {
+                    $error = new FormError("Could not find user that username and email.");
+                    $form->get('username')->addError($error);
+                    $form->get('email')->addError($error);
+                    $flash->set('failure', "Invalid form.");
+                } else {
+
+                // otherwise internally redirect to the admin resetUser endpoint
+                    return $this->forward('BioUserBundle:Admin:resetUser', array(
+                        'id' => $user->getId(),
+                        'request' => $request
+                    ));
                 }
-                $error = new FormError("Could not find user with that name and email");
-                $form->get('username')->addError($error);
-                $form->get('email')->addError($error);
-                $flash->set('failure', 'Invalid form.');
             }
         }
 
@@ -88,8 +99,10 @@ class PublicController extends Controller
         $flash = $request->getSession()->getFlashBag();
 
         $user = $this->get('security.context')->getToken()->getUser();
-        $encoder = $this->get('security.encoder_factory')->getEncoder($user);
+        $encoderFactory = $this->get('security.encoder_factory');
+        $encoder = $encoderFactory->getEncoder($user);
 
+        // TODO stick into a FormType maybe
         $form = $this->createFormBuilder()
             ->add('password', 'password', array(
                 'label' => 'Current:',
@@ -119,12 +132,27 @@ class PublicController extends Controller
         if ($request->getMethod() === "POST") {
             $form->handleRequest($request);
             if ($form->isValid()) {
-                $newPwd = $encoder->encodePassword($form->get('new')->getData(), $user->getSalt());
-                $user->setPassword($newPwd);
-                $this->getDoctrine()->getManager()->flush();
-                $this->get('security.context')->setToken(null);
-                $request->getSession()->invalidate();
-                $flash->set('success', 'Password changed. Please log in again.');
+
+                // change password
+                $result = $this->getDoctrine()
+                               ->getManager()
+                               ->getRepository('BioUserBundle:AbstractUserStudent')
+                               ->changePassword(
+                                    $user,
+                                    $encoderFactory,
+                                    $form->get('password')->getData()
+                                );
+
+                $flash->set(
+                    $result['success'] ? 'success' : 'failure',
+                    $result['message']
+                );
+
+                // if it worked, sign out
+                if ($result['success']) {
+                    $this->get('security.context')->setToken(null);
+                    $request->getSession()->invalidate();
+                }
                 return $this->redirect($this->generateUrl('login'));
             } else {
                 $flash->set('failure', 'Invalid form.');

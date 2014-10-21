@@ -8,19 +8,15 @@ use Bio\UserBundle\Entity\AbstractUserStudent;
 class AbstractUserStudentRepository extends EntityRepository {
 
     public function getUserByUsername($username) {
-        return $this->getEntityManager()
-            ->createQuery('
-                SELECT a
-                FROM BioUserBundle:AbstractUserStudent a
-                JOIN BioUserBundle:User u
-                WITH u.id = a.id
-                JOIN BioUserBundle:Student s
-                WITH s.id = a.id
-                WHERE u.username = :username
-                OR a.sid = :username
-            ')
-            ->setParameter('username', $username)
-            ->getOneOrNull();
+        $user = $this->getEntityManager()->getRepository('BioUserBundle:User')
+            ->findOneBy(array('username' => $username));
+
+        if ($user) return $user;
+
+        $student = $this->getEntityManager()->getRepository('BioStudentBundle:Student')
+            ->findOneBy(array('sid' => $username));
+
+        return $student;
     }
 
     /**
