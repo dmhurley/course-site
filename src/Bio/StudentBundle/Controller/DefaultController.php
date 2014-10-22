@@ -150,7 +150,7 @@ class DefaultController extends Controller
      * @Template("BioPublicBundle:Template:singleForm.html.twig")
      */
     public function addAction(Request $request)
-    {   
+    {
         $flash = $request->getSession()->getFlashBag();
 
     	$entity = new Student();
@@ -160,26 +160,26 @@ class DefaultController extends Controller
     	if ($request->getMethod() === "POST") {
     		$form->handleRequest($request);
     		if ($form->isValid()) {
-    			try {
-                    $db = new Database($this, 'BioStudentBundle:Student');
 
-                    // create password based off last name
-                    $encoder = $this->get('security.encoder_factory')->getEncoder($entity);
-                    $entity->setPassword($encoder->encodePassword($entity->getLName(), $entity->getSalt()));
+                // try to save the user to the db
+                // the create function also encodes password for us
+                $result = $this->getDoctrine()
+                               ->getManager()
+                               ->getRepository('BioStudentBundle:Student')
+                               ->create($entity, $this->get('security.encoder_factory'));
 
-                    $db->add($entity);
-                    $db->close();
-                    $flash->set('success', 'Student added.');
-                    return $this->redirect($this->generateUrl('add_student'));
-                } catch (BioException $e) {
+                // handle error
+                if (!$result['success']) {
                     $error = new FormError("That student ID or email is already registered");
                     $form->get('sid')->addError($error);
                     $form->get('email')->addError($error);
-                    $flash->set('failure', 'Invalid form.');
+                } else {
+                    $flash->set('success', 'Student added.');
+                    return $this->redirect($this->generateUrl('add_student'));
                 }
-    		} else {
-    			$flash->set('failure', 'Invalid form.');
     		}
+
+            $flash->set('failure', 'Invalid form.');
     	}
         return array(
             'form' => $form->createView(),
@@ -193,18 +193,16 @@ class DefaultController extends Controller
     public function deleteAction(Request $request, Student $student = null) {
         $flash = $request->getSession()->getFlashBag();
 
-        if ($student !== null){
-            $db = new Database($this, 'BioStudentBundle:Student');
-            $db->delete($student);
+        $result = $this->getDoctrine()
+                       ->getManager()
+                       ->getRepository('BioStudentBundle:Student')
+                       ->delete($user);
 
-            try {
-                $db->close();
-                $flash->set('success', "Student removed.");
-            } catch (BioException $e){
-                $flash->set('failure', "Could not delete student");
-            }
-        }
-    	
+        $flash->set(
+            $result['success'] ? 'success' : 'failure',
+            $result['message']
+        );
+
         if (!$request->headers->get('referer')){
             return $this->redirect($this->generateUrl('find_student'));
         } else {
@@ -284,14 +282,14 @@ class DefaultController extends Controller
         $dbSections = $db->find(array(), array(), false);
 
         $encoder = $this->get('security.encoder_factory')->getEncoder(new Student());
-       
+
         $sids = [];
         $emails = [];
         $ents = [];
 
         $sections = [];
         $studentCount = count($file);
-        
+
         $headers = $studentCount > 0 ? array_flip(str_getcsv($file[0])) : [];
 
         for ($i = 1; $i < $studentCount; $i++) {
@@ -306,7 +304,7 @@ class DefaultController extends Controller
                 throw new BioException("The file was badly formatted");
             }
 
-            if ( !($section = $this->findObjectByFieldValue($sectionName, $dbSections, 'name')) && 
+            if ( !($section = $this->findObjectByFieldValue($sectionName, $dbSections, 'name')) &&
                  !($section = $this->findObjectByFieldValue($sectionName, $sections, 'name'))) {
                 $section = new Section();
                 $section->setName($sectionName)
@@ -410,7 +408,7 @@ class DefaultController extends Controller
         foreach ($haystack as $straw) {
             if (call_user_func_array(array($straw, $getter), array()) === $needle) {
                 return $straw;
-            } 
+            }
         }
         return null;
     }
