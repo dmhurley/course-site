@@ -3,18 +3,20 @@
 namespace Bio\StudentBundle;
 
 use Bio\StudentBundle\Entity\Student;
+use Bio\InfoBundle\Entity\Section;
 
 class StudentUploader {
 
     private $lines;
+    private $headers;
 
-    public function __constructor($file) {
+    public function __construct($file) {
 
         // get the content of the file
         // and split into lines
         // csv parse each line and store
         $data = file_get_contents($file);
-        $this->lines = array_map(str_getcsv, preg_split(
+        $this->lines = array_map('str_getcsv', preg_split(
             '/\n\r|\r\n|\n|\r/',
             $data,
             -1,
@@ -30,7 +32,7 @@ class StudentUploader {
      * @private
      */
     private function parseHeaders() {
-        $this->headers = array_flip($this->data[0]);
+        $this->headers = array_flip($this->lines[0]);
     }
 
     /**
@@ -43,10 +45,10 @@ class StudentUploader {
 
         // get all current students/data
         // then walk over arrays, making keys mean something for quick lookup
-        $sections = $em->getRepository('BioSectionBundle:Section')->findAll();
+        $sections = $em->getRepository('BioInfoBundle:Section')->findAll();
         $students = $em->getRepository('BioStudentBundle:Student')->findAll();
-        array_walk($sections, function(&$key, $section) { $key = $section->getName(); });
-        array_walk($students, function(&$key, $student) { $key = $student->getSid(); });
+        $sections = $this->keyMap($sections, function($key, $section) { return $section->getName(); });
+        $students = $this->keyMap($students, function($key, $student) { return $student->getSid(); });
 
         // make arrays to hold the students/sections after upload
         // students/sections not in these will be deleted
@@ -54,12 +56,12 @@ class StudentUploader {
         $newSections = array();
 
         // map each line (excluding the first) to values we want
-        $data = array_map($this->extract, array_slice($this->data, 1));
+        $data = array_map(array($this, 'extract'), array_slice($this->lines, 1));
 
         // build sections
         foreach($data as $i => $studentData) {
             $sectionName = $studentData['labSection'];
-            $isNew = isset($sections[$sectionName]);
+            $isNew = !isset($sections[$sectionName]);
 
             // build new section if it doesn't exist
             // otherwise just keep it
@@ -83,8 +85,9 @@ class StudentUploader {
         foreach($data as $i => $studentData) {
 
             // get existing student or create new one
-            $isNew = !isset($studentData['sid']);
-            $student = $isNew ? new Student() : $students[$studentData['sid']];
+            $sid = $studentData['sid'];
+            $isNew = !isset($students[$sid]);
+            $student = $isNew ? new Student() : $students[$sid];
 
             // encode new password based off last name or use current one
             $password = $isNew ? $encoder->encodePassword($studentData['lastName'], $student->getSalt()) :
@@ -99,13 +102,41 @@ class StudentUploader {
                 ->setMName($studentData['middleName'])
                 ->setPassword($password);
 
+            $newStudents[$sid] = $student;
+
             // persist if new
             if ($isNew) {
                 $em->persist($student);
             }
         }
 
+        // remove old sections
+        $oldSections = array_diff_key($sections, $newSections);
+        foreach($oldSections as $i => $section) {
+            $em->remove($section);
+        }
 
+        // remove old students
+        $oldStudents = array_diff_key($students, $newStudents);
+        foreach($oldStudents as $i => $student) {
+            $em->remove($student);
+        }
+
+        try {
+            // save changes to db
+            $em->flush();
+        } catch (\Exception $e) {
+            var_dump($e->getMessage());
+            return array(
+                'success' => false,
+                'message' => 'Could not upload student list.'
+            );
+        }
+
+        return array(
+            'success' => true,
+            'message' => 'Uploaded '.count($newStudents).' students.'
+        );
     }
 
     /**
@@ -119,7 +150,7 @@ class StudentUploader {
         // extra raw data
         $sid = $line[$this->headers['StudentNo']];
         $name = $line[$this->headers['Name']];
-        $section = $line[$this->headers['Lb Sect']];
+        $section = $line[$this->headers['LB Sect']];
         $email = $line[$this->headers['Email']];
 
         // defaults
@@ -127,8 +158,8 @@ class StudentUploader {
         $email = $email ? $email : '';
 
         // split $name into $firstName, $middleName, and $lastName
-        $parts = explode(",", $name); // ['Last, First( Middle (I))']
-        $parts[1] = explode(' ', $parts[1], 2); // ['Last', ['First', 'Middle I']]
+        $parts = explode(",", $name, 2); // ['Last, First( Middle (I))']
+        $parts[1] = explode(' ', trim($parts[1]), 2); // ['Last', ['First', 'Middle I']]
 
         $lastName = trim($parts[0]);
         $firstName = trim($parts[1][0]);
@@ -143,5 +174,15 @@ class StudentUploader {
             'labSection' => $section,
             'email' => $email
         );
+    }
+
+    private function keyMap($array, $fn) {
+        $newArray = array();
+
+        foreach($array as $key => $value) {
+            $newArray[call_user_func_array($fn, array($key, $value))] = $value;
+        }
+
+        return $newArray;
     }
 }
