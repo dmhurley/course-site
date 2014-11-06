@@ -5,17 +5,17 @@ namespace Bio\ClickerBundle\Repository;
 use Doctrine\ORM\EntityRepository;
 
 use Bio\ClickerBundle\Entity\Clicker;
-use Bio\UserBundle\Entity\User;
+use Bio\UserBundle\Entity\AbstractUserStudent;
 
 class ClickerRepository extends EntityRepository {
 
     /**
      * Registers a clicker ID to a user
-     * @param {User} user
+     * @param {AbstractUserStudent} user
      * @param {String} cid - clicker id
      * @return {Array} - {'error': boolean, 'message': string}
      */
-    public function registerClicker(User $user, $cid) {
+    public function registerClicker(AbstractUserStudent $user, $cid) {
         $em = $this->getEntityManager();
         $clicker = $this->getClickerByUser($user);
         $new = false;
@@ -49,7 +49,7 @@ class ClickerRepository extends EntityRepository {
      * @param {string} $cid
      * @return {Clicker}
      */
-    public function getClickerByUser(User $user) {
+    public function getClickerByUser(AbstractUserStudent $user) {
         return $this->getEntityManager()
             ->createQuery('
                 SELECT c
