@@ -65,9 +65,10 @@ class StudentUploader {
 
             // build new section if it doesn't exist
             // otherwise just keep it
-            if ($isNew) {
+            if ($isNew && !isset($newSections[$sectionName])) {
                 $newSections[$sectionName] = new Section();
                 $newSections[$sectionName]
+                    ->setName($sectionName)
                     ->setStart(new \DateTime('midnight'))
                     ->setEnd(new \DateTime('midnight'))
                     ->setDays([])
@@ -75,7 +76,7 @@ class StudentUploader {
                     ->setRoom(0);
 
                 $em->persist($newSections[$sectionName]);
-            } else {
+            } else if (!$isNew) {
                 $newSections[$sectionName] = $sections[$sectionName];
             }
         }
@@ -126,7 +127,6 @@ class StudentUploader {
             // save changes to db
             $em->flush();
         } catch (\Exception $e) {
-            var_dump($e->getMessage());
             return array(
                 'success' => false,
                 'message' => 'Could not upload student list.'
