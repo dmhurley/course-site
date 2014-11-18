@@ -7,13 +7,13 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Bio\UserBundle\Repository\AbstractUserStudentRepository")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({"user" = "User", "student" = "Bio\StudentBundle\Entity\Student"})
  */
 abstract class AbstractUserStudent implements UserInterface
-{	
+{
 	/**
 	 * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -68,7 +68,7 @@ abstract class AbstractUserStudent implements UserInterface
     public function setEmail($email)
     {
         $this->email = $email;
-    
+
         return $this;
     }
 
@@ -81,14 +81,14 @@ abstract class AbstractUserStudent implements UserInterface
     public function setSalt($salt)
     {
         $this->salt = $salt;
-    
+
         return $this;
     }
 
     /**
      * Get email
      *
-     * @return privatestring 
+     * @return privatestring
      */
     public function getEmail()
     {
