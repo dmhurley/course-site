@@ -2,6 +2,9 @@
 
 {% block head %}
     {{ parent() }}
+    {% stylesheets 'bundles/biosurvey/css/survey.css' filter="cssrewrite" output="css/*.css" %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
 {% endblock %}
 
 {% block content %}

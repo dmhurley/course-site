@@ -20,7 +20,15 @@ use Bio\SurveyBundle\Entity\SurveyQuestion;
 class AdminController extends Controller
 {
     /**
-     * @Route("/manage", name="manage_surveys")
+     * @Route("/", name="survey_instruct")
+     * @Template()
+     */
+    public function instructionAction() {
+        return array('title' => 'Survey');
+    }
+
+    /**
+     * @Route("/manage", name="survey_manage")
      * @Template()
      */
     public function indexAction(Request $request)

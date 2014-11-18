@@ -1,0 +1,5 @@
+Survey:
+    Survey:
+        route: survey_instruct
+    Manage:
+        route: survey_manage
