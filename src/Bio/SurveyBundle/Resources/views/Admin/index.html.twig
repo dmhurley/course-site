@@ -10,7 +10,7 @@
 {% block content %}
     <h2>Create Survey</h2>
     <form method="POST" class="tableStyle">
-        <div id="form">
+        <div id="form" class="survey">
             <div>
                 <label for="form_name" class="required">Survey Name</label>
                 <input type="text" id="form_name" name="form[name]" required="required">
@@ -80,6 +80,7 @@
 
             document.getElementById('response').onclick = function() {
                 var tr = document.createElement('tr');
+                tr.classList.add('response');
                 var left = document.createElement('td');
                 var right = document.createElement('td');
                 right.classList.add('delete');
@@ -97,6 +98,7 @@
 
             document.getElementById('multiple').onclick = function() {
                 var tr = document.createElement('tr');
+                tr.classList.add('multiple');
                 var left = document.createElement('td');
                 var right = document.createElement('td');
                 right.classList.add('delete');
@@ -104,13 +106,19 @@
                 var question = document.createElement('textarea');
                 question.name="form["+index+"][]";
                 var add = document.createElement('a');
+                add.classList.add('link');
+                add.classList.add('addOption');
                 add.innerHTML = 'add';
                 left.appendChild(question);
                 left.appendChild(add);
                 var i = index;
 
+                var optionHolder = document.createElement('ol');
+                left.insertBefore(optionHolder, add);
+
                 function addOption() {
-                    var container = document.createElement('div');
+                    var container = document.createElement('li');
+                    container.classList.add('option');
                     var input = document.createElement('input');
                     var del = document.createElement('span');
                     container.appendChild(input);
@@ -120,7 +128,7 @@
                     input.type = "text";
                     input.name = "form["+i+"][]";
 
-                    left.insertBefore(container, add);
+                    optionHolder.appendChild(container);
                 }
 
                 add.onclick = function() {
