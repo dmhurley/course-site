@@ -92,9 +92,22 @@ class AdminController extends Controller
     }
 
     /**
-     * @Route("/delete/{id}", name="download_survey")
+     * @Route("/download/{id}", name="download_survey")
      */
     public function downloadSurveyAction(Request $request, Survey $survey) {
+        // build response
+        $response = $this->render('BioSurveyBundle:Admin:download.csv.twig', array(
+            'survey' => $survey
+        ));
 
+        $response->headers->set(
+            "Content-Type", 'text/csv'
+        );
+
+        $response->headers->set(
+            'Content-Disposition', ('attachment; filename="survey.csv"')
+        );
+
+        return $response;
     }
 }
