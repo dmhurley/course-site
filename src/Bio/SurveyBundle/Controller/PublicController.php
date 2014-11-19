@@ -24,7 +24,7 @@ class PublicController extends Controller
      * @Route("/", name="view_surveys")
      * @Template()
      */
-    public function indexAction() {
+    public function indexAction(Request $request) {
 
     }
 
