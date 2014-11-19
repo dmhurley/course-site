@@ -38,6 +38,14 @@ class Survey
      */
     private $questions;
 
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="hidden", type="boolean")
+     * @Assert\Type(type="bool", message="The value must be true or false.")
+     */
+    private $hidden;
+
     public function __construct() {
         $this->questions = new ArrayCollection();
     }
@@ -86,5 +94,28 @@ class Survey
     public function getQuestions()
     {
         return $this->questions;
+    }
+
+    /**
+     * Set hidden
+     *
+     * @param boolean $hidden
+     * @return Survey
+     */
+    public function setHidden($hidden)
+    {
+        $this->hidden = $hidden;
+    
+        return $this;
+    }
+
+    /**
+     * Get hidden
+     *
+     * @return boolean 
+     */
+    public function getHidden()
+    {
+        return $this->hidden;
     }
 }
