@@ -47,4 +47,90 @@ class SurveyTaker
     {
         return $this->id;
     }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->answers = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    /**
+     * Set student
+     *
+     * @param \Bio\UserBundle\Entity\AbstractUserStudent $student
+     * @return SurveyTaker
+     */
+    public function setStudent(\Bio\UserBundle\Entity\AbstractUserStudent $student = null)
+    {
+        $this->student = $student;
+    
+        return $this;
+    }
+
+    /**
+     * Get student
+     *
+     * @return \Bio\UserBundle\Entity\AbstractUserStudent 
+     */
+    public function getStudent()
+    {
+        return $this->student;
+    }
+
+    /**
+     * Set survey
+     *
+     * @param \Bio\SurveyBundle\Entity\Survey $survey
+     * @return SurveyTaker
+     */
+    public function setSurvey(\Bio\SurveyBundle\Entity\Survey $survey = null)
+    {
+        $this->survey = $survey;
+    
+        return $this;
+    }
+
+    /**
+     * Get survey
+     *
+     * @return \Bio\SurveyBundle\Entity\Survey 
+     */
+    public function getSurvey()
+    {
+        return $this->survey;
+    }
+
+    /**
+     * Add answers
+     *
+     * @param \Bio\SurveyBundle\Entity\SurveyAnswer $answers
+     * @return SurveyTaker
+     */
+    public function addAnswer(\Bio\SurveyBundle\Entity\SurveyAnswer $answers)
+    {
+        $this->answers[] = $answers;
+    
+        return $this;
+    }
+
+    /**
+     * Remove answers
+     *
+     * @param \Bio\SurveyBundle\Entity\SurveyAnswer $answers
+     */
+    public function removeAnswer(\Bio\SurveyBundle\Entity\SurveyAnswer $answers)
+    {
+        $this->answers->removeElement($answers);
+    }
+
+    /**
+     * Get answers
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getAnswers()
+    {
+        return $this->answers;
+    }
 }

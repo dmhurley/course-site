@@ -72,4 +72,50 @@ class SurveyAnswer
     {
         return $this->answer;
     }
+
+    /**
+     * Set surveyTaker
+     *
+     * @param \Bio\SurveyBundle\Entity\SurveyTaker $surveyTaker
+     * @return SurveyAnswer
+     */
+    public function setSurveyTaker(\Bio\SurveyBundle\Entity\SurveyTaker $surveyTaker = null)
+    {
+        $this->surveyTaker = $surveyTaker;
+    
+        return $this;
+    }
+
+    /**
+     * Get surveyTaker
+     *
+     * @return \Bio\SurveyBundle\Entity\SurveyTaker 
+     */
+    public function getSurveyTaker()
+    {
+        return $this->surveyTaker;
+    }
+
+    /**
+     * Set question
+     *
+     * @param \Bio\SurveyBundle\Entity\SurveyQuestion $question
+     * @return SurveyAnswer
+     */
+    public function setQuestion(\Bio\SurveyBundle\Entity\SurveyQuestion $question = null)
+    {
+        $this->question = $question;
+    
+        return $this;
+    }
+
+    /**
+     * Get question
+     *
+     * @return \Bio\SurveyBundle\Entity\SurveyQuestion 
+     */
+    public function getQuestion()
+    {
+        return $this->question;
+    }
 }
