@@ -20,8 +20,16 @@ class SurveyRepository extends EntityRepository {
         return $em->createQuery('
                 SELECT s
                 FROM BioSurveyBundle:Survey s
-                WHERE s.hidden = false
+                LEFT JOIN BioSurveyBundle:SurveyTaker t
+                WITH (
+                    t.survey = s
+                    AND (
+                        t.student = :student
+                        OR t.id IS NULL
+                    )
+                )
             ')
+            ->setParameter('student', $user)
             ->getResult();
     }
 

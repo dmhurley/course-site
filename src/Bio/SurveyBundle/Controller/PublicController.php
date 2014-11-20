@@ -25,7 +25,20 @@ class PublicController extends Controller
      * @Template()
      */
     public function indexAction(Request $request) {
+        $flash = $request->getSession()->getFlashBag();
+        $user = $this->get('security.context')->getToken()->getUser();
+        $repo = $this->getDoctrine()
+                     ->getManager()
+                     ->getRepository('BioSurveyBundle:Survey');
 
+        $openSurveys = $repo->getOpenSurveys($user);
+        $finishedSurveys = $repo->getFinishedSurveys($user);
+
+        return array(
+            'title' => 'Your Surveys',
+            'surveys' => $openSurveys,
+            'completed' => $finishedSurveys
+        );
     }
 
     /**

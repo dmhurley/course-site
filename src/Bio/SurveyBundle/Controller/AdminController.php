@@ -35,6 +35,7 @@ class AdminController extends Controller
     {
         $flash = $request->getSession()->getFlashBag();
         $survey = new Survey();
+        $survey->setHidden(true);
         $db = new Database($this, 'BioSurveyBundle:Survey');
 
         if ($request->getMethod() === "POST") {

@@ -1,0 +1,44 @@
+{% extends 'BioPublicBundle::main.html.twig' %}
+
+{% block content %}
+    <h2>Open Surveys</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Take</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for survey in surveys %}
+                <tr>
+                    <td>{{survey.name}}</td>
+                    <td><a href="{{ path('take_survey', {'id' : survey.id}) }}">take</a></td>
+                </tr>
+            {% else %}
+                <tr><td colspan="2" style="text-align: center;">no open surveys</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Finished Surveys</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Taken</th>
+                <th>Review</th>
+        </thead>
+        <tbody>
+            {% for survey in completed %}
+                <tr>
+                    <td>{{survey.name}}</td>
+                    <td></td>
+                    <td><a href="">review</a></td>
+                </tr>
+            {% else %}
+                <tr><td colspan="3" style="text-align: center;">no surveys to review</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
