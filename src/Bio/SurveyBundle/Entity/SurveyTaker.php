@@ -29,7 +29,7 @@ class SurveyTaker
 
     /**
      * @ORM\ManyToOne(targetEntity="Survey")
-     * @ORM\JoinColumn(name="studentID", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="surveyID", referencedColumnName="id", onDelete="CASCADE")
      */
     private $survey;
 
@@ -54,7 +54,7 @@ class SurveyTaker
     {
         $this->answers = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
+
     /**
      * Set student
      *
@@ -64,14 +64,14 @@ class SurveyTaker
     public function setStudent(\Bio\UserBundle\Entity\AbstractUserStudent $student = null)
     {
         $this->student = $student;
-    
+
         return $this;
     }
 
     /**
      * Get student
      *
-     * @return \Bio\UserBundle\Entity\AbstractUserStudent 
+     * @return \Bio\UserBundle\Entity\AbstractUserStudent
      */
     public function getStudent()
     {
@@ -87,14 +87,14 @@ class SurveyTaker
     public function setSurvey(\Bio\SurveyBundle\Entity\Survey $survey = null)
     {
         $this->survey = $survey;
-    
+
         return $this;
     }
 
     /**
      * Get survey
      *
-     * @return \Bio\SurveyBundle\Entity\Survey 
+     * @return \Bio\SurveyBundle\Entity\Survey
      */
     public function getSurvey()
     {
@@ -110,7 +110,7 @@ class SurveyTaker
     public function addAnswer(\Bio\SurveyBundle\Entity\SurveyAnswer $answers)
     {
         $this->answers[] = $answers;
-    
+
         return $this;
     }
 
@@ -127,7 +127,7 @@ class SurveyTaker
     /**
      * Get answers
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getAnswers()
     {

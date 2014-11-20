@@ -12,7 +12,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * Survey
  *
  * @ORM\Table()
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Bio\SurveyBundle\Repository\SurveyRepository")
  */
 class Survey
 {
@@ -105,14 +105,14 @@ class Survey
     public function setHidden($hidden)
     {
         $this->hidden = $hidden;
-    
+
         return $this;
     }
 
     /**
      * Get hidden
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getHidden()
     {

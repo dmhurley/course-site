@@ -23,7 +23,7 @@ class SurveyQuestion
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Survey")
+     * @ORM\ManyToOne(targetEntity="Survey", inversedBy="questions")
      * @ORM\JoinColumn(name="surveyID", referencedColumnName="id", onDelete="CASCADE")
      **/
     private $survey;
