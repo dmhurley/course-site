@@ -70,9 +70,30 @@ class AdminController extends Controller
     }
 
     /**
+     * @Route("/toggle/{id}", name="toggle_survey")
+     */
+    public function toggleSurveyAction(Request $request, Survey $survey = null) {
+        $flash = $request->getSession()->getFlashBag();
+
+        if ($survey) {
+            $survey->setHidden(!$survey->getHidden());
+            $this->getDoctrine()->getManager()->flush();
+            $flash->set('success', 'Survey ' . ($survey->getHidden() ? 'closed.' : 'opened.'));
+        } else {
+            $flash->set('failure');
+        }
+
+        if ($request->headers->get('referer')) {
+            return $this->redirect($request->headers->get('referer'));
+        } else {
+            return $this->redirect($this->generateUrl('manage_surveys'));
+        }
+    }
+
+    /**
      * @Route("/delete/{id}", name="delete_survey")
      */
-    public function deleteSurveyAction(Request $request, Survey $survey) {
+    public function deleteSurveyAction(Request $request, Survey $survey = null) {
         $flash = $request->getSession()->getFlashBag();
 
         if ($survey) {

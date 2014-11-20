@@ -49,6 +49,8 @@
         <tr>
             <th>Name</th>
             <th>Questions</th>
+            <th>Status</th>
+            <th>Toggle</th>
             <th>Download</th>
             <th>Delete</th>
         </tr>
@@ -56,6 +58,8 @@
             <tr>
                 <td>{{survey.name}}</td>
                 <td>{{survey.questions | length}}</td>
+                <td>{{survey.hidden ? 'closed' : 'open'}}</td>
+                <td><a href="{{ path('toggle_survey', {'id' : survey.id}) }}">toggle</a></td>
                 <td><a href="{{ path('download_survey', {'id': survey.id}) }}">download</a></td>
                 <td><a href="{{ path('delete_survey', {'id':survey.id}) }}">delete</a></td>
             </tr>
