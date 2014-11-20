@@ -50,4 +50,23 @@ class SurveyRepository extends EntityRepository {
             ->setParameter('student', $user)
             ->getResult();
     }
+
+    /**
+     * Check to see if a user has taken a survey
+     * @param {Survey} $survey
+     * @param {AbstractUserStudent} $user
+     * @return {Boolean}
+     */
+    public function hasTaken(Survey $survey, AbstractUserStudent $user) {
+        return $this->getEntityManager()
+            ->createQuery('
+                SELECT t
+                FROM BioSurveyBundle:SurveyTaker t
+                WHERE t.student = :user
+                AND t.survey = :survey
+            ')
+            ->setParameter('survey', $survey)
+            ->setParameter('user', $user)
+            ->getOneOrNullResult() !== null;
+    }
 }
