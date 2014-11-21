@@ -12,6 +12,9 @@ use Bio\DataBundle\Objects\Database;
 use Bio\DataBundle\Exception\BioException;
 use Bio\SurveyBundle\Entity\Survey;
 use Bio\SurveyBundle\Entity\SurveyQuestion;
+use Bio\SurveyBundle\Entity\SurveyTaker;
+use Bio\SurveyBundle\Entity\SurveyAnswer;
+use Bio\SurveyBundle\Type\SurveyAnswerType;
 
 
 /**
@@ -68,10 +71,29 @@ class PublicController extends Controller
             );
         }
 
+        $taker = new SurveyTaker();
+        $taker->setSurvey($survey)
+            ->setStudent($user);
+
+        foreach($survey->getQuestions() as $question) {
+            $answer = new SurveyAnswer();
+            $answer->setQuestion($question)
+                ->setSurveyTaker($taker);
+
+            $taker->addAnswer($answer);
+        }
+
+        $form = $this->createFormBuilder($taker)
+            ->add('answers', 'collection', array(
+                'type' => new SurveyAnswerType()
+            ))
+            ->add('submit', 'submit')
+            ->getForm();
 
         return array(
             'title' => $survey->getName(),
-            'survey' => $survey
+            'survey' => $survey,
+            'form' => $form->createView()
         );
     }
 
@@ -104,7 +126,7 @@ class PublicController extends Controller
             ->getRepository('BioSurveyBundle:Survey');
 
         return array(
-            'title': $survey->getName();
-        )
+            'title' => $survey->getName()
+        );
     }
 }
