@@ -23,6 +23,10 @@ class FileBaseRepository extends EntityRepository {
         $isFolder = $type === 'Folder';
         $isLink = $type === 'Link';
 
+        if ($isFolder) {
+            $entity->setPrivate($parent->getPrivate());
+        }
+
         $entity->setParent($parent);
         $parent->addChild($entity);
         $em->persist($entity);
