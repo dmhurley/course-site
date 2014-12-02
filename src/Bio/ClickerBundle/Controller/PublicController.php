@@ -30,7 +30,6 @@ class PublicController extends Controller {
 
     	if ($request->getMethod() === "POST") {
     		$form->handleRequest($request);
-            $clicker = new Clicker();
 
     		if ($form->isValid()){
                 $student = $this->get('security.context')->getToken()->getUser();
@@ -43,6 +42,7 @@ class PublicController extends Controller {
 
                 if ($result['success']) {
                     $flash->set('success', $result['message']);
+                    $clicker = $result['clicker'];
 
                     // send email if settings allow
                     $db = new Database($this, 'BioClickerBundle:ClickerGlobal');
