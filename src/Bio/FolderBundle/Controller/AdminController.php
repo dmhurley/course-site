@@ -48,14 +48,10 @@ class AdminController extends Controller
             ->getRepository('BioFolderBundle:Folder');
 
         // parse the query string for state
-        $private = null;
         $parent = null; // defaults to mainpage
 
     	if ($request->query->get('id')) {
             $parent = $folderRepo->findOneBy(array('id' => $request->query->get('id')));
-            if ($request->query->get('private')){
-                $private = 'private';
-            }
     	} else {
             $parent = $folderRepo->getMainpageFolder();
         }
@@ -106,7 +102,9 @@ class AdminController extends Controller
                 if ($result['success']) {
                     $flash->set('success', $result['message']);
                     return $this->redirect(
-                        $this->generateUrl('view_folders')
+                        $this->generateUrl('view_folders', array(
+                            'id' => $parent ? $parent->getId() : undefined
+                        ))
                     );
                 } else {
                     $flash->set('failure', $result['message']);

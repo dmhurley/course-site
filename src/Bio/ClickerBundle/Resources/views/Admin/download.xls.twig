@@ -1,7 +1,7 @@
 {% filter raw %}
 Last Name	First Name	Middle Name	clicker id	Student ID
 {% for clicker in clickers %}
-{{clicker.student.lName}}	{{clicker.student.fName}}	{{clicker.student.mName}}	{{clicker.id}}	{{clicker.student.sid}}
+{{clicker.student.lName}}	{{clicker.student.fName}}	{{clicker.student.mName}}	{{clicker.cid}}	{{clicker.student.sid}}
 {% endfor %}
 
 

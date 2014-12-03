@@ -33,6 +33,7 @@ class ClickerRepository extends EntityRepository {
             $em->flush();
             return array(
                 'success' => true,
+                'clicker' => $clicker,
                 'message' => $new ? 'Clicker ID #'.$cid.' registered.' :
                                     'Clicker ID changed to #'.$cid.'.'
             );
