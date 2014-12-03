@@ -51,9 +51,8 @@ class PublicController extends Controller
     public function takeAction(Request $request, Survey $survey = null) {
         $flash = $request->getSession()->getFlashBag();
         $user = $this->get('security.context')->getToken()->getUser();
-        $repo = $this->getDoctrine()
-            ->getManager()
-            ->getRepository('BioSurveyBundle:Survey');
+        $em = $this->getDoctrine()->getManager();
+        $repo = $em->getRepository('BioSurveyBundle:Survey');
 
         if ($survey === null) {
             $flash->set('failure', 'Survey does not exist.');
@@ -90,6 +89,30 @@ class PublicController extends Controller
             ->add('submit', 'submit')
             ->getForm();
 
+
+        if ($request->getMethod() === "POST") {
+            $form->handleRequest($request);
+
+            if ($form->isValid()) {
+
+                try {
+                    $em->persist($taker);
+                    $em->flush();
+                    $flash->set('success', 'Answers saved.');
+
+                    return $this->redirect(
+                        $this->generateUrl('review_survey', array(
+                            'id' => $survey->getId()
+                        ))
+                    );
+                } catch (Exception $e) {
+                    $flash->set('failure', 'Unable to save answers.');
+                }
+            } else {
+                $flash->set('failure', 'Invalid answer(s).');
+            }
+        }
+
         return array(
             'title' => $survey->getName(),
             'survey' => $survey,
@@ -103,6 +126,8 @@ class PublicController extends Controller
      */
     public function reviewAction(Request $request, Survey $survey = null) {
         $flash = $request->getSession()->getFlashBag();
+        $repo = $this->getDoctrine()->getManager()->getRepository('BioSurveyBundle:Survey');
+        $user = $this->get('security.context')->getToken()->getUser();
 
         if ($survey === null) {
             $flash->set('failure', 'Survey does not exist.');
