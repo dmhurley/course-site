@@ -15,7 +15,11 @@
 
                 <div class="line"></div>
 
+                {% if answer.children['answer'].vars.errors|length > 0 %}
+                <div class="a error row_error" data-tip="{{answer.children['answer'].vars.errors[0].message}}">
+                {% else %}
                 <div class="a">
+                {% endif %}
                     {{form_widget(answer.children['answer'])}}
                 </div>
             </div>
