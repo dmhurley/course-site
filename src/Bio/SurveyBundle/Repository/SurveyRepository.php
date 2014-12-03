@@ -21,13 +21,13 @@ class SurveyRepository extends EntityRepository {
                 SELECT s
                 FROM BioSurveyBundle:Survey s
                 LEFT JOIN BioSurveyBundle:SurveyTaker t
-                WITH (
-                    t.survey = s
+                WITH (t.survey = s
                     AND (
                         t.student = :student
                         OR t.id IS NULL
                     )
                 )
+                WHERE t.id IS NULL
             ')
             ->setParameter('student', $user)
             ->getResult();
