@@ -10,8 +10,8 @@ use Bio\UserBundle\Entity\AbstractUserStudent;
 /**
  * Student
  *
- * @ORM\Table(repositoryClass="Bio\StudentBundle\Repository\StudentRepository")
- * @ORM\Entity
+ * @ORM\Table()
+ * @ORM\Entity(repositoryClass="Bio\StudentBundle\Repository\StudentRepository")
  */
 class Student extends AbstractUserStudent
 {

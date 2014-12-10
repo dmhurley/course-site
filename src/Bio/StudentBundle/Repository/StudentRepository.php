@@ -81,7 +81,7 @@ class StudentRepository extends EntityRepository {
             );
         }
 
-        $em = $this->getEntityManager()
+        $em = $this->getEntityManager();
         $em->remove($user);
 
         try {

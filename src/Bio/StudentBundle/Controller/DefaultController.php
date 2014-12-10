@@ -197,7 +197,7 @@ class DefaultController extends Controller
         $result = $this->getDoctrine()
                        ->getManager()
                        ->getRepository('BioStudentBundle:Student')
-                       ->delete($user);
+                       ->delete($student);
 
         $flash->set(
             $result['success'] ? 'success' : 'failure',
