@@ -10,7 +10,7 @@ use Bio\UserBundle\Entity\AbstractUserStudent;
 /**
  * Student
  *
- * @ORM\Table()
+ * @ORM\Table(repositoryClass="Bio\StudentBundle\Repository\StudentRepository")
  * @ORM\Entity
  */
 class Student extends AbstractUserStudent
@@ -86,7 +86,7 @@ class Student extends AbstractUserStudent
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -102,14 +102,14 @@ class Student extends AbstractUserStudent
     public function setSid($sid)
     {
         $this->sid = $sid;
-    
+
         return $this;
     }
 
     /**
      * Get sid
      *
-     * @return string 
+     * @return string
      */
     public function getSid()
     {
@@ -125,14 +125,14 @@ class Student extends AbstractUserStudent
     public function setFName($fName)
     {
         $this->fName = $fName;
-    
+
         return $this;
     }
 
     /**
      * Get fName
      *
-     * @return string 
+     * @return string
      */
     public function getFName()
     {
@@ -148,14 +148,14 @@ class Student extends AbstractUserStudent
     public function setMName($mName)
     {
         $this->mName = $mName;
-    
+
         return $this;
     }
 
     /**
      * Get mName
      *
-     * @return string 
+     * @return string
      */
     public function getMName()
     {
@@ -172,14 +172,14 @@ class Student extends AbstractUserStudent
     public function setLName($lName)
     {
         $this->lName = $lName;
-    
+
         return $this;
     }
 
     /**
      * Get lName
      *
-     * @return string 
+     * @return string
      */
     public function getLName()
     {
@@ -195,17 +195,17 @@ class Student extends AbstractUserStudent
     public function setPassword($password)
     {
         $this->password = $password;
-    
+
         return $this;
     }
 
     /**
      * Get password
      *
-     * @return string 
+     * @return string
      */
     public function getPassword()
-    {   
+    {
         return $this->password;
     }
 
@@ -218,14 +218,14 @@ class Student extends AbstractUserStudent
     public function setSection(\Bio\InfoBundle\Entity\Section $section = null)
     {
         $this->section = $section;
-    
+
         return $this;
     }
 
     /**
      * Get section
      *
-     * @return \Bio\InfoBundle\Entity\Section 
+     * @return \Bio\InfoBundle\Entity\Section
      */
     public function getSection()
     {
