@@ -14,7 +14,7 @@ parameters:
     gmail_dev_username:
     gmail_dev_password:
     locale: en
-    secret:
+    secret: secret
     bundles: default
     minimum_role: IS_AUTHENTICATED_ANONYMOUSLY
     user_username: username
