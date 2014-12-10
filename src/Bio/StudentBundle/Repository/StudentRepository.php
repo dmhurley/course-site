@@ -12,7 +12,7 @@ class StudentRepository extends EntityRepository {
      * @param {Array} $array - key/value where key is property value is desired
      * @return {Collection}
      */
-    public function find($array) {
+    public function findStudent($array) {
         $em = $this->getEntityManager();
 
         // start our standard query builder

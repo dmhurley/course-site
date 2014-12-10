@@ -27,19 +27,28 @@
 
 				<div class="line"></div>
 
-				<h2>Grades</h2>
+				{% set total = 0 %}
+				{% set count = 0 %}
+				{% for grade in answer.grades if grade.points is not null %}
+					{% set count = count + 1 %}
+					{% set total = total + grade.points %}
+				{% endfor %}
+
+				<h2 style="margin-bottom: 0px;">
+					Grade {% if count > 0 %} -
+					<span style="font-size: 85%;">{{total / count | number_format(2)}}</span>
+					{% endif %}
+				</h2>
 				<div class="tableStyle">
 					<table style="border:inherit;">
 						<thead>
 							<tr>
-								<th>Points</th>
-								<th>Comment</th>
+								<th></th>
 							</tr>
 						</thead>
 						<tbody>
 							{% for grade in answer.grades if grade.points is not null %}
 								<tr>
-									<td>{{grade.points}}/{{grade.answer.question.points}} points</td>
 									<td>{{grade.comment}}</td>
 								</tr>
 							{% endfor %}
