@@ -9,8 +9,8 @@ parameters:
     mailer_host: 127.0.0.1
     mailer_user: null
     mailer_password: null
-    mailer_dev_address: dhurl@u.washington.edu
-    mailer_spool_directory: /Library/Webserver/spool
+    mailer_dev_address: dhurl@uw.edu
+    mailer_spool_directory: /media/Data/spool
     gmail_dev_username:
     gmail_dev_password:
     locale: en
