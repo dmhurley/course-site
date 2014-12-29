@@ -603,12 +603,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/migrations.git",
-                "reference": "1a9dffa64e33fdc10f4b4c3f5d7230b74d4a1021"
+                "reference": "f4fe9d9cc21a711d89d91d29c4a4e7945289cdd0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/migrations/zipball/1a9dffa64e33fdc10f4b4c3f5d7230b74d4a1021",
-                "reference": "1a9dffa64e33fdc10f4b4c3f5d7230b74d4a1021",
+                "url": "https://api.github.com/repos/doctrine/migrations/zipball/f4fe9d9cc21a711d89d91d29c4a4e7945289cdd0",
+                "reference": "f4fe9d9cc21a711d89d91d29c4a4e7945289cdd0",
                 "shasum": ""
             },
             "require": {
@@ -653,7 +653,7 @@
                 "database",
                 "migrations"
             ],
-            "time": "2014-08-18 18:03:07"
+            "time": "2014-10-30 14:49:25"
         },
         {
             "name": "doctrine/orm",
@@ -1266,21 +1266,21 @@
         },
         {
             "name": "symfony/assetic-bundle",
-            "version": "v2.3.0",
+            "version": "v2.3.1",
             "target-dir": "Symfony/Bundle/AsseticBundle",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/AsseticBundle.git",
-                "reference": "146dd3cb46b302bd471560471c6aaa930483dac1"
+                "reference": "099e0bb5d80e7039af20db384a41017fde521f21"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/AsseticBundle/zipball/146dd3cb46b302bd471560471c6aaa930483dac1",
-                "reference": "146dd3cb46b302bd471560471c6aaa930483dac1",
+                "url": "https://api.github.com/repos/symfony/AsseticBundle/zipball/099e0bb5d80e7039af20db384a41017fde521f21",
+                "reference": "099e0bb5d80e7039af20db384a41017fde521f21",
                 "shasum": ""
             },
             "require": {
-                "kriswallsmith/assetic": "~1.1",
+                "kriswallsmith/assetic": "1.1.x",
                 "php": ">=5.3.0",
                 "symfony/framework-bundle": "~2.1"
             },
@@ -1299,7 +1299,7 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.1.x-dev"
+                    "dev-master": "2.3-dev"
                 }
             },
             "autoload": {
@@ -1325,54 +1325,7 @@
                 "compression",
                 "minification"
             ],
-            "time": "2013-05-16 05:32:23"
-        },
-        {
-            "name": "symfony/icu",
-            "version": "v1.0.1",
-            "target-dir": "Symfony/Component/Icu",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/Icu.git",
-                "reference": "fdba214b1e087c149843bde976263c53ac10c975"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Icu/zipball/fdba214b1e087c149843bde976263c53ac10c975",
-                "reference": "fdba214b1e087c149843bde976263c53ac10c975",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.3",
-                "symfony/intl": "~2.3"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Symfony\\Component\\Icu\\": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Symfony Community",
-                    "homepage": "http://symfony.com/contributors"
-                },
-                {
-                    "name": "Bernhard Schussek",
-                    "email": "bschussek@gmail.com"
-                }
-            ],
-            "description": "Contains an excerpt of the ICU data and classes to load it.",
-            "homepage": "http://symfony.com",
-            "keywords": [
-                "icu",
-                "intl"
-            ],
-            "time": "2013-10-04 09:12:07"
+            "time": "2013-11-25 16:34:50"
         },
         {
             "name": "symfony/monolog-bundle",
@@ -1493,23 +1446,22 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v2.3.20",
+            "version": "v2.3.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "5ef0ea8414fd61df090f6aa60a3d78bfb4d8bd1c"
+                "reference": "0a6e90e0918d273ac451fc77c4887beffbeb368d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/5ef0ea8414fd61df090f6aa60a3d78bfb4d8bd1c",
-                "reference": "5ef0ea8414fd61df090f6aa60a3d78bfb4d8bd1c",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/0a6e90e0918d273ac451fc77c4887beffbeb368d",
+                "reference": "0a6e90e0918d273ac451fc77c4887beffbeb368d",
                 "shasum": ""
             },
             "require": {
                 "doctrine/common": "~2.2",
                 "php": ">=5.3.3",
                 "psr/log": "~1.0",
-                "symfony/icu": "~1.0",
                 "twig/twig": "~1.12"
             },
             "replace": {
@@ -1597,19 +1549,19 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2014-09-28 16:24:47"
+            "time": "2014-10-24 05:54:08"
         },
         {
             "name": "twig/extensions",
             "version": "v1.0.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/fabpot/Twig-extensions.git",
+                "url": "https://github.com/twigphp/Twig-extensions.git",
                 "reference": "f91a82ec225e5bb108e01a0f93c9be04f84dcfa0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Twig-extensions/zipball/f91a82ec225e5bb108e01a0f93c9be04f84dcfa0",
+                "url": "https://api.github.com/repos/twigphp/Twig-extensions/zipball/f91a82ec225e5bb108e01a0f93c9be04f84dcfa0",
                 "reference": "f91a82ec225e5bb108e01a0f93c9be04f84dcfa0",
                 "shasum": ""
             },
@@ -1634,9 +1586,7 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com",
-                    "homepage": "http://fabien.potencier.org",
-                    "role": "Lead Developer"
+                    "email": "fabien@symfony.com"
                 }
             ],
             "description": "Common additional features for Twig that do not directly belong in core",
@@ -1650,16 +1600,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v1.16.0",
+            "version": "v1.16.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/fabpot/Twig.git",
-                "reference": "8ce37115802e257a984a82d38254884085060024"
+                "url": "https://github.com/twigphp/Twig.git",
+                "reference": "42f758d9fe2146d1f0470604fc05ee43580873fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Twig/zipball/8ce37115802e257a984a82d38254884085060024",
-                "reference": "8ce37115802e257a984a82d38254884085060024",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/42f758d9fe2146d1f0470604fc05ee43580873fc",
+                "reference": "42f758d9fe2146d1f0470604fc05ee43580873fc",
                 "shasum": ""
             },
             "require": {
@@ -1703,7 +1653,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2014-07-05 12:19:05"
+            "time": "2014-10-17 12:53:44"
         }
     ],
     "packages-dev": [],

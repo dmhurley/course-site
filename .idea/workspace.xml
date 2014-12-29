@@ -1,0 +1,611 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="bdaf7082-a1cb-45b3-bf3d-eeea0c0e5a7c" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/StudentBundle/Resources/public/images/add.png" afterPath="$PROJECT_DIR$/src/Bio/StudentBundle/Resources/public/images/add.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/public/images/ajax-loader.gif" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/public/images/ajax-loader.gif" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/Public/images/announcements.png" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/Public/images/announcements.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/public/images/browse.png" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/public/images/browse.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/public/images/clear.png" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/public/images/clear.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/clear.png" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/clear.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/public/images/clicker.jpg" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/public/images/clicker.jpg" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/Public/images/courseinfo.png" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/Public/images/courseinfo.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/public/images/download.png" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/public/images/download.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/public/images/editexams.png" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/public/images/editexams.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/images/error.png" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/images/error.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/public/images/evaluations.png" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/public/images/evaluations.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/public/images/exams.png" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/public/images/exams.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/images/favicon.ico" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/images/favicon.ico" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/favicon.ico" afterPath="$PROJECT_DIR$/web/favicon.ico" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/file.png" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/file.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/file_full.png" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/file_full.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/file_private.png" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/file_private.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/file_private_full.png" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/file_private_full.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/public/images/find.png" afterPath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/public/images/find.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/StudentBundle/Resources/public/images/find.png" afterPath="$PROJECT_DIR$/src/Bio/StudentBundle/Resources/public/images/find.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/folder.png" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/folder.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/folder_full.png" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/folder_full.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/folder_private.png" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/folder_private.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/folder_private_full.png" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/folder_private_full.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/public/images/global.png" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/public/images/global.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/public/images/guide.png" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/public/images/guide.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/Public/images/hours.png" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/Public/images/hours.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/Public/images/instructor.png" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/Public/images/instructor.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/images/line.jpg" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/images/line.jpg" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/link.png" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/link.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/link_full.png" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/link_full.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/Public/images/links.png" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/Public/images/links.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/UserBundle/Resources/public/images/login.png" afterPath="$PROJECT_DIR$/src/Bio/UserBundle/Resources/public/images/login.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/images/mainpage.png" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/images/mainpage.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/manage.png" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/manage.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/UserBundle/Resources/public/images/menu.png" afterPath="$PROJECT_DIR$/src/Bio/UserBundle/Resources/public/images/menu.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/private.png" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/private.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/private_full.png" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/images/private_full.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/public/images/promo.png" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/public/images/promo.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/public/images/questions.png" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/public/images/questions.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/public/images/register.png" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/public/images/register.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/public/images/requests.png" afterPath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/public/images/requests.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/public/images/sample.png" afterPath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/public/images/sample.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/Public/images/sections.png" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/Public/images/sections.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/public/images/start.png" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/public/images/start.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/public/images/trip.png" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/public/images/trip.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/public/images/upload.png" afterPath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/public/images/upload.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/StudentBundle/Resources/public/images/upload.png" afterPath="$PROJECT_DIR$/src/Bio/StudentBundle/Resources/public/images/upload.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/images/w.png" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/images/w.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/files/.gitignore" afterPath="$PROJECT_DIR$/web/files/.gitignore" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/.htaccess" afterPath="$PROJECT_DIR$/app/.htaccess" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/.htaccess" afterPath="$PROJECT_DIR$/src/.htaccess" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/.htaccess" afterPath="$PROJECT_DIR$/web/.htaccess" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.travis.yml" afterPath="$PROJECT_DIR$/.travis.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/UserBundle/Entity/AbstractUserStudent.php" afterPath="$PROJECT_DIR$/src/Bio/UserBundle/Entity/AbstractUserStudent.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/UserBundle/Repository/AbstractUserStudentRepository.php" afterPath="$PROJECT_DIR$/src/Bio/UserBundle/Repository/AbstractUserStudentRepository.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/DependencyInjection/AccessDeniedHandler.php" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/DependencyInjection/AccessDeniedHandler.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/DataBundle/Command/AccountCommand.php" afterPath="$PROJECT_DIR$/src/Bio/DataBundle/Command/AccountCommand.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/Controller/AdminController.php" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/Controller/AdminController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Controller/AdminController.php" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Controller/AdminController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Controller/AdminController.php" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Controller/AdminController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SurveyBundle/Controller/AdminController.php" afterPath="$PROJECT_DIR$/src/Bio/SurveyBundle/Controller/AdminController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Controller/AdminController.php" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Controller/AdminController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/UserBundle/Controller/AdminController.php" afterPath="$PROJECT_DIR$/src/Bio/UserBundle/Controller/AdminController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Entity/Announcement.php" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Entity/Announcement.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Form/AnnouncementType.php" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Form/AnnouncementType.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Entity/Answer.php" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Entity/Answer.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Type/AnswerType.php" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Type/AnswerType.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/AppCache.php" afterPath="$PROJECT_DIR$/app/AppCache.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/AppKernel.php" afterPath="$PROJECT_DIR$/app/AppKernel.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Entity/Base.php" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Entity/Base.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/BioClickerBundle.php" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/BioClickerBundle.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/DependencyInjection/BioClickerExtension.php" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/DependencyInjection/BioClickerExtension.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/DataBundle/BioDataBundle.php" afterPath="$PROJECT_DIR$/src/Bio/DataBundle/BioDataBundle.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/DataBundle/DependencyInjection/BioDataExtension.php" afterPath="$PROJECT_DIR$/src/Bio/DataBundle/DependencyInjection/BioDataExtension.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/BioExamBundle.php" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/BioExamBundle.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/DependencyInjection/BioExamExtension.php" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/DependencyInjection/BioExamExtension.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/DataBundle/Exception/BioException.php" afterPath="$PROJECT_DIR$/src/Bio/DataBundle/Exception/BioException.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/DataBundle/Twig/BioExtension.php" afterPath="$PROJECT_DIR$/src/Bio/DataBundle/Twig/BioExtension.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/BioFolderBundle.php" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/BioFolderBundle.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/DependencyInjection/BioFolderExtension.php" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/DependencyInjection/BioFolderExtension.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/BioInfoBundle.php" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/BioInfoBundle.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/DependencyInjection/BioInfoExtension.php" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/DependencyInjection/BioInfoExtension.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/BioPublicBundle.php" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/BioPublicBundle.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/DependencyInjection/BioPublicExtension.php" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/DependencyInjection/BioPublicExtension.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ScoreBundle/BioScoreBundle.php" afterPath="$PROJECT_DIR$/src/Bio/ScoreBundle/BioScoreBundle.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ScoreBundle/DependencyInjection/BioScoreExtension.php" afterPath="$PROJECT_DIR$/src/Bio/ScoreBundle/DependencyInjection/BioScoreExtension.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/StudentBundle/BioStudentBundle.php" afterPath="$PROJECT_DIR$/src/Bio/StudentBundle/BioStudentBundle.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/StudentBundle/DependencyInjection/BioStudentExtension.php" afterPath="$PROJECT_DIR$/src/Bio/StudentBundle/DependencyInjection/BioStudentExtension.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SurveyBundle/BioSurveyBundle.php" afterPath="$PROJECT_DIR$/src/Bio/SurveyBundle/BioSurveyBundle.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SurveyBundle/DependencyInjection/BioSurveyExtension.php" afterPath="$PROJECT_DIR$/src/Bio/SurveyBundle/DependencyInjection/BioSurveyExtension.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SwitchBundle/BioSwitchBundle.php" afterPath="$PROJECT_DIR$/src/Bio/SwitchBundle/BioSwitchBundle.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SwitchBundle/DependencyInjection/BioSwitchExtension.php" afterPath="$PROJECT_DIR$/src/Bio/SwitchBundle/DependencyInjection/BioSwitchExtension.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/BioTripBundle.php" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/BioTripBundle.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/DependencyInjection/BioTripExtension.php" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/DependencyInjection/BioTripExtension.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/UserBundle/BioUserBundle.php" afterPath="$PROJECT_DIR$/src/Bio/UserBundle/BioUserBundle.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/UserBundle/DependencyInjection/BioUserExtension.php" afterPath="$PROJECT_DIR$/src/Bio/UserBundle/DependencyInjection/BioUserExtension.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/Entity/Clicker.php" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/Entity/Clicker.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/Entity/ClickerGlobal.php" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/Entity/ClickerGlobal.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/Form/ClickerGlobalType.php" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/Form/ClickerGlobalType.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/Repository/ClickerRepository.php" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/Repository/ClickerRepository.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/Form/ClickerType.php" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/Form/ClickerType.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/DependencyInjection/Configuration.php" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/DependencyInjection/Configuration.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/DataBundle/DependencyInjection/Configuration.php" afterPath="$PROJECT_DIR$/src/Bio/DataBundle/DependencyInjection/Configuration.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/DependencyInjection/Configuration.php" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/DependencyInjection/Configuration.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/DependencyInjection/Configuration.php" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/DependencyInjection/Configuration.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/DependencyInjection/Configuration.php" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/DependencyInjection/Configuration.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/DependencyInjection/Configuration.php" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/DependencyInjection/Configuration.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ScoreBundle/DependencyInjection/Configuration.php" afterPath="$PROJECT_DIR$/src/Bio/ScoreBundle/DependencyInjection/Configuration.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/StudentBundle/DependencyInjection/Configuration.php" afterPath="$PROJECT_DIR$/src/Bio/StudentBundle/DependencyInjection/Configuration.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SurveyBundle/DependencyInjection/Configuration.php" afterPath="$PROJECT_DIR$/src/Bio/SurveyBundle/DependencyInjection/Configuration.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SwitchBundle/DependencyInjection/Configuration.php" afterPath="$PROJECT_DIR$/src/Bio/SwitchBundle/DependencyInjection/Configuration.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/DependencyInjection/Configuration.php" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/DependencyInjection/Configuration.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/UserBundle/DependencyInjection/Configuration.php" afterPath="$PROJECT_DIR$/src/Bio/UserBundle/DependencyInjection/Configuration.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Controller/ContentController.php" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Controller/ContentController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Controller/CourseController.php" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Controller/CourseController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Entity/CourseSection.php" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Entity/CourseSection.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Form/CourseSectionType.php" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Form/CourseSectionType.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/DataBundle/Objects/Database.php" afterPath="$PROJECT_DIR$/src/Bio/DataBundle/Objects/Database.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Controller/DefaultController.php" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Controller/DefaultController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Controller/DefaultController.php" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Controller/DefaultController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ScoreBundle/Controller/DefaultController.php" afterPath="$PROJECT_DIR$/src/Bio/ScoreBundle/Controller/DefaultController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/StudentBundle/Controller/DefaultController.php" afterPath="$PROJECT_DIR$/src/Bio/StudentBundle/Controller/DefaultController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SwitchBundle/Controller/DefaultController.php" afterPath="$PROJECT_DIR$/src/Bio/SwitchBundle/Controller/DefaultController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SurveyBundle/Tests/Controller/DefaultControllerTest.php" afterPath="$PROJECT_DIR$/src/Bio/SurveyBundle/Tests/Controller/DefaultControllerTest.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/js/DragDrop.js" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/js/DragDrop.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/DataBundle/Command/EmailCommand.php" afterPath="$PROJECT_DIR$/src/Bio/DataBundle/Command/EmailCommand.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Entity/EvalQuestion.php" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Entity/EvalQuestion.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Entity/Evaluation.php" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Entity/Evaluation.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Entity/Exam.php" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Entity/Exam.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Entity/ExamGlobal.php" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Entity/ExamGlobal.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Form/ExamGlobalType.php" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Form/ExamGlobalType.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Form/ExamType.php" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Form/ExamType.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Entity/File.php" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Entity/File.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Entity/FileBase.php" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Entity/FileBase.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Repository/FileBaseRepository.php" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Repository/FileBaseRepository.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Repository/FileRepository.php" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Repository/FileRepository.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Form/FileType.php" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Form/FileType.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Entity/Folder.php" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Entity/Folder.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Repository/FolderRepository.php" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Repository/FolderRepository.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Form/FolderType.php" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Form/FolderType.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Entity/Grade.php" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Entity/Grade.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Type/GradeType.php" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Type/GradeType.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Entity/Hours.php" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Entity/Hours.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Form/HoursType.php" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Form/HoursType.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Entity/Info.php" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Entity/Info.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Form/InfoType.php" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Form/InfoType.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/DataBundle/Command/InstallCommand.php" afterPath="$PROJECT_DIR$/src/Bio/DataBundle/Command/InstallCommand.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/LICENSE" afterPath="$PROJECT_DIR$/LICENSE" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Entity/Link.php" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Entity/Link.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Form/LinkType.php" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Form/LinkType.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/js/Namer.js" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/js/Namer.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Entity/Person.php" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Entity/Person.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Form/PersonType.php" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Form/PersonType.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/DataBundle/Type/PrivateTextType.php" afterPath="$PROJECT_DIR$/src/Bio/DataBundle/Type/PrivateTextType.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/Controller/PublicController.php" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/Controller/PublicController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Controller/PublicController.php" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Controller/PublicController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Controller/PublicController.php" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Controller/PublicController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Controller/PublicController.php" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Controller/PublicController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/UserBundle/Controller/PublicController.php" afterPath="$PROJECT_DIR$/src/Bio/UserBundle/Controller/PublicController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Entity/PublicGlobal.php" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Entity/PublicGlobal.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Entity/Question.php" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Entity/Question.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Form/QuestionType.php" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Form/QuestionType.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SwitchBundle/Entity/Request.php" afterPath="$PROJECT_DIR$/src/Bio/SwitchBundle/Entity/Request.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Entity/Response.php" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Entity/Response.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ScoreBundle/Entity/Scores.php" afterPath="$PROJECT_DIR$/src/Bio/ScoreBundle/Entity/Scores.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Entity/Section.php" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Entity/Section.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Form/SectionType.php" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Form/SectionType.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/DataBundle/Command/SetupCommand.php" afterPath="$PROJECT_DIR$/src/Bio/DataBundle/Command/SetupCommand.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ScoreBundle/Entity/Stat.php" afterPath="$PROJECT_DIR$/src/Bio/ScoreBundle/Entity/Stat.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/StudentBundle/Entity/Student.php" afterPath="$PROJECT_DIR$/src/Bio/StudentBundle/Entity/Student.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Form/StudentFolderType.php" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Form/StudentFolderType.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/StudentBundle/Repository/StudentRepository.php" afterPath="$PROJECT_DIR$/src/Bio/StudentBundle/Repository/StudentRepository.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/StudentBundle/Form/StudentType.php" afterPath="$PROJECT_DIR$/src/Bio/StudentBundle/Form/StudentType.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/StudentBundle/StudentUploader.php" afterPath="$PROJECT_DIR$/src/Bio/StudentBundle/StudentUploader.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SurveyBundle/Entity/Survey.php" afterPath="$PROJECT_DIR$/src/Bio/SurveyBundle/Entity/Survey.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SurveyBundle/Entity/SurveyQuestion.php" afterPath="$PROJECT_DIR$/src/Bio/SurveyBundle/Entity/SurveyQuestion.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/SymfonyRequirements.php" afterPath="$PROJECT_DIR$/app/SymfonyRequirements.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Entity/TestTaker.php" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Entity/TestTaker.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Entity/Trip.php" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Entity/Trip.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Entity/TripGlobal.php" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Entity/TripGlobal.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Form/TripGlobalType.php" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Form/TripGlobalType.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Form/TripType.php" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Form/TripType.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/DataBundle/Command/UpdateCommand.php" afterPath="$PROJECT_DIR$/src/Bio/DataBundle/Command/UpdateCommand.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/UserBundle/Entity/User.php" afterPath="$PROJECT_DIR$/src/Bio/UserBundle/Entity/User.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/UserBundle/Repository/UserRepository.php" afterPath="$PROJECT_DIR$/src/Bio/UserBundle/Repository/UserRepository.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/DoctrineMigrations/Version20130909155329.php" afterPath="$PROJECT_DIR$/app/DoctrineMigrations/Version20130909155329.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/DoctrineMigrations/Version20130911110229.php" afterPath="$PROJECT_DIR$/app/DoctrineMigrations/Version20130911110229.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/DoctrineMigrations/Version20130912120149.php" afterPath="$PROJECT_DIR$/app/DoctrineMigrations/Version20130912120149.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/DoctrineMigrations/Version20130912145831.php" afterPath="$PROJECT_DIR$/app/DoctrineMigrations/Version20130912145831.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/DoctrineMigrations/Version20130913111233.php" afterPath="$PROJECT_DIR$/app/DoctrineMigrations/Version20130913111233.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/DoctrineMigrations/Version20130913145336.php" afterPath="$PROJECT_DIR$/app/DoctrineMigrations/Version20130913145336.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/DoctrineMigrations/Version20130916091124.php" afterPath="$PROJECT_DIR$/app/DoctrineMigrations/Version20130916091124.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/DoctrineMigrations/Version20130916121938.php" afterPath="$PROJECT_DIR$/app/DoctrineMigrations/Version20130916121938.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/DoctrineMigrations/Version20130917140542.php" afterPath="$PROJECT_DIR$/app/DoctrineMigrations/Version20130917140542.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/DoctrineMigrations/Version20130923111554.php" afterPath="$PROJECT_DIR$/app/DoctrineMigrations/Version20130923111554.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/DoctrineMigrations/Version20130925163851.php" afterPath="$PROJECT_DIR$/app/DoctrineMigrations/Version20130925163851.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/DoctrineMigrations/Version20131001134822.php" afterPath="$PROJECT_DIR$/app/DoctrineMigrations/Version20131001134822.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/DoctrineMigrations/Version20131014150900.php" afterPath="$PROJECT_DIR$/app/DoctrineMigrations/Version20131014150900.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/DoctrineMigrations/Version20131014163002.php" afterPath="$PROJECT_DIR$/app/DoctrineMigrations/Version20131014163002.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/DoctrineMigrations/Version20131017130803.php" afterPath="$PROJECT_DIR$/app/DoctrineMigrations/Version20131017130803.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/DoctrineMigrations/Version20131118085750.php" afterPath="$PROJECT_DIR$/app/DoctrineMigrations/Version20131118085750.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/DoctrineMigrations/Version20131120143301.php" afterPath="$PROJECT_DIR$/app/DoctrineMigrations/Version20131120143301.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/DoctrineMigrations/Version20140123131523.php" afterPath="$PROJECT_DIR$/app/DoctrineMigrations/Version20140123131523.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/DoctrineMigrations/Version20140613130231.php" afterPath="$PROJECT_DIR$/app/DoctrineMigrations/Version20140613130231.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/DoctrineMigrations/Version20141009145416.php" afterPath="$PROJECT_DIR$/app/DoctrineMigrations/Version20141009145416.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/views/Announcement/announcement.html.twig" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/views/Announcement/announcement.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/app.php" afterPath="$PROJECT_DIR$/web/app.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/app_dev.php" afterPath="$PROJECT_DIR$/web/app_dev.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/autoload.php" afterPath="$PROJECT_DIR$/app/autoload.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/Resources/views/base.html.twig" afterPath="$PROJECT_DIR$/app/Resources/views/base.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/views/base.html.twig" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/views/base.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/base.html.twig" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/base.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/Template/blank.html.twig" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/Template/blank.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/css/bounce.css" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/css/bounce.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Public/browse.html.twig" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Public/browse.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/Public/buildings.txt" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/Public/buildings.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Public/check.json.twig" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Public/check.json.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/check.php" afterPath="$PROJECT_DIR$/app/check.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/views/Default/choose.html.twig" afterPath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/views/Default/choose.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/views/Admin/clear.html.twig" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/views/Admin/clear.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/views/Admin/clear.html.twig" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/views/Admin/clear.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/public/css/clicker.css" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/public/css/clicker.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/composer.json" afterPath="$PROJECT_DIR$/composer.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/composer.lock" afterPath="$PROJECT_DIR$/composer.lock" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/config/config.yml" afterPath="$PROJECT_DIR$/app/config/config.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/config/config_dev.yml" afterPath="$PROJECT_DIR$/app/config/config_dev.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/config/config_prod.yml" afterPath="$PROJECT_DIR$/app/config/config_prod.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/config/config_test.yml" afterPath="$PROJECT_DIR$/app/config/config_test.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/views/Default/confirm.html.twig" afterPath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/views/Default/confirm.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Public/confirmation.html.twig" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Public/confirmation.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/views/Default/confirmationEmail.html.twig" afterPath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/views/Default/confirmationEmail.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/views/CourseSection/coursesection.html.twig" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/views/CourseSection/coursesection.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/views/Default/declineEmail.html.twig" afterPath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/views/Default/declineEmail.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/views/Admin/download.xls.twig" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/views/Admin/download.xls.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Admin/edit.html.twig" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Admin/edit.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Admin/edit.html.twig" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Admin/edit.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Admin/editQuestion.html.twig" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Admin/editQuestion.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/public/css/editor.css" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/public/css/editor.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/DataBundle/Resources/views/Default/email.html.twig" afterPath="$PROJECT_DIR$/src/Bio/DataBundle/Resources/views/Default/email.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Public/email.html.twig" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Public/email.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/Resources/TwigBundle/views/Exception/error.html.twig" afterPath="$PROJECT_DIR$/app/Resources/TwigBundle/views/Exception/error.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Public/eval.html.twig" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Public/eval.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Admin/evals.html.twig" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Admin/evals.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/public/css/exam.css" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/public/css/exam.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Admin/exam.html.twig" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Admin/exam.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Public/exam.html.twig" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Public/exam.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/views/Default/find.html.twig" afterPath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/views/Default/find.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/StudentBundle/Resources/views/Default/find.html.twig" afterPath="$PROJECT_DIR$/src/Bio/StudentBundle/Resources/views/Default/find.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/css/folder.css" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/public/css/folder.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/Default/folder.html.twig" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/Default/folder.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/css/form.css" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/css/form.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/form_errors.html.twig" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/form_errors.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/public/css/form_extension.css" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/public/css/form_extension.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/Public/css/form_extension.css" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/Public/css/form_extension.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Public/grade.html.twig" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Public/grade.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Public/guide.html.twig" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Public/guide.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Public/guideViewTrip.html.twig" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Public/guideViewTrip.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/views/Hours/hours.html.twig" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/views/Hours/hours.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/views/Admin/index.html.twig" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/views/Admin/index.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/Default/index.html.twig" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/Default/index.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/views/Default/index.html.twig" afterPath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/views/Default/index.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SurveyBundle/Resources/views/Admin/index.html.twig" afterPath="$PROJECT_DIR$/src/Bio/SurveyBundle/Resources/views/Admin/index.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Admin/index.html.twig" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Admin/index.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/UserBundle/Resources/views/Admin/index.html.twig" afterPath="$PROJECT_DIR$/src/Bio/UserBundle/Resources/views/Admin/index.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/doc/index.rst" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/doc/index.rst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/doc/index.rst" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/doc/index.rst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/doc/index.rst" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/doc/index.rst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/doc/index.rst" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/doc/index.rst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/doc/index.rst" afterPath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/doc/index.rst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/StudentBundle/Resources/doc/index.rst" afterPath="$PROJECT_DIR$/src/Bio/StudentBundle/Resources/doc/index.rst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SurveyBundle/Resources/doc/index.rst" afterPath="$PROJECT_DIR$/src/Bio/SurveyBundle/Resources/doc/index.rst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/doc/index.rst" afterPath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/doc/index.rst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/doc/index.rst" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/doc/index.rst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/UserBundle/Resources/doc/index.rst" afterPath="$PROJECT_DIR$/src/Bio/UserBundle/Resources/doc/index.rst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/css/instruction.css" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/css/instruction.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/views/Admin/instruction.html.twig" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/views/Admin/instruction.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Admin/instruction.html.twig" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Admin/instruction.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/views/Admin/instruction.html.twig" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/views/Admin/instruction.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/views/Course/instruction.html.twig" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/views/Course/instruction.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/Content/instruction.html.twig" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/Content/instruction.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/Default/instruction.html.twig" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/Default/instruction.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/views/Default/instruction.html.twig" afterPath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/views/Default/instruction.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/StudentBundle/Resources/views/Default/instruction.html.twig" afterPath="$PROJECT_DIR$/src/Bio/StudentBundle/Resources/views/Default/instruction.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/views/Default/instruction.html.twig" afterPath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/views/Default/instruction.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Admin/instruction.html.twig" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Admin/instruction.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/UserBundle/Resources/views/Public/login.html.twig" afterPath="$PROJECT_DIR$/src/Bio/UserBundle/Resources/views/Public/login.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Public/main.html.twig" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Public/main.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/main.html.twig" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/main.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/views/Admin/manage.html.twig" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/views/Admin/manage.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/views/Default/matches.html.twig" afterPath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/views/Default/matches.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/translations/messages.fr.xlf" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/translations/messages.fr.xlf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/translations/messages.fr.xlf" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/translations/messages.fr.xlf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/translations/messages.fr.xlf" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/translations/messages.fr.xlf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/translations/messages.fr.xlf" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/translations/messages.fr.xlf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/translations/messages.fr.xlf" afterPath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/translations/messages.fr.xlf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/StudentBundle/Resources/translations/messages.fr.xlf" afterPath="$PROJECT_DIR$/src/Bio/StudentBundle/Resources/translations/messages.fr.xlf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SurveyBundle/Resources/translations/messages.fr.xlf" afterPath="$PROJECT_DIR$/src/Bio/SurveyBundle/Resources/translations/messages.fr.xlf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/translations/messages.fr.xlf" afterPath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/translations/messages.fr.xlf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/translations/messages.fr.xlf" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/translations/messages.fr.xlf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/UserBundle/Resources/translations/messages.fr.xlf" afterPath="$PROJECT_DIR$/src/Bio/UserBundle/Resources/translations/messages.fr.xlf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/views/Default/notificationEmail.html.twig" afterPath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/views/Default/notificationEmail.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/css/page.css" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/css/page.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/config/parameters.yml.dist" afterPath="$PROJECT_DIR$/app/config/parameters.yml.dist" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/views/Person/person.html.twig" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/views/Person/person.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/phpunit.xml.dist" afterPath="$PROJECT_DIR$/app/phpunit.xml.dist" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/public/css/pikaday.css" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/public/css/pikaday.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/public/js/pikaday.js" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/public/js/pikaday.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Admin/preview.html.twig" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Admin/preview.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Public/promo.html.twig" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Public/promo.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/css/public.css" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/css/public.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Admin/question.html.twig" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Admin/question.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/views/Public/register.html.twig" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/views/Public/register.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/views/Default/requests.html.twig" afterPath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/views/Default/requests.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Public/review.html.twig" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Public/review.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Admin/review.html.twig" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Admin/review.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/robots.txt" afterPath="$PROJECT_DIR$/web/robots.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/config/routing.yml.dist" afterPath="$PROJECT_DIR$/app/config/routing.yml.dist" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/config/routing.yml" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/config/routing.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/config/routing.yml" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/config/routing.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/config/routing.yml" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/config/routing.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/config/routing.yml" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/config/routing.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/config/routing.yml" afterPath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/config/routing.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/StudentBundle/Resources/config/routing.yml" afterPath="$PROJECT_DIR$/src/Bio/StudentBundle/Resources/config/routing.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/config/routing.yml" afterPath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/config/routing.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/config/routing.yml" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/config/routing.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/UserBundle/Resources/config/routing.yml" afterPath="$PROJECT_DIR$/src/Bio/UserBundle/Resources/config/routing.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/config/routing_dev.yml" afterPath="$PROJECT_DIR$/app/config/routing_dev.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/views/Section/section.html.twig" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/views/Section/section.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/config/security.yml" afterPath="$PROJECT_DIR$/app/config/security.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/config/services.xml" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/config/services.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/DataBundle/Resources/config/services.xml" afterPath="$PROJECT_DIR$/src/Bio/DataBundle/Resources/config/services.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/config/services.xml" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/config/services.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/config/services.xml" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/config/services.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/config/services.xml" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/config/services.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/config/services.xml" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/config/services.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/config/services.xml" afterPath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/config/services.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/StudentBundle/Resources/config/services.xml" afterPath="$PROJECT_DIR$/src/Bio/StudentBundle/Resources/config/services.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SurveyBundle/Resources/config/services.xml" afterPath="$PROJECT_DIR$/src/Bio/SurveyBundle/Resources/config/services.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/config/services.xml" afterPath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/config/services.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/config/services.xml" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/config/services.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/UserBundle/Resources/config/services.xml" afterPath="$PROJECT_DIR$/src/Bio/UserBundle/Resources/config/services.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/Content/sidebar.html.twig" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/Content/sidebar.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/config/sidebar.yml.dist" afterPath="$PROJECT_DIR$/app/config/sidebar.yml.dist" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/config/sidebar.yml" afterPath="$PROJECT_DIR$/src/Bio/ClickerBundle/Resources/config/sidebar.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/config/sidebar.yml" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/config/sidebar.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/config/sidebar.yml" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/config/sidebar.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/config/sidebar.yml" afterPath="$PROJECT_DIR$/src/Bio/InfoBundle/Resources/config/sidebar.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/config/sidebar.yml" afterPath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/config/sidebar.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/StudentBundle/Resources/config/sidebar.yml" afterPath="$PROJECT_DIR$/src/Bio/StudentBundle/Resources/config/sidebar.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/config/sidebar.yml" afterPath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/config/sidebar.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/config/sidebar.yml" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/config/sidebar.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/UserBundle/Resources/config/sidebar.yml" afterPath="$PROJECT_DIR$/src/Bio/UserBundle/Resources/config/sidebar.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/Template/singleForm.html.twig" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/Template/singleForm.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Public/start.html.twig" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Public/start.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/views/structure.html.twig" afterPath="$PROJECT_DIR$/src/Bio/FolderBundle/Resources/views/structure.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/Content/structure.html.twig" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/Content/structure.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/public/js/switcher.js" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/public/js/switcher.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/public/css/tableextension.css" afterPath="$PROJECT_DIR$/src/Bio/ScoreBundle/Resources/public/css/tableextension.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/public/js/tags.js" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/public/js/tags.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Public/timer.html.twig" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Public/timer.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/Content/title.html.twig" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/views/Content/title.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/css/tool-tip.css" afterPath="$PROJECT_DIR$/src/Bio/PublicBundle/Resources/public/css/tool-tip.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/public/css/trip.css" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/public/css/trip.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Public/tripTemplate.html.twig" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Public/tripTemplate.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Public/view.html.twig" afterPath="$PROJECT_DIR$/src/Bio/TripBundle/Resources/views/Public/view.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Public/wait.html.twig" afterPath="$PROJECT_DIR$/src/Bio/ExamBundle/Resources/views/Public/wait.html.twig" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/views/Default/wait.html.twig" afterPath="$PROJECT_DIR$/src/Bio/SwitchBundle/Resources/views/Default/wait.html.twig" />
+    </list>
+    <ignored path="course-site.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="DaemonCodeAnalyzer">
+    <disable_hints />
+  </component>
+  <component name="FavoritesManager">
+    <favorites_list name="course-site" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file leaf-file-name="AdminController.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/Bio/ClickerBundle/Controller/AdminController.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2193">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="172" />
+    <option name="y" value="47" />
+    <option name="width" value="1279" />
+    <option name="height" value="986" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+    <OptionsSetting value="true" id="Add" />
+    <OptionsSetting value="true" id="Remove" />
+    <OptionsSetting value="true" id="Checkout" />
+    <OptionsSetting value="true" id="Update" />
+    <OptionsSetting value="true" id="Status" />
+    <OptionsSetting value="true" id="Edit" />
+    <ConfirmationsSetting value="0" id="Add" />
+    <ConfirmationsSetting value="0" id="Remove" />
+  </component>
+  <component name="ProjectReloadState">
+    <option name="STATE" value="0" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="course-site" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="course-site" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="course-site" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="course-site" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="course-site" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="course-site" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="course-site" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Bio" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="course-site" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="course-site" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Bio" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ClickerBundle" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="course-site" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="course-site" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Bio" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ClickerBundle" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Controller" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="FullScreen" value="false" />
+  </component>
+  <component name="RunManager">
+    <list size="0" />
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="bdaf7082-a1cb-45b3-bf3d-eeea0c0e5a7c" name="Default" comment="" />
+      <created>1416503492680</created>
+      <option name="number" value="Default" />
+      <updated>1416503492680</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="172" y="47" width="1279" height="986" extended-state="0" />
+    <editor active="false" />
+    <layout>
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.27970898" sideWeight="0.5" order="-1" side_tool="false" content_ui="combo" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="myTodoPanelSettings">
+      <TodoPanelSettings />
+    </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager />
+    <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/Bio/ClickerBundle/Controller/AdminController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2193">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
+
