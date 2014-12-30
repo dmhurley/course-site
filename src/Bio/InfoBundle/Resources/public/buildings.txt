@@ -1,0 +1,321 @@
+AAA	14700 N.E. 95th 102, Redmond, WA
+AAB	4513 University Way N.E.
+AAH	506 Second Avenue
+ABP	Ann Building Partnership
+ACC	Academic Computer Center
+ADA	3945 15th Avenue N.E.
+ADI	3937 15th Avenue N.E.
+ADL	Aerodynamics Laboratory
+ADS	4545 15th Avenue N.E.
+AER	Aerospace and Engineering Research Building
+AFC	Architect Mobile Field Construction Office
+AHO	1415 N.E. 45th Street
+AL1	6987 Perimeter Road South
+ALB	Allen Library
+AMB	Athletic Maintenance Building
+AMS	Warner Road, Rainbow Lake, NY
+AND	Anderson Hall
+ARB	Arboretum Buildings
+ARC	Architecture Hall
+ARI	2366 Eastlake Avenue East
+ART	Art Building
+ASC	Architect South Campus Construction Office
+ASH	Aero Svcs Hangar Office
+ATG	Atmospheric Sciences-Geophysics Building
+ATS	1209 N.E. 41st Street
+AUR	12500 Aurora Ave N
+AVA	Allen Center for The Visual Arts
+BAB	1802 Bellevue Ave.
+BAG	Bagley Hall
+BBK	Birmingham Block
+BBL	Big Beef Creek Laboratory
+BCA	4041 Roosevelt Way N.E.
+BGH	Botany Greenhouse
+BHA	Botany Greenhouse Annex
+BHS	Birmingham Hay & Seed
+BIOE	W.H. Foege Bioengineering
+BL1	Bothell Branch Campus
+BL2	22032-23RD Drive SE, Bothell
+BLD	Bloedel Hall
+BLM	Balmer Hall
+BLV	Blakeley Village
+BMC	600 Broadway
+BMM	Burke Memorial-Washington State Museum
+BMS	Bristol Meyers Squibb Building
+BNS	Benson Hall
+BOW	4625 Union Bay Place
+BRA	Bryants Annex
+BRK	Brooklyn Building
+BRY	Bryants Building
+CCC	Child Care Center
+CDA	4516 University Avenue NE
+CDE	150 Nickerson Street
+CDH	Condon Hall
+CFU	1303 N.E. Boat Street
+CHB	Chemistry Building
+CHD	Center on Human Development and Disability
+CHL	Chemistry Library Building
+CHM	Childrens Hospital and Medical Center
+CLB	Consolidated Laundry Buildings
+CLK	Clark Hall
+CMA	Ceramic and Metal Arts Building
+CMT	901 Boren Ave
+CMU	Communications Building
+CNH	Canoe House
+CPG	Central Plaza Garage
+CRB	Corbet Building
+CRN	2121 N. 35th Street
+CSB	1501 4th Avenue (Century Square Building)
+CSE	Paul G. Allen Center for Computer Science & Engineering
+CSH	Conibear Shellhouse
+CYB	Corporation Yard Buildings
+DEN	Denny Hall
+DIC	5025 25th Avenue N.E.
+DRC	Douglas Research Conservatory
+DSC	3941 University Way N.E.
+ECC	Ethnic Cultural Center
+ECE	3201 Fremont Avenue N.
+EDP	Edmundson Pavilion
+EEB	Electrical Engineering Building
+EEC	Bank of America Executive Education Center
+EGA	Engineering Annex
+EGL	Eagleson Hall
+EHD	668 N. E. Northlake Way
+EIC	3939 University Way N.E.
+ELB	Engineering Library
+ELD	Elkind Hall
+ESB	Environmental Safety Storage Building
+ESO	Environmental Safety Office Building
+FAC	Faculty Center
+FAD	2367 Tacoma Avenue
+FCB	Financial Center Building
+FIS	Fisheries Center
+FLK	Fluke Hall
+FRH	Friday Harbor Laboratories
+FRI	Fisheries Research Institute
+FSC	9725 3rd Avenue N.E.
+FSH	Fishery Science Building
+FTA	124 Fishermans Terminal
+FTR	Fisheries Teaching and Research Building
+FUA	2401 Utah Street South
+GA1	Guthrie Annex 1
+GA2	Guthrie Annex 2
+GA3	Guthrie Annex 3
+GA4	Guthrie Annex 4
+GAB	Graves Annex Building
+GCS	3935 University Way N.E.
+GDR	Golf Driving Range Building
+GHS	Gate Houses
+GIL	Gilman Building
+GLD	Gould Hall
+GMN	German Heritage Society
+GRB	Gerberding Hall
+GNOM	W.H. Foege Genome Sciences
+GRL	2001 6th Avenue
+GTH	Guthrie Hall
+GUA	Guggenheim Annex
+GUG	Guggenheim Hall
+GWN	Gowen Hall
+GWP	Garretson-Woodruff-Prat
+HAG	Henry Art Gallery
+HBT	1401 N.E. Boat
+HCB	1801 Roeder Avenue, (Harbor Ctr. Bldg.), Bellingham
+HCD	1910 Fairview Avenue E.
+HCK	Hitchcock Hall
+HGT	Haggett Hall
+HHA	Harborview Hall
+HHL	Harris Hydraulics Laboratory
+HJC	1016 Jefferson Street
+HLL	Hall Health Center
+HND	Henderson Hall
+HNS	Hansee Hall
+HPF	Hanger C-78, Paine Field
+HPG	Haggett Parking Garage
+HPT	Hughes Penthouse Theatre
+HS4	Health Sciences Annex 4
+HSA	Magnuson Health Sciences Center, Wings A, B, C
+HSB	Magnuson Health Sciences Center, Wings AA, BB
+HSD	Magnuson Health Sciences Center, Wings D, E, F, G,
+HSG	Magnuson Health Sciences Center, Wings G, H & I Add
+HSI	Magnuson Health Sciences Center, Wing I
+HSJ	Magnuson Health Sciences Center, Wing J
+HSK	Fialkow Biomedical Sciences Research Pavilion
+HSR	Magnuson Health Sciences Center, Wing RR
+HST	Magnuson Health Sciences Center, Wing T
+HUB	Student Union Building
+HUT	Hutchinson Hall
+IBM	1200 5th Avenue
+IC2	3930 Brooklyn Avenue N.E.
+ICH	Cunningham Hall
+ICT	Instructional Center/Theater
+IMA	Intramural Activities Building
+ISA	Isaacson Hall
+JAD	1201 Jadwin Ave
+JHA	Johnson Annex A
+JHN	Johnson Hall
+KIN	Kincaid Hall
+KIR	Kirsten Aeronautical Laboratory
+KNE	Kane Hall
+KNG	4909 25th Avenue N.E.
+KOB	Kobe Park Bldg
+KTV	KCTS-TV Transmitter Building
+LA1	Lewis Annex 1
+LA2	Lewis Annex 2
+LAV	Laurel Village
+LAW	William H. Gates Hall
+LBR	Library Building
+LEW	Lewis Hall
+LOW	Loew Hall
+LPB	7900 E Greenlake Dr N
+LPR	1914 N. 34th
+LSS	4042 12th Avenue N.E.
+LTH	Lander-Terry Halls
+LTP	Lander-Terry Parking Garage
+MAR	Marine Studies Building
+MCC	McCarty Hall
+MCM	McMahon Hall
+MCR	Mercer Hall
+MDX	307 South 12th Avenue, Yakima, Wa
+MEB	Mechanical Engineering Building
+MER	Merrill Hall
+MGH	Mary Gates Hall
+MKZ	Mackenzie Hall
+MLB	401 Queen Anne Avenue
+MLR	Miller Hall
+MNR	Manastash Ridge Observatory
+MNY	Meany Hall
+MOR	More Hall
+MP1	1100 Olive Way
+MP2	West 104th Fifth Ave, Spokane
+MPE	1730 Minor Avenue
+MPG	McMahon Parking Garage
+MSB	Marine Sciences Building
+MSS	4034 12th Avenue N.E.
+MTA	1326 5th Avenue
+MUE	Mueller Hall
+MUS	Music Building
+MX2	Arlington Airport Office Space
+NHH	10750 30th Avenue N.E.
+NHS	Northwest Horticultural Society Hall
+NIN	700 Ninth Avenue
+NLB	Northlake Building
+NLR	1203 James Street
+NNL	927 North Northlake Way
+NPC	Nuclear Physics Laboratory
+NPS	Nuclear Physics Laboratory
+NPV	Nuclear Physics Laboratory
+NRB	Nuclear Reactor Building
+NTC	Nordstrom Tennis Center
+NWM	1001 Broadway
+OAK	Oaktree Building
+OBS	Observatory
+OCE	Oceanography Building
+ODB	Oceanography Dock Building
+OR1	Ocean Research Bldg. 1
+OR2	Ocean Research Bldg. 2
+ORN	Olympic Natural Resource Center
+OSS	Oceanography Storage Shed
+OTB	Oceanography Teaching Building
+OTS	1429 N.E. Boat Street
+OTT	4225 Roosevelt Way N.E.
+OUG	Odegaard Undergraduate Library
+PAA	Pacific Apartments
+PAB	Physics-Astronomy Building
+PAH	180 Nickerson Street
+PAR	Parrington Hall
+PCH	Purchasing and Accounting Building
+PCK	Pack Forest
+PDL	Padelford Hall
+PHT	Playhouse Theater
+PL1	Plant Laboratory Annex
+PL2	Plant Lab Annex 2
+PLT	Plant Laboratory
+PMC	Pacific Medical Center
+PO2	Plant Operations Annex 2
+PO3	Plant Operations Annex 3
+PO4	Plant Operations Annex 4
+PO5	Plant Operations Annex 5
+PO6	Plant Operations Annex 6
+POB	Plant Operations Building
+PPG	Padelford Parking Garage
+PPO	Physical Plant Office Building
+PRC	4059 Roosevelt Way N.E.
+PRO	909 N.E. 43rd
+PRR	President's Residence
+PSA	Plant Services Annex
+PSB	Plant Services Building
+PSV	Publications Services Building
+PTS	5020 25th Avenue N.E.
+PVP	Pavilion Pool
+PWR	Power Plant
+PWY	Parkway Housing
+QUC	4245 Roosevelt Way N.E.
+RAI	Raitt Hall
+RAX	Roberts Annex
+REC	4535 Union Bay Place
+ROB	Roberts Hall
+RPC	1101 Westlake Avenue N.
+RUS	Russian House
+SAV	Savery Hall
+SBT	4025 13th Avenue West
+SCB	Stadium Concession Buildings
+SCC	South Campus Center
+SCG	Stevens Court Parking Garage
+SEB	Staff Employment Building
+SGS	3947 University Way N.E.
+SHA	Shellhouse Annex 1
+SIG	Sieg Hall
+SMI	Smith Hall
+SMT	506 Second Avenue
+SMZ	Schmitz Hall
+SOC	146 N. Canal Street
+SPG	South Campus Parking Garage
+SPH	Sand Point Housing
+SSB	Staff Services Building
+SSO	444 N Capitol Street, Washington DC
+ST1	Snoqualmie Building
+ST2	Tacoma Paper and Stationary
+ST3	Dougan Building
+ST4	Shed Building
+STC	Stevens Court
+STD	Stadium
+STL	2203 Airport Way South
+SUZ	Suzzallo Library
+SWS	Social Work/Speech and Hearing Sciences Building
+TGB	Graves Hall
+THO	Thomson Hall
+TPG	Traingle Parking Garage
+TSB	Transportation Services Building
+UDB	1107 N.E. 45th Street
+UEC	5001 - 25th Avenue N.E.
+UED	1325 4th Avenue
+UFA	University Facilities Annex
+UFB	University Facilities Building
+UHF	Urban Horticulture Field House
+ULB	105 14th Avenue
+UMC	University Medical Center, Wings CC, EE, NE, NN, N
+UME	University Medical Center, Wings EA, EB, EC
+URC	University Records Center
+URO	2923 N.E. Blakeley Street
+UTO	4001-7 University Way N.E.
+UX1	West 1411 Fourth Avenue
+UX2	2445-140th Avenue NE
+VIC	Visitors Information Center
+VIR	12001-6TH Avenue
+WAC	Waterfront Activities Center
+WCG	West Coast Grocery Building
+WCL	Wilson Ceramic Laboratory
+WCP	West Campus Parking Garage
+WFS	Winkenwerder Forest Sciences Laboratory
+WGB	Walsh Gardner Building
+WIL	Wilcox Hall
+WLA	Wilson Annex
+WMC	320 N 6th Street, Sunnyside, Wa
+WNX	Winkenwerder Annex
+WPW	204 South Broadway, Westport, Washington
+WRS	West Receiving Station
+WSG	3710 Brooklyn Avenue N.E.
+WSL	West Seattle Laboratories
+WSP	3716 Brooklyn Avenue N.E.
+YCC	Yakima Community Center
+ZAK	4522 University Way NE
