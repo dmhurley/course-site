@@ -140,7 +140,7 @@ class PublicController extends Controller
                                ->changePassword(
                                     $user,
                                     $encoderFactory,
-                                    $form->get('password')->getData()
+                                    $form->get('new')->getData()
                                 );
 
                 $flash->set(
