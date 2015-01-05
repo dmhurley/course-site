@@ -19,7 +19,7 @@ class Version20130909155329 extends AbstractMigration
         $this->addSql("CREATE TABLE Clicker (id INT AUTO_INCREMENT NOT NULL, cid VARCHAR(255) NOT NULL, studentID INT DEFAULT NULL, UNIQUE INDEX UNIQ_C80B99594B30D9C4 (cid), UNIQUE INDEX UNIQ_C80B9959A3D10F50 (studentID), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB");
         $this->addSql("CREATE TABLE Base (id INT AUTO_INCREMENT NOT NULL, person_id INT DEFAULT NULL, type VARCHAR(255) NOT NULL, timestamp DATETIME DEFAULT NULL, expiration DATETIME DEFAULT NULL, text LONGTEXT DEFAULT NULL, title VARCHAR(255) DEFAULT NULL, address VARCHAR(2048) DEFAULT NULL, location VARCHAR(255) DEFAULT NULL, fName VARCHAR(255) DEFAULT NULL, lName VARCHAR(255) DEFAULT NULL, email VARCHAR(255) DEFAULT NULL, bldg VARCHAR(255) DEFAULT NULL, room VARCHAR(255) DEFAULT NULL, name VARCHAR(255) DEFAULT NULL, day VARCHAR(255) DEFAULT NULL, start TIME DEFAULT NULL, end TIME DEFAULT NULL, days VARCHAR(255) DEFAULT NULL, byAppointment TINYINT(1) DEFAULT NULL, UNIQUE INDEX UNIQ_6086515F5E237E06 (name), INDEX IDX_6086515F217BBB47 (person_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB");
         $this->addSql("CREATE TABLE Info (id INT AUTO_INCREMENT NOT NULL, courseNumber VARCHAR(255) NOT NULL, title VARCHAR(255) NOT NULL, qtr VARCHAR(255) NOT NULL, year INT NOT NULL, days LONGTEXT NOT NULL COMMENT '(DC2Type:array)', startTime TIME NOT NULL, endTime TIME NOT NULL, bldg VARCHAR(255) NOT NULL, room VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB");
-        $this->addSql("CREATE TABLE FileBase (id INT AUTO_INCREMENT NOT NULL, parent_id INT DEFAULT NULL, type VARCHAR(255) NOT NULL, name VARCHAR(255) DEFAULT NULL, private TINYINT(1) DEFAULT NULL, path VARCHAR(1024) DEFAULT NULL, INDEX IDX_FBD8A46A727ACA70 (parent_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB");
+        $this->addSql("CREATE TABLE filebase (id INT AUTO_INCREMENT NOT NULL, parent_id INT DEFAULT NULL, type VARCHAR(255) NOT NULL, name VARCHAR(255) DEFAULT NULL, private TINYINT(1) DEFAULT NULL, path VARCHAR(1024) DEFAULT NULL, INDEX IDX_FBD8A46A727ACA70 (parent_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB");
         $this->addSql("CREATE TABLE AbstractUserStudent (id INT AUTO_INCREMENT NOT NULL, salt VARCHAR(255) NOT NULL, type VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB");
         $this->addSql("CREATE TABLE User (id INT NOT NULL, username VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL COMMENT '(DC2Type:privatestring)', password VARCHAR(255) NOT NULL, roles LONGTEXT NOT NULL COMMENT '(DC2Type:array)', UNIQUE INDEX UNIQ_2DA17977F85E0677 (username), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB");
         $this->addSql("CREATE TABLE Scores (id INT AUTO_INCREMENT NOT NULL, sid VARCHAR(255) NOT NULL COMMENT '(DC2Type:privatestring)', scores LONGTEXT NOT NULL COMMENT '(DC2Type:array)', PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB");
@@ -47,7 +47,7 @@ class Version20130909155329 extends AbstractMigration
         $this->addSql("ALTER TABLE Student ADD CONSTRAINT FK_789E96AFBF396750 FOREIGN KEY (id) REFERENCES AbstractUserStudent (id) ON DELETE CASCADE");
         $this->addSql("ALTER TABLE Clicker ADD CONSTRAINT FK_C80B9959A3D10F50 FOREIGN KEY (studentID) REFERENCES AbstractUserStudent (id) ON DELETE CASCADE");
         $this->addSql("ALTER TABLE Base ADD CONSTRAINT FK_6086515F217BBB47 FOREIGN KEY (person_id) REFERENCES Base (id)");
-        $this->addSql("ALTER TABLE FileBase ADD CONSTRAINT FK_FBD8A46A727ACA70 FOREIGN KEY (parent_id) REFERENCES FileBase (id)");
+        $this->addSql("ALTER TABLE filebase ADD CONSTRAINT FK_FBD8A46A727ACA70 FOREIGN KEY (parent_id) REFERENCES filebase (id)");
         $this->addSql("ALTER TABLE User ADD CONSTRAINT FK_2DA17977BF396750 FOREIGN KEY (id) REFERENCES AbstractUserStudent (id) ON DELETE CASCADE");
         $this->addSql("ALTER TABLE Evaluation ADD CONSTRAINT FK_5C7EA6A5A3D10F50 FOREIGN KEY (studentID) REFERENCES AbstractUserStudent (id) ON DELETE CASCADE");
         $this->addSql("ALTER TABLE Evaluation ADD CONSTRAINT FK_5C7EA6A5E0B6FCC7 FOREIGN KEY (tripID) REFERENCES Trip (id) ON DELETE CASCADE");
@@ -79,7 +79,7 @@ class Version20130909155329 extends AbstractMigration
 
         $this->addSql("INSERT INTO `TripGlobal` (`opening`, `closing`, `maxTrips`, `evalDue`, `guidePass`, `instructions`, `promo`) VALUES ('2013-09-20 09:39:25', '2013-09-20 09:39:25', 1, 5, '', 'Trip instructions go here.', 'Trip promo goes here.');");
         $this->addSql("INSERT INTO `ExamGlobal` (`grade`, `rules`) VALUES (2, 'Exam rules go here.');");
-        $this->addSql("INSERT INTO `FileBase` (`id`, `parent_id`, `type`, `name`, `private`, `path`) VALUES (1, NULL, 'folder', 'root', 0, NULL);");
+        $this->addSql("INSERT INTO `filebase` (`id`, `parent_id`, `type`, `name`, `private`, `path`) VALUES (1, NULL, 'folder', 'root', 0, NULL);");
         $this->addSql("INSERT INTO `Info` (`courseNumber`, `title`, `qtr`, `year`, `days`, `startTime`, `endTime`, `bldg`, `room`, `email`) VALUES ('999', 'Biologiology', 'summer', 2013, 'a:3:{i:0;s:1:\"m\";i:1;s:1:\"w\";i:2;s:1:\"f\";}', '09:15:14', '09:15:14', 'HCK	Hitchcock Hall', '120', 'fakeemail@gmail.com')");
     }
 
@@ -92,7 +92,7 @@ class Version20130909155329 extends AbstractMigration
         $this->addSql("ALTER TABLE Base DROP FOREIGN KEY FK_6086515F217BBB47");
         $this->addSql("ALTER TABLE Request DROP FOREIGN KEY FK_F42AB6037982A08");
         $this->addSql("ALTER TABLE requested_sections DROP FOREIGN KEY FK_5AE50A08577906E4");
-        $this->addSql("ALTER TABLE FileBase DROP FOREIGN KEY FK_FBD8A46A727ACA70");
+        $this->addSql("ALTER TABLE filebase DROP FOREIGN KEY FK_FBD8A46A727ACA70");
         $this->addSql("ALTER TABLE Student DROP FOREIGN KEY FK_789E96AFBF396750");
         $this->addSql("ALTER TABLE Clicker DROP FOREIGN KEY FK_C80B9959A3D10F50");
         $this->addSql("ALTER TABLE User DROP FOREIGN KEY FK_2DA17977BF396750");
@@ -125,7 +125,7 @@ class Version20130909155329 extends AbstractMigration
         $this->addSql("DROP TABLE Clicker");
         $this->addSql("DROP TABLE Base");
         $this->addSql("DROP TABLE Info");
-        $this->addSql("DROP TABLE FileBase");
+        $this->addSql("DROP TABLE filebase");
         $this->addSql("DROP TABLE AbstractUserStudent");
         $this->addSql("DROP TABLE User");
         $this->addSql("DROP TABLE Scores");
