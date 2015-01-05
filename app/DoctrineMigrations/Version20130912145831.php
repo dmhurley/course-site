@@ -15,8 +15,8 @@ class Version20130912145831 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != "mysql", "Migration can only be executed safely on 'mysql'.");
         
-        $this->addSql("UPDATE FileBase SET name = title WHERE type = 'link'");
-        $this->addSql("ALTER TABLE FileBase DROP title");
+        $this->addSql("UPDATE filebase SET name = title WHERE type = 'link'");
+        $this->addSql("ALTER TABLE filebase DROP title");
     }
 
     public function down(Schema $schema)
@@ -24,7 +24,7 @@ class Version20130912145831 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != "mysql", "Migration can only be executed safely on 'mysql'.");
         
-        $this->addSql("ALTER TABLE FileBase ADD title VARCHAR(255) DEFAULT NULL");
-        $this->addSql("UPDATE FileBase SET title = name, name = NULL WHERE type = 'link'");
+        $this->addSql("ALTER TABLE filebase ADD title VARCHAR(255) DEFAULT NULL");
+        $this->addSql("UPDATE filebase SET title = name, name = NULL WHERE type = 'link'");
     }
 }
