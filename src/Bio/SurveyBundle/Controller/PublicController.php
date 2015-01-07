@@ -63,6 +63,15 @@ class PublicController extends Controller
             }
         }
 
+        if ($survey->getHidden()) {
+            $flash->set('failure', 'Survey is not open.');
+            if ($request->headers->get('referer')) {
+                return $this->redirect($request->headers->get('referer'));
+            } else {
+                return $this->redirect($this->generateUrl('view_surveys'));
+            }
+        }
+
         if ($repo->hasTaken($survey, $user)) {
             $flash->set('failure', 'Survey already taken.');
             return $this->redirect(

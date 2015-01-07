@@ -41,6 +41,7 @@ class SurveyRepository extends EntityRepository {
                     )
                 )
                 WHERE t.id IS NULL
+                AND s.hidden = false
             ')
             ->setParameter('student', $user)
             ->getResult();

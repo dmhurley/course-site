@@ -6,7 +6,7 @@
         {% for survey in surveys %}
             <li>{{survey.name}} - <a href="{{ path('take_survey', {'id' : survey.id}) }}">take</a></li>
         {% else %}
-            <span>No surveys to take</span>
+            <span>No surveys to take.</span>
         {% endfor %}
     </ul>
 
@@ -15,7 +15,7 @@
         {% for survey in completed %}
             <li>{{survey.name}} - <a href="{{ path('review_survey', {'id' : survey.id}) }}">review</a></li>
         {% else %}
-            <span>No surveys to take</span>
+            <span>No surveys to review.</span>
         {% endfor %}
     </ul>
 {% endblock %}
