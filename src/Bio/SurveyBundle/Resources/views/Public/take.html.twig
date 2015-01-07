@@ -1,5 +1,33 @@
 {% extends 'BioExamBundle:Public:main.html.twig' %}
 
+{% block head %}
+    {{parent()}}
+
+    <style>
+        .a label {
+            display: block;
+            float: left;
+            line-height: 20pt;
+            height: 20pt;
+            padding: 0px 10px;
+        }
+
+        .a input[type=radio] {
+            display: block;
+            float: left;
+            clear: both;
+            line-height: 20pt;
+            height: 20pt;
+        }
+
+        .a > div:after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
 
     {{form_start(form)}}

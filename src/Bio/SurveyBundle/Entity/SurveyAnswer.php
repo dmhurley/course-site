@@ -73,6 +73,16 @@ class SurveyAnswer
         return $this->answer;
     }
 
+    public function getAnswerText() {
+        $data = $this->getQuestion()->getData();
+
+        if (count($data) > 1) {
+            return $data[$this->getAnswer()];
+        } else {
+            return $this->getAnswer();
+        }
+    }
+
     /**
      * Set surveyTaker
      *
@@ -82,14 +92,14 @@ class SurveyAnswer
     public function setSurveyTaker(\Bio\SurveyBundle\Entity\SurveyTaker $surveyTaker = null)
     {
         $this->surveyTaker = $surveyTaker;
-    
+
         return $this;
     }
 
     /**
      * Get surveyTaker
      *
-     * @return \Bio\SurveyBundle\Entity\SurveyTaker 
+     * @return \Bio\SurveyBundle\Entity\SurveyTaker
      */
     public function getSurveyTaker()
     {
@@ -105,14 +115,14 @@ class SurveyAnswer
     public function setQuestion(\Bio\SurveyBundle\Entity\SurveyQuestion $question = null)
     {
         $this->question = $question;
-    
+
         return $this;
     }
 
     /**
      * Get question
      *
-     * @return \Bio\SurveyBundle\Entity\SurveyQuestion 
+     * @return \Bio\SurveyBundle\Entity\SurveyQuestion
      */
     public function getQuestion()
     {
