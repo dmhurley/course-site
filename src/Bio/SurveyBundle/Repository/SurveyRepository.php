@@ -9,6 +9,19 @@ use Bio\SurveyBundle\Entity\Survey;
 
 class SurveyRepository extends EntityRepository {
 
+    public function getTaker(Survey $survey, AbstractUserStudent $user) {
+        return $this->getEntityManager()
+            ->createQuery('
+                SELECT t
+                FROM BioSurveyBundle:SurveyTaker t
+                WHERE t.student = :student
+                AND t.survey = :survey
+            ')
+            ->setParameter('student', $user)
+            ->setParameter('survey', $survey)
+            ->getOneOrNullResult();
+    }
+
     /**
      * Gets all available surveys for a user
      * @param {AbstractUserStudent} $user

@@ -145,13 +145,11 @@ class PublicController extends Controller
             );
         }
 
-        $user = $this->get('security.context')->getToken()->getUser();
-        $repo = $this->getDoctrine()
-            ->getManager()
-            ->getRepository('BioSurveyBundle:Survey');
+        $taker = $repo->getTaker($survey, $user);
 
         return array(
-            'title' => $survey->getName()
+            'title' => $survey->getName(),
+            'taker' => $taker
         );
     }
 }
