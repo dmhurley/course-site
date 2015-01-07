@@ -3,6 +3,7 @@
 namespace Bio\SurveyBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * SurveyAnswer
@@ -25,6 +26,8 @@ class SurveyAnswer
      * @var string
      *
      * @ORM\Column(name="answer", type="text")
+     * @Assert\NotNull()
+     * @Assert\NotBlank()
      */
     private $answer;
 

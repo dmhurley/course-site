@@ -35,7 +35,6 @@
         {% for answer in form.answers.children %}
             <div class="question tableStyle">
                 <h1 style="float:left;margin-top:18px;">Question {{loop.index}}</h1>
-                <h2 style="float:right;">test</h2>
 
                 <div class="q">
                     {{answer.vars.data.question.data[0]|safe}}

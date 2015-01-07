@@ -3,6 +3,8 @@
 namespace Bio\SurveyBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * SurveyTaker
@@ -24,17 +26,20 @@ class SurveyTaker
     /**
      * @ORM\ManyToOne(targetEntity="\Bio\UserBundle\Entity\AbstractUserStudent")
      * @ORM\JoinColumn(name="studentID", referencedColumnName="id", onDelete="CASCADE")
+     * @Assert\NotNull()
      */
     private $student;
 
     /**
      * @ORM\ManyToOne(targetEntity="Survey")
      * @ORM\JoinColumn(name="surveyID", referencedColumnName="id", onDelete="CASCADE")
+     * @Assert\NotNull()
      */
     private $survey;
 
     /**
      * @ORM\OneToMany(targetEntity="SurveyAnswer", mappedBy="surveyTaker", cascade={"remove", "persist"})
+     * @Assert\Valid(traverse=true)
      */
     private $answers;
 
