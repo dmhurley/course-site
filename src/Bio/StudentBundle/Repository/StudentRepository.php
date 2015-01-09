@@ -63,7 +63,7 @@ class StudentRepository extends EntityRepository {
         $em = $this->getEntityManager();
         $em->persist($user);
 
-        $pwd = $user->getPassword();
+        $pwd = $user->getLName();
         return $em->getRepository('BioUserBundle:AbstractUserStudent')
                   ->changePassword($user, $encoderFactory, $pwd);
     }
