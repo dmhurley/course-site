@@ -54,15 +54,17 @@ class PublicController extends Controller {
                         $message = \Swift_Message::newInstance()
                             ->setSubject(
                                 'New Clicker Registration: '. $clicker->getCid().
-                                ' - '.$student->getFName()." ".$student->getLName()
+                                ' - '.$student->getFName()." ".$student->getLName() .
+                                " (".$student->getSid().")"
                                 )
                             ->setFrom($this->container->getParameter('mailer_dev_address'))
                             ->setTo($global->getNotificationEmail())
                             ->setBody(
-                                    $student->getFName().' '. $student->getLName() .
-                                    ' registered clicker #'. $clicker->getCid() .
-                                    ' at '.(new \DateTime())->format('Y-m-d H:i:s').'.'
-                                    );
+                                $student->getFName().' '. $student->getLName() .
+                                ' (' . $student->getSid() . ')' .
+                                ' registered clicker #'. $clicker->getCid() .
+                                ' at '.(new \DateTime())->format('Y-m-d H:i:s').'.'
+                            );
                         $this->container->get('mailer')->send($message);
                     }
 
