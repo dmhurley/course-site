@@ -52,7 +52,7 @@ class AdminController extends Controller
 
             if ($request->request->has('form')) {
        			$form->handleRequest($request);
-                
+
        			if ($form->isValid()) {
        				$db->add($exam);
        			} else {
@@ -140,7 +140,7 @@ class AdminController extends Controller
 
 	   		if ($form->isValid()) {
                     $db = new Database($this, 'BioExamBundle:Exam');
- 
+
                     try {
 	   				    $db->close();
                         $flash->set('success', 'Exam edited.');
@@ -343,6 +343,7 @@ class AdminController extends Controller
             /**** TAKER DATA ****/
             $name = $taker->getStudent()->getLName().", ".$taker->getStudent()->getFName().($taker->getStudent()->getMName()?' '.$taker->getStudent()->getMName():'');
             $studentID = $taker->getStudent()->getSid();
+            $studentEmail = $taker->getStudent()->getEmail();
             $section = $taker->getStudent()->getSection()->getName();
             $didGrade = $taker->getStatus() === 5 || count($taker->getGraded()) >= $global->getGrade()?"Yes":count($taker->getGraded());
 
@@ -382,7 +383,8 @@ class AdminController extends Controller
                         '',                         // answer
                         0,                          // score
                         0,                          // total mean score
-                        ''                          // comment
+                        '',                         // comment
+                        $studentEmail               // email
                     )
                 );
             } else {
@@ -417,7 +419,8 @@ class AdminController extends Controller
                                 $answerText,                // answer
                                 "",                         // score
                                 'NOT GRADED',               // total mean score
-                                ''                          // comment
+                                '',                         // comment
+                                $studentEmail               // email
                             )
                         );
                     } else {
@@ -459,7 +462,7 @@ class AdminController extends Controller
                                 $points = '';
                             }
                             /**** END GRADE DATA ****/
-                            
+
                             $responseText[] = $this->echoArray(
                                 array(
                                     $examID,                    // exam id
@@ -481,7 +484,8 @@ class AdminController extends Controller
                                     $answerText,                // answer
                                     $points,                    // score
                                     $totalMean,                 // total mean score
-                                    $comment                    // comment
+                                    $comment,                   // comment
+                                    $studentEmail               // email
                                 )
                             );
                         }
@@ -504,7 +508,7 @@ class AdminController extends Controller
                     WITH t.student = s1
                     AND t.exam = :exam
                 )
-                AND (e.name LIKE CONCAT(:section, '."'%'".') OR 
+                AND (e.name LIKE CONCAT(:section, '."'%'".') OR
                     :section IS NULL)
                 ORDER BY s.lName ASC, s.fName ASC
             ')
