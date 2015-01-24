@@ -7,13 +7,11 @@
 #form.survey textarea {
     width: 400px;
     height: 40px;
-    margin-left: 20px;
 }
 
 #form.survey .multiple textarea {
     width: 400px;
     height: 30px;
-    margin-left: 20px;
 }
 
 #form.survey .multiple ol {

@@ -34,9 +34,22 @@ class Survey
     private $name;
 
     /**
+     * @var boolean
+     * @ORM\Column(name="anonymous", type="boolean")
+     * @Assert\NotNull()
+     */
+    private $anonymous;
+
+    /**
      * @ORM\OneToMany(targetEntity="SurveyQuestion", mappedBy="survey", cascade={"persist"})
+     * @Assert\Count(min=1, minMessage="You must have at least one question.")
      */
     private $questions;
+
+    /**
+     * @ORM\OneToMany(targetEntity="SurveyTaker", mappedBy="survey")
+     */
+    private $takers;
 
     /**
      * @var boolean
@@ -48,6 +61,7 @@ class Survey
 
     public function __construct() {
         $this->questions = new ArrayCollection();
+        $this->takers = new ArrayCollection();
     }
 
     public function getId() {
@@ -61,6 +75,16 @@ class Survey
 
     public function getName() {
         return $this->name;
+    }
+
+    public function getAnonymous() {
+        return $this->anonymous;
+    }
+
+    public function setAnonymous($anonymous) {
+        $this->anonymous = $anonymous;
+
+        return $this;
     }
 
     /**
@@ -94,6 +118,39 @@ class Survey
     public function getQuestions()
     {
         return $this->questions;
+    }
+
+    /**
+    * Add takers
+    *
+    * @param \Bio\SurveyBundle\Entity\SurveyQuestion $takers
+    * @return Survey
+    */
+    public function addTaker(\Bio\SurveyBundle\Entity\SurveyTaker $takers)
+    {
+        $this->takers[] = $takers;
+
+        return $this;
+    }
+
+    /**
+    * Remove takers
+    *
+    * @param \Bio\SurveyBundle\Entity\SurveyTaker $takers
+    */
+    public function removeTaker(\Bio\SurveyBundle\Entity\SurveyTaker $takers)
+    {
+        $this->takers->removeElement($takers);
+    }
+
+    /**
+    * Get takers
+    *
+    * @return \Doctrine\Common\Collections\Collection
+    */
+    public function getTakers()
+    {
+        return $this->takers;
     }
 
     /**

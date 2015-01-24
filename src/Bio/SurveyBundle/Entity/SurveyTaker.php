@@ -25,13 +25,13 @@ class SurveyTaker
 
     /**
      * @ORM\ManyToOne(targetEntity="\Bio\UserBundle\Entity\AbstractUserStudent")
-     * @ORM\JoinColumn(name="studentID", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\JoinColumn(name="studentID", referencedColumnName="id")
      * @Assert\NotNull()
      */
     private $student;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Survey")
+     * @ORM\ManyToOne(targetEntity="Survey", inversedBy="takers")
      * @ORM\JoinColumn(name="surveyID", referencedColumnName="id", onDelete="CASCADE")
      * @Assert\NotNull()
      */

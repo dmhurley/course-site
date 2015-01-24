@@ -13,6 +13,8 @@ use Bio\DataBundle\Exception\BioException;
 use Bio\SurveyBundle\Entity\Survey;
 use Bio\SurveyBundle\Entity\SurveyQuestion;
 
+use Bio\SurveyBundle\Type\SurveyType;
+
 
 /**
  * @Route("/admin/survey")
@@ -31,40 +33,38 @@ class AdminController extends Controller
      * @Route("/manage", name="survey_manage")
      * @Template()
      */
-    public function indexAction(Request $request)
-    {
+    public function indexAction(Request $request) {
         $flash = $request->getSession()->getFlashBag();
-        $survey = new Survey();
-        $survey->setHidden(true);
         $db = new Database($this, 'BioSurveyBundle:Survey');
 
-        if ($request->getMethod() === "POST") {
-            $data = $request->request->get('form');
-            foreach ($data as $key => $value) {
-                if (is_numeric($key)) {
-                    $question = new SurveyQuestion();
-                    $question->setType(
-                        count($value) === 1 ? "response" : "multiple"
-                    );
-                    $question->setSurvey($survey);
-                    $question->setData($value);
-                    $survey->addQuestion($question);
-                }
-            }
-            $survey->setName($data['name']);
+        $survey = new Survey();
+        $survey->setHidden(false);
+        $survey->setAnonymous(true);
 
-            try {
+        $form = $this->createForm(new SurveyType(), $survey)
+            ->add('submit', 'submit');
+
+        if ($request->getMethod() === "POST") {
+            $form->handleRequest($request);
+
+            echo $survey->getQuestions()->count();
+
+            if ($form->isValid()) {
+                foreach ($survey->getQuestions() as $i => $question) {
+                    $question->setSurvey($survey);
+                }
                 $db->add($survey);
                 $db->close();
-                $flash->set('success', 'Survey added.');
-            } catch(\Exception $e) {
-                $flash->set('failure', 'Survey could not be added.');
+            } else {
+                echo '<pre>'.$form->getErrorsAsString().'</pre>';
             }
+
         }
 
         $surveys = $db->find(array(), array(), false);
 
         return array(
+            'form' => $form->createView(),
             'surveys' => $surveys,
             'title' => 'Manage Surveys'
         );
@@ -118,7 +118,7 @@ class AdminController extends Controller
      */
     public function downloadSurveyAction(Request $request, Survey $survey) {
         // build response
-        $response = $this->render('BioSurveyBundle:Admin:download.csv.twig', array(
+        $response = $this->render('BioSurveyBundle:Admin:download.xls.twig', array(
             'survey' => $survey
         ));
 
@@ -127,7 +127,7 @@ class AdminController extends Controller
         );
 
         $response->headers->set(
-            'Content-Disposition', ('attachment; filename="survey.csv"')
+            'Content-Disposition', ('attachment; filename="survey.xls"')
         );
 
         return $response;

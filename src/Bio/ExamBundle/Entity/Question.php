@@ -63,7 +63,7 @@ class Question
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -85,14 +85,14 @@ class Question
     public function setQuestion($question)
     {
         $this->question = $question;
-    
+
         return $this;
     }
 
     /**
      * Get question
      *
-     * @return string 
+     * @return string
      */
     public function getQuestion()
     {
@@ -103,6 +103,7 @@ class Question
         $string = $this->question;
         $string = strip_tags($string);
         $string = str_replace("&nbsp;", '', $string);
+
         return $string;
     }
 
@@ -115,14 +116,14 @@ class Question
     public function setAnswer($answer)
     {
         $this->answer = $answer;
-    
+
         return $this;
     }
 
     /**
      * Get answer
      *
-     * @return string 
+     * @return string
      */
     public function getAnswer()
     {
@@ -138,14 +139,14 @@ class Question
     public function setPoints($points)
     {
         $this->points = $points;
-    
+
         return $this;
     }
 
     /**
      * Get points
      *
-     * @return integer 
+     * @return integer
      */
     public function getPoints()
     {
@@ -161,14 +162,14 @@ class Question
     public function setTags($tags)
     {
         $this->tags = $tags;
-    
+
         return $this;
     }
 
     /**
      * Get tags
      *
-     * @return array 
+     * @return array
      */
     public function getTags()
     {
