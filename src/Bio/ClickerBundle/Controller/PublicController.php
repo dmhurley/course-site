@@ -56,7 +56,7 @@ class PublicController extends Controller {
                                 'New Clicker Registration: '. $clicker->getCid().
                                 ' - '.$student->getFName()." ".$student->getLName() .
                                 " (".$student->getSid().")"
-                                )
+                            )
                             ->setFrom($this->container->getParameter('mailer_dev_address'))
                             ->setTo($global->getNotificationEmail())
                             ->setBody(

@@ -1,0 +1,32 @@
+#response, .delete, #multiple, .link {
+    cursor:pointer;
+    text-decoration:underline;
+    color: rgb(0, 0, 238);
+}
+
+#form.survey textarea {
+    width: 400px;
+    height: 40px;
+}
+
+#form.survey .multiple textarea {
+    width: 400px;
+    height: 30px;
+}
+
+#form.survey .multiple ol {
+
+}
+
+#form.survey .multiple input {
+    width: 410px;
+    padding: 5px;
+}
+
+#form.survey .multiple .addOption {
+    margin-left: 20px;
+}
+
+#form.survey .multiple .delete {
+    margin-left: 5px;
+}

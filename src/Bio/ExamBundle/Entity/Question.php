@@ -107,6 +107,7 @@ class Question
         if ($string) {
             $string = '(preview unavailable)';
         }
+
         return $string;
     }
 

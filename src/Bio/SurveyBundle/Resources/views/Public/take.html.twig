@@ -1,0 +1,60 @@
+{% extends 'BioExamBundle:Public:main.html.twig' %}
+
+{% block head %}
+    {{parent()}}
+
+    <style>
+        .a label {
+            display: block;
+            float: left;
+            line-height: 20pt;
+            height: 20pt;
+            padding: 0px 10px;
+        }
+
+        .a input[type=radio] {
+            display: block;
+            float: left;
+            clear: both;
+            line-height: 20pt;
+            height: 20pt;
+        }
+
+        .a > div:after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    {{form_start(form)}}
+
+        {% for answer in form.answers.children %}
+            <div class="question tableStyle">
+                <h1 style="float:left;margin-top:18px;">Question {{loop.index}}</h1>
+
+                <div class="q">
+                    {{answer.vars.data.question.data[0]|safe}}
+                </div>
+
+                <div class="line"></div>
+
+                {% if answer.children['answer'].vars.errors|length > 0 %}
+                <div class="a error row_error" data-tip="{{answer.children['answer'].vars.errors[0].message}}">
+                {% else %}
+                <div class="a">
+                {% endif %}
+                    {{form_widget(answer.children['answer'])}}
+                </div>
+            </div>
+        {% endfor %}
+
+        <div id="submit">
+            {{form_widget(form.submit)}}
+        </div>
+    {{form_end(form)}}
+
+{% endblock %}

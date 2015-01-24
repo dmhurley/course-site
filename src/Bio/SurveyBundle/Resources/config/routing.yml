@@ -1,0 +1,4 @@
+bio_survey:
+    resource: '@BioSurveyBundle/Controller/'
+    type: annotation
+    prefix: /

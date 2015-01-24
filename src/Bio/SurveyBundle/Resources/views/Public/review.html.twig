@@ -1,0 +1,20 @@
+{% extends 'BioExamBundle:Public:main.html.twig' %}
+
+{% block content %}
+
+    {% for answer in taker.answers %}
+        <div class="question tableStyle">
+            <h1 style="float:left;margin-top:18px;">Question {{loop.index}}</h1>
+
+            <div class="q">
+                {{answer.question.data[0]}}
+            </div>
+
+            <div class="line"></div>
+
+            <div class="a">
+                {{answer.getAnswerText()}}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

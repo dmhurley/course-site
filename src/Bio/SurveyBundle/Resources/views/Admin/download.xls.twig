@@ -1,0 +1,8 @@
+{% filter raw %}
+seq{% for question in survey.questions %}	{{question.name}}{% endfor %}
+
+{% for taker in survey.takers %}
+{{taker.id}}{% for answer in taker.answers %}	{{answer.answerText}}{% endfor %}
+
+{% endfor %}
+{% endfilter %}

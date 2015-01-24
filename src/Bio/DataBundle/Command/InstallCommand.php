@@ -26,7 +26,7 @@ class InstallCommand extends ContainerAwareCommand
                 '-a',
                 InputOption::VALUE_NONE,
                 'Install all Bundles.'
-            ) 
+            )
             -> addOption(
                 'no-clear',
                 null,
@@ -106,6 +106,7 @@ class InstallCommand extends ContainerAwareCommand
             'score',
             'exam',
             'trip',
+            'survey',
             'switch',
             'user'
         );
@@ -129,7 +130,7 @@ class InstallCommand extends ContainerAwareCommand
             $dist = Yaml::parse($distribution);
         } else {
             $output->writeln($distribution." does not exist. Generating empty array.");
-            $dist = array();    
+            $dist = array();
         }
 
         foreach($bundles as $bundleName) {
@@ -154,5 +155,5 @@ class InstallCommand extends ContainerAwareCommand
     private function setRouting(array $bundles, OutputInterface $output) {
         $this->setConfig($bundles, $output, 'routing');
     }
-        
+
 }

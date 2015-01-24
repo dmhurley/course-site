@@ -2,24 +2,57 @@
 
 {% block head %}
     {{ parent() }}
+    {% stylesheets 'bundles/biosurvey/css/survey.css' filter="cssrewrite" output="css/*.css" %}
+        <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
 {% endblock %}
 
 {% block content %}
     <h2>Create Survey</h2>
-    <form method="POST" class="tableStyle">
-        <div id="form">
-            <div>
-                <label for="form_name" class="required">Survey Name</label>
-                <input type="text" id="form_name" name="form[name]" required="required">
-            </div>
-            <table>
+
+    {{form_start(form)}}
+        <div id="form" class="survey tableStyle">
+            {{form_row(form.name)}}
+            {{form_row(form.hidden)}}
+            {{form_row(form.anonymous)}}
+
+            <table style="font-size: 13px;">
                 <thead>
                     <tr>
-                        <th>Question</th>
-                        <th>Delete</th>
+                        <th>Questions</th>
+                        <th></th>
                     </tr>
                     <tbody id="body">
+                        {% for question in form.questions %}
+                            <tr>
+                                <td>
+                                    <div style="margin: 10px">
+                                        <label style="display: block; float: left; width: 100px; text-align: right; padding-right: 15px; font-size: 13px;">Question Name</label>
+                                        <input name="form[questions][{{loop.index0}}][name]" value="{{ question.name.vars.value }}" />
+                                    </div>
+                                    <div style="margin: 10px">
+                                        <label style="display: block; float: left; width: 100px; text-align: right; padding-right: 15px; font-size: 13px;">Question</label>
+                                        <textarea name="form[questions][{{loop.index0}}][data][]">{{ question.data.vars.value[0] }}</textarea>
+                                    </div>
+                                    {% set index = loop.index0 %}
 
+                                    {% if question.data.vars.value|length > 1 %}
+                                        <div class="multiple">
+                                            {% for multiple in question.data.vars.value %}
+                                                {% if loop.index0 != 0 %}
+                                                    <div>
+                                                        <input name="form[questions][{{index}}][data][]" style="margin: 2px 2px 2px 125px; width: 300px;" type="text" value="{{multiple}}" />
+                                                        {% if loop.index0 != 1 %}<span class="delete remove">remove</span>{% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                            <a class="link option" style="margin-left: 125px;">add option</a>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td><a class="delete">delete</a></td>
+                            </tr>
+                        {% endfor %}
                     </tbody>
                     <tfoot>
                         <tr>
@@ -35,9 +68,8 @@
                     </tfoot>
                 </thead>
             </table>
-            <div>
-                <button type="submit">submit</button>
-            </div>
+
+            {{form_row(form.submit)}}
         </div>
     </form>
 
@@ -46,6 +78,8 @@
         <tr>
             <th>Name</th>
             <th>Questions</th>
+            <th>Status</th>
+            <th>Toggle</th>
             <th>Download</th>
             <th>Delete</th>
         </tr>
@@ -53,7 +87,9 @@
             <tr>
                 <td>{{survey.name}}</td>
                 <td>{{survey.questions | length}}</td>
-                <td><a href="">download</a></td>
+                <td>{{survey.hidden ? 'closed' : 'open'}}</td>
+                <td><a href="{{ path('toggle_survey', {'id' : survey.id}) }}">toggle</a></td>
+                <td><a href="{{ path('download_survey', {'id': survey.id}) }}">download</a></td>
                 <td><a href="{{ path('delete_survey', {'id':survey.id}) }}">delete</a></td>
             </tr>
         {% else %}
@@ -65,73 +101,82 @@
 {% block java %}
     <script>
         (function() {
-            var body = document.getElementById('body')
-                index = 0;
 
-            document.body.addEventListener('click', function(evt) {
+            var body = document.getElementById('body');
+
+            body.addEventListener('click', function(evt) {
+                if (evt.target.classList.contains('remove')) {
+                    evt.target.parentElement.remove();
+                    return;
+                }
+
                 if (evt.target.classList.contains('delete')) {
-                    var tr = evt.target.parentElement;
-                    tr.parentElement.removeChild(tr);
+                    evt.target.parentElement.parentElement.remove()
                 }
             });
 
-            document.getElementById('response').onclick = function() {
+            var template = [
+                    '<td>',
+                        '<div style="margin: 10px;">',
+                            '<label style="display: block; float: left; width: 100px; text-align: right; padding-right: 15px; font-size: 13px;">Question Name</label>',
+                            '<input required="required" name="form[questions][<index>][name]" value="" />',
+                        '</div>',
+                        '<div style="margin: 10px;">',
+                            '<label style="display: block; float: left; width: 100px; text-align: right; padding-right: 15px; font-size: 13px;">Question</label>',
+                            '<textarea required="required" name="form[questions][<index>][data][]"></textarea>',
+                            '<div class="multiple">',
+
+                            '</div>',
+                        '</div>',
+                    '</td>',
+                    '<td>',
+                        '<a class="delete">delete</a>',
+                    '</td>'
+            ].join("\n");
+
+            var multiTemplate = [
+                '<input required="required" name="form[questions][<index>][data][]" style="margin: 2px 2px 2px 125px; width: 300px;" type="text" value="" />',
+                '<span class="delete remove">remove</span>'
+            ].join("\n");
+
+            var index = body.children.length;
+
+
+            document.getElementById('response').addEventListener('click', function() {
                 var tr = document.createElement('tr');
-                var left = document.createElement('td');
-                var right = document.createElement('td');
-                right.classList.add('delete');
-                right.innerHTML = 'delete';
+                tr.innerHTML = template.replace(/<index>/g, index++);
 
-                var text = document.createElement('textarea');
-                text.name="form["+index+"][]";
-
-                left.appendChild(text);
-                tr.appendChild(left);
-                tr.appendChild(right);
                 body.appendChild(tr);
-                index++;
-            }
+            });
 
-            document.getElementById('multiple').onclick = function() {
-                var tr = document.createElement('tr');
-                var left = document.createElement('td');
-                var right = document.createElement('td');
-                right.classList.add('delete');
-                right.innerHTML = 'delete';
-                var question = document.createElement('textarea');
-                question.name="form["+index+"][]";
-                var add = document.createElement('a');
-                add.innerHTML = 'add';
-                left.appendChild(question);
-                left.appendChild(add);
+            document.getElementById('multiple').addEventListener('click', function() {
                 var i = index;
+                var tr = document.createElement('tr');
+                tr.innerHTML = template.replace(/<index>/g, index++);
 
-                function addOption() {
-                    var container = document.createElement('div');
-                    var input = document.createElement('input');
-                    var del = document.createElement('span');
-                    container.appendChild(input);
-                    container.appendChild(del);
-                    del.classList.add('delete');
-                    del.innerHTML = 'remove';
-                    input.type = "text";
-                    input.name = "form["+i+"][]";
+                var multiple = tr.getElementsByClassName('multiple')[0];
 
-                    left.insertBefore(container, add);
-                }
+                var button = document.createElement('a');
+                button.innerHTML = 'add option';
+                button.classList.add('link');
+                button.classList.add('option');
+                button.style.marginLeft = '125px';
+                button.addEventListener('click', function(evt) {
+                    var div = document.createElement('div');
+                    div.innerHTML = multiTemplate.replace(/<index>/g, i);
+                    button.insertAdjacentElement('beforebegin', div);
+                });
 
-                add.onclick = function() {
-                    addOption();
-                };
+                multiple.appendChild(button);
 
-                addOption();
+                var d = document.createElement('div');
+                d.innerHTML = '<input required="required" name="form[questions][<index>][data][]" style="margin: 2px 2px 2px 125px; width: 300px;" type="text" value="" />'.replace(/<index>/g, i);
+                button.insertAdjacentElement('beforebegin', d);
 
-                tr.appendChild(left);
-                tr.appendChild(right);
+
 
                 body.appendChild(tr);
-                index++;
-            }
+            });
         })();
     </script>
 {% endblock %}

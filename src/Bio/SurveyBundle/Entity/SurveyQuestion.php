@@ -23,7 +23,16 @@ class SurveyQuestion
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Survey")
+     * @var string
+     *
+     * @ORM\Column(name="name", type="text")
+     * @Assert\NotNull()
+     * @Assert\NotBlank()
+     */
+    private $name;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Survey", inversedBy="questions")
      * @ORM\JoinColumn(name="surveyID", referencedColumnName="id", onDelete="CASCADE")
      **/
     private $survey;
@@ -51,6 +60,26 @@ class SurveyQuestion
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Get name
+     * @return string
+     */
+    public function getName() {
+        return $this->name;
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     * @return this
+     */
+    public function setName($name) {
+        $this->name = $name;
+
+        return $this;
     }
 
     /**
