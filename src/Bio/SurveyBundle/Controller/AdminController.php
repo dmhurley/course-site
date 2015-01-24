@@ -53,10 +53,21 @@ class AdminController extends Controller
                 foreach ($survey->getQuestions() as $i => $question) {
                     $question->setSurvey($survey);
                 }
-                $db->add($survey);
-                $db->close();
+
+                try {
+                    $db->add($survey);
+                    $db->close();
+                    $flash->set('success', 'Survey saved.');
+                    if ($request->headers->get('referer')) {
+                        return $this->redirect($request->headers->get('referer'));
+                    } else {
+                        return $this->redirect($this->generateUrl('survey_manage'));
+                    }
+                } catch (\Exception $e) {
+                    $flash->set('error', 'Could not save survey.');
+                }
             } else {
-                echo '<pre>'.$form->getErrorsAsString().'</pre>';
+                $flash->set('error', 'Could not save survey.');
             }
 
         }
@@ -87,7 +98,7 @@ class AdminController extends Controller
         if ($request->headers->get('referer')) {
             return $this->redirect($request->headers->get('referer'));
         } else {
-            return $this->redirect($this->generateUrl('manage_surveys'));
+            return $this->redirect($this->generateUrl('survey_manage'));
         }
     }
 
@@ -109,7 +120,7 @@ class AdminController extends Controller
         if ($request->headers->get('referer')) {
             return $this->redirect($request->headers->get('referer'));
         } else {
-            return $this->redirect($this->generateUrl('manage_surveys'));
+            return $this->redirect($this->generateUrl('survey_manage'));
         }
     }
 

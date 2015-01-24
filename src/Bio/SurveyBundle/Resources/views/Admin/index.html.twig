@@ -36,16 +36,19 @@
                                     </div>
                                     {% set index = loop.index0 %}
 
-                                    <div class="multiple">
-                                        {% for multiple in question.data.vars.value %}
-                                            {% if loop.index0 != 0 %}
-                                                <div>
-                                                    <input name="form[questions][{{index}}][data][]" style="margin: 2px 2px 2px 125px; width: 300px;" type="text" value="{{multiple}}" />
-                                                    {% if loop.index0 != 1 %}<span class="delete remove">remove</span>{% endif %}
-                                                </div>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
+                                    {% if question.data.vars.value|length > 1 %}
+                                        <div class="multiple">
+                                            {% for multiple in question.data.vars.value %}
+                                                {% if loop.index0 != 0 %}
+                                                    <div>
+                                                        <input name="form[questions][{{index}}][data][]" style="margin: 2px 2px 2px 125px; width: 300px;" type="text" value="{{multiple}}" />
+                                                        {% if loop.index0 != 1 %}<span class="delete remove">remove</span>{% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                            <a class="link option" style="margin-left: 125px;">add option</a>
+                                        </div>
+                                    {% endif %}
                                 </td>
                                 <td><a class="delete">delete</a></td>
                             </tr>
@@ -156,6 +159,7 @@
                 var button = document.createElement('a');
                 button.innerHTML = 'add option';
                 button.classList.add('link');
+                button.classList.add('option');
                 button.style.marginLeft = '125px';
                 button.addEventListener('click', function(evt) {
                     var div = document.createElement('div');
