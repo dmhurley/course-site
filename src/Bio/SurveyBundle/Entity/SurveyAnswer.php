@@ -80,7 +80,7 @@ class SurveyAnswer
         $data = $this->getQuestion()->getData();
 
         if (count($data) > 1) {
-            return $data[$this->getAnswer()];
+            return $data[$this->getAnswer() + 1];
         } else {
             return $this->getAnswer();
         }
