@@ -36,14 +36,16 @@
                                     </div>
                                     {% set index = loop.index0 %}
 
-                                    {% for multiple in question.data.vars.value %}
-                                        {% if loop.index0 != 0 %}
-                                            <div>
-                                                <input name="form[questions][{{index}}][data][]" style="margin: 2px 2px 2px 125px; width: 300px;" type="text" value="{{multiple}}" />
-                                                <span class="delete">remove</span>
-                                            </div>
-                                        {% endif %}
-                                    {% endfor %}
+                                    <div class="multiple">
+                                        {% for multiple in question.data.vars.value %}
+                                            {% if loop.index0 != 0 %}
+                                                <div>
+                                                    <input name="form[questions][{{index}}][data][]" style="margin: 2px 2px 2px 125px; width: 300px;" type="text" value="{{multiple}}" />
+                                                    {% if loop.index0 != 1 %}<span class="delete remove">remove</span>{% endif %}
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
                                 </td>
                                 <td><a class="delete">delete</a></td>
                             </tr>
@@ -100,12 +102,13 @@
             var body = document.getElementById('body');
 
             body.addEventListener('click', function(evt) {
-                if (evt.target.classList.contains('delete')) {
-                    console.log('deleting');
+                if (evt.target.classList.contains('remove')) {
+                    evt.target.parentElement.remove();
+                    return;
                 }
 
-                if (evt.target.classList.contains('remove')) {
-                    console.log('removing');
+                if (evt.target.classList.contains('delete')) {
+                    evt.target.parentElement.parentElement.remove()
                 }
             });
 
@@ -113,11 +116,11 @@
                     '<td>',
                         '<div style="margin: 10px;">',
                             '<label style="display: block; float: left; width: 100px; text-align: right; padding-right: 15px; font-size: 13px;">Question Name</label>',
-                            '<input name="form[questions][<index>][name]" value="" />',
+                            '<input required="required" name="form[questions][<index>][name]" value="" />',
                         '</div>',
                         '<div style="margin: 10px;">',
                             '<label style="display: block; float: left; width: 100px; text-align: right; padding-right: 15px; font-size: 13px;">Question</label>',
-                            '<textarea name="form[questions][<index>][data][]"></textarea>',
+                            '<textarea required="required" name="form[questions][<index>][data][]"></textarea>',
                             '<div class="multiple">',
 
                             '</div>',
@@ -129,23 +132,44 @@
             ].join("\n");
 
             var multiTemplate = [
-                '<input name="" style="" type="text" value="" />',
+                '<input required="required" name="form[questions][<index>][data][]" style="margin: 2px 2px 2px 125px; width: 300px;" type="text" value="" />',
                 '<span class="delete remove">remove</span>'
             ].join("\n");
 
+            var index = body.children.length;
+
 
             document.getElementById('response').addEventListener('click', function() {
-                var index = body.children.length;
                 var tr = document.createElement('tr');
-                tr.innerHTML = template.replace(/<index>/g, index);
+                tr.innerHTML = template.replace(/<index>/g, index++);
 
                 body.appendChild(tr);
             });
 
             document.getElementById('multiple').addEventListener('click', function() {
-                var index = body.children.length;
+                var i = index;
                 var tr = document.createElement('tr');
-                tr.innerHTML = template.replace(/<index>/g, index);
+                tr.innerHTML = template.replace(/<index>/g, index++);
+
+                var multiple = tr.getElementsByClassName('multiple')[0];
+
+                var button = document.createElement('a');
+                button.innerHTML = 'add option';
+                button.classList.add('link');
+                button.style.marginLeft = '125px';
+                button.addEventListener('click', function(evt) {
+                    var div = document.createElement('div');
+                    div.innerHTML = multiTemplate.replace(/<index>/g, i);
+                    button.insertAdjacentElement('beforebegin', div);
+                });
+
+                multiple.appendChild(button);
+
+                var d = document.createElement('div');
+                d.innerHTML = '<input required="required" name="form[questions][<index>][data][]" style="margin: 2px 2px 2px 125px; width: 300px;" type="text" value="" />'.replace(/<index>/g, i);
+                button.insertAdjacentElement('beforebegin', d);
+
+
 
                 body.appendChild(tr);
             });
