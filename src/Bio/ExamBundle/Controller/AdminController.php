@@ -525,7 +525,21 @@ class AdminController extends Controller
                     $result->getSid(),
                     '',
                     $result->getLName().', '.$result->getFName().($result->getMName()?' '.$result->getMName():''),
-                    $result->getSection()->getName()
+                    $result->getSection()->getName(),
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    $result ->getEmail()
                 )
             );
         }
