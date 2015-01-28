@@ -539,7 +539,7 @@ class AdminController extends Controller
                     '',
                     '',
                     '',
-                    $result ->getEmail()
+                    $result->getEmail()
                 )
             );
         }
