@@ -104,7 +104,7 @@ class Question
         $string = strip_tags($string);
         $string = str_replace("&nbsp;", '', $string);
         $string = trim($string);
-        if ($string) {
+        if (!$string) {
             $string = '(preview unavailable)';
         }
 
