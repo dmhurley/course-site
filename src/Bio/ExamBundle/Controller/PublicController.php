@@ -30,11 +30,16 @@ class PublicController extends Controller {
 	 */
 	public function reviewAction(Request $request,Exam $exam) {
 		$student = $this->get('security.context')->getToken()->getUser();
-
+		$global = (new Database($this, 'BioExamBundle:ExamGlobal'))->findOne(array());
 		$db = new Database($this, 'BioExamBundle:TestTaker');
 		$taker = $db->findOne(array('student' => $student, 'exam' => $exam));
 
-		if ($taker && $student) {
+		if (
+			new \DateTime($exam->getGDate()->format('Y-m-d').' '.$exam->getGStart()->format('H:i:s'))
+		 	>= new \DateTime('-'. $global->getReviewHours() .' hours')
+		) {
+			return $this->redirect($this->generateUrl('exam_entrance'));
+		} else if ($taker && $student) {
 			return array(
 				'taker' => $taker,
 				'title' => $taker->getExam()->getTitle().' Review'
